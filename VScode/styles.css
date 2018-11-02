@@ -1,0 +1,76 @@
+/*- Comments */
+.mtk3 {
+  /*- margin-left: 1px;
+  font-size: 1em; */
+  font-family: "Gidole";
+  margin-left: 2px;
+  font-size: 0.9em;
+}
+
+/*- Comments for monospaced areas */
+.mtk3.ced-1-TextEditorDecorationType52-1 {
+  margin-left: 1px;
+  font-family: "FuraCode Nerd Font Mono";
+  font-size: 1em;
+}
+
+.mtk3.ced-1-TextEditorDecorationType53-1 {
+  margin-left: 1px;
+  font-family: "FuraCode Nerd Font Mono";
+  font-size: 1em;
+}
+
+.mtk3.ced-1-TextEditorDecorationType54-1 {
+  margin-left: 1px;
+  font-family: "FuraCode Nerd Font Mono";
+  font-size: 1em;
+}
+
+span.mtk3.ced-1-TextEditorDecorationType43-1 {
+  margin-left: 1px;
+  font-family: "FuraCode Nerd Font Mono";
+  font-size: 1em;
+}
+
+span.mtk3.ced-1-TextEditorDecorationType44-1 {
+  margin-left: 1px;
+  font-family: "FuraCode Nerd Font Mono";
+  font-size: 1em;
+}
+
+span.mtk3.ced-1-TextEditorDecorationType45-1 {
+  margin-left: 1px;
+  font-family: "FuraCode Nerd Font Mono";
+  font-size: 1em;
+}
+
+/*- I don't know what this is*/
+.mtk13 {
+  margin-left: 1px;
+  /*- font-family: "Algerian, monospaced"; */
+  font-size: 1em;
+}
+
+/*- Property names for javascript webpack and clas names*/
+.mtk10 {
+  margin-left: 1px;
+  /** font-family: "Aller, mono" !important; */
+  font-size: 1em;
+  color: #ff677b;
+}
+
+/*-   Class names and css property values*/
+.mtk4 {
+  font-size: 1em !important;
+}
+
+/*- Div Tag opening*/
+span.mtk1.ced-TextEditorDecorationType36-1.ced-TextEditorDecorationType64-1.ced-TextEditorDecorationType32-1.ced-TextEditorDecorationType63-1 {
+  font-family: "Big John";
+  font-size: 1em;
+}
+
+span.mtk1.ced-TextEditorDecorationType38-1.ced-TextEditorDecorationType34-1 {
+  font-family: "Big John";
+  font-size: 1em;
+}

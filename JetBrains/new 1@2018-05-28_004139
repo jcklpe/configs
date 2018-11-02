@@ -1,0 +1,211 @@
+{
+  ///////////////////
+  //    Visual Settings
+  "workbench.colorTheme": "Hopscotch (TextMate Theme)",
+  "editor.fontSize": 18,
+  "editor.lineHeight": 29,
+  "editor.fontFamily": "Input",
+  "editor.fontLigatures": true,
+
+
+  // color customizations for theme
+    "workbench.colorCustomizations": {
+    //Activity bar
+    "activityBar.background": "#24222f",
+    "activityBar.dropBackground": "#101731",
+    "activityBar.foreground": "#8c6188",
+    "activityBar.border": "#202030",
+    "activityBarBadge.background": "#101731",
+    "activityBarBadge.foreground": "#73f0ae",
+    //Input
+    "input.background": "#24222f",
+    "inputOption.activeBorder": "#73f0ae",
+    "input.foreground":"#73f0ae",
+    //Scrollbar
+    "scrollbarSlider.activeBackground": "#10173166",
+    //Sidebar
+    "sideBar.background": "#29242e",
+    "sideBar.foreground": "#d37c82",
+    "sideBar.border": "#101731",
+    "sideBar.dropBackground": "#000098",
+    "sideBarTitle.foreground": "#ffd900",
+    "sideBarSectionHeader.background": "#101731d3",
+    "sideBarSectionHeader.foreground": "#72edebce",
+    //tabs
+    "editorGroupHeader.tabsBackground": "#1b1a26",
+    "tab.inactiveBackground": "#29242e",
+    "focusBorder": "#45272f",
+    "foreground": "#d37c82",
+    "widget.shadow": "#101731",
+    "selection.background": "#101731",
+    "descriptionForeground": "#ffdc52",
+    "errorForeground": "#e24f47",
+    //buttons
+    "button.background": "#101731",
+    "button.foreground": "#1a97c5",
+    "button.hoverBackground": "#fff77b",
+    "badge.foreground": "#fff77b",
+    "badge.background": "#101731",
+    //editor lines and selections
+    "editorLineNumber.activeForeground": "#fff77b",
+    "editorIndentGuide.activeBackground": "#ffcb43",
+    "editor.lineHighlightBackground": "#251e4d",
+    "editor.rangeHighlightBackground":"#f8cc8f",
+    "editor.rangeHighlightBorder": "#72edeb",
+    "editor.selectionBackground": "#ac2a32",
+    "editor.selectionForeground": "#101731",
+    "editor.selectionHighlightBackground": "#211a57",
+    "editor.selectionHighlightBorder": "#72edeb",
+    "editorCursor.foreground": "#e9f56f",
+    // bottom status bar
+    "editorWidget.background":"#332932",
+    "editorSuggestWidget.background": "#332932",
+    "statusBar.background": "#24222f",
+    "statusBar.noFolderBackground": "#522f33",
+    "titleBar.activeBackground": "#522f33",
+    //Panel and Terminal
+    "panel.background": "#181c21",
+    "panel.border": "#73f0ae",
+    "panelTitle.activeForeground": "#e9f56f",
+    "panelTitle.inactiveForeground": "#73f0ada4",
+    "terminal.foreground": "#73f0ae",
+    "terminal.selectionBackground": "#0e000f66",
+    "editorMarkerNavigationWarning.background":"#ff0000",
+    "editorSuggestWidget.background":"#29242e", 
+    "editorSuggestWidget.selectedBackground":"#000098", 
+    "list.activeSelectionBackground": "#0e000f4b",
+    "list.activeSelectionForeground": "#e9f56f",
+    "list.inactiveSelectionBackground":  "#07000f34",
+    "list.hoverBackground": "#000098",
+    "list.focusBackground": "#002998ce",
+
+
+
+
+
+},
+  
+  /////////////////////////
+  //    Visual organization
+  "editor.renderIndentGuides": false,
+  "editor.formatOnType": true,
+  "editor.minimap.renderCharacters": false,
+  "editor.minimap.showSlider": "always",
+  "editor.renderLineHighlight": "all",
+  "editor.showFoldingControls": "always",
+  "editor.wordWrap": "bounded",
+  //Guides plugin
+  "guides.enabled": true,
+  "guides.active.extraIndent": false,
+  "guides.active.gutter": false,
+  "guides.indent.showFirstIndentGuides": true,
+  "guides.active.hideOnSelection": true,
+  "guides.normal.hideOnSelection": true,
+  "guides.stack.hideOnSelection": true,
+  "guides.overrideDefault": true,
+  "guides.stack.enabled": true,
+  "guides.stack.style": "solid",
+  "guides.active.style": "solid",
+  "guides.normal.style": "dotted",
+  "guides.active.width": 8,
+  "guides.stack.width": 2,
+  "guides.normal.width": 2,
+  "guides.active.color.dark": "Gold", 
+  "guides.normal.color.dark": "rgba(53, 82, 156, 0.75)",
+  "guides.stack.color.dark": "#060d22",
+  "guides.indent.backgrounds": [
+    "rgba(81, 47, 50, .75)",
+    "rgba(15,24,48, .75)",
+    "rgba(38, 29, 46, .75)",
+    "rgba(69, 39, 47, .75)",
+    ],
+    "guides.indent.hideBackgroundOnSelection": false,
+    // Bracket Colorize Settings
+    "editor.matchBrackets": false, //this is the built in match brackets disabled
+    "bracketPairColorizer.consecutivePairColors": [
+      "()",
+      "[]",
+      "{}",
+      ["<", "</"],
+      ["<", "/>"],
+      ["<?php", "/>"],
+      [
+        "#ad4a79",
+        "#ca687f",
+        "#f2666f",
+      ],
+      "Red"
+    ],
+    "bracketPairColorizer.highlightActiveScope": true,
+    "bracketPairColorizer.scopeLineCSS": [
+      "borderStyle : solid",
+      "borderWidth : 3px",
+      "borderColor : {color}; opacity: 1;",
+      "backgroundColor : {color}; opacity: 0.5;"
+    ],
+    "bracketPairColorizer.activeScopeCSS": [
+      "borderStyle : solid",
+      "borderWidth : 2px",
+      "borderColor : {color}; opacity: 1;",
+      "backgroundColor : gold; opacity: 1;",
+      "fontWeight: 900;",
+      "borderRadius: 4px;",
+      
+    ],
+    "bracketPairColorizer.showBracketsInRuler": true,
+    "bracketPairColorizer.rulerPosition": "Full",
+    "bracketPairColorizer.timeOut": 100,
+  
+    
+  
+  
+  //////////////////////////////
+  // Behavior
+  "window.restoreWindows": "all",
+  "files.insertFinalNewline": true,
+  "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\bash.exe",
+
+
+
+  ////////////////
+  //background
+// Your custom Images(Max length is 3). 自己定制背景图，最多3个
+"background.customImages": ["https://i.imgur.com/7Jy7DSg.jpg"],
+
+// Plugin background enabled.background 插件是否启用
+"background.enabled": true,
+
+// Custom common style.自定义各项公有样式.
+"background.style": {
+  "content": "''",
+  "pointer-events": "none",
+  "position": "absolute",
+  "z-index": "99999",
+  "width": "100%",
+  "height": "100%",
+  "background-position": "0% 100%",
+  "background-repeat": "no-repeat",
+  "opacity": 
+},
+
+// Use default images.使用默认图片
+"background.useDefault": false,
+
+// If use front image,which means image is placed on the top of your code. 是否使用前景图，这样会使图片放在代码的顶部
+"background.useFront": false,
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  }
+  
