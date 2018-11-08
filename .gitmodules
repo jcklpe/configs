@@ -1,3 +1,6 @@
 [submodule "zsh/powerlevel9k"]
 	path = zsh/powerlevel9k
 	url = https://github.com/bhilburn/powerlevel9k.git
+[submodule "ShellScripts/Color-Scripts"]
+	path = ShellScripts/Color-Scripts
+	url = https://github.com/stark/Color-Scripts.git

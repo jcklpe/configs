@@ -195,7 +195,7 @@ module.exports = {
     //'hyper-stylesheet',
     //"hyper-always-on-top",
     // 𝑻𝑯𝑬𝑴𝑬𝑺
-    //'hyper-bloody',
+    'hyper-bloody',
     //'an-old-hype',
     //'hyper-clean',
     //'hyper-oldschool',
@@ -212,7 +212,7 @@ module.exports = {
   // `~/.hyper_plugins/local/` and include it here
   // to load it and avoid it being `npm install`ed
   localPlugins: [
-    'hyperpunk2.0'
+    //'hyperpunk2.0'
   ],
 
   keymaps: {

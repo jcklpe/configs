@@ -143,18 +143,18 @@ alias cd..='cd ..'
 
 
 # update on one command
- alias update='sudo apt-get update -y && sudo apt-get upgrade -y'
+ alias refresh='sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y'
 
 #Windows Interop
  alias cdrive='cd /mnt/c'
  alias cdHome='cd /mnt/c/Users/David'
 
 #List users
-alias listusers='cut -d: -f1 /etc/passwd'
+alias list users='cut -d: -f1 /etc/passwd'
 
 #What's installed?
- alias listnpm='npm list -g --depth=0'
- alias listapt='sudo apt list --installed'
+ alias list npm='npm list -g --depth=0'
+ alias list apt='sudo apt list --installed'
 
 ## zsh related
  alias zshconfig="nano ~/.zshrc"
@@ -297,5 +297,5 @@ wd() {
 export PATH="$PATH:$HOME/.rvm/bin"
 
 
-source ~/.xsh
-
+#source ~/.xsh
+# xsh is fun but it don't work right!
