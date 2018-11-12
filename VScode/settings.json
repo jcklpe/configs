@@ -6,7 +6,7 @@
   "editor.lineHeight": 29,
   "editor.fontFamily": "Input Sans, monospaced",
   "editor.fontLigatures": true,
-  "vscode_custom_css.imports": ["file://C:/Users/david/Documents/Configs/VScode/styles.css"],
+  "vscode_custom_css.imports": ["https://gist.githubusercontent.com/jcklpe/1e502c7cf29296c206eca044eeed8081/raw/05e8a9c324a7bb893b91dc64baa18e65f0990a92/style.css"],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
@@ -793,6 +793,7 @@
       }
     }
   },
+  "vsicons.projectDetection.autoReload": true,
 
 
 

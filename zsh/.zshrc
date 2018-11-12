@@ -150,11 +150,11 @@ alias cd..='cd ..'
  alias cdHome='cd /mnt/c/Users/David'
 
 #List users
-alias list users='cut -d: -f1 /etc/passwd'
+alias list-users='cut -d: -f1 /etc/passwd'
 
 #What's installed?
- alias list npm='npm list -g --depth=0'
- alias list apt='sudo apt list --installed'
+ alias list-npm='npm list -g --depth=0'
+ alias list-apt='sudo apt list --installed'
 
 ## zsh related
  alias zshconfig="nano ~/.zshrc"
@@ -299,3 +299,7 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 #source ~/.xsh
 # xsh is fun but it don't work right!
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

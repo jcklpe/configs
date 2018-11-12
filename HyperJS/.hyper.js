@@ -108,6 +108,12 @@ module.exports = {
 
     // set to `false` for no bell
     bell: 'SOUND',
+    
+    summon: {
+      hideDock: true,
+      hideOnBlur: true,
+      hotkey: 'Ctrl+.'
+    },
 
     // if `true` (without backticks and without quotes), selected text will automatically be copied to the clipboard
     copyOnSelect: false,
@@ -190,6 +196,7 @@ module.exports = {
     //'hyper-pane',
     //'hyper-hover-header',
     //'hyper-background',
+    'hyperterm-summon',
     'gitrocket',
     'space-pull',
     //'hyper-stylesheet',
