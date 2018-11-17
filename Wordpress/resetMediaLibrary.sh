@@ -1,0 +1,1 @@
+wp post delete $( wp post list --post_type=attachment --fields=ID --format=csv )

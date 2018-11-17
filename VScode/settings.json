@@ -794,6 +794,10 @@
     }
   },
   "vsicons.projectDetection.autoReload": true,
+  "files.exclude": {
+    "*.ico": true,
+    "node_modules/": true
+  },
 
 
 

@@ -1,5 +1,8 @@
 # 𝖅𝖘𝖍 𝕾𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$PATH
+
+
 POWERLEVEL9K_MODE="nerdfont-complete"
 ZSH_DISABLE_COMPFIX=true
 
@@ -157,7 +160,7 @@ alias list-users='cut -d: -f1 /etc/passwd'
  alias list-apt='sudo apt list --installed'
 
 ## zsh related
- alias zshconfig="nano ~/.zshrc"
+ alias config-zsh="nano ~/.zshrc"
 
  case $(uname -a) in
 *Microsoft*) unsetopt BG_NICE ;;
@@ -299,6 +302,8 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 #source ~/.xsh
 # xsh is fun but it don't work right!
+
+
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
