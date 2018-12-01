@@ -1,4 +1,5 @@
 {
+
   /////////////////////////
   //- Visual Core
   "workbench.colorTheme": "Hopscotch (TextMate Theme)",
@@ -6,14 +7,16 @@
   "editor.lineHeight": 29,
   "editor.fontFamily": "Input Sans, monospaced",
   "editor.fontLigatures": true,
-  "vscode_custom_css.imports": ["https://gist.githubusercontent.com/jcklpe/1e502c7cf29296c206eca044eeed8081/raw/05e8a9c324a7bb893b91dc64baa18e65f0990a92/style.css"],
+  "vscode_custom_css.imports": [
+    "https://gist.githubusercontent.com/jcklpe/1e502c7cf29296c206eca044eeed8081/raw/05e8a9c324a7bb893b91dc64baa18e65f0990a92/style.css"
+  ],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
-
-
   //-- BACKGROUND
-  "background.customImages": ["https://imgur.com/TLozdBw.jpg"],
+  "background.customImages": [
+    "https://imgur.com/TLozdBw.jpg"
+  ],
   "background.enabled": true,
   "background.style": {
     "content": "''",
@@ -28,11 +31,9 @@
   },
   "background.useDefault": false,
   "background.useFront": false,
-
   /////////////////////////
   //- color customizations
   "workbench.colorCustomizations": {
-
     //- Activity bar
     "activityBar.background": "#24222f",
     "activityBar.dropBackground": "#101731",
@@ -105,17 +106,13 @@
     "list.hoverBackground": "#000098",
     "list.focusBackground": "#002998ce",
     "terminal.ansiBrightMagenta": "#ff1677",
-    "terminal.ansiBrightRed": "#e86650",
-
-
-
+    "terminal.ansiBrightRed": "#e86650"
   },
-
   "terminal.integrated.fontFamily": "FuraCode Nerd Font Mono",
-
   //- Token Color customizations
   "editor.tokenColorCustomizations": {
-    "textMateRules": [{
+    "textMateRules": [
+      {
         "name": "JSON Value - Level 0",
         "scope": [
           "source.json meta.structure.dictionary.json string.quoted.double.json"
@@ -149,7 +146,7 @@
         ],
         "settings": {
           "foreground": "#009c87",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
       {
@@ -159,7 +156,7 @@
         ],
         "settings": {
           "foreground": "#1cf08d",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
       {
@@ -169,10 +166,9 @@
         ],
         "settings": {
           "foreground": "#85ff67",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
-
       {
         "name": "CSS selectors",
         "scope": [
@@ -180,7 +176,7 @@
         ],
         "settings": {
           "foreground": "#ff677b",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
       {
@@ -190,17 +186,16 @@
         ],
         "settings": {
           "foreground": "#ff677b",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
-
       {
         "name": "CSS property values",
         "scope": [
           "source.css.scss meta.property-list.scss meta.property-list.scss meta.property-list.scss meta.property-value.scss support.constant.property-value.css"
         ],
         "settings": {
-          "foreground": "#ffe867",
+          "foreground": "#ffe867"
         }
       },
       {
@@ -210,7 +205,7 @@
         ],
         "settings": {
           "foreground": "#6790ff",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
       {
@@ -220,7 +215,7 @@
         ],
         "settings": {
           "foreground": "#6790ff",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
       {
@@ -230,7 +225,7 @@
         ],
         "settings": {
           "foreground": "#ff677b",
-          "fontStyle": "bold",
+          "fontStyle": "bold"
         }
       },
       {
@@ -239,31 +234,28 @@
           "source.js meta.objectliteral.js meta.object.member.js meta.object-literal.key.js"
         ],
         "settings": {
-          "foreground": "#ff677b",
+          "foreground": "#ff677b"
         }
       },
-
       {
         "name": "WebPack property ide level 2",
         "scope": [
           "source.js meta.objectliteral.js meta.object.member.js meta.objectliteral.js meta.object.member.js meta.object-literal.key.js"
         ],
         "settings": {
-          "foreground": "#ff67d9",
+          "foreground": "#ff67d9"
         }
-      },
+      }
     ]
   },
-
-
-
   //- HILIGHT REGEX
   "highlight.decorations": {
     "rangeBehavior": 3
   },
   "highlight.regexes": {
     //TODO styling
-    "(// ?TODO:?)(.*)": [{
+    "(// ?TODO:?)(.*)": [
+      {
         "overviewRulerColor": "#ffcc00",
         "backgroundColor": "#ffcc00",
         "color": "#1f1f1f",
@@ -276,7 +268,8 @@
       }
     ],
     //FIXME styling
-    "(// ?FIXME:?)(.*)": [{
+    "(// ?FIXME:?)(.*)": [
+      {
         "overviewRulerColor": "#ff0000",
         "backgroundColor": "#ff0000",
         "color": "#1f1f1f",
@@ -289,7 +282,8 @@
       }
     ],
     // HACK: styling
-    "(// ?HACK:?)(.*)": [{
+    "(// ?HACK:?)(.*)": [
+      {
         "overviewRulerColor": "#4b553f",
         "backgroundColor": "#4b553f",
         "color": "#1f1f1f",
@@ -302,85 +296,84 @@
       }
     ],
     // @import styling
-    "(// )(@\\w+)": [{},
+    "(// )(@\\w+)": [
+      {},
       {
         "color": "#4de0ff"
       }
     ],
-
     // HTML  Title
-    "(<!--(?:\\/\\/))(.*?)(-->)": [{
+    "(<!--(?:\\/\\/))(.*?)(-->)": [
+      {
         "backgroundColor": "cyan",
         "color": "black",
-        "overviewRulerColor": "yellow",
+        "overviewRulerColor": "yellow"
       },
       {
         "backgroundColor": "cyan",
         "color": "black",
-        "overviewRulerColor": "yellow",
+        "overviewRulerColor": "yellow"
       },
       {
         "backgroundColor": "red",
         "color": "black",
-        "overviewRulerColor": "yellow",
-      },
+        "overviewRulerColor": "yellow"
+      }
     ],
-
     ///////////////////////////////
     //-  Title styling
-    "(\\/\\/\\-)(.*)": [{
+    "(\\/\\/\\-)(.*)": [
+      {
         "overviewRulerColor": "yellow",
         "backgroundColor": "yellow",
         "color": "black",
-        "fontWeight": "bold",
-
+        "fontWeight": "bold"
       },
       {
         "backgroundColor": "black",
         "color": "#72edeb",
         "fontWeight": "bold",
         "isWholeLine": true,
-        "fontSize": "2em",
+        "fontSize": "2em"
       }
     ],
     /// Additional styling for signage
-    "(\\/\\/\\/.*)(.*)": [{
+    "(\\/\\/\\/.*)(.*)": [
+      {
         "overviewRulerColor": "yellow",
         "backgroundColor": "yellow",
         "color": "black",
-        "fontWeight": "bold",
-
+        "fontWeight": "bold"
       },
       {
         "backgroundColor": "black",
         "color": "yellow",
         "fontWeight": "bold",
         "isWholeLine": true
-
       }
     ],
     //{{ Angular Dynamic Variable styling}}
-    "(\\{\\{[^\\}]*\\}\\})(?!\\})": [{
-      "backgroundColor": "rgba(109, 158, 70, 0.71)",
-      "color": "#000",
-      "fontWeight": "bold",
-      "borderRadius": "10px"
-    }],
-
+    "(\\{\\{[^\\}]*\\}\\})(?!\\})": [
+      {
+        "backgroundColor": "rgba(109, 158, 70, 0.71)",
+        "color": "#000",
+        "fontWeight": "bold",
+        "borderRadius": "10px"
+      }
+    ],
     // HTML Comment Block
-    "(<!--(?!\\/\\/))((.|\n|\r)*?)(\\-\\->)" // -->
-    : [{
+    // -->
+    "(<!--(?!\\/\\/))((.|\n|\r)*?)(\\-\\->)": [
+      //-->
+      {
         "backgroundColor": "#3b4052",
         "borderStyle": "solid",
         "borderWidth": "1px",
         "borderColor": "#3b4052",
         "color": "#385d74",
         "isWholeLine": "true",
-        "overviewRulerColor": "#3b4052",
-
-
+        "overviewRulerColor": "#3b4052"
       },
-
       {
         "borderWidth": "1px",
         "borderStyle": "solid",
@@ -388,25 +381,20 @@
         "borderRadius": "0px",
         "backgroundColor": "33b4052",
         "color": "#385d74",
-        "isWholeLine": "true",
-
-
+        "isWholeLine": "true"
       },
-
       {
         "backgroundColor": "#3b4052",
         "borderStyle": "solid",
         "borderWidth": "1px",
         "borderColor": "#3b4052",
         "color": "#385d74",
-        "isWholeLine": "true",
-
-      },
+        "isWholeLine": "true"
+      }
     ],
-
-
     //- Opening  HTML Tag
-    "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": [{
+    "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": [
+      {
         "borderWidth": "1px 0 0 4px",
         "borderStyle": "solid",
         "borderColor": "rgba(255, 103, 123, 0.5)",
@@ -414,40 +402,35 @@
         "backgroundColor": "rgba(33, 24, 28, 0.6)",
         "color": "#d44040",
         "fontStyle": "bold",
-        "fontWeight": "bold",
+        "fontWeight": "bold"
       },
-
       {
         "backgroundColor": "rgba(26, 18, 26, 0.4)",
         "borderWidth": "0 0 0 0",
         "borderStyle": "solid",
         "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px",
+        "borderRadius": "0px"
       },
-
       {
         "backgroundColor": "rgba(15, 21, 31, 0.45)",
         "color": "rgba(40, 68, 85, 0.7)",
         "fontStyle": "bold",
         "fontWeight": "bold"
-      },
-
+      }
     ],
     //- Closing HTML Tag
-    "(<\\/)((.|\n|\r)*?)((?!\\?)>)": [{
+    "(<\\/)((.|\n|\r)*?)((?!\\?)>)": [
+      {
         "backgroundColor": "rgba(15, 21, 31, 0.45)",
         "color": "rgba(40, 68, 85, 0.7)"
       },
-
       {
         "borderWidth": "0 0 0 0",
         "borderStyle": "solid",
         "borderColor": "rgba(255, 103, 123, 0.5)",
         "borderRadius": "0px",
-        "backgroundColor": "rgba(26, 18, 26, 0.4)",
-
+        "backgroundColor": "rgba(26, 18, 26, 0.4)"
       },
-
       {
         "borderWidth": "0 4px 1px 0",
         "borderStyle": "solid",
@@ -456,12 +439,12 @@
         "backgroundColor": "rgba(33, 24, 28, 0.6)",
         "color": "#d44040",
         "fontStyle": "bold",
-        "fontWeight": "bold",
-      },
+        "fontWeight": "bold"
+      }
     ],
-
     // PHP Tag
-    "(<\\?php)((.|\n|\r)*?)(\\?>)": [{
+    "(<\\?php)((.|\n|\r)*?)(\\?>)": [
+      {
         "borderWidth": "1px 0 0 4px",
         "borderStyle": "solid",
         "borderColor": "#9075ac",
@@ -469,17 +452,15 @@
         "backgroundColor": "rgba(33, 24, 28, 0.6)",
         "color": "#9075ac",
         "fontStyle": "bold",
-        "fontWeight": "bold",
+        "fontWeight": "bold"
       },
-
       {
         "backgroundColor": "rgba(26, 18, 26, 0.4)",
         "borderWidth": "0px 0 0 0",
         "borderStyle": "solid",
         "borderColor": "#9075ac",
-        "borderRadius": "0px",
+        "borderRadius": "0px"
       },
-
       {
         "borderWidth": "0 4px 1px 0",
         "borderStyle": "solid",
@@ -487,30 +468,24 @@
         "borderRadius": "0px",
         "backgroundColor": "rgba(15, 21, 31, 0.45)",
         "color": "#9075ac"
-      },
+      }
     ],
-
-
-
-
     // HTML Comment Block
-    "(<!--(?!\\/\\/))((.|\n|\\s|\r)*?)(-->)": [{
+    "(<!--(?!\\/\\/))((.|\n|\\s|\r)*?)(-->)": [
+      {
         "backgroundColor": "#3b4052",
         "borderStyle": "solid",
         "borderWidth": "1px",
         "borderColor": "#3b4052",
         "color": "gold",
         "isWholeLine": "true"
-
       },
       {
         "borderWidth": "1px",
         "borderStyle": "solid",
         "borderColor": "#3b4052",
-        "backgroundColor": "#3b4052",
-
+        "backgroundColor": "#3b4052"
       },
-
       {
         "backgroundColor": "#3b4052",
         "borderStyle": "solid",
@@ -518,44 +493,28 @@
         "borderColor": "#3b4052",
         "color": "red",
         "isWholeLine": "true"
-
-
-      },
+      }
     ],
     // HTML  Title
-    "(<!--(?:\\/\\/))(.*?)(-->)": [{
+    "(<!--(?:\\/\\/))(.*?)(-->)": [
+      {
         "backgroundColor": "black",
         "color": "yellow",
-        "overviewRulerColor": "yellow",
-
-
-
+        "overviewRulerColor": "yellow"
       },
-
       {
         "backgroundColor": "yellow",
         "color": "black",
-        "overviewRulerColor": "yellow",
-
-
-
+        "overviewRulerColor": "yellow"
       },
-
       {
         "backgroundColor": "yellow",
         "color": "black",
-        "overviewRulerColor": "yellow",
-
-      },
+        "overviewRulerColor": "yellow"
+      }
     ],
-
-
-
-
-
     // doctype
     "(<!doctype)(.*?)(>)": [
-
       {
         "backgroundColor": "rgba(43, 31, 36, 0.2)",
         "color": "rgba(30, 18, 20, .5)",
@@ -563,12 +522,10 @@
         "isWholeLine": true
       },
       {},
-      {},
+      {}
     ],
-
-
     // * SCSS block commented code */
-    "((\\/\\*)(?!-)([^/*][^*]*\\*+)*\\/)": [
+    "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [
       // */*
       {
         "overviewRulerColor": "Blue",
@@ -576,29 +533,21 @@
         "color": " #73f0ae",
         "fontWeight": "italic",
         "isWholeLine": true
-      },
+      }
     ],
-
-    // /* Hash block commented code */
+    // Hash block commented code
     "^#": [
-
       {
         "overviewRulerColor": "Blue",
         "backgroundColor": "#181c21",
         "color": "#73f0ae",
         "fontWeight": "italic",
-
         "isWholeLine": true
-      },
-    ],
-
+      }
+    ]
   },
-
   // Flags used when building the regexes
   "highlight.regexFlags": "gi",
-
-
-
   ////////////////////////////////////
   //- Visual organization Defaults
   "editor.renderIndentGuides": false,
@@ -608,7 +557,6 @@
   "editor.renderLineHighlight": "all",
   "editor.showFoldingControls": "always",
   "editor.wordWrap": "on",
-
   //---Guides and Indents
   "guides.enabled": true,
   "guides.active.extraIndent": false,
@@ -632,10 +580,9 @@
     "rgba(81, 47, 50, .75)",
     "rgba(15,24,48, .75)",
     "rgba(38, 29, 46, .75)",
-    "rgba(69, 39, 47, .75)",
+    "rgba(69, 39, 47, .75)"
   ],
   "guides.indent.hideBackgroundOnSelection": false,
-
   //--- Block Hilighter
   "blockhighlight.accentCurrentLine": true,
   "blockhighlight.background": [
@@ -645,7 +592,6 @@
     ".1"
   ],
   "blockhighlight.isWholeLine": true,
-
   //- Bracket Pair Colorize
   "editor.matchBrackets": false, //this is the built in match brackets
   "bracketPairColorizer.consecutivePairColors": [
@@ -655,7 +601,7 @@
     [
       "#ad4a79",
       "#ca687f",
-      "#f2666f",
+      "#f2666f"
     ],
     "Red"
   ],
@@ -672,13 +618,11 @@
     "borderColor : {color}; opacity: 1;",
     "backgroundColor : gold; opacity: 1;",
     "fontWeight: bold;",
-    "borderRadius: 4px;",
+    "borderRadius: 4px;"
   ],
   "bracketPairColorizer.showBracketsInRuler": true,
   "bracketPairColorizer.rulerPosition": "Full",
   "bracketPairColorizer.timeOut": 100,
-
-
   //////////////////////////////
   //- Behavior
   "window.restoreWindows": "all",
@@ -692,11 +636,20 @@
   "autofold.default": 1,
   "php.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev\\php\\php.exe",
   "php.validate.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev\\php\\php.exe",
-
-
-
-
-
+  // this makes beautify and prettify place nice
+  "beautify.language": {
+    "html": [
+      "html",
+      "php",
+      "erb"
+    ],
+    "css": [
+      "scss",
+      "css"
+    ],
+    "js": []
+  },
+  "javascript.implicitProjectConfig.experimentalDecorators": true,
   "liveServer.settings.donotVerifyTags": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
   "team.showWelcomeMessage": false,
@@ -722,13 +675,7 @@
   "editor.formatOnSave": true,
   "html.format.endWithNewline": true,
   "html.format.indentInnerHtml": true,
-
-
-
-
-
-
-  /////////////////////////////////////////
+  /////////////////////////////////////
   //- Sync Settings
   "explorer.confirmDelete": false,
   "sync.gist": "1bed6c262105cbde0f3f857a7fae6163",
@@ -797,9 +744,5 @@
   "files.exclude": {
     "*.ico": true,
     "node_modules/": true
-  },
-
-
-
-
+  }
 }
