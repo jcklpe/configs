@@ -2,42 +2,17 @@
 .mtk3 {
   /*- margin-left: 1px;
   font-size: 1em; */
-  font-family: "Gidole";
+  /* font-family: "Gidole"; */
   margin-left: 2px;
   font-size: 0.9em;
 }
 
 /*- Comments for monospaced areas */
-.mtk3.ced-1-TextEditorDecorationType52-1 {
-  margin-left: 1px;
-  font-family: "FuraCode Nerd Font Mono";
-  font-size: 1em;
-}
-
-.mtk3.ced-1-TextEditorDecorationType53-1 {
-  margin-left: 1px;
-  font-family: "FuraCode Nerd Font Mono";
-  font-size: 1em;
-}
-
-.mtk3.ced-1-TextEditorDecorationType54-1 {
-  margin-left: 1px;
-  font-family: "FuraCode Nerd Font Mono";
-  font-size: 1em;
-}
-
-span.mtk3.ced-1-TextEditorDecorationType43-1 {
-  margin-left: 1px;
-  font-family: "FuraCode Nerd Font Mono";
-  font-size: 1em;
-}
-
-span.mtk3.ced-1-TextEditorDecorationType44-1 {
-  margin-left: 1px;
-  font-family: "FuraCode Nerd Font Mono";
-  font-size: 1em;
-}
-
+.mtk3.ced-1-TextEditorDecorationType52-1,
+.mtk3.ced-1-TextEditorDecorationType53-1,
+.mtk3.ced-1-TextEditorDecorationType54-1,
+span.mtk3.ced-1-TextEditorDecorationType43-1,
+span.mtk3.ced-1-TextEditorDecorationType44-1,
 span.mtk3.ced-1-TextEditorDecorationType45-1 {
   margin-left: 1px;
   font-family: "FuraCode Nerd Font Mono";
@@ -64,15 +39,8 @@ span.mtk3.ced-1-TextEditorDecorationType45-1 {
   font-size: 1em !important;
 }
 
-
-/* eventually would like to get this working better. Also would like to get this to expose properly via nextcloud instead */
 /*- Opening Tag*/
 span.mtk1.ced-1-TextEditorDecorationType39-1 {
-  /* font-family: "Big John"; */
-  /* font-weight: bold;
-  font-size: 1em;
-  color: blue;
-  background: blue; */
   padding: 0px 5px 0 8px;
 }
 
