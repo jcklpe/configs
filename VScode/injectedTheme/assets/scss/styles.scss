@@ -22,30 +22,43 @@ span.mtk3 {
 
 
 
-/*- Property names for javascript webpack and class names*/
+//- Property names for javascript webpack and class names
 .mtk10 {
   margin-left: 1px;
-  /** font-family: "Aller, mono" !important; */
   font-size: 1em;
   color: #ff677b;
 }
 
-/*-   Class names and css property values*/
+//-   Class names and css property values
 .mtk4 {
   font-size: 1em !important;
 }
 
+
+//-Tag Config Variables
+$tag-margin: 0px 0px 0 0px;
+$tag-o-padding: 0px 5px 0 0px;
+$tag-c-padding: 0px 0px 0px 5px;
+
 //- PHP tags
 .mtk13 {
   font-size: 1.2em;
+
   //opening tag
-  // font-family: Arial Black;
-  font-family: "Input Sans";
+  &.ced-1-TextEditorDecorationType47-1 {
+    padding: $tag-o-padding;
+    margin: $tag-margin;
+  }
+
   //closing tag
+  &.ced-1-TextEditorDecorationType51-1 {
+    padding: $tag-c-padding;
+    margin: $tag-margin;
 
-
-
-
+    &+.mtk13 {
+      color: rgb(144, 117, 172) !important;
+    }
+  }
 }
 
 //- HTML tags
@@ -59,11 +72,13 @@ span.mtk1 {
   &.ced-1-TextEditorDecorationType39-1,
   &.ced-1-TextEditorDecorationType42-1,
   &.ced-1-TextEditorDecorationType41-1 {
-    padding: 0px 5px 0 8px;
+    padding: $tag-o-padding;
+    margin: $tag-margin;
+    border: none;
   }
 
   // closing tag
   &.ced-1-TextEditorDecorationType49-1 {
-    padding: 0px 8px 0px 5px;
+    padding: $tag-c-padding;
   }
 }
