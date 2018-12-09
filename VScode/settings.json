@@ -1,5 +1,4 @@
 {
-
   /////////////////////////
   //- Visual Core
   "workbench.colorTheme": "Hopscotch (TextMate Theme)",
@@ -8,7 +7,7 @@
   "editor.fontFamily": "Input Sans, monospaced",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
-    "https://gist.githubusercontent.com/jcklpe/1e502c7cf29296c206eca044eeed8081/raw/05e8a9c324a7bb893b91dc64baa18e65f0990a92/style.css"
+    "https://raw.githubusercontent.com/jcklpe/Configs/master/VScode/styles.css"
   ],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,
@@ -60,7 +59,7 @@
     "tab.inactiveBackground": "#29242e",
     "tab.activeForeground": "#e9f56f",
     "tab.activeBorder": "#e9f56f",
-    "tab.inactiveForeground": "#9075ac",
+    "tab.inactiveForeground": "#8c6188",
     "tab.hoverBackground": "#000014",
     "focusBorder": "#45272f",
     "foreground": "#d37c82",
@@ -97,7 +96,7 @@
     "panelTitle.inactiveForeground": "#73f0ada4",
     "terminal.foreground": "#73f0ae",
     "terminal.selectionBackground": "#0e000f66",
-    "editorMarkerNavigationWarning.background": "#ff0000",
+    // "editorMarkerNavigationWarning.background": "rgba(212, 64, 64, 1)",
     "editorSuggestWidget.background": "#29242e",
     "editorSuggestWidget.selectedBackground": "#000098",
     "list.activeSelectionBackground": "#0e000f4b",
@@ -315,7 +314,6 @@
         "overviewRulerColor": "yellow"
       },
       {
-        "backgroundColor": "red",
         "color": "black",
         "overviewRulerColor": "yellow"
       }
@@ -366,54 +364,74 @@
     "(<!--(?!\\/\\/))((.|\n|\r)*?)(\\-\\->)": [
       //-->
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59, 64, 82, 1)",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
-        "color": "#385d74",
+        "borderColor": "rgba(59, 64, 82, 1)",
+        "color": "rgba(56, 93, 116, 1)",
         "isWholeLine": "true",
-        "overviewRulerColor": "#3b4052"
+        "overviewRulerColor": "rgba(59, 64, 82, 1)"
       },
       {
         "borderWidth": "1px",
         "borderStyle": "solid",
-        "borderColor": "#3b4052",
+        "borderColor": "rgba(59, 64, 82, 1)",
         "borderRadius": "0px",
         "backgroundColor": "33b4052",
-        "color": "#385d74",
+        "color": "rgba(56, 93, 116, 1)",
         "isWholeLine": "true"
       },
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59, 64, 82, 1)",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
-        "color": "#385d74",
+        "borderColor": "rgba(59, 64, 82, 1)",
+        "color": "rgba(56, 93, 116, 1)",
         "isWholeLine": "true"
       }
     ],
     //- Opening  HTML Tag
     "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": [
       {
-        "borderWidth": "1px 0 0 4px",
+        //"borderWidth": "1px 0 0 1px",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px",
-        "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#d44040",
+        "borderColor": "rgba(212, 64, 64, .5)",
+        "borderRadius": "10px 0px 0px 0px",
+        "backgroundColor": "rgba(33, 24, 28, 0.7)",
+        "color": "rgba(212, 64, 64, 1)",
         "fontStyle": "bold",
         "fontWeight": "bold"
       },
       {
-        "backgroundColor": "rgba(26, 18, 26, 0.4)",
+        "backgroundColor": "rgba(26, 18, 26, .4)",
         "borderWidth": "0 0 0 0",
         "borderStyle": "solid",
         "borderColor": "rgba(255, 103, 123, 0.5)",
         "borderRadius": "0px"
       },
       {
-        "backgroundColor": "rgba(15, 21, 31, 0.45)",
+        "backgroundColor": "rgba(15, 21, 31, 0)",
         "color": "rgba(40, 68, 85, 0.7)",
+        "fontStyle": "bold",
+        "fontWeight": "bold"
+      }
+    ],
+    //- Self-closing tag
+    "(\\/)(>)": [
+      {
+        "borderWidth": "0 0 0 0",
+        "borderStyle": "solid",
+        "borderColor": "rgba(212, 64, 64, .5)",
+        "borderRadius": "0px",
+        "backgroundColor": "rgba(26, 18, 26, 0.4)"
+      },
+      {
+        //"borderWidth": "0 4px 1px 0",
+        "borderStyle": "solid",
+        "borderColor": "rgba(212, 64, 64, .5)",
+        "borderRadius": "0px",
+        "backgroundColor": "rgba(33, 24, 28, 0.6)",
+        "color": "rgba(212, 64, 64, 1)",
         "fontStyle": "bold",
         "fontWeight": "bold"
       }
@@ -427,30 +445,30 @@
       {
         "borderWidth": "0 0 0 0",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
+        "borderColor": "rgba(212, 64, 64, .5)",
         "borderRadius": "0px",
         "backgroundColor": "rgba(26, 18, 26, 0.4)"
       },
       {
-        "borderWidth": "0 4px 1px 0",
+        // "borderWidth": "0 1px 1px 0",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px",
+        "borderColor": "rgba(212, 64, 64, .5)",
+        "borderRadius": "0px 0px 10px 0px",
         "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#d44040",
+        "color": "rgba(212, 64, 64, 1)",
         "fontStyle": "bold",
         "fontWeight": "bold"
       }
     ],
     // PHP Tag
-    "(<\\?php)((.|\n|\r)*?)(\\?>)": [
+    "(<\\?php)((.|\n|\r)*?)(\\?\\>)": [
       {
-        "borderWidth": "1px 0 0 4px",
+        "borderWidth": "1px 0 0 2px",
         "borderStyle": "solid",
-        "borderColor": "#9075ac",
+        "borderColor": "rgba(144, 117, 172, 0.5)",
         "borderRadius": "0px",
         "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#9075ac",
+        "color": "rgba(144, 117, 172, 1)",
         "fontStyle": "bold",
         "fontWeight": "bold"
       },
@@ -458,40 +476,39 @@
         "backgroundColor": "rgba(26, 18, 26, 0.4)",
         "borderWidth": "0px 0 0 0",
         "borderStyle": "solid",
-        "borderColor": "#9075ac",
+        "borderColor": "rgba(144, 117, 172, 0.5)",
         "borderRadius": "0px"
       },
       {
-        "borderWidth": "0 4px 1px 0",
+        "borderWidth": "0 1px 1px 0",
         "borderStyle": "solid",
-        "borderColor": "#9075ac",
+        "borderColor": "rgba(144, 117, 172, 0.5)",
         "borderRadius": "0px",
         "backgroundColor": "rgba(15, 21, 31, 0.45)",
-        "color": "#9075ac"
+        "color": "rgba(144, 117, 172, 1)"
       }
     ],
     // HTML Comment Block
     "(<!--(?!\\/\\/))((.|\n|\\s|\r)*?)(-->)": [
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59, 64, 82, 1)",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
+        "borderColor": "rgba(59, 64, 82, 1)",
         "color": "gold",
         "isWholeLine": "true"
       },
       {
         "borderWidth": "1px",
         "borderStyle": "solid",
-        "borderColor": "#3b4052",
-        "backgroundColor": "#3b4052"
+        "borderColor": "rgba(59, 64, 82, 1)",
+        "backgroundColor": "rgba(59, 64, 82, 1)"
       },
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59, 64, 82, 1)",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
-        "color": "red",
+        "borderColor": "rgba(59, 64, 82, 1)",
         "isWholeLine": "true"
       }
     ],
@@ -634,8 +651,8 @@
   "editor.dragAndDrop": false,
   "editor.tabCompletion": true,
   "autofold.default": 1,
-  "php.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev\\php\\php.exe",
-  "php.validate.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev\\php\\php.exe",
+  "php.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev2\\php\\php.exe",
+  "php.validate.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev2\\php\\php.exe",
   // this makes beautify and prettify place nice
   "beautify.language": {
     "html": [

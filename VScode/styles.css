@@ -64,13 +64,19 @@ span.mtk3.ced-1-TextEditorDecorationType45-1 {
   font-size: 1em !important;
 }
 
-/*- Div Tag opening*/
-span.mtk1.ced-TextEditorDecorationType36-1.ced-TextEditorDecorationType64-1.ced-TextEditorDecorationType32-1.ced-TextEditorDecorationType63-1 {
-  font-family: "Big John";
+
+/* eventually would like to get this working better. Also would like to get this to expose properly via nextcloud instead */
+/*- Opening Tag*/
+span.mtk1.ced-1-TextEditorDecorationType39-1 {
+  /* font-family: "Big John"; */
+  /* font-weight: bold;
   font-size: 1em;
+  color: blue;
+  background: blue; */
+  padding: 0px 5px 0 8px;
 }
 
-span.mtk1.ced-TextEditorDecorationType38-1.ced-TextEditorDecorationType34-1 {
-  font-family: "Big John";
-  font-size: 1em;
+/*-Closing Tag */
+span.mtk1.ced-1-TextEditorDecorationType49-1 {
+  padding: 0px 8px 0px 5px;
 }

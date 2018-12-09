@@ -6,10 +6,10 @@
 [ -z "$PS1" ] && return
 
 #use zsh
-if [[ $- == *i* ]]; then
-    export SHELL=zsh
-    exec zsh -l
-fi
+#if [[ $- == *i* ]]; then
+ #   export SHELL=zsh
+  #  exec zsh -l
+#fi
 
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace

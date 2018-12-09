@@ -1,6 +1,9 @@
 # 𝖅𝖘𝖍 𝕾𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
+#PATH EDITS
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$PATH
+
+
 
 
 POWERLEVEL9K_MODE="nerdfont-complete"
@@ -16,7 +19,7 @@ export DISPLAY=localhost:0.0
 
 #  add ls auto to cd command
 function cd {
-    builtin cd "$@" && ls -F
+    builtin cd "$@" && ls -F --color=auto
     }
 
 
@@ -24,7 +27,7 @@ function cd {
 # Add  color to ll
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls -lF --color=auto'
+    alias ls='ls -F --color=auto'
     alias dir='dir --color=auto'
     alias vdir='vdir --color=auto'
 
@@ -57,7 +60,7 @@ lo() {
 
 # List but formatted and colored without hidden stuff
 lf() {
-    ls --color=always | awk '
+    ls -lF --color=always | awk '
         BEGIN {
             FPAT = "([[:space:]]*[^[:space:]]+)";
             OFS = "";
@@ -148,7 +151,16 @@ alias cd..='cd ..'
 # update on one command
  alias refresh='sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y'
 
-#Windows Interop
+## //- zsh related
+ alias config-zsh="nano ~/.zshrc"
+
+ # update bash and zsh settings
+ alias refresh-bash='source ~/.bashrc && source ~/.zshrc'
+ alias refresh-zsh='source ~/.bashrc && source ~/.zshrc'
+
+
+
+##//- Windows Interop
  alias cdrive='cd /mnt/c'
  alias cdHome='cd /mnt/c/Users/David'
 
@@ -159,8 +171,11 @@ alias list-users='cut -d: -f1 /etc/passwd'
  alias list-npm='npm list -g --depth=0'
  alias list-apt='sudo apt list --installed'
 
-## zsh related
- alias config-zsh="nano ~/.zshrc"
+#NPM plain english aliases
+alias builder='npm run build'
+alias watcher='npm run watch'
+
+
 
  case $(uname -a) in
 *Microsoft*) unsetopt BG_NICE ;;
@@ -286,11 +301,6 @@ source ~/Documents/Configs/zsh/zsh-plugins/zsh-autosuggestions/zsh-autosuggestio
 #ls
 
 #//- warp door
-# wd() {
-#      ~/Documents/Configs/zsh/zsh-plugins/wd/wd.sh
-#  }
- #fpath=(~/Documents/Configs/zsh/zsh-plugins/wd $fpath)
-#//HACK: Not sure if the above is needed so I'm disabling for now
 
 wd() {
   . /home/david/bin/wd/wd.sh
@@ -317,3 +327,6 @@ if [ -s "$HOME/.nvm/nvm.sh" ] && [ ! "$(type -f __init_nvm)" = function ]; then
 	}
 	for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
 fi
+
+
+. /home/david/torch/install/bin/torch-activate

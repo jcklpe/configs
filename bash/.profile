@@ -97,3 +97,12 @@ fi
 export PATH="$PATH:$HOME/.rvm/bin"
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+
+. /home/david/torch/install/bin/torch-activate
+
+
+. /home/david/torch/install/bin/torch-activate
+
+
+. /home/david/torch/install/bin/torch-activate
