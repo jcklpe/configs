@@ -8,11 +8,11 @@ span.mtk3 {
 
   //- Comments for monospaced areas
   &.ced-1-TextEditorDecorationType52-1,
-  .ced-1-TextEditorDecorationType53-1,
-  .ced-1-TextEditorDecorationType54-1,
-  .ced-1-TextEditorDecorationType43-1,
-  .ced-1-TextEditorDecorationType44-1,
-  .ced-1-TextEditorDecorationType45-1 {
+  &.ced-1-TextEditorDecorationType53-1,
+  &.ced-1-TextEditorDecorationType54-1,
+  &.ced-1-TextEditorDecorationType43-1,
+  &.ced-1-TextEditorDecorationType44-1,
+  &.ced-1-TextEditorDecorationType45-1 {
     margin-left: 1px;
     font-family: "FuraCode Nerd Font Mono";
     font-size: 1em;
@@ -57,13 +57,13 @@ span.mtk1 {
 
   // opening tag
   &.ced-1-TextEditorDecorationType39-1,
-  .mtk1.ced-1-TextEditorDecorationType42-1,
-  .mtk1.ced-1-TextEditorDecorationType41-1 {
+  &.ced-1-TextEditorDecorationType42-1,
+  &.ced-1-TextEditorDecorationType41-1 {
     padding: 0px 5px 0 8px;
   }
 
   // closing tag
-  &.mtk1.ced-1-TextEditorDecorationType49-1 {
+  &.ced-1-TextEditorDecorationType49-1 {
     padding: 0px 8px 0px 5px;
   }
 }
