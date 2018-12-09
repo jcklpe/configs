@@ -131,10 +131,10 @@ removeLAMP() {
 #make mount look prettier
 alias mount='mount |column -t'
 
-## get rid of command not found ##
+# get rid of command not found
 alias cd..='cd ..'
 
-## a quick way to get out of current directory ##
+# a quick way to get out of current directory
  alias ..='cd ..'
  alias ...='cd ../../../'
  alias ....='cd ../../../../'
@@ -180,6 +180,14 @@ alias watcher='npm run watch'
  case $(uname -a) in
 *Microsoft*) unsetopt BG_NICE ;;
 esac
+
+#//- GIT related
+# lazy git add commit push all in one
+function gitall() {
+    git add .
+    git commit -a -m "$1"
+    git push origin
+}
 
 
 ## LAMP focused aliases

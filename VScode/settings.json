@@ -7,7 +7,7 @@
   "editor.fontFamily": "Input Sans, monospaced",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
-    "https://raw.githubusercontent.com/jcklpe/Configs/master/VScode/injectedTheme/styles.css",
+    // "https://raw.githubusercontent.com/jcklpe/Configs/master/VScode/injectedTheme/styles.css",
     "file://C:/Users/David/Documents/Configs/VScode/injectedTheme/styles.css"
   ],
   "vscode_custom_css.policy": true,
@@ -394,8 +394,7 @@
     //- Opening  HTML Tag
     "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": [
       {
-        //"borderWidth": "1px 0 0 1px",
-        "borderWidth": "0px",
+        "borderWidth": "1px 0 0 2px",
         "borderStyle": "solid",
         "borderColor": "rgba(212, 64, 64, .5)",
         "borderRadius": "10px 0px 0px 0px",
@@ -428,8 +427,7 @@
         "backgroundColor": "rgba(26, 18, 26, 0.4)"
       },
       {
-        //"borderWidth": "0 4px 1px 0",
-        "borderWidth": "0px",
+        "borderWidth": "0 2px 1px 0",
         "borderStyle": "solid",
         "borderColor": "rgba(212, 64, 64, .5)",
         "borderRadius": "0px",
@@ -453,8 +451,7 @@
         "backgroundColor": "rgba(26, 18, 26, 0.4)"
       },
       {
-        // "borderWidth": "0 1px 1px 0",
-        "borderWidth": "0px",
+        "borderWidth": "0 2px 1px 0",
         "borderStyle": "solid",
         "borderColor": "rgba(212, 64, 64, .5)",
         "borderRadius": "0px 0px 10px 0px",
