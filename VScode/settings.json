@@ -7,8 +7,8 @@
   "editor.fontFamily": "Input Sans, monospaced",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
-    "https://raw.githubusercontent.com/jcklpe/Configs/master/VScode/styles.css",
-    "file://C:/Users/David/Documents/Configs/VScode/styles.css"
+    "https://raw.githubusercontent.com/jcklpe/Configs/master/VScode/injectedTheme/styles.css",
+    "file://C:/Users/David/Documents/Configs/VScode/injectedTheme/styles.css"
   ],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,

@@ -37,9 +37,9 @@ span.mtk3 {
 
 //- PHP tags
 .mtk13 {
-
+  font-size: 1.2em;
   //opening tag
-
+  // font-family: Arial Black;
 
   //closing tag
 
@@ -52,11 +52,12 @@ span.mtk3 {
 
 span.mtk1 {
 
-  font-family: "Arial Black";
+  // font-family: "Arial Black";
   font-size: 1.2em;
 
   // opening tag
-  &.ced-1-TextEditorDecorationType39-1 {
+  &.ced-1-TextEditorDecorationType39-1,
+  .mtk1.ced-1-TextEditorDecorationType42-1 {
     padding: 0px 5px 0 8px;
   }
 
