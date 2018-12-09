@@ -1,0 +1,67 @@
+//- SCSS INJECTED VSCODE THEME
+
+//-Comments
+span.mtk3 {
+  font-family: "Gidole";
+  margin-left: 2px;
+  font-size: 0.9em;
+
+  //- Comments for monospaced areas
+  &.ced-1-TextEditorDecorationType52-1,
+  .ced-1-TextEditorDecorationType53-1,
+  .ced-1-TextEditorDecorationType54-1,
+  .ced-1-TextEditorDecorationType43-1,
+  .ced-1-TextEditorDecorationType44-1,
+  .ced-1-TextEditorDecorationType45-1 {
+    margin-left: 1px;
+    font-family: "FuraCode Nerd Font Mono";
+    font-size: 1em;
+  }
+}
+
+
+
+
+/*- Property names for javascript webpack and class names*/
+.mtk10 {
+  margin-left: 1px;
+  /** font-family: "Aller, mono" !important; */
+  font-size: 1em;
+  color: #ff677b;
+}
+
+/*-   Class names and css property values*/
+.mtk4 {
+  font-size: 1em !important;
+}
+
+//- PHP tags
+.mtk13 {
+
+  //opening tag
+
+
+  //closing tag
+
+
+
+
+}
+
+//- HTML tags
+
+span.mtk1 {
+
+  font-family: "Arial Black";
+  font-size: 1.2em;
+
+  // opening tag
+  &.ced-1-TextEditorDecorationType39-1 {
+    padding: 0px 5px 0 8px;
+  }
+
+  // closing tag
+  &.mtk1.ced-1-TextEditorDecorationType49-1 {
+    padding: 0px 8px 0px 5px;
+  }
+}

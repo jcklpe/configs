@@ -2,7 +2,7 @@
 .mtk3 {
   /*- margin-left: 1px;
   font-size: 1em; */
-  /* font-family: "Gidole"; */
+  font-family: "Gidole";
   margin-left: 2px;
   font-size: 0.9em;
 }
@@ -19,14 +19,9 @@ span.mtk3.ced-1-TextEditorDecorationType45-1 {
   font-size: 1em;
 }
 
-/*- I don't know what this is*/
-.mtk13 {
-  margin-left: 1px;
-  /*- font-family: "Algerian, monospaced"; */
-  font-size: 1em;
-}
 
-/*- Property names for javascript webpack and clas names*/
+
+/*- Property names for javascript webpack and class names*/
 .mtk10 {
   margin-left: 1px;
   /** font-family: "Aller, mono" !important; */
@@ -37,6 +32,12 @@ span.mtk3.ced-1-TextEditorDecorationType45-1 {
 /*-   Class names and css property values*/
 .mtk4 {
   font-size: 1em !important;
+}
+
+/*- Both PHP tags*/
+.mtk13 {
+  font-family: "Algerian, monospaced";
+  font-size: 1.2em;
 }
 
 /*- Opening Tag*/
