@@ -1,7 +1,9 @@
 # 𝖅𝖘𝖍 𝕾𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
 #PATH EDITS
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$PATH
+# export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$PATH
+
+
 
 
 
@@ -157,6 +159,7 @@ alias cd..='cd ..'
  # update bash and zsh settings
  alias refresh-bash='source ~/.bashrc && source ~/.zshrc'
  alias refresh-zsh='source ~/.bashrc && source ~/.zshrc'
+ alias reload='source ~/.zshrc'
 
 
 
@@ -336,5 +339,6 @@ if [ -s "$HOME/.nvm/nvm.sh" ] && [ ! "$(type -f __init_nvm)" = function ]; then
 	for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
 fi
 
+nvm install node;
 
 . /home/david/torch/install/bin/torch-activate
