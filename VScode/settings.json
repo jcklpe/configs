@@ -8,7 +8,7 @@
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
     "file:///C:\\Users\\David\\Docs\\Configs\\VScode\\injectedTheme\\styles.css",
-    ""
+    "https://raw.githubusercontent.com/jcklpe/Configs/master/VScode/injectedTheme/styles.css"
   ],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,
