@@ -39,6 +39,7 @@ Windows/Registry/
 .hyper_plugins/
 OldConfigs/
 zsh/zsh-plugins/
+.vscode/extensions/
 
 # TypeScript v1 declaration files
 typings/
@@ -65,3 +66,18 @@ typings/
 .next
 zsh/powerlevel9k/
 .config/configstore/update-notifier-npm.json
+
+# Security issues
+.gitconfig
+*.sql
+*.sqlite3
+*.sqlite3-journal
+/cache
+_gsdata_
+.npmrc
+.git-credentials
+*.pub
+Code/CachedData/*
+*/Code/CachedData/*
+*.code
+newstuff/*

@@ -1,0 +1,24 @@
+// Empty
+[
+  {
+    "key": "ctrl+alt+d",
+    "command": "workbench.action.toggleDevTools"
+  },
+  {
+    "key": "shift+alt+u",
+    "command": "cursorLineStart"
+  },
+  {
+    "key": "ctrl+shift+alt+u",
+    "command": "extension.updateSettings"
+  },
+  {
+    "key": "shift+alt+u",
+    "command": "-extension.updateSettings"
+  },
+  {
+    "key": "ctrl+y",
+    "command": "-editor.action.deleteLines",
+    "when": "editorTextFocus && !editorReadonly"
+  }
+]

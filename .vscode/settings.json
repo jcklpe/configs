@@ -7,8 +7,8 @@
   "editor.fontFamily": "Input Sans, monospaced",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
-    "file:///C:/Users/David/Docs/Configs/VScode/injectedTheme/styles.css",
-    "https://raw.githubusercontent.com/jcklpe/Configs/master/VScode/injectedTheme/style.css"
+    "file:///C:/Users/David/Home/Docs/Configs/VScode/injectedTheme/styles.css",
+    "https://cdn.jsdelivr.net/gh/jcklpe/Configs/.vscode/injectedTheme/styles.css"
   ],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,
@@ -764,5 +764,7 @@
   "files.exclude": {
     "*.ico": true,
     "node_modules/": true
-  }
+  },
+  "editor.snippetSuggestions": "top",
+  "workbench.settings.editor": "json"
 }
