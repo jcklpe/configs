@@ -1,0 +1,16 @@
+{
+	"comment_block": {
+		"prefix": "h#",
+		"body": "<!--////////////////////\n //- ${1:Title} -->\n${0}",
+		"description": "Comment - Block comment",
+		"scope": ""
+	}
+	,"comment_block": {
+		"prefix": "h##",
+		"body": "<!--// ${1:Title} -->\n${0}",
+		"description": "Comment - Block comment",
+		"scope": ""
+	}
+
+}
+

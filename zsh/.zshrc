@@ -2,6 +2,37 @@
 
 #PATH EDITS
 # export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$PATH
+# the below fixed a problem with testing using karma and I don't know what it does
+# export CHROME_BIN=/usr/bin/chromium-browser
+
+## PER OS SETTINGS
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    UNAMECHECK=$(uname -a);
+    if [[ $UNAMECHECK == *"Microsoft"* ]]
+        then
+        # WSL
+    else
+        . /home/david/torch/install/bin/torch-activate
+    fi
+
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+    # POSIX compatibility layer and Linux environment emulation for Windows
+
+elif [[ "$OSTYPE" == "msys" ]]; then
+    # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+
+elif [[ "$OSTYPE" == "win32" ]]; then
+    # lol
+
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    # It's a fucking MAC! GROSS! STEVE JOBS RIPPED  OFF THE WOZ! BOOOOO!
+
+else
+    # Unknown.
+fi
 
 
 
@@ -326,19 +357,17 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 
 
-if [ -s "$HOME/.nvm/nvm.sh" ] && [ ! "$(type -f __init_nvm)" = function ]; then
-	export NVM_DIR="$HOME/.nvm"
-	[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-	declare -a __node_commands=(nvm `find -L $NVM_DIR/versions/*/*/bin -type f -exec basename {} \; | sort -u`)
-	function __init_nvm() {
-		for i in "${__node_commands[@]}"; do unalias $i; done
-		. "$NVM_DIR"/nvm.sh
-		unset __node_commands
-		unset -f __init_nvm
-	}
-	for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
-fi
+# if [ -s "$HOME/.nvm/nvm.sh" ] && [ ! "$(type -f __init_nvm)" = function ]; then
+# 	export NVM_DIR="$HOME/.nvm"
+# 	[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+# 	declare -a __node_commands=(nvm `find -L $NVM_DIR/versions/*/*/bin -type f -exec basename {} \; | sort -u`)
+# 	function __init_nvm() {
+# 		for i in "${__node_commands[@]}"; do unalias $i; done
+# 		. "$NVM_DIR"/nvm.sh
+# 		unset __node_commands
+# 		unset -f __init_nvm
+# 	}
+# 	for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
+# fi
 
-nvm install node;
-
-. /home/david/torch/install/bin/torch-activate
+# nvm install node;
