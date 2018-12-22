@@ -1,1 +1,29 @@
-# Nothing here yet but my installation configs for dotbot will go here
+- link:
+    ~/.zshrc:
+      relink: true
+      path: zsh/.zshrc
+    ~/.jump:
+      relink: true
+      path: .jump/
+    ~/.bashrc:
+      relink: true
+      path: bash/.bashrc
+    ~/.gitconfig:
+      relink: true
+      path: git/.gitconfig
+    ~/.gitignore_global:
+      relink: true
+      path: git/.gitignore_global
+    ~/.git-credentials:
+      relink: true
+      path: git/.git-credentials
+    ~/.hyper.js:
+      relink: true
+      path: hyper-js/.hyper.js
+    ~/.config/mc/:
+      create: true
+      relink: true
+      path: mc/
+    ~/.warprc:
+      relink: true
+      path: zsh/zsh-plugins/.warprc
