@@ -1,0 +1,12 @@
+<application>
+  <component name="UsageTrigger">
+    <counts>
+      <entry feature="AbstractNewProjectStep.PHP Empty Project" count="1" />
+      <entry feature="StripeButton[Docker].hidden" count="1" />
+      <entry feature="ide.settings.Appearance" count="1" />
+      <entry feature="ide.settings.Color Scheme" count="1" />
+      <entry feature="ideaapp.started" count="2" />
+      <entry feature="welcome.screen.null" count="1" />
+    </counts>
+  </component>
+</application>

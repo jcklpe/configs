@@ -1,0 +1,23 @@
+1524252698177
+Stylus￿stub:org.jetbrains.plugins.stylus.psi.StylusFileElementType,29￿1524252698176
+XML￿binary stub builder:com.intellij.util.xml.stubs.builder.DomStubBuilder,21￿1524252698175
+CSS￿stub:com.intellij.psi.css.CssFileElementType,29￿1524252698174
+TypeScript JSX￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698173
+Flow￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698172
+Literate CoffeeScript￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698171
+Sass￿stub:org.jetbrains.plugins.scss.psi.SassScssFileElementType,29￿1524252698170
+Jade￿stub:com.jetbrains.plugins.jade.psi.JadeFileElementType,422371569￿1524252698169
+JSP￿stub:com.intellij.lang.jsp.NewJspParserDefinition$1,422371573￿1524252698168
+ActionScript￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698167
+Vue.js￿stub:com.intellij.psi.tree.IStubFileElementType,0￿1524252698166
+Less￿stub:org.jetbrains.plugins.less.psi.LessFileElementType,29￿1524252698165
+CoffeeScript￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698164
+Handlebars/Mustache￿stub:com.intellij.psi.tree.IStubFileElementType,422371569￿1524252698163
+EJS￿stub:com.intellij.psi.tree.IStubFileElementType,422371569￿1524252698162
+Spacebars￿stub:com.intellij.psi.tree.IStubFileElementType,0￿1524252698161
+SCSS￿stub:org.jetbrains.plugins.scss.psi.SassScssFileElementType,29￿1524252698160
+ECMAScript 6￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698159
+JavaScript￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698158
+JSX Harmony￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698157
+HTML￿stub:com.intellij.psi.tree.IStubFileElementType,0￿1524252698156
+TypeScript￿stub:com.intellij.lang.javascript.types.JSFileElementType,530135648￿1524252698155
