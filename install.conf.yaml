@@ -27,3 +27,6 @@
     ~/.warprc:
       relink: true
       path: zsh/zsh-plugins/.warprc
+    ~/shell-scripts:
+      relink: true
+      path: zsh/shell-scripts

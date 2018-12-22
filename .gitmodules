@@ -7,3 +7,6 @@
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
+[submodule "zsh/shell-scripts/Color-Scripts"]
+	path = zsh/shell-scripts/Color-Scripts
+	url = https://github.com/stark/Color-Scripts.git
