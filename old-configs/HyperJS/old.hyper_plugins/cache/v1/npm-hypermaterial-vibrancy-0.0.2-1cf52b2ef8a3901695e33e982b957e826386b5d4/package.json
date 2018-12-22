@@ -1,0 +1,20 @@
+{
+  "name": "hypermaterial-vibrancy",
+  "version": "0.0.2",
+  "description": "A material theme for Hyper.js",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/danielheyman/hypermaterial-vibrancy"
+  },
+  "main": "index.js",
+  "keywords": [
+    "hyperterm",
+    "hyper",
+    "hyper.app",
+    "material",
+    "hyper.js",
+    "theme"
+  ],
+  "author": "Daniel Heyman",
+  "license": "MIT"
+}
