@@ -1,10 +1,5 @@
 # 𝖅𝖘𝖍 𝕾𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
-#PATH EDITS
-# export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$PATH
-# the below fixed a problem with testing using karma and I don't know what it does
-# export CHROME_BIN=/usr/bin/chromium-browser
-
 ## PER OS SETTINGS
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     UNAMECHECK=$(uname -a);
@@ -28,7 +23,7 @@ elif [[ "$OSTYPE" == "win32" ]]; then
     # lol
 
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
-    # It's a fucking MAC! GROSS! STEVE JOBS RIPPED  OFF THE WOZ! BOOOOO!
+    # Maybe a Nintendo Switch?
 
 else
     # Unknown.
@@ -60,7 +55,7 @@ function cd {
 # Add  color to ll
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls -F --color=auto'
+    alias ls='ls -F --color=auto 2>/dev/null -I "*NTUSER*" -I "*ntuser*"'
     alias dir='dir --color=auto'
     alias vdir='vdir --color=auto'
 
@@ -175,28 +170,31 @@ alias cd..='cd ..'
  alias .4='cd ../../../../'
  alias .5='cd ../../../../..'
 
-# install with apt-get
- alias apt-get="sudo apt-get"
- alias updatey="sudo apt-get --yes"
+ alias cd2="cd ../.."
+ alias cd3='cd ../../../'
+ alias cd4='cd ../../../../'
+ alias cd5='cd ../../../../..'
+ alias cd6='cd ../../../../../..'
+ alias cd7='cd ../../../../../../..'
 
 
+
+# install with sudo apt all the time
+    alias apt="sudo apt"
+    alias apt-get="apt"
+    alias apt-y="apt --yes"
 
 # update on one command
- alias refresh='sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y'
+ alias refresh='apt update -y && apt upgrade -y && apt autoremove -y && apt autoclean -y'
 
 ## //- zsh related
- alias config-zsh="nano ~/.zshrc"
+ alias configure-zsh="nano ~/.zshrc"
 
  # update bash and zsh settings
- alias refresh-bash='source ~/.bashrc && source ~/.zshrc'
- alias refresh-zsh='source ~/.bashrc && source ~/.zshrc'
+ alias reload-bash='source ~/.bashrc'
+ alias reload-zsh='source ~/.zshrc'
  alias reload='source ~/.zshrc'
 
-
-
-##//- Windows Interop
- alias cdrive='cd /mnt/c'
- alias cdHome='cd /mnt/c/Users/David'
 
 #List users
 alias list-users='cut -d: -f1 /etc/passwd'
@@ -223,19 +221,21 @@ function gitall() {
     git push origin
 }
 
+#//- nMap stuff
+source ~/shell-scripts/nmap
 
-## LAMP focused aliases
-    #make it so you can call composer without issues.
-        #alias composer='composer.phar'
 
-    #alias for restarting MySQL
-        alias restartmysql='sudo service mysql restart'
-
-#Tests
+##//-Tests
  alias testbold='bold=$(tput bold) && normal=$(tput sgr0) && echo "this is ${bold}bold${normal} but this aint"'
+
+ alias color-check='./shell-scripts/Color-Scripts/color-scripts/colorview'
+
+
 
  ##//- THEMES
  source  ~/Documents/Configs/zsh/powerlevel9k/powerlevel9k.zsh-theme
+
+
 
  #//- Theme Settings
 
@@ -294,40 +294,12 @@ POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR="%F{$(( $DEFAULT_BACKGROUND - 2 ))}|%f"
 POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR='\UE0BA'
 POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR="%F{$(( $DEFAULT_BACKGROUND - 2 ))}|%f"
 
-
-
-######################################
-##//- Leftover Oh My ZSH crap.
-## never going to use omz again geeze.
-# If you come from bash you might have to change your $PATH.
-#export PATH=$HOME/bin:/usr/local/bin:$PATH
-# Path to your oh-my-zsh installation.
-#   export ZSH="~/Documents/Configs/zsh/.oh-my-zsh"
-# export ZSH="/zsh/.oh-my-zsh"
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-# Path to your oh-my-zsh installation.
-#export ZSH=$HOME/oh-my-zsh
-#source ~/Documents/Configs/zsh/oh-my-zsh/oh-my-zsh.sh
-#source /mnt/c/Users/Documents/Configs/zsh/.oh-my-zsh/oh-my-zsh.sh
-
-#ZSH_DISABLE_COMPFIX=true
-#Change ls colours
-#LS_COLORS="ow=01;36;40" && export LS_COLORS
-
-#make cd use the ls colours
-#zstyle ':completion:*' list-colors "${(@s.:.)LS_COLORS}"
-#autoload -Uz compinit -u
-#compinit -u
-
-# Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
 
 ##//- PLUGINS
+
 #//- syntax highlighting
 source ~/Documents/Configs/zsh/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-
 
 #//- jump directories
 eval "$(jump shell zsh)"
@@ -354,20 +326,3 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 #source ~/.xsh
 # xsh is fun but it don't work right!
-
-
-
-# if [ -s "$HOME/.nvm/nvm.sh" ] && [ ! "$(type -f __init_nvm)" = function ]; then
-# 	export NVM_DIR="$HOME/.nvm"
-# 	[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-# 	declare -a __node_commands=(nvm `find -L $NVM_DIR/versions/*/*/bin -type f -exec basename {} \; | sort -u`)
-# 	function __init_nvm() {
-# 		for i in "${__node_commands[@]}"; do unalias $i; done
-# 		. "$NVM_DIR"/nvm.sh
-# 		unset __node_commands
-# 		unset -f __init_nvm
-# 	}
-# 	for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
-# fi
-
-# nvm install node;
