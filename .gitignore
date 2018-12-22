@@ -79,15 +79,5 @@ _gsdata_
 *.pub
 Code/CachedData/*
 */Code/CachedData/*
-*Code/*Cac*
 *.code
 newstuff/*
-*.reg
-.configs/Code/*
-!.configs/Code/User/*
-.configs/Code/User/*
-!.configs/Code/User/snippets/*
-!.configs/Code/User/settings.json
-!.configs/Code/User/keybindings.json
-.config/Code/machineid
-.config/Code/Cache/f_000002
