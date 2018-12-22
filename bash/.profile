@@ -76,6 +76,7 @@ fi
 
 if [ "$color_prompt" = yes ]; then
     PS1='⚡ \[\e[33m\]\w\[\e[m\]\[\e[36;40m\] ⭄>>\[\e[m\]'
+    # export PS1=$'   \e[0;34m \u2692\e[m\e[0;31m \u26A1  [\w] \e[m\e[0;36m >>>'
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -97,12 +98,3 @@ fi
 export PATH="$PATH:$HOME/.rvm/bin"
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-
-
-. /home/david/torch/install/bin/torch-activate
-
-
-. /home/david/torch/install/bin/torch-activate
-
-
-. /home/david/torch/install/bin/torch-activate

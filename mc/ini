@@ -3,7 +3,7 @@ verbose=true
 shell_patterns=true
 auto_save_setup=true
 preallocate_space=false
-auto_menu=false
+auto_menu=true
 use_internal_view=true
 use_internal_edit=false
 clear_before_exec=true
@@ -19,7 +19,7 @@ use_8th_bit_as_meta=false
 mouse_move_pages_viewer=true
 mouse_close_dialog=false
 fast_refresh=false
-drop_menus=false
+drop_menus=true
 wrap_mode=true
 old_esc_mode=true
 cd_symlinks=true
@@ -93,7 +93,7 @@ menubar_visible=1
 free_space=1
 horizontal_split=0
 vertical_equal=1
-left_panel_size=89
+left_panel_size=78
 horizontal_equal=1
 top_panel_size=1
 
@@ -134,6 +134,8 @@ permission_mode=false
 torben_fj_mode=false
 quick_search_mode=2
 select_flags=6
+
+simple_swap=false
 
 [HotlistConfig]
 expanded_view_of_groups=0
