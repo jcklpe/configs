@@ -1,11 +1,18 @@
 //- SCSS INJECTED VSCODE THEME
 
-//-Comments
+//- Comments
 span.mtk3 {
   font-family: "Gidole";
   // font-family: "Levi ReBrushed", "LeviReBrushed";
   margin-left: 2px;
-  font-size: 1.5em;
+  font-size: 1.2em;
+
+  // just the highlighted text
+  //NOTE: I think ced classes are created by the regex extension as a namespace thing
+  &.ced-1-TextEditorDecorationType34-1 {
+    font-family: "Gidole";
+    font-size: 1.5em;
+  }
 
   //- Comments for monospaced areas
   &.ced-1-TextEditorDecorationType52-1,
@@ -20,6 +27,8 @@ span.mtk3 {
   }
 }
 
+// fdsdfd
+
 
 
 
@@ -30,7 +39,7 @@ span.mtk3 {
   color: #ff677b;
 }
 
-//-   Class names and css property values
+//- Class names and css property values
 .mtk4 {
   font-size: 1em !important;
 }

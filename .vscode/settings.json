@@ -7,8 +7,8 @@
   "editor.fontFamily": "Input Sans, monospaced",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
-    "file:///C:/Users/David/Home/Docs/Configs/VScode/injectedTheme/styles.css",
-    "https://cdn.jsdelivr.net/gh/jcklpe/Configs/.vscode/injectedTheme/styles.css"
+    "file:///C:/Users/David/Home/Documents/Configs/.vscode/injectedTheme/styles.css",
+    // "https://cdn.jsdelivr.net/gh/jcklpe/Configs/.vscode/injectedTheme/styles.css"
   ],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,
@@ -576,7 +576,9 @@
   "editor.minimap.showSlider": "always",
   "editor.renderLineHighlight": "all",
   "editor.showFoldingControls": "always",
-  "editor.wordWrap": "on",
+  "editor.wordWrap": "bounded",
+  "editor.wordWrapColumn": 80,
+  "editor.wrappingIndent": "deepIndent",
   //---Guides and Indents
   "guides.enabled": true,
   "guides.active.extraIndent": false,
