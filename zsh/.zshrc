@@ -1,5 +1,10 @@
 # 𝖅𝖘𝖍 𝕾𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
+# CMD binding
+alias cmd='/mnt/c/Windows/System32/cmd.exe'
+
+alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe"
+
 ## PER OS SETTINGS
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     UNAMECHECK=$(uname -a);
