@@ -5,6 +5,12 @@ alias cmd='/mnt/c/Windows/System32/cmd.exe'
 
 alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe"
 
+# Run nano with softwrapping always
+
+alias nano='nano -\$cwS'
+
+
+
 ## PER OS SETTINGS
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     UNAMECHECK=$(uname -a);
@@ -49,9 +55,11 @@ ZSH_DISABLE_COMPFIX=true
 
 
 
-
 #𝗔𝗟𝗜𝗔𝗦𝗘𝗦
 #Movement
+
+#add directory history function to cd
+source ~/shell-scripts/acd_func.sh;
 
 #  add exa auto to cd command
 function cd {
@@ -124,6 +132,16 @@ lf() {
         }
     '
 }
+
+
+## can't seem to get it to work
+## https://unix.stackexchange.com/questions/157763/do-we-have-more-history-for-cd
+# add the ability to cd to previously visited directories
+#setopt AUTO_PUSHD                  # pushes the old directory onto the stack
+#setopt PUSHD_MINUS                 # exchange the meanings of '+' and '-'
+#setopt CDABLE_VARS                 # expand the expression (allows 'cd -2/tmp')
+#autoload -U compinit && compinit   # load + start completion
+# zstyle ':completion:*:directory-stack' list-colors '=(#b) #([0-9]#)*( *)==95=38;5;12
 
 removeLAMP() {
     /etc/init.d/mysql stop ||
