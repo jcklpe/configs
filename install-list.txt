@@ -1,0 +1,67 @@
+temp list to log all the CLI tools I would need to install on a new system in order to eventually create shell script or something to auto install them on any new system I need. 
+
+
+## wd for bash
+https://github.com/mfaerevaag/wd
+
+## wd for zsh
+https://github.com/mfaerevaag/wd
+
+## wd built in ruby
+https://github.com/kigster/warp-dir
+
+## jump
+wget https://github.com/gsamokovarov/jump/releases/download/v0.22.0/jump_0.22.0_amd64.deb
+sudo dpkg -i jump_0.22.0_amd64.deb
+
+## ranger related stuff
+sudo apt-get install ranger caca-utils highlight atool w3m poppler-utils mediainfo
+
+## Slap text editor
+curl -sL https://raw.githubusercontent.com/slap-editor/slap/master/install.sh | sh
+sudo npm install -g slap@latest
+
+## Midnight Commander
+sudo apt install mc
+
+## Zsh
+apt install zsh
+
+## Zsh auto complete
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+add to .zshrc
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+## ZSH syntax highlighting
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+add to .zshrc
+source ./zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+## Powerlevel9k theme
+git clone https://github.com/bhilburn/powerlevel9k.git ~/powerlevel9k
+echo 'source  ~/powerlevel9k/powerlevel9k.zsh-theme' >> ~/.zshrc
+
+## bd utility (allows you to cd up to previous parent directories
+curl https://raw.githubusercontent.com/Tarrasch/zsh-bd/master/bd.zsh > $HOME/.zsh/plugins/bd/bd.zsh
+then source to .zshrc
+
+## exa utility 
+https://the.exa.website/install/linux
+
+## colorls (perhaps switch off exa to this
+gem install colorls
+source $(dirname $(gem which colorls))/tab_complete.sh
+
+## Ruby
+sudo apt install ruby-full
+
+## Zsh Alias tips
+git clone https://github.com/djui/alias-tips.git
+add to .zshrc
+source /usr/share/zsh/plugins/alias-tips/alias-tips.plugin.zsh
+
+## ZSH matrix
+ git clone https://github.com/amstrad/oh-my-matrix
+add to .zshrc
+source ./oh-my-matrix
+

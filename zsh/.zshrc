@@ -11,12 +11,16 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     if [[ $UNAMECHECK == *"Microsoft"* ]]
         then
         # WSL
+        # add X server to WSL to open Linux GUI apps
+export DISPLAY=localhost:0.0
+
     else
+        # Normal Linux
         . /home/david/torch/install/bin/torch-activate
     fi
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # Mac OSX
+    # fucking fancy-ass Mac OSX
 
 elif [[ "$OSTYPE" == "cygwin" ]]; then
     # POSIX compatibility layer and Linux environment emulation for Windows
@@ -42,18 +46,24 @@ fi
 POWERLEVEL9K_MODE="nerdfont-complete"
 ZSH_DISABLE_COMPFIX=true
 
-# add X server to WSL to open Linux GUI apps
-export DISPLAY=localhost:0.0
+
 
 
 
 #𝗔𝗟𝗜𝗔𝗦𝗘𝗦
 #Movement
 
-#  add ls auto to cd command
+#  add exa auto to cd command
 function cd {
-    builtin cd "$@" && ls -F --color=auto
+    builtin cd "$@" && exa --grid --sort=ext
     }
+
+# make a directory and then go inside it
+function mkcdir ()
+{
+    mkdir -p -- "$1" &&
+      cd -P -- "$1"
+}
 
 
 
@@ -71,7 +81,7 @@ fi
 
 #List everything including hidden stuff
 lo() {
-    ls -alF --color=always | awk '
+    ls -AlF --color=always | awk '
         BEGIN {
             FPAT = "([[:space:]]*[^[:space:]]+)";
             OFS = "";
@@ -90,6 +100,8 @@ lo() {
         }
     '
 }
+
+alias exa-lo='exa --long --grid --sort=ext --header --git --color-scale';
 
 # List but formatted and colored without hidden stuff
 lf() {
@@ -303,11 +315,17 @@ COMPLETION_WAITING_DOTS="true"
 
 ##//- PLUGINS
 
+#//- Ranger autojump
+source ~/Documents/Configs/zsh/zsh-plugins/ranger-autojump/ranger-autojump.plugin.zsh
+
 #//- syntax highlighting
 source ~/Documents/Configs/zsh/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 #//- jump directories
 eval "$(jump shell zsh)"
+
+#//-  fasd directories (like j but weighted towards recent history)
+eval "$(fasd --init auto)"
 
 
 

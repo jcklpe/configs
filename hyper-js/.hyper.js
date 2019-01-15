@@ -33,7 +33,7 @@ module.exports = {
     cursorBlink: false,
 
     // color of the text
-    foregroundColor: '#fff',
+    foregroundColor: '#fffbf4',
 
     // terminal background color
     // opacity is only supported on macOS
@@ -68,21 +68,21 @@ module.exports = {
     // an array here instead of a color map object
     colors: {
       black: 'black',
-      red: '#C51E14',
-      green: '#97ff30',
-      yellow: '#C7C329',
-      blue: '#0032ff',
-      magenta: '#C839C5',
-      cyan: '#20C5C6',
-      white: '#C7C7C7',
-      lightBlack: '#686868',
-      lightRed: '#FD6F6B',
-      lightGreen: '#67F86F',
-      lightYellow: '#FFFA72',
-      lightBlue: '#6A76FB',
-      lightMagenta: '#FD7CFC',
-      lightCyan: '#68FDFE',
-      lightWhite: '#FFFFFF',
+      red: '#F70258',
+      green: '#02F758',
+      yellow: '#ffbc05',
+      blue: '#0e35d1',
+      magenta: '#7b39c8',
+      cyan: '#00c6a5',
+      white: '#adaaa4',
+      lightBlack: '#3d342b',
+      lightRed: '#ff5470',
+      lightGreen: '#D4F442',
+      lightYellow: '#fffa00',
+      lightBlue: '#19aeff',
+      lightMagenta: '#c932fc',
+      lightCyan: '#65f2ca',
+      lightWhite: '#fffbf4',
     },
 
     // the shell to run when spawning a new session (i.e. /usr/local/bin/fish)
@@ -109,11 +109,11 @@ module.exports = {
     // set to `false` for no bell
     bell: 'SOUND',
 
-    summon: {
-      hideDock: true,
-      hideOnBlur: true,
-      hotkey: 'Ctrl+.'
-    },
+    // summon: {
+    //   hideDock: true,
+    //   hideOnBlur: true,
+    //   hotkey: 'Ctrl+.'
+    // },
 
     // if `true` (without backticks and without quotes), selected text will automatically be copied to the clipboard
     copyOnSelect: false,
@@ -197,7 +197,7 @@ module.exports = {
     //'hyper-pane',
     //'hyper-hover-header',
     //'hyper-background',
-    'hyperterm-summon',
+    //'hyperterm-summon',
     'gitrocket',
     'space-pull',
     //'hyper-stylesheet',
