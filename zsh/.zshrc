@@ -9,7 +9,8 @@ alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe"
 
 alias nano='nano -\$cwS'
 
-
+# add jump integration to ranger
+source /mnt/c/Users/David/Home/Documents/Configs/zsh/zsh-plugins/jump-ranger.zsh
 
 ## PER OS SETTINGS
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
@@ -332,9 +333,6 @@ POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR="%F{$(( $DEFAULT_BACKGROUND - 2 ))}|%f"
 COMPLETION_WAITING_DOTS="true"
 
 ##//- PLUGINS
-
-#//- Ranger autojump
-source ~/Documents/Configs/zsh/zsh-plugins/ranger-autojump/ranger-autojump.plugin.zsh
 
 #//- syntax highlighting
 source ~/Documents/Configs/zsh/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

@@ -16,3 +16,6 @@
 [submodule "zsh/zsh-plugins/ranger-autojump"]
 	path = zsh/zsh-plugins/ranger-autojump
 	url = https://github.com/fdw/ranger-autojump.git
+[submodule "zsh/zsh-plugins/jump-ranger"]
+	path = zsh/zsh-plugins/jump-ranger
+	url = https://github.com/gsamokovarov/jump-ranger.git
