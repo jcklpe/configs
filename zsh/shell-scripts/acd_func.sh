@@ -56,7 +56,7 @@ cd_func ()
   return 0
 }
 
-alias cd=cd_func
+#alias cd=cd_func
 
 if [[ $BASH_VERSION > "2.05a" ]]; then
   # ctrl+w shows the menu
