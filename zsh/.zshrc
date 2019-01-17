@@ -10,7 +10,7 @@ alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe"
 alias nano='nano -\$cwS'
 
 # add jump integration to ranger
-source /mnt/c/Users/David/Home/Documents/Configs/zsh/zsh-plugins/jump-ranger.zsh
+source /mnt/c/Users/David/Home/Documents/Configs/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
 
 ## PER OS SETTINGS
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
