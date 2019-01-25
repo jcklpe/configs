@@ -17,6 +17,8 @@ module.exports = {
     // default font weight: 'normal' or 'bold'
     fontWeight: 'normal',
 
+    scrollback: 60000,
+
     // font weight for bold characters: 'normal' or 'bold'
     fontWeightBold: 'bold',
 
