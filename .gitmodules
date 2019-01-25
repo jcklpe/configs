@@ -1,21 +1,21 @@
-[submodule "zsh/powerlevel9k"]
-	path = zsh/powerlevel9k
-	url = https://github.com/bhilburn/powerlevel9k.git
-[submodule "shell-scripts/Color-Scripts"]
-	path = shell-scripts/Color-Scripts
-	url = https://github.com/stark/Color-Scripts.git
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
 [submodule "zsh/shell-scripts/Color-Scripts"]
 	path = zsh/shell-scripts/Color-Scripts
 	url = https://github.com/stark/Color-Scripts.git
-[submodule "zsh/zsh-plugins/-f"]
-	path = zsh/zsh-plugins/-f
-	url = https://github.com/fdw/ranger-autojump.git
-[submodule "zsh/zsh-plugins/ranger-autojump"]
-	path = zsh/zsh-plugins/ranger-autojump
-	url = https://github.com/fdw/ranger-autojump.git
-[submodule "zsh/zsh-plugins/jump-ranger"]
-	path = zsh/zsh-plugins/jump-ranger
-	url = https://github.com/gsamokovarov/jump-ranger.git
+[submodule "zsh/shell-scripts/no-more-secrets"]
+	path = zsh/shell-scripts/no-more-secrets
+	url = https://github.com/bartobri/no-more-secrets.git
+[submodule "zsh/zsh-plugins/powerlevel9k"]
+	path = zsh/zsh-plugins/powerlevel9k
+	url = https://github.com/bhilburn/powerlevel9k.git
+[submodule "zsh/zsh-plugins/wd"]
+	path = zsh/zsh-plugins/wd
+	url = https://github.com/mfaerevaag/wd.git
+[submodule "zsh/zsh-plugins/zsh-autosuggestions"]
+	path = zsh/zsh-plugins/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "zsh/zsh-plugins/zsh-syntax-highlighting"]
+	path = zsh/zsh-plugins/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting.git

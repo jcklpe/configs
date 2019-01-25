@@ -1,5 +1,4 @@
 {
-
   /////////////////////////
   //- Visual Core
   "workbench.colorTheme": "Hopscotch (TextMate Theme)",
@@ -250,6 +249,7 @@
     ]
   },
   //- HILIGHT REGEX
+  "highlight.regexFlags": "gmi",
   "highlight.decorations": {
     "rangeBehavior": 3
   },
@@ -292,7 +292,7 @@
         "borderRadius": "5px 0px 0px 5px"
       },
       {
-        "backgroundColor": "#4b553f",
+        "backgroundColor": "#4b5539",
         "color": "#1f1f1f"
       }
     ],
@@ -353,6 +353,43 @@
         "isWholeLine": true
       }
     ],
+    //## monospaced hash comments
+    "(^##(?!-).+(?=\n|\r))": [
+      {
+        "overviewRulerColor": "#73f0ae",
+        "backgroundColor": "#181c21",
+        "color": " #73f0ae",
+        "fontWeight": "italic",
+        "isWholeLine": true
+      }
+    ],
+    // ##-  hash comments titles
+    "(##-.*?)(.+(?=\n|\r))": [
+      {
+        "overviewRulerColor": "yellow",
+        "backgroundColor": "yellow",
+        "color": "black",
+        "fontWeight": "bold"
+      },
+      {
+        "backgroundColor": "black",
+        "color": "#72edeb",
+        "fontWeight": "bold",
+        "isWholeLine": true,
+        "fontSize": "2em"
+      }
+    ],
+    // * SCSS block commented code */
+    "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [
+      // */*
+      {
+        "overviewRulerColor": "Blue",
+        "backgroundColor": "#181c21",
+        "color": " #73f0ae",
+        "fontWeight": "italic",
+        "isWholeLine": true
+      }
+    ],
     //{{ Angular Dynamic Variable styling}}
     "(\\{\\{[^\\}]*\\}\\})(?!\\})": [
       {
@@ -394,31 +431,34 @@
       }
     ],
     //- Opening  HTML Tag
-    "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": [
-      {
-        "borderWidth": "1px 0 0 4px",
-        "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "5px",
-        "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#d44040",
-        "fontStyle": "bold",
-        "fontWeight": "bold"
-      },
-      {
-        "backgroundColor": "rgba(26, 18, 26, 0.4)",
-        "borderWidth": "0 0 0 0",
-        "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px"
-      },
-      {
-        "backgroundColor": "rgba(15, 21, 31, 0.45)",
-        "color": "rgba(40, 68, 85, 0.7)",
-        "fontStyle": "bold",
-        "fontWeight": "bold"
-      }
-    ],
+    "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": {
+      "filterFileRegex": ".*\\.html",
+      "decorations": [
+        {
+          "borderWidth": "1px 0 0 4px",
+          "borderStyle": "solid",
+          "borderColor": "rgba(255, 103, 123, 0.5)",
+          "borderRadius": "5px",
+          "backgroundColor": "rgba(33, 24, 28, 0.6)",
+          "color": "#d44040",
+          "fontStyle": "bold",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "rgba(26, 18, 26, 0.4)",
+          "borderWidth": "0 0 0 0",
+          "borderStyle": "solid",
+          "borderColor": "rgba(255, 103, 123, 0.5)",
+          "borderRadius": "0px"
+        },
+        {
+          "backgroundColor": "rgba(15, 21, 31, 0.45)",
+          "color": "rgba(40, 68, 85, 0.7)",
+          "fontStyle": "bold",
+          "fontWeight": "bold"
+        }
+      ],
+    },
     //- Self-closing tag
     "(\\/)(>)": [
       {
@@ -439,30 +479,35 @@
         "fontWeight": "bold"
       }
     ],
-    //- Closing HTML Tag
-    "(<\\/)((.|\n|\r)*?)((?!\\?)>)": [
-      {
-        "backgroundColor": "rgba(15, 21, 31, 0.45)",
-        "color": "rgba(40, 68, 85, 0.7)"
-      },
-      {
-        "borderWidth": "0 0 0 0",
-        "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px",
-        "backgroundColor": "rgba(26, 18, 26, 0.4)"
-      },
-      {
-        "borderWidth": "0 4px 1px 0",
-        "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px",
-        "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#d44040",
-        "fontStyle": "bold",
-        "fontWeight": "bold"
-      }
-    ],
+    // </Closing HTML Tag>
+    "(<\\/)((.|\n|\r)*?)(>)": {
+      "filterFileRegex": ".*\\.html",
+      "decorations": [
+        {
+          "backgroundColor": "rgba(15, 21, 31, 0.45)",
+          "color": "rgba(40, 68, 85, 0.7)"
+        },
+        {
+          "borderWidth": "0 0 0 0",
+          "borderStyle": "solid",
+          "borderColor": "rgba(255, 103, 123, 0.5)",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(26, 18, 26, 0.4)",
+          "color": "#d44040",
+          "fontWeight": "bold"
+        },
+        {
+          "borderWidth": "0 4px 1px 0",
+          "borderStyle": "solid",
+          "borderColor": "rgba(255, 103, 123, 0.5)",
+          "borderRadius": "0px",
+          "backgroundColor": "rgba(33, 24, 28, 0.6)",
+          "color": "#d44040",
+          "fontStyle": "bold",
+          "fontWeight": "bold"
+        }
+      ],
+    },
     // PHP Tag
     "(<\\?php)((.|\n|\r)*?)(\\?>)": [
       {
@@ -545,30 +590,7 @@
       {},
       {}
     ],
-    // * SCSS block commented code */
-    "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [
-      // */*
-      {
-        "overviewRulerColor": "Blue",
-        "backgroundColor": "#181c21",
-        "color": " #73f0ae",
-        "fontWeight": "italic",
-        "isWholeLine": true
-      }
-    ],
-    // Hash block commented code
-    "^#": [
-      {
-        "overviewRulerColor": "Blue",
-        "backgroundColor": "#181c21",
-        "color": "#73f0ae",
-        "fontWeight": "italic",
-        "isWholeLine": true
-      }
-    ]
   },
-  // Flags used when building the regexes
-  "highlight.regexFlags": "gi",
   ////////////////////////////////////
   //- Visual organization Defaults
   "editor.renderIndentGuides": false,

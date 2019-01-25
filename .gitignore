@@ -38,7 +38,6 @@ jspm_packages/
 Windows/Registry/
 .hyper_plugins/
 OldConfigs/
-zsh/zsh-plugins/
 .vscode/extensions/
 
 # TypeScript v1 declaration files
@@ -64,7 +63,6 @@ typings/
 
 # next.js build output
 .next
-zsh/powerlevel9k/
 .config/configstore/update-notifier-npm.json
 
 # Security issues
