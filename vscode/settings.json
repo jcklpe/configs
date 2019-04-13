@@ -1,10 +1,11 @@
 {
+
   /////////////////////////
   //- Visual Core
   "workbench.colorTheme": "Hopscotch (TextMate Theme)",
   "editor.fontSize": 16,
   "editor.lineHeight": 29,
-  "editor.fontFamily": "Input Sans, monospaced",
+  "editor.fontFamily": "Input, monospaced",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
     "file:///C:/Users/David/Home/Documents/Configs/.vscode/injectedTheme/styles.css",
@@ -431,34 +432,31 @@
       }
     ],
     //- Opening  HTML Tag
-    "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": {
-      "filterFileRegex": ".*\\.html",
-      "decorations": [
-        {
-          "borderWidth": "1px 0 0 4px",
-          "borderStyle": "solid",
-          "borderColor": "rgba(255, 103, 123, 0.5)",
-          "borderRadius": "5px",
-          "backgroundColor": "rgba(33, 24, 28, 0.6)",
-          "color": "#d44040",
-          "fontStyle": "bold",
-          "fontWeight": "bold"
-        },
-        {
-          "backgroundColor": "rgba(26, 18, 26, 0.4)",
-          "borderWidth": "0 0 0 0",
-          "borderStyle": "solid",
-          "borderColor": "rgba(255, 103, 123, 0.5)",
-          "borderRadius": "0px"
-        },
-        {
-          "backgroundColor": "rgba(15, 21, 31, 0.45)",
-          "color": "rgba(40, 68, 85, 0.7)",
-          "fontStyle": "bold",
-          "fontWeight": "bold"
-        }
-      ],
-    },
+    "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": [
+      {
+        "borderWidth": "1px 0 0 4px",
+        "borderStyle": "solid",
+        "borderColor": "rgba(255, 103, 123, 0.5)",
+        "borderRadius": "5px",
+        "backgroundColor": "rgba(33, 24, 28, 0.6)",
+        "color": "#d44040",
+        "fontStyle": "bold",
+        "fontWeight": "bold"
+      },
+      {
+        "backgroundColor": "rgba(26, 18, 26, 0.4)",
+        "borderWidth": "0 0 0 0",
+        "borderStyle": "solid",
+        "borderColor": "rgba(255, 103, 123, 0.5)",
+        "borderRadius": "0px"
+      },
+      {
+        "backgroundColor": "rgba(15, 21, 31, 0.45)",
+        "color": "rgba(40, 68, 85, 0.7)",
+        "fontStyle": "bold",
+        "fontWeight": "bold"
+      }
+    ],
     //- Self-closing tag
     "(\\/)(>)": [
       {
@@ -480,34 +478,31 @@
       }
     ],
     // </Closing HTML Tag>
-    "(<\\/)((.|\n|\r)*?)(>)": {
-      "filterFileRegex": ".*\\.html",
-      "decorations": [
-        {
-          "backgroundColor": "rgba(15, 21, 31, 0.45)",
-          "color": "rgba(40, 68, 85, 0.7)"
-        },
-        {
-          "borderWidth": "0 0 0 0",
-          "borderStyle": "solid",
-          "borderColor": "rgba(255, 103, 123, 0.5)",
-          "borderRadius": "0px",
-          "backgroundColor": "rgba(26, 18, 26, 0.4)",
-          "color": "#d44040",
-          "fontWeight": "bold"
-        },
-        {
-          "borderWidth": "0 4px 1px 0",
-          "borderStyle": "solid",
-          "borderColor": "rgba(255, 103, 123, 0.5)",
-          "borderRadius": "0px",
-          "backgroundColor": "rgba(33, 24, 28, 0.6)",
-          "color": "#d44040",
-          "fontStyle": "bold",
-          "fontWeight": "bold"
-        }
-      ],
-    },
+    "(<\\/)((.|\n|\r)*?)(>)": [
+      {
+        "backgroundColor": "rgba(15, 21, 31, 0.45)",
+        "color": "rgba(40, 68, 85, 0.7)"
+      },
+      {
+        "borderWidth": "0 0 0 0",
+        "borderStyle": "solid",
+        "borderColor": "rgba(255, 103, 123, 0.5)",
+        "borderRadius": "0px",
+        "backgroundColor": "rgba(26, 18, 26, 0.4)",
+        "color": "#d44040",
+        "fontWeight": "bold"
+      },
+      {
+        "borderWidth": "0 4px 1px 0",
+        "borderStyle": "solid",
+        "borderColor": "rgba(255, 103, 123, 0.5)",
+        "borderRadius": "0px",
+        "backgroundColor": "rgba(33, 24, 28, 0.6)",
+        "color": "#d44040",
+        "fontStyle": "bold",
+        "fontWeight": "bold"
+      }
+    ],
     // PHP Tag
     "(<\\?php)((.|\n|\r)*?)(\\?>)": [
       {
@@ -791,5 +786,6 @@
     "node_modules/": true
   },
   "editor.snippetSuggestions": "top",
-  "workbench.settings.editor": "json"
+  "workbench.settings.editor": "json",
+  "workbench.iconTheme": "simple-icons"
 }

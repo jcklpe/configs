@@ -4,10 +4,9 @@
 # ██╔══██╗██╔══██║╚════██║██╔══██║
 # ██████╔╝██║  ██║███████║██║  ██║
 # ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-export SHELL=/bin/zsh
-exec /bin/zsh -l
 
-# start zsh
+
+
  if [ -t 1 ]; then
  exec zsh
  fi

@@ -12,14 +12,17 @@
 # Run nano with softwrapping always
 alias nano='nano -\$cwS'
 
+#- Necessary to enable 256 colors in terminal
+ export TERM="xterm-256color"
+
 POWERLEVEL9K_MODE="nerdfont-complete"
 ZSH_DISABLE_COMPFIX=true
 
 
 
 
-##-𝗔𝗟𝗜𝗔𝗦𝗘𝗦
-##-Movement
+##- 𝗔𝗟𝗜𝗔𝗦𝗘𝗦
+##- Movement
 alias exa=exa --grid --sort=ext --group-directories-first
 
 #  add exa auto to cd command
@@ -178,7 +181,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         then
             # WSL
             # add X server to WSL to open Linux GUI apps
-            export DISPLAY=localhost:0.0
+           # export DISPLAY=localhost:0.0
 
             # the below was in my config but I don't know why. It's left over from something. Seems to be unsetting the default zsh option that makes background stuff a lower priority
             unsetopt BG_NICE
