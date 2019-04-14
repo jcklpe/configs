@@ -12,6 +12,9 @@
 # Run nano with softwrapping always
 alias nano='nano -\$cwS'
 
+#configs location
+CONFIGS=~/configs
+
 #- Necessary to enable 256 colors in terminal
  export TERM="xterm-256color"
 
@@ -146,26 +149,26 @@ alias gsub='git submodule add'
 ##-Tests
  alias testbold='bold=$(tput bold) && normal=$(tput sgr0) && echo "this is ${bold}bold${normal} but this aint"'
 
- alias test-color='~/Configs/zsh/shell-scripts/Color-Scripts/color-scripts/colorview'
+ alias test-color='~/configs/zsh/shell-scripts/Color-Scripts/color-scripts/colorview'
 
 
 ##- Theme Settings
 
-source ~/Configs/zsh/zsh-plugins/prompt.zsh
+source $CONFIGS/zsh/zsh-plugins/prompt.zsh
 
 
 ##- PLUGINS
 ##- syntax highlighting
-source ~/Configs/zsh/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $CONFIGS/zsh/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ##- Zsh Auto-suggestions
-source ~/Configs/zsh/zsh-plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $CONFIGS/zsh/zsh-plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ##- jump directories
 eval "$(jump shell zsh)"
 
 # add jump integration to ranger
-source ~/Configs/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
+source $CONFIGS/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
 
 ##- warp door
 wd() {
