@@ -8,9 +8,18 @@
 ##                               | |
 ##                               |_|
 
+##- VARIABLES
+OCC="/var/www/nextcloud/occ "
+
+
+
+
 
 # Run nano with softwrapping always
 alias nano='nano -\$cwS'
+
+#- Necessary to enable 256 colors in terminal
+ export TERM="xterm-256color"
 
 POWERLEVEL9K_MODE="nerdfont-complete"
 ZSH_DISABLE_COMPFIX=true
@@ -18,8 +27,8 @@ ZSH_DISABLE_COMPFIX=true
 
 
 
-##-𝗔𝗟𝗜𝗔𝗦𝗘𝗦
-##-Movement
+##- 𝗔𝗟𝗜𝗔𝗦𝗘𝗦
+##- Movement
 alias exa=exa --grid --sort=ext --group-directories-first
 
 #  add exa auto to cd command
@@ -124,6 +133,17 @@ alias list-path='tr ':' '\n' <<< "$PATH"';
 alias builder='npm run build'
 alias watcher='npm run watch'
 
+##- Nextcloud related
+# list all apps
+alias nc-list='sudo -u www-data php $OCC app:list'
+
+#scan and clean up files
+alias nc-scan='sudo -u www-data php $OCC files:scan --all'
+alias nc-scan='sudo -u www-data php $OCC files:cleanup'
+
+# turn off and on safe mode
+alias nc-on='sudo -u www-data php $OCC maintenance:mode --on'
+alias nc-off='sudo -u www-data php $OCC maintenance:mode --off'
 
 
 
@@ -143,26 +163,26 @@ alias gsub='git submodule add'
 ##-Tests
  alias testbold='bold=$(tput bold) && normal=$(tput sgr0) && echo "this is ${bold}bold${normal} but this aint"'
 
- alias test-color='~/Configs/zsh/shell-scripts/Color-Scripts/color-scripts/colorview'
+ alias test-color='~/configs/zsh/shell-scripts/Color-Scripts/color-scripts/colorview'
 
 
 ##- Theme Settings
 
-source ~/Configs/zsh/zsh-plugins/prompt.zsh
+source ~/configs/zsh/zsh-plugins/prompt.zsh
 
 
 ##- PLUGINS
 ##- syntax highlighting
-source ~/Configs/zsh/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/configs/zsh/zsh-plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ##- Zsh Auto-suggestions
-source ~/Configs/zsh/zsh-plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/configs/zsh/zsh-plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ##- jump directories
 eval "$(jump shell zsh)"
 
 # add jump integration to ranger
-source ~/Configs/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
+source ~/configs/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
 
 ##- warp door
 wd() {
@@ -178,7 +198,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
         then
             # WSL
             # add X server to WSL to open Linux GUI apps
-            export DISPLAY=localhost:0.0
+           # export DISPLAY=localhost:0.0
 
             # the below was in my config but I don't know why. It's left over from something. Seems to be unsetting the default zsh option that makes background stuff a lower priority
             unsetopt BG_NICE
