@@ -10,7 +10,7 @@
 
 ##- VARIABLES
 OCC="/var/www/nextcloud/occ "
-CONFIGS="/home/david/configs"
+CONFIGS="$HOME/configs"
 pluginz="${CONFIGS}/zsh/shell-scripts"
 alias rm=trash
 
