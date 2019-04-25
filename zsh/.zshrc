@@ -12,6 +12,7 @@
 OCC="/var/www/nextcloud/occ "
 CONFIGS="$HOME/configs"
 pluginz="${CONFIGS}/zsh/shell-scripts"
+
 alias rm=trash
 
 ##- Imports
@@ -164,6 +165,14 @@ function gitall() {
 # git submodule add
 alias gsub='git submodule add'
 
+# create a new branch of a git you are currently on
+alias git-create='git checkout -b master'
+
+# pull from master branch and discard old changes
+alias git-pull-refresh='git stash && git pull'
+
+alias git-uncommit=' git reset --soft HEAD^'
+
 
 ##-Tests
  alias testbold='bold=$(tput bold) && normal=$(tput sgr0) && echo "this is ${bold}bold${normal} but this aint"'
@@ -191,7 +200,7 @@ source ~/configs/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
 
 ##- warp door
 wd() {
-  . /home/david/bin/wd/wd.sh;
+  . $HOME/bin/wd/wd.sh;
   exa
 }
 
