@@ -1,18 +1,24 @@
 [submodule "zsh/shell-scripts/Color-Scripts"]
 	path = zsh/shell-scripts/Color-Scripts
 	url = https://github.com/stark/Color-Scripts.git
+	ignore = dirty
 [submodule "zsh/shell-scripts/no-more-secrets"]
 	path = zsh/shell-scripts/no-more-secrets
 	url = https://github.com/bartobri/no-more-secrets.git
+	ignore = dirty
 [submodule "zsh/zsh-plugins/powerlevel9k"]
 	path = zsh/zsh-plugins/powerlevel9k
 	url = https://github.com/bhilburn/powerlevel9k.git
+	ignore = dirty
 [submodule "zsh/zsh-plugins/wd"]
 	path = zsh/zsh-plugins/wd
 	url = https://github.com/mfaerevaag/wd.git
+	ignore = dirty
 [submodule "zsh/zsh-plugins/zsh-autosuggestions"]
 	path = zsh/zsh-plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
+	ignore = dirty
 [submodule "zsh/zsh-plugins/zsh-syntax-highlighting"]
 	path = zsh/zsh-plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+	ignore = dirty
