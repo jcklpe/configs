@@ -4,9 +4,20 @@
 
 module.exports = {
   config: {
+
+
     // choose either `'stable'` for receiving highly polished,
     // or `'canary'` for less polished but more frequent updates
-    updateChannel: 'stable',
+    updateChannel: 'canary',
+
+    hyperBorder: {
+      //   borderColors: ['random','random'],
+      //   borderColors: ['rgb(10, 40, 45)', 'rgb(15, 25, 50)'],
+      borderColors: ['rgb(212, 244, 66)', 'rgb(2, 247, 88)'],
+      borderRadiusOuter: '1px',
+      borderRadiusInner: '1px',
+      borderWidth: '2px'
+    },
 
     // default font size in pixels for all tabs
     fontSize: 19,
@@ -32,7 +43,7 @@ module.exports = {
     cursorShape: 'BEAM',
 
     // set to `true` (without backticks and without quotes) for blinking cursor
-    cursorBlink: false,
+    cursorBlink: true,
 
     // color of the text
     foregroundColor: '#fffbf4',
@@ -132,11 +143,7 @@ module.exports = {
 
     // for advanced config flags please refer to https://hyper.is/#cfg
 
-    hyperBorder: {
-      //   borderColors: ['random','random'],
-      //   borderColors: ['rgb(10, 40, 45)', 'rgb(15, 25, 50)'],
-      borderColors: ['rgb(212, 244, 66)', 'rgb(2, 247, 88)'],
-    }
+
 
     // opacity: {
     //   focus: 0.9,
@@ -144,29 +151,29 @@ module.exports = {
     // }
 
 
+    overlay: {
+      alwaysOnTop: true,
+      animate: true,
+      hasShadow: true,
+      hideDock: false,
+      hideOnBlur: false,
+      //   hotkeys: {
+      //     open: ['Control+Space'], // On MacOS hotkey is default to Option + Space!
+      //       close: ['Control+Shift+Space'], // On MacOS hotkey is default to Option + Escape!
+      //   },
+      position: 'top',
+      primaryDisplay: false,
+      resizable: true,
+      size: {
+        width: 0.4,
+        height: 0.6
+      },
+      startAlone: true,
+      startup: true,
+      tray: true,
+      unique: false,
+    },
 
-    // overlay: {
-    //   alwaysOnTop: true,
-    //   animate: true,
-    //   hasShadow: true,
-    //   hideDock: false,
-    //   hideOnBlur: false,
-    //   hotkeys: {
-    //     open: ['Control+Space'], // On MacOS hotkey is default to Option + Space!
-    //       close: ['Control+Shift+Space'], // On MacOS hotkey is default to Option + Escape!
-    //   },
-    //   position: 'top',
-    //   primaryDisplay: false,
-    //   resizable: true,
-    //   size: {
-    //     width: 0.4,
-    //     height: 0.4
-    //   },
-    //   startAlone: false,
-    //   startup: true,
-    //   tray: true,
-    //   unique: false,
-    // }
 
 
 
@@ -181,29 +188,44 @@ module.exports = {
     //'hyperterm-tabs',
     //'hypertheme',
     //'hyperterm-blink',
-    //'hyper-overlay',
     //'hyper-transparent-bg', does not work on Windows
-    'hyperborder',
     //'hyper-opacity',
     //'hyper2-border',
     //'hyperterm-paste',
-    'hyperterm-alternatescroll',
-    'hyperterm-bold-tab',
-    'hyperterm-dibdabs',
     // 'hyper-alt-click',
     //'hyper-match',
     //'hyperterm-crosshair',
     //'hyper-autohide-tabs',
-    'hyper-tabs-enhanced',
     //'hyper-tab-icons',
-    //'hyper-pane',
     //'hyper-hover-header',
     //'hyper-background',
     //'hyperterm-summon',
+    //'hyper-stylesheet',
+
+    // adds animation to git push and pull
     'gitrocket',
     'space-pull',
-    //'hyper-stylesheet',
-    //"hyper-always-on-top",
+
+    //add support for pane multiplexing
+    "hyper-pane",
+
+    //enhances tab styling
+    'hyper-tabs-enhanced',
+    'hyperterm-bold-tab',
+    'hyperterm-dibdabs',
+
+    // open new tabs in the same location as current tab
+    "hypercwd",
+
+    // adds overlay hotkey abilities
+    "hyper-overlay",
+
+    // give normal scrolling in nano
+    'hyperterm-alternatescroll',
+
+    // Cool looking border
+    'hyperborder',
+
     // 𝑻𝑯𝑬𝑴𝑬𝑺
     'hyper-bloody',
     //'an-old-hype',
@@ -211,8 +233,7 @@ module.exports = {
     //'hyper-oldschool',
     //'hyperatompunk',
     //'hyperterm-retro',
-    //'hyperpunk',
-
+    //'hyperpunk2.0'
     //'hyperblue-vibrancy',
     //'hyper-mahoushoujo',
     //'hypermaterial-vibrancy'
@@ -222,7 +243,6 @@ module.exports = {
   // `~/.hyper_plugins/local/` and include it here
   // to load it and avoid it being `npm install`ed
   localPlugins: [
-    //'hyperpunk2.0'
   ],
 
   keymaps: {
