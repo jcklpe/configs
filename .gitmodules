@@ -22,3 +22,9 @@
 	path = zsh/zsh-plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
 	ignore = dirty
+[submodule "firefox/injectedTheme/assets/scss/libs/UserChrome-Tweaks"]
+	path = firefox/injectedTheme/assets/scss/libs/UserChrome-Tweaks
+	url = https://github.com/Timvde/UserChrome-Tweaks.git
+[submodule "firefox/injectedTheme/assets/scss/libs/CustomCSSforFx"]
+	path = firefox/injectedTheme/assets/scss/libs/CustomCSSforFx
+	url = https://github.com/Aris-t2/CustomCSSforFx.git
