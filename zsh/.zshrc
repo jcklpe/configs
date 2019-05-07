@@ -9,13 +9,14 @@
 ##                               |_|
 
 ##- VARIABLES
-OCC="/var/www/nextcloud/occ "
 CONFIGS="$HOME/configs"
 pluginz="${CONFIGS}/zsh/shell-scripts"
 
 alias rm=trash
 
 ##- Imports
+
+
 
 
 source ${pluginz}/utilities.zsh
@@ -141,15 +142,15 @@ alias watcher='npm run watch'
 
 ##- Nextcloud related
 # list all apps
-alias nc-list='sudo -u www-data php $OCC app:list'
+alias nc-list='cd /var/www/nextcloud && sudo -u www-data php occ app:list'
 
 #scan and clean up files
-alias nc-scan='sudo -u www-data php $OCC files:scan --all'
-alias nc-scan='sudo -u www-data php $OCC files:cleanup'
+alias nc-scan='cd /var/www/nextcloud && sudo -u www-data php occ files:scan --all'
+alias nc-scan='cd /var/www/nextcloud && sudo -u www-data php occ files:cleanup'
 
 # turn off and on safe mode
-alias nc-on='sudo -u www-data php $OCC maintenance:mode --on'
-alias nc-off='sudo -u www-data php $OCC maintenance:mode --off'
+alias nc-on='cd /var/www/nextcloud && sudo -u www-data php occ maintenance:mode --on'
+alias nc-off='cd /var/www/nextcloud && sudo -u www-data php occ maintenance:mode --off'
 
 
 
