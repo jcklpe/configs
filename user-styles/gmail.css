@@ -1,0 +1,158 @@
+/*notifcation*/
+div.bsU {
+    display: none;
+}
+
+/*sidebar label icons*/
+div.qj.qr {
+    border-color: rgba(32, 33, 36, .0);
+}
+
+/*keyboard input button*/
+div.J-Jw.J-Jw-ayU {
+    display: none !important;
+}
+
+/*info button*/
+a#lZwQje {
+    display: none;
+}
+
+div.G-asx.T-I-J3.J-J5-Ji {
+    display: none;
+}
+
+/*labels ubbolding*/
+.n1 .n0 {
+    font-weight: normal;
+}
+
+/*messages in inbox spacing*/
+div.nH.bkK.nn {
+
+    display: flex;
+
+    justify-content: center;
+
+    margin-top: 50px;
+}
+/*limit width*/
+div.nH.bkK.nn .nH {
+
+}
+
+div.aeF {
+  max-width: 1080px;
+}
+
+/*gmail logo*/
+img.gb_ma {
+    display: none;
+}
+
+/*top action bar*/
+div.aeH {
+    position: absolute;
+
+    top: 10px;
+
+    z-index: 99999;
+   right: 100px;
+}
+
+/*top action bar underline*/
+.G-atb::before {
+    box-shadow: none;
+}
+
+/*select all box from action bar*/
+G-tf:nth-child(5) {
+    display: none;
+}
+
+/*another button*/
+div.T-I.J-J5-Ji.T-Pm.T-I-ax7.L3.J-JN-M-I {
+    display: none;
+}
+
+
+div.T-I.J-J5-Ji.nu.T-I-ax7.L3 {
+    display: none;
+}
+
+/*pagination controls*/
+
+div.ar5.J-J5-Ji {
+    display: none;
+}
+
+/*add padding to messages*/
+tr.zA.zE {
+    padding: 20px
+}
+/*add more margin to selector box*/
+td.oZ-x3.xY {
+    margin-right: 35px;
+    border-color: rgba( 3, 3, 3, 0)!important;
+
+
+}
+
+tr[style] {
+     border-color: rgba( 3, 3, 3, 0)!important;
+}
+
+/*get rid of star*/
+td.apU.xY {
+    display: none;
+}
+
+/*get rid of important button*/
+td.xY.bnk.aZ5.aHR, td.xY.bnk.aZ5 {
+    display: none;
+}
+
+/*more padding on description*/
+td.xY.a4W {
+    padding-right: 50px
+}
+
+/*add padding to read messages*/
+
+td.zA.zE {
+    padding: 5px 20px;
+}
+
+/*get rid of date*/
+
+td.xW.xY {
+    display: none;
+}
+
+/*add margin to even out boxes*/
+td.oZ-jc.T-Jo.J-J5-Ji {
+    margin-right: 35px;
+}
+
+/*get rid of date indicator*/
+td.byZ.xY .by1.cL {
+    display: none;
+    color: transparent;
+    position: absolute;
+}
+/*add in icon for snoozed*/
+td.byZ.xY:before {
+
+     content:'';
+    background-image: url(https://image.flaticon.com/icons/svg/1198/1198597.svg);
+    background-size: 100% 100%;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+        display: none;
+
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
