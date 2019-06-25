@@ -8,7 +8,7 @@ module.exports = {
 
     // choose either `'stable'` for receiving highly polished,
     // or `'canary'` for less polished but more frequent updates
-    updateChannel: 'canary',
+    updateChannel: 'stable',
 
     hyperBorder: {
       //   borderColors: ['random','random'],
