@@ -28,3 +28,6 @@
 [submodule "firefox/injectedTheme/assets/scss/libs/CustomCSSforFx"]
 	path = firefox/injectedTheme/assets/scss/libs/CustomCSSforFx
 	url = https://github.com/Aris-t2/CustomCSSforFx.git
+[submodule "zsh/zsh-plugins/zsh-you-should-use"]
+	path = zsh/zsh-plugins/zsh-you-should-use
+	url = https://github.com/MichaelAquilina/zsh-you-should-use.git
