@@ -206,6 +206,9 @@ wd() {
   exa
 }
 
+##- you should use
+source ~/configs/zsh/zsh-plugins/zsh-you-should-use/you-should-use.plugin.zsh
+
 
 ##- PER OS SETTINGS
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
