@@ -16,7 +16,7 @@ videopath=$pathAndName:h
 #create new folder for converted icons to be placed in
 mkdir -p ${videopath}/compressed/
 
-ffmpeg -y -r 30 -i ${fname} -vcodec libx265 -crf 18 -acodec mp3 ${videopath}/compressed/${videoname}-compressed.mp4
+ffmpeg -y -i  ${fname} -vcodec libx264 -acodec mp3 -movflags +faststart -crf 18 -r 29.97 -tune grain ${videopath}/compressed/${videoname}-compressed.mp4
 
 
 
