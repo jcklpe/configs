@@ -1,23 +1,18 @@
 {
-
-  /////////////////////////
-  //- Visual Core
-  "workbench.colorTheme": "Hopscotch (TextMate Theme)",
+  "workbench.colorTheme": "Hopscotch",
   "editor.fontSize": 16,
   "editor.lineHeight": 29,
-  "editor.fontFamily": "Input, monospaced",
+  "editor.fontFamily": "liga-input-sans, FuraCode Nerd Font Mono, monospaced",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
-    "file:///C:/Users/David/Home/Documents/Configs/.vscode/injectedTheme/styles.css",
+    "file:///C:/Users/aslan/home/Documents/configs/vscode/injectedTheme/styles.css"
     // "https://cdn.jsdelivr.net/gh/jcklpe/Configs/.vscode/injectedTheme/styles.css"
   ],
   "vscode_custom_css.policy": true,
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
   //-- BACKGROUND
-  "background.customImages": [
-    "https://imgur.com/TLozdBw.jpg"
-  ],
+  "background.customImages": ["https://imgur.com/TLozdBw.jpg"],
   "background.enabled": true,
   "background.style": {
     "content": "''",
@@ -92,27 +87,29 @@
     "statusBar.noFolderBackground": "#522f33",
     "titleBar.activeBackground": "#24222f",
     //- Panel and Terminal
+    // 181c21
     "panel.background": "#181c21",
     "panel.border": "#73f0ae",
-    "panelTitle.activeForeground": "#e9f56f",
-    "panelTitle.inactiveForeground": "#73f0ada4",
-    "terminal.foreground": "#73f0ae",
+    "panelTitle.activeForeground": "#DDFF03",
+    "panelTitle.inactiveForeground": "#73f0ad5d",
+    "terminal.foreground": "#A8FD20",
     "terminal.selectionBackground": "#0e000f66",
     "editorMarkerNavigationWarning.background": "#ff0000",
     "editorSuggestWidget.background": "#29242e",
     "editorSuggestWidget.selectedBackground": "#000098",
     "list.activeSelectionBackground": "#0e000f4b",
-    "list.activeSelectionForeground": "#e9f56f",
+    "list.activeSelectionForeground": "#DDFF03",
     "list.inactiveSelectionBackground": "#07000f34",
     "list.hoverBackground": "#000098",
     "list.focusBackground": "#002998ce",
     "terminal.ansiBrightMagenta": "#ff1677",
-    "terminal.ansiBrightRed": "#e86650"
+    "terminal.ansiBrightRed": "#ff677b"
   },
   "terminal.integrated.fontFamily": "FuraCode Nerd Font Mono",
   //- Token Color customizations
   "editor.tokenColorCustomizations": {
     "textMateRules": [
+      //Json Layers theming
       {
         "name": "JSON Value - Level 0",
         "scope": [
@@ -170,6 +167,8 @@
           "fontStyle": "bold"
         }
       },
+
+      //CSS selectors
       {
         "name": "CSS selectors",
         "scope": [
@@ -182,14 +181,13 @@
       },
       {
         "name": "CSS selectors",
-        "scope": [
-          "source.css.scss entity.other.attribute-name.class.css"
-        ],
+        "scope": ["source.css.scss entity.other.attribute-name.class.css"],
         "settings": {
           "foreground": "#ff677b",
           "fontStyle": "bold"
         }
       },
+      //CSS property values
       {
         "name": "CSS property values",
         "scope": [
@@ -199,6 +197,7 @@
           "foreground": "#ffe867"
         }
       },
+      //SCSS property value levels
       {
         "name": "SCSS property Level1",
         "scope": [
@@ -229,6 +228,7 @@
           "fontStyle": "bold"
         }
       },
+      // Webpack stuff
       {
         "name": "WebPack property ide",
         "scope": [
@@ -246,6 +246,115 @@
         "settings": {
           "foreground": "#ff67d9"
         }
+      },
+      // Javascript punctuation
+      {
+        "name": "JS semicolons",
+        "scope": ["punctuation.terminator.statement.js"],
+        "settings": {
+          "foreground": "#ff6f5c"
+        }
+      },
+      {
+        "name": ". in between functions/variables",
+        "scope": ["punctuation.accessor.js"],
+        "settings": {
+          "foreground": "#ff6f5c"
+        }
+      },
+
+      {
+        "name": "quotation marks",
+        "scope": ["punctuation.definition.string.begin.js"],
+        "settings": {
+          "foreground": "#9fb30e"
+        }
+      },
+      {
+        "name": "quotation marks",
+        "scope": ["punctuation.definition.string.end.js"],
+        "settings": {
+          "foreground": "#9fb30e"
+        }
+      },
+      {
+        "name": "quotation marks",
+        "scope": [" punctuation.definition.string.begin.html"],
+        "settings": {
+          "foreground": "#9fb30e"
+        }
+      },
+      {
+        "name": "quotation marks",
+        "scope": [" punctuation.definition.string.end.html"],
+        "settings": {
+          "foreground": "#9fb30e"
+        }
+      },
+
+      {
+        "name": "commas",
+        "scope": ["punctuation.separator.comma.js"],
+        "settings": {
+          "foreground": "#e2da4b"
+        }
+      },
+
+      {
+        "name": "array brackets",
+        "scope": ["meta.array.literal.js meta.brace.square.js "],
+        "settings": {
+          "foreground": "#e2da4b"
+        }
+      },
+
+      {
+        "name": "equals sign for assigning variables",
+        "scope": ["keyword.operator.assignment.js"],
+        "settings": {
+          "foreground": "#ffa342"
+        }
+      },
+
+      {
+        "name": "equals sign for assigning variables",
+        "scope": ["punctuation.separator.key-value.html"],
+        "settings": {
+          "foreground": "#ffa342"
+        }
+      },
+
+      {
+        "name": "comparison sign",
+        "scope": ["keyword.operator.comparison.js"],
+        "settings": {
+          "foreground": "#ffa342"
+        }
+      },
+
+      // fix missing array functions
+      {
+        "name": "array function",
+        "scope": ["support.variable.property.js"],
+        "settings": {
+          "foreground": "#ff677b"
+        }
+      },
+
+      {
+        "name": "variable being used with a function",
+        "scope": ["support.variable.property.js"],
+        "settings": {
+          "foreground": "#e94e8d"
+        }
+      },
+
+      {
+        "name": "operators",
+        "scope": ["keyword.operator.arithmetic.js"],
+        "settings": {
+          "foreground": "#ffa342"
+        }
       }
     ]
   },
@@ -255,8 +364,8 @@
     "rangeBehavior": 3
   },
   "highlight.regexes": {
-    //TODO styling
-    "(// ?TODO:?)(.*)": [
+    //TODO: styling
+    "(//?TODO:?)(.*)": [
       {
         "overviewRulerColor": "#ffcc00",
         "backgroundColor": "#ffcc00",
@@ -269,8 +378,8 @@
         "color": "#1f1f1f"
       }
     ],
-    //FIXME styling
-    "(// ?FIXME:?)(.*)": [
+    //FIXME: styling
+    "(//?FIXME:?)(.*)": [
       {
         "overviewRulerColor": "#ff0000",
         "backgroundColor": "#ff0000",
@@ -283,18 +392,68 @@
         "color": "#1f1f1f"
       }
     ],
-    // HACK: styling
-    "(// ?HACK:?)(.*)": [
+    //HACK: styling
+    "(//?HACK:?)(.*)": [
       {
         "overviewRulerColor": "#4b553f",
-        "backgroundColor": "#4b553f",
+        "backgroundColor": "rgba(75, 85, 63, 1)",
         "color": "#1f1f1f",
         "fontWeight": "bold",
         "borderRadius": "5px 0px 0px 5px"
       },
       {
-        "backgroundColor": "#4b5539",
+        "backgroundColor": "rgba(75, 85, 63, .5)",
         "color": "#1f1f1f"
+      }
+    ],
+    //NOTE: styling
+    "(/)(/?)(N)(O?)(T)(E)(:?)(.*)": [
+      {
+        "overviewRulerColor": "#45304C",
+        "backgroundColor": "#45304C",
+        "color": "#1f1f1f",
+        "fontWeight": "bold",
+        "borderRadius": "5px 0px 0px 5px"
+      },
+      {
+        "overviewRulerColor": "#4A3862",
+        "backgroundColor": "#4A3862",
+        "color": "#1f1f1f",
+        "fontWeight": "bold"
+      },
+      {
+        "overviewRulerColor": "#3F4889",
+        "backgroundColor": "#3F4889",
+        "color": "#1f1f1f",
+        "fontWeight": "bold"
+      },
+      {
+        "overviewRulerColor": "#3F73A4",
+        "backgroundColor": "#3F73A4",
+        "color": "#1f1f1f",
+        "fontWeight": "bold"
+      },
+      {
+        "overviewRulerColor": "#37C2C3",
+        "backgroundColor": "#37C2C3",
+        "color": "#1f1f1f",
+        "fontWeight": "bold"
+      },
+      {
+        "overviewRulerColor": "#28E27D",
+        "backgroundColor": "#28E27D",
+        "color": "#1f1f1f",
+        "fontWeight": "bold"
+      },
+      {
+        "overviewRulerColor": "rgba(30, 241, 68, 0.9)",
+        "backgroundColor": "rgba(30, 241, 68, 0.9)",
+        "color": "#1f1f1f",
+        "fontWeight": "bold"
+      },
+      {
+        "backgroundColor": "rgba(30, 241, 68, 0.09)",
+        "color": "black"
       }
     ],
     // @import styling
@@ -328,7 +487,7 @@
       {
         "overviewRulerColor": "yellow",
         "backgroundColor": "yellow",
-        "color": "black",
+        "color": "yellow",
         "fontWeight": "bold"
       },
       {
@@ -339,12 +498,13 @@
         "fontSize": "2em"
       }
     ],
-    /// Additional styling for signage
-    "(\\/\\/\\/.*)(.*)": [
+    //////////////////////////////
+    //- Additional styling for signage
+    "(\\/\\/\\/\\/.*)(.*)": [
       {
         "overviewRulerColor": "yellow",
         "backgroundColor": "yellow",
-        "color": "black",
+        "color": "yellow",
         "fontWeight": "bold"
       },
       {
@@ -380,7 +540,7 @@
         "fontSize": "2em"
       }
     ],
-    // * SCSS block commented code */
+    //*- SCSS block commented code */
     "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [
       // */*
       {
@@ -392,10 +552,19 @@
       }
     ],
     //{{ Angular Dynamic Variable styling}}
-    "(\\{\\{[^\\}]*\\}\\})(?!\\})": [
+    "(\\{\\{[^\\}|^\\r|^\\n]*\\}\\})(?!\\})": [
       {
         "backgroundColor": "rgba(109, 158, 70, 0.71)",
         "color": "#000",
+        "fontWeight": "bold",
+        "borderRadius": "10px"
+      }
+    ],
+    //{ React Dynamic Variable styling }
+    "(\\{[^\\}|^\\r|^\\n]*\\})(?!\\})": [
+      {
+        "backgroundColor": "rgba(0, 217, 255, 0.95)",
+        "color": "#001130",
         "fontWeight": "bold",
         "borderRadius": "10px"
       }
@@ -405,173 +574,214 @@
     "(<!--(?!\\/\\/))((.|\n|\r)*?)(\\-\\->)": [
       //-->
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59,64,82, .7)",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
+        "borderColor": "rgba(59,64,82, .7)",
         "color": "#385d74",
         "isWholeLine": "true",
-        "overviewRulerColor": "#3b4052"
+        "overviewRulerColor": "rgba(59,64,82, .7)"
       },
       {
         "borderWidth": "1px",
         "borderStyle": "solid",
-        "borderColor": "#3b4052",
+        "borderColor": "rgba(59,64,82, .7)",
         "borderRadius": "0px",
         "backgroundColor": "33b4052",
         "color": "#385d74",
         "isWholeLine": "true"
       },
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59,64,82, .7)",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
+        "borderColor": "rgba(59,64,82, .7)",
         "color": "#385d74",
         "isWholeLine": "true"
       }
     ],
     //- Opening  HTML Tag
-    "(<[^\\/!%=\\?])([^!%\\?(</)](.|\n|\r)*?)(>)": [
+    //    <tag>
+    // <?php
+    // ?>
+    //      <img/>
+    //      testing
+    //    </tag>
+    "(<(?!\\?php|\\!|/))(\\w+)([\\s\\S]*?)(>(?=/?))": [
       {
-        "borderWidth": "1px 0 0 4px",
+        "borderWidth": "1px 0 0 1px",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "5px",
-        "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#d44040",
+        "borderColor": "rgba(212,64,64, 0.5)",
+        "borderRadius": "16px 0 0 0",
+        "backgroundColor": "rgba(33, 18, 30, 0.7)",
+        "color": "rgba(212,64,64, 0.5)",
+        "fontStyle": "bold",
+        "fontWeight": "bold",
+        "margin": "50px"
+      },
+      {
+        "backgroundColor": "rgba(33, 18, 30, 0.5)",
+        "borderWidth": "1px 0 0 0",
+        "borderStyle": "solid",
+        "borderColor": "rgba(212,64,64, 0.5)",
+        "borderRadius": "0px",
+        "color": "#c03339",
         "fontStyle": "bold",
         "fontWeight": "bold"
       },
       {
-        "backgroundColor": "rgba(26, 18, 26, 0.4)",
-        "borderWidth": "0 0 0 0",
-        "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px"
+        "backgroundColor": "rgba(33, 18, 30, 0.3)"
+        // "borderWidth": "0 0 0 0",
+        // "borderStyle": "solid",
+        // "borderColor": "rgba(255, 103, 123, 0.5)",
+        // "borderRadius": "0px",
+        //"color": "rgba(212,64,64, 0.5)"
       },
       {
-        "backgroundColor": "rgba(15, 21, 31, 0.45)",
-        "color": "rgba(40, 68, 85, 0.7)",
-        "fontStyle": "bold",
-        "fontWeight": "bold"
+        "backgroundColor": "rgba(15, 21, 31, 0.3)",
+        "color": "rgba(40, 68, 85, 0.7)"
       }
     ],
-    //- Self-closing tag
-    "(\\/)(>)": [
+    //- Self-closing HTML Tags
+    // <img/>
+    // <?php
+    // ?>
+    // </ app>
+    //([abc])
+    // </ app>
+    "(<(?!\\/p\\!))(.*|\n*|\r)(\\/>)": [
+      {
+        "borderWidth": "1px 0 1px 1px",
+        "borderStyle": "solid",
+        "borderColor": "rgba(192, 51, 57, .5)",
+        "borderRadius": "16px 0 0 0",
+        "backgroundColor": "rgba(26, 18, 26, 0.4)"
+      },
       {
         "borderWidth": "0 0 0 0",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
+        "borderColor": "rgba(192, 51, 57, .6)",
         "borderRadius": "0px",
         "backgroundColor": "rgba(26, 18, 26, 0.4)"
       },
       {
-        "borderWidth": "0 4px 1px 0",
+        "borderWidth": "1px 1px 1px 0px ",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px",
+        "borderColor": "rgba(192, 51, 57, .5)",
+        "borderRadius": "0 8px 8px 0",
         "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#d44040",
+        "color": "#c03339",
         "fontStyle": "bold",
         "fontWeight": "bold"
       }
     ],
-    // </Closing HTML Tag>
-    "(<\\/)((.|\n|\r)*?)(>)": [
+    //- Closing HTML Tags
+    //  <tag>
+    //<?php
+    // ?>
+    // <?php
+    // ?>
+    // </ app>
+    // </tag>
+    "(<\\/)(\\w+)(>)": [
       {
         "backgroundColor": "rgba(15, 21, 31, 0.45)",
         "color": "rgba(40, 68, 85, 0.7)"
       },
       {
-        "borderWidth": "0 0 0 0",
+        "borderWidth": "0 0 1px 0",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
+        "borderColor": "rgba(192, 51, 57, .5)",
         "borderRadius": "0px",
-        "backgroundColor": "rgba(26, 18, 26, 0.4)",
-        "color": "#d44040",
+        "backgroundColor": "rgba(26, 18, 26, 0.5)",
+        "color": "rgba(192, 51, 57, .5)",
         "fontWeight": "bold"
       },
       {
-        "borderWidth": "0 4px 1px 0",
+        "borderWidth": "0 1px 1px 0",
         "borderStyle": "solid",
-        "borderColor": "rgba(255, 103, 123, 0.5)",
-        "borderRadius": "0px",
-        "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#d44040",
+        "borderColor": "rgba(192, 51, 57, .5)",
+        "borderRadius": "0 0 16px 0",
+        "backgroundColor": "rgba(33, 24, 28, 0.7)",
+        "color": "#c03339",
         "fontStyle": "bold",
         "fontWeight": "bold"
       }
     ],
-    // PHP Tag
+    //- PHP Tag
+    // <?php fdjfkldjsaf
+    // fjdklsafjkld
+
+    // ?>
     "(<\\?php)((.|\n|\r)*?)(\\?>)": [
       {
-        "borderWidth": "1px 0 0 4px",
+        "borderWidth": "2px 0 0 2px",
         "borderStyle": "solid",
-        "borderColor": "#9075ac",
+        "borderColor": "rgba(144, 117, 172, .5)",
         "borderRadius": "0px",
         "backgroundColor": "rgba(33, 24, 28, 0.6)",
-        "color": "#9075ac",
+        "color": "rgba(144, 117, 172, 1)",
         "fontStyle": "bold",
         "fontWeight": "bold"
       },
+
       {
-        "backgroundColor": "rgba(26, 18, 26, 0.4)",
-        "borderWidth": "0px 0 0 0",
-        "borderStyle": "solid",
-        "borderColor": "#9075ac",
-        "borderRadius": "0px"
+        "backgroundColor": "rgba(24, 33, 33, 0.4)"
+        // "borderWidth": "0px 0 0 0",
+        // "borderStyle": "solid",
+        // "borderColor": "rgba(144, 117, 172, .5)",
+        // "borderRadius": "0px",
+        // "color": "rgba(144, 117, 172, .3)"
       },
       {
-        "borderWidth": "0 4px 1px 0",
+        "borderWidth": "0 2px 2px 0",
         "borderStyle": "solid",
-        "borderColor": "#9075ac",
+        "borderColor": "rgba(144, 117, 172, .5)",
         "borderRadius": "0px",
-        "backgroundColor": "rgba(15, 21, 31, 0.45)",
-        "color": "#9075ac"
+        "backgroundColor": "rgba(33, 24, 28, 0.6)",
+        "color": "rgba(144, 117, 172, 1)"
       }
     ],
     // HTML Comment Block
     "(<!--(?!\\/\\/))((.|\n|\\s|\r)*?)(-->)": [
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59,64,82, .7) ",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
+        "borderColor": "rgba(59,64,82, .7)",
         "color": "gold",
         "isWholeLine": "true"
       },
       {
         "borderWidth": "1px",
         "borderStyle": "solid",
-        "borderColor": "#3b4052",
-        "backgroundColor": "#3b4052"
+        "borderColor": "rgba(59,64,82, .7)",
+        "backgroundColor": "rgba(59,64,82, .7)"
       },
       {
-        "backgroundColor": "#3b4052",
+        "backgroundColor": "rgba(59,64,82, .7)",
         "borderStyle": "solid",
         "borderWidth": "1px",
-        "borderColor": "#3b4052",
+        "borderColor": "rgba(59,64,82, .7)",
         "color": "red",
         "isWholeLine": "true"
       }
     ],
-    // HTML  Title
+    // <!--// stuff -->
+    //- HTML  Title
     "(<!--(?:\\/\\/))(.*?)(-->)": [
       {
-        "backgroundColor": "black",
+        "backgroundColor": "yellow",
         "color": "yellow",
         "overviewRulerColor": "yellow"
       },
       {
-        "backgroundColor": "yellow",
-        "color": "black",
-        "overviewRulerColor": "yellow"
+        "backgroundColor": "black",
+        "color": "cyan"
       },
       {
-        "backgroundColor": "yellow",
-        "color": "black",
-        "overviewRulerColor": "yellow"
+        "backgroundColor": "black",
+        "color": "black"
       }
     ],
     // doctype
@@ -584,7 +794,7 @@
       },
       {},
       {}
-    ],
+    ]
   },
   ////////////////////////////////////
   //- Visual organization Defaults
@@ -597,6 +807,11 @@
   "editor.wordWrap": "bounded",
   "editor.wordWrapColumn": 80,
   "editor.wrappingIndent": "deepIndent",
+  "[markdown]": {
+    "editor.wordWrap": "bounded",
+    "editor.wordWrapColumn": 60,
+    "editor.wrappingIndent": "indent"
+  },
   //---Guides and Indents
   "guides.enabled": true,
   "guides.active.extraIndent": false,
@@ -625,89 +840,55 @@
   "guides.indent.hideBackgroundOnSelection": false,
   //--- Block Hilighter
   "blockhighlight.accentCurrentLine": true,
-  "blockhighlight.background": [
-    "5",
-    "25",
-    "35",
-    ".1"
-  ],
+  "blockhighlight.background": ["5", "25", "35", ".1"],
   "blockhighlight.isWholeLine": true,
-  //- Bracket Pair Colorize
+  //- Bracket Pair Colorizer
+  "bracket-pair-colorizer-2.forceIterationColorCycle": true,
   "editor.matchBrackets": false, //this is the built in match brackets
-  "bracketPairColorizer.consecutivePairColors": [
-    "()",
-    "[]",
-    "{}",
-    [
-      "#ad4a79",
-      "#ca687f",
-      "#f2666f"
-    ],
-    "Red"
+  "bracket-pair-colorizer-2.colors": [
+    "#9EE83C",
+    "#F7A13D",
+    "#FC6739",
+    "rgba(255, 66, 82, 1)",
+    "rgba(210, 52, 134, 1)",
+    "rgba(171, 35, 148, 1)",
+    "rgba(210, 52, 134, 1)",
+    "rgba(255, 66, 82, 1)",
+    "#FC6739",
+    "#F7A13D"
   ],
-  "bracketPairColorizer.highlightActiveScope": true,
-  "bracketPairColorizer.scopeLineCSS": [
+  "bracket-pair-colorizer-2.activeScopeCSS": [
+    "borderWidth : 2px",
+    "borderColor : {color};",
+    "backgroundColor : gold;",
+    "fontWeight: bold;",
+    "borderRadius: 4px;"
+  ],
+  "bracket-pair-colorizer-2.scopeLineCSS": [
     "borderStyle : solid",
     "borderWidth : 3px",
     "borderColor : {color}; opacity: 1;",
     "backgroundColor : {color}; opacity: 0.5;",
     "borderSpacing : 15px"
   ],
-  "bracketPairColorizer.activeScopeCSS": [
-    "borderWidth : 2px",
-    "borderColor : {color}; opacity: 1;",
-    "backgroundColor : gold; opacity: 1;",
-    "fontWeight: bold;",
-    "borderRadius: 4px;"
-  ],
-  "bracketPairColorizer.showBracketsInRuler": true,
-  "bracketPairColorizer.rulerPosition": "Full",
-  "bracketPairColorizer.timeOut": 100,
+  "bracket-pair-colorizer-2.showBracketsInGutter": true,
+  "bracket-pair-colorizer-2.highlightActiveScope": true,
+  "bracket-pair-colorizer-2.showBracketsInRuler": true,
+  "bracket-pair-colorizer-2.rulerPosition": "Full",
   //////////////////////////////
   //- Behavior
   "window.restoreWindows": "all",
   "files.trimTrailingWhitespace": true,
   "files.trimFinalNewlines": true,
   "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\bash.exe",
-  "liveServer.settings.donotShowInfoMsg": true,
-  "liveServer.settings.fullReload": true,
   "editor.dragAndDrop": false,
-  "editor.tabCompletion": true,
-  "autofold.default": 1,
-  "php.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev\\php\\php.exe",
+  "editor.tabCompletion": "on",
   "php.validate.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev\\php\\php.exe",
-  // this makes beautify and prettify place nice
-  "beautify.language": {
-    "html": [
-      "html",
-      "php",
-      "erb"
-    ],
-    "css": [
-      "scss",
-      "css"
-    ],
-    "js": []
-  },
   "javascript.implicitProjectConfig.experimentalDecorators": true,
-  "liveServer.settings.donotVerifyTags": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "team.showWelcomeMessage": false,
-  "cSpell.userWords": [
-    "anim",
-    "callout",
-    "dolla",
-    "fura",
-    "jetpack",
-    "keyframes",
-    "segoe",
-    "touch",
-    "webkit"
-  ],
   "javascript.format.placeOpenBraceOnNewLineForFunctions": true,
   "javascript.format.placeOpenBraceOnNewLineForControlBlocks": true,
   "window.zoomLevel": 1,
-  "vsicons.dontShowNewVersionMessage": true,
   "explorer.confirmDragAndDrop": false,
   "favorites.sortDirection": "ASC",
   "favorites.groupsFirst": true,
@@ -719,73 +900,130 @@
   //- Sync Settings
   "explorer.confirmDelete": false,
   "sync.gist": "1bed6c262105cbde0f3f857a7fae6163",
-  "sync.host": "",
-  "sync.pathPrefix": "",
   "sync.quietSync": true,
   "sync.askGistName": false,
   "sync.removeExtensions": true,
   "sync.syncExtensions": true,
-  "sync.autoDownload": true,
   "sync.autoUpload": true,
-  "sync.lastUpload": "2018-07-17T20:04:13.172Z",
-  "sync.lastDownload": "",
   "sync.forceDownload": false,
-  "liveServer.settings.donotVerifyTags": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "team.showWelcomeMessage": false,
-  "cSpell.userWords": [
-    "anim",
-    "callout",
-    "dolla",
-    "fura",
-    "jetpack",
-    "keyframes",
-    "segoe",
-    "touch",
-    "webkit"
-  ],
-  "javascript.format.placeOpenBraceOnNewLineForFunctions": true,
-  "javascript.format.placeOpenBraceOnNewLineForControlBlocks": true,
-  "window.zoomLevel": 1,
-  "vsicons.dontShowNewVersionMessage": true,
+  ////////////////////////////
+  //- Highlight Matching Tags
+  "highlight-matching-tag.highlightSelfClosing": true,
+  "highlight-matching-tag.highlightFromContent": true,
   "highlight-matching-tag.styles": {
     "opening": {
       "full": {
         "custom": {
-          "borderWidth": "0px",
-          "borderStyle": "dotted",
-          "borderColor": "red",
-          "borderRadius": "0px",
-          "backgroundColor": "#181c21",
-          "fontWeight": "bold"
+          "backgroundColor": "rgba(180, 20, 80, 0.3)",
+          // "borderWidth": "2px 0 0 0",
+          // "borderColor": "rgba(180, 20, 80, 0.6)",
+          // "borderStyle": "solid",
+          "borderRadius": "16px 0 0 0"
         }
       },
+
       "left": {
         "custom": {
-          "borderWidth": "2px 0 2px 2px",
+          "backgroundColor": "rgba(180, 20, 80, 0.3)",
+          "borderWidth": "2px 0 0 0",
+          "borderColor": "rgba(180, 20, 80, 0.6)",
           "borderStyle": "solid",
-          "borderColor": "#73f0ae",
-          "borderRadius": "0px",
-          "fontWeight": "bold"
+          "borderRadius": "16px 0 0 0",
+          "color": "blue"
+        }
+      },
+      "name": {
+        "custom": {
+          "backgroundColor": "rgba(180, 20, 80, 0.3)",
+          "color": "rgba(180, 20, 80, 0.6)",
+          "borderWidth": "2px 0 0 0",
+          "borderColor": "rgba(180, 20, 80, 0.6)",
+          "borderStyle": "solid"
         }
       },
       "right": {
         "custom": {
-          "borderWidth": "1px 1px 1px 0",
-          "borderStyle": "dotted",
-          "borderColor": "#73f0ae",
-          "borderRadius": "0px",
-          "fontWeight": "bold"
+          "backgroundColor": "rgba(180, 20, 80, 0.3)"
+          // "borderColor": "white",
+          // "borderStyle": "solid",
+          // "borderRadius": "16px 0 0 0",
+        }
+      }
+    },
+    "closing": {
+      "full": {
+        "custom": {
+          "backgroundColor": "rgba(180, 20, 80, 0.3)",
+          // "borderWidth": "2px 0 0 0",
+          // "borderColor": "rgba(180, 20, 80, 0.6)",
+          // "borderStyle": "solid",
+          //"borderRadius": "16px 0 0 0",
+          "borderRadius": "0 0 16px 0"
+        }
+      },
+      "left": {
+        "custom": {
+          //"backgroundColor": "rgba(180, 20, 80, 0.3)",
+          // "borderWidth": "2px 0 0 0",
+          // "borderColor": "rgba(180, 20, 80, 0.6)",
+          // "borderStyle": "solid",
+          // "borderRadius": "16px 0 0 0",
+        }
+      },
+      "name": {
+        "custom": {
+          "backgroundColor": "rgba(180, 20, 80, 0.3)",
+          "borderWidth": "0 0 2px 0",
+          "borderColor": "rgba(180, 20, 80, 0.6)",
+          "borderStyle": "solid"
+        }
+      },
+      "right": {
+        "custom": {
+          "backgroundColor": "rgba(180, 20, 80, 0.3)",
+          // "borderColor": "white",
+          // "borderStyle": "solid",
+          "borderRadius": "0 0 16px 0"
         }
       }
     }
   },
-  "vsicons.projectDetection.autoReload": true,
+
+  //- File Explorer Settings
   "files.exclude": {
     "*.ico": true,
     "node_modules/": true
   },
-  "editor.snippetSuggestions": "top",
+  "search.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/tmp": true,
+    "**/build": true
+  },
+  // Icon theme
+  "workbench.iconTheme": "simple-icons",
+  "simpleIcons.simple.folder.color": "#6a88c4",
+
+  //- LINTING SETTINGS
+
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.associations": {
+    ".jsbeautifyrc": "jsonc",
+    "*.json": "jsonc"
+  },
+  "html.format.wrapAttributes": "force-expand-multiline",
+  "html.format.extraLiners": "head, body, /html, h1, h2, h3, h4, h5, -->",
+
+  //- MISC SETTINGS
   "workbench.settings.editor": "json",
-  "workbench.iconTheme": "simple-icons"
+  "editor.snippetSuggestions": "top",
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+
+  // code runner settings
+  "code-runner.terminalRoot": "/mnt/",
+  "code-runner.runInTerminal": true
 }
