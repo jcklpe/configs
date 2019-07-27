@@ -13,26 +13,14 @@ iconname=${pathAndName##*/}
 iconpath=$pathAndName:h
 
 #create new folder for converted icons to be placed in
+# -p makes mkdir idempotent. Remember this word!
 mkdir -p ${iconpath}/ico-converted/
 
-# The below should take png and convert it to png which basically means resizes it but I'm not sure and I don't want to spend any more time twiddling with this crap. If that doesn't work then just resize or whatever.
 
-svgexport ${fname} ${iconpath}/ico-converted/${iconname}-256tmp.png 256:
-svgexport ${fname} ${iconpath}/ico-converted/${iconname}-128tmp.png 128:
-svgexport ${fname} ${iconpath}/ico-converted/${iconname}-64tmp.png 64:
-svgexport ${fname} ${iconpath}/ico-converted/${iconname}-32tmp.png 32:
-svgexport ${fname} ${iconpath}/ico-converted/${iconname}-24tmp.png 24:
-svgexport ${fname} ${iconpath}/ico-converted/${iconname}-16tmp.png 16:
 
- convert \
- ${iconpath}/ico-converted/${iconname}-256tmp.png \
- ${iconpath}/ico-converted/${iconname}-128tmp.png \
- ${iconpath}/ico-converted/${iconname}-64tmp.png \
- ${iconpath}/ico-converted/${iconname}-32tmp.png \
- ${iconpath}/ico-converted/${iconname}-24tmp.png \
- ${iconpath}/ico-converted/${iconname}-16tmp.png \
- -background none ${iconpath}/ico-converted/${iconname}.ico
-rm -rf ${iconpath}/ico-converted/*tmp.png
+     convert -background transparent $fname  -define icon:auto-resize=16,32,48,64,256 ${iconpath}/ico-converted/${iconname}.ico
+
+
 
 
 echo "\033[1;33m converted ${iconname}.png to ico\n \033[0m"
