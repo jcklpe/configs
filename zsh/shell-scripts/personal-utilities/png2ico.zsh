@@ -2,29 +2,27 @@
 function png2ico ()  {
 for fname in $1/**/*.png
 do
-#take off the svg
-pathAndName=${fname%.svg}
+# this is basically the same version as batch but I don't have time to convert this over
 
-# this should hypothetically resize pngs to pngs but if this thing screws up then you'll have to actually write stuff to resize but I'm too lazy right now to deal with that.
-svgexport ${fname} ${pathAndName}-256tmp.png 256:
-svgexport ${fname} ${pathAndName}-128tmp.png 128:
-svgexport ${fname} ${pathAndName}-64tmp.png 64:
-svgexport ${fname} ${pathAndName}-32tmp.png 32:
-svgexport ${fname} ${pathAndName}-24tmp.png 24:
-svgexport ${fname} ${pathAndName}-16tmp.png 16:
+#take off the png
+pathAndName=${fname%.png}
 
-#convert all pngs into a ico container
-convert \
- ${pathAndName}-256tmp.png \
- ${pathAndName}-128tmp.png \
- ${pathAndName}-64tmp.png \
- ${pathAndName}-32tmp.png \
- ${pathAndName}-24tmp.png \
- ${pathAndName}-16tmp.png \
- -background none ${pathAndName}.ico
+#take off the path from the file name
+iconname=${pathAndName##*/}
 
- #delete residual leftover pngs
-rm -rf ${pathAndName}*tmp.png
+#take off the file name from the path
+iconpath=$pathAndName:h
+
+#create new folder for converted icons to be placed in
+# -p makes mkdir idempotent. Remember this word!
+mkdir -p ${iconpath}/ico-converted/
+
+
+
+     convert -background transparent $fname  -define icon:auto-resize=16,32,48,64,256 ${iconpath}/ico-converted/${iconname}.ico
+
+
+
 
 echo "\033[1;33m converted ${iconname}.png to ico\n \033[0m"
 done
