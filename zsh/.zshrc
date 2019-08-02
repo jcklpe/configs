@@ -25,6 +25,10 @@ source ${pluginz}/utilities.zsh
 # Run nano with softwrapping always
 alias nano='nano -\$cwS'
 
+# fix python2 to run python3
+
+alias python=python3
+
 #- Necessary to enable 256 colors in terminal
  export TERM="xterm-256color"
 
@@ -133,6 +137,15 @@ alias list-users='cut -d: -f1 /etc/passwd'
 
 # human readable path check
 alias list-path='tr ':' '\n' <<< "$PATH"';
+
+# list deps for a program
+list-deps () {
+echo "enter Package"
+read Package
+
+apt-cache depends --no-pre-depends --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances $Package | grep -E "(qt|gtk|kde)"
+
+}
 
 
 ##- Node related
