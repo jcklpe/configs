@@ -15,19 +15,14 @@ pluginz="${CONFIGS}/zsh/shell-scripts"
 alias rm=trash
 
 ##- Imports
-
-
-
-
 source ${pluginz}/utilities.zsh
-
 
 # Run nano with softwrapping always
 alias nano='nano -\$cwS'
 
 # fix python2 to run python3
 
-alias python=python3
+#alias python=python3
 
 #- Necessary to enable 256 colors in terminal
  export TERM="xterm-256color"
@@ -112,14 +107,14 @@ alias cd..='cd ..'
  alias cd7='cd ../../../../../../..'
 
 
-
+## apt related
 # install with sudo apt all the time
     alias apt="sudo apt"
     alias apt-get="apt"
     alias apt-y="apt --yes"
 
 # update on one command
- alias clean-update='apt update -y && apt upgrade -y && apt autoremove -y && apt autoclean -y'
+ alias apt-refresh='apt update -y && apt upgrade -y && apt autoremove -y && apt autoclean -y'
 
 ##- zsh related
  alias configz="nano ~/.zshrc"
