@@ -1,21 +1,21 @@
 /* ==UserStyle==
-@name         Pinterest
-@namespace    github.com/openstyles/stylus
+@name         pinterest.com -> jcklpe
+@namespace    https://github.com/jcklpe/Configs/tree/master/user-styles
 @version      1.0.0
 @license      GPL V3
 @preprocessor default
 @var color link-color "Link Color" red
 ==/UserStyle== */
 
-@namespace url(http://www.w3.org/1999/xhtml);
-/* keep it simple */
-.Pin.summary.pinWithSocialCounts .pinMetaWrapper,
-.Pin .pinCredits {
+@-moz-document domain("pinterest.com") {
+  /* keep it simple */
+  .Pin.summary.pinWithSocialCounts .pinMetaWrapper,
+  .Pin .pinCredits {
     display: none;
-}
+  }
 
-/* pin notification */
-div.Miw.Hsu,
+  /* pin notification */
+  div.Miw.Hsu,
 /*analytics and ads dropdowns*/
 div.Jea.gjz.hA-.hs0.mQ8.wYR.zI7.iyn.Hsu,
 /*notifications button*/
@@ -31,16 +31,17 @@ div.tBJ.dyH.iFc.SMy.MF7.pBj.DrD.IZT.mWe,
 /*div.zI7.iyn.Hsu*/
 div.z17.iyn.Hsu {
     display: none !important;
-}
-/*testworked?*/
+  }
 
-/*again*/
-* {
-    border-radius: 0px!important;
-}
+  * {
+    border-radius: 0px !important;
+  }
 
-.bulkEditPinWrapper + div,
-.pinImageActionButtonWrapper {
-    padding-bottom: 0px!important;
-    margin-bottom: 0px!important;
+  .bulkEditPinWrapper + div,
+  .pinImageActionButtonWrapper {
+    padding-bottom: 0px !important;
+    margin-bottom: 0px !important;
+  }
+
+  /*  forked from MINIM: https://userstyles.org/styles/93215/pinterest-m-i-n-i-m */
 }
