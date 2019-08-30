@@ -1,0 +1,633 @@
+<TableTransfer>
+  <configBytes>AAFUb3VyQm94IERlZmF1bHQAAAAAAAAAIAQAAAABACAIAAAAAgAgAgAAAAMAIAAsAAAEAAIALwAw
+BQAGAAAAAAYAAgIvAjAHAAYAAQAACAACAAAAAAkABgACAAAKAAAIJwAACwAABC8EMAwAAAodDB0N
+AAAAAAAADgAAAi4CLQ8ABAAAAAAQAAAACAAAEQAAABYAABIAAAANAAATAAAABQAAFAAAABAAABUA
+AAAPAAAWAAAAGgAAFwAAAAYAABgAAAAbAAAZAAAAAAAAGgAAACgAABsAAAgHAAAcAAAIHQAAHQAA
+AAAAAB4AAAgWAAAfAAAAAAAAIAAAAAAAACEAAAApAAAiAAAIHQAAIwAACh0AACQAAAAAAAAlAAAA
+AAAAJgAAAAAAACcAAAAAAAAoAAAAAAAAKQAAAAAAACoAAAAAAAArAAACPwAALAAAAj4AAC0AAAoM
+AAAuAAAIFwAALwAAAAAAADAAAAAAAAAxAAAAAAAAMgAAAAAAADMAAAAAAAA0AAAAAAAANQAAAAAA
+ADYAAAAAAAA3AAAAAAAAOAAAAAAAADkAAAAAAAA6AAAAAAAAOwAAAAAAADwAAAAAAAA9AAAAAAAA
+PgAAAAAAAD8AAAAAAABAAAAAAAAAQQAAAAAAAEIAAAAAAABDAAAAAAAARAAAAAAAAEUAAAAAAAAA
+AVRvb2xiYXIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAA=</configBytes>
+  <shortCuts>
+    <ShortDesc>
+      <s>3097</s>
+      <d>Vanishing Point</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2587</s>
+      <d>Liquify</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2581</s>
+      <d>Lens Correction</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2564</s>
+      <d>Camera Raw Filter</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3588</s>
+      <d>Wide Angle Correction</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2065</s>
+      <d>New...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2066</s>
+      <d>Open...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2070</s>
+      <d>Save</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2074</s>
+      <d>Close</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2582</s>
+      <d>Save As... </d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3094</s>
+      <d>Save As...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>69</s>
+      <d>Revert</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2068</s>
+      <d>Quit Photoshop CC</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3098</s>
+      <d>Close All</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2077</s>
+      <d>Undo</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2075</s>
+      <d>Cut</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>59</s>
+      <d>Cut</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2054</s>
+      <d>Copy</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>60</s>
+      <d>Copy</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2073</s>
+      <d>Paste</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>61</s>
+      <d>Paste</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2589</s>
+      <d>Redo</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3101</s>
+      <d>Toggle Last State</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>58</s>
+      <d>Toggle Last State</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3603</s>
+      <d>Print One Copy</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2069</s>
+      <d>Rulers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2094</s>
+      <d>Zoom In</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2093</s>
+      <d>Zoom Out</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2055</s>
+      <d>Deselect</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2052</s>
+      <d>All</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2572</s>
+      <d>Inverse</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>576</s>
+      <d>Inverse</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2057</s>
+      <d>Last Filter</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>62</s>
+      <d>Brush Settings</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3084</s>
+      <d>Image Size...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3078</s>
+      <d>Canvas Size...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>575</s>
+      <d>Feather...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3609</s>
+      <d>Paste Into</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>574</s>
+      <d>Fill...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>63</s>
+      <d>Color</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>65</s>
+      <d>Info</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>64</s>
+      <d>Layers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2577</s>
+      <d>Layer...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2076</s>
+      <d>Proof Colors</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2588</s>
+      <d>Gamut Warning</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2566</s>
+      <d>Copy Merged</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2102</s>
+      <d>Hide Layers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3093</s>
+      <d>Select and Mask...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3596</s>
+      <d>File Info...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2568</s>
+      <d>Merge Visible</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2569</s>
+      <d>Fade...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2056</s>
+      <d>Merge Layers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>1090</s>
+      <d>Actions</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2078</s>
+      <d>100%</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3111</s>
+      <d>100%</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2087</s>
+      <d>Fit on Screen</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2585</s>
+      <d>Paste in Place</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3090</s>
+      <d>Browse in Bridge...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2578</s>
+      <d>Browse in Bridge...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2586</s>
+      <d>Close and Go to Bridge...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3606</s>
+      <d>Save for Web (Legacy)...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2060</s>
+      <d>Invert</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2063</s>
+      <d>Levels...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2064</s>
+      <d>Curves...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2053</s>
+      <d>Color Balance...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2072</s>
+      <d>Hue/Saturation...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2575</s>
+      <d>Auto Tone</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2584</s>
+      <d>Desaturate</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3599</s>
+      <d>Auto Contrast</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2565</s>
+      <d>Auto Color</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3589</s>
+      <d>Black &amp; White...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2567</s>
+      <d>Reselect</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2067</s>
+      <d>Print...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2071</s>
+      <d>Free Transform</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2583</s>
+      <d>Again</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3590</s>
+      <d>Content-Aware Scale</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2062</s>
+      <d>General...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2574</s>
+      <d>Color Settings...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2608</s>
+      <d>Bring to Front</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2096</s>
+      <d>Bring Forward</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2095</s>
+      <d>Send Backward</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2607</s>
+      <d>Send to Back</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2576</s>
+      <d>Record Measurements</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3123</s>
+      <d>Lock Guides</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2104</s>
+      <d>Lock Layers...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2058</s>
+      <d>Group Layers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2570</s>
+      <d>Ungroup Layers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3076</s>
+      <d>All Layers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2061</s>
+      <d>Layer Via Copy</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2573</s>
+      <d>Layer Via Cut</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3082</s>
+      <d>Create Clipping Mask</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3593</s>
+      <d>Find Layers</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3610</s>
+      <d>Export As...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2612</s>
+      <d>Quick Export as PNG</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3636</s>
+      <d>Export As...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2059</s>
+      <d>Extras</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2571</s>
+      <d>Target Path</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2099</s>
+      <d>Guides</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2100</s>
+      <d>Grid</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2611</s>
+      <d>Snap</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2616</s>
+      <d>Photoshop Help...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2064</s>
+      <d>Minimize</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2057</s>
+      <d>Search</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3598</s>
+      <d>Keyboard Shortcuts...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3600</s>
+      <d>Menus...</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3099</s>
+      <d>Within Selection</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3611</s>
+      <d>Reveal All</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3605</s>
+      <d>Render 3D Layer</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2059</s>
+      <d>Hide Photoshop CC</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3083</s>
+      <d>Hide Others</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>25</s>
+      <d>Move/Artboard Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>16</s>
+      <d>Marquee Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>15</s>
+      <d>Lasso Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>26</s>
+      <d>Quick Selection/Magic Wand Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>6</s>
+      <d>Crop Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>14</s>
+      <d>Frame Tool </d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>12</s>
+      <d>Eyedropper/Analysis Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>13</s>
+      <d>Healing Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>5</s>
+      <d>Brush Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>22</s>
+      <d>Stamp Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>28</s>
+      <d>History Brush Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>8</s>
+      <d>Eraser Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>10</s>
+      <d>Gradient/Paint Bucket Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>18</s>
+      <d>Dodge/Burn Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>19</s>
+      <d>Pen Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>23</s>
+      <d>Type Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>4</s>
+      <d>Path/Direct Selection Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>24</s>
+      <d>Shape Tools</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>11</s>
+      <d>Hand Tool</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>21</s>
+      <d>Rotate View Tool</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>29</s>
+      <d>Zoom Tool</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>7</s>
+      <d>Default Foreground/Background Colors</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>27</s>
+      <d>Switch Foreground/Background Colors</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>20</s>
+      <d>Toggle Standard/Quick Mask Modes</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>9</s>
+      <d>Toggle Screen Modes</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>56</s>
+      <d>Toggle Preserve Transparency</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>47</s>
+      <d>Decrease Brush Size</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>48</s>
+      <d>Increase Brush Size</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>559</s>
+      <d>Decrease Brush Hardness</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>560</s>
+      <d>Increase Brush Hardness</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>54</s>
+      <d>Previous Brush</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>55</s>
+      <d>Next Brush</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>566</s>
+      <d>First Brush</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>567</s>
+      <d>Last Brush</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>1071</s>
+      <d>Next Layer</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>1072</s>
+      <d>Previous Layer</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>558</s>
+      <d>Next Blend Mode</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>557</s>
+      <d>Previous Blend Mode</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>3592</s>
+      <d>Merge All Layers To A New One</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>40</s>
+      <d>Enter</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>1066</s>
+      <d>Fill With The Foreground Color</d>
+    </ShortDesc>
+    <ShortDesc>
+      <s>2090</s>
+      <d>Fill With The Background Color</d>
+    </ShortDesc>
+  </shortCuts>
+</TableTransfer>
