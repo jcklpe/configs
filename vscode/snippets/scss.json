@@ -1,16 +1,13 @@
 {
-	"comment_block_SCSS": {
-		"prefix": "h#",
-		"body": "//////////////////////////////////////\n//- ${1:Title}\n////////////////////////////////////  \n${0}",
-		"description": "Comment - Block comment",
-		"scope": ""
-	},
+  "comment_block H1": {
+    "prefix": "h#",
+    "body": "//////////////////////////////////////\n//- ${1:Title}\n////////////////////////////////////  \n${0}",
+    "description": "Comment - Block comment"
+  },
 
-	"comment_title_SCSS": {
-		"prefix": "h##",
-		"body": "////////////////////////////\n//- ${1:Title} \n${0}",
-		"description": "Comment - Block comment",
-		"scope": ""
-	}
-	
+  "comment_title H2": {
+    "prefix": "h##",
+    "body": "////////////////////////////\n//- ${1:Title} \n${0}",
+    "description": "Comment - Block comment"
+  }
 }

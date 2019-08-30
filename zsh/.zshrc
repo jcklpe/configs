@@ -213,7 +213,7 @@ source ~/configs/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
 ##- warp door
 wd() {
   . $HOME/bin/wd/wd.sh;
-  exa
+
 }
 
 ##- you should use
