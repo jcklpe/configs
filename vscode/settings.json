@@ -1,8 +1,9 @@
 {
-  "workbench.colorTheme": "Hopscotch",
+  //Settings
   "editor.fontSize": 16,
   "editor.lineHeight": 29,
-  "editor.fontFamily": "liga-input-sans, FuraCode Nerd Font Mono, monospaced",
+  "editor.fontFamily": "BlexMono NF, FuraCode Nerd Font,liga-input-sans,monospace",
+  "terminal.integrated.fontFamily": "ProFontWindows Nerd Font Mono",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
     "file:///C:/Users/aslan/home/Documents/configs/vscode/injectedTheme/styles.css"
@@ -12,7 +13,9 @@
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
   //-- BACKGROUND
-  "background.customImages": ["https://imgur.com/TLozdBw.jpg"],
+  "background.customImages": [
+    "https://imgur.com/TLozdBw.jpg"
+  ],
   "background.enabled": true,
   "background.style": {
     "content": "''",
@@ -47,7 +50,7 @@
     "sideBar.background": "#29242e",
     "sideBar.foreground": "#d37c82",
     "sideBar.border": "#101731",
-    "sideBar.dropBackground": "#000098",
+    //"sideBar.dropBackground": "",
     "sideBarTitle.foreground": "#ffd900",
     "sideBarSectionHeader.background": "#101731d3",
     "sideBarSectionHeader.foreground": "#72edebce",
@@ -105,7 +108,6 @@
     "terminal.ansiBrightMagenta": "#ff1677",
     "terminal.ansiBrightRed": "#ff677b"
   },
-  "terminal.integrated.fontFamily": "FuraCode Nerd Font Mono",
   //- Token Color customizations
   "editor.tokenColorCustomizations": {
     "textMateRules": [
@@ -167,7 +169,6 @@
           "fontStyle": "bold"
         }
       },
-
       //CSS selectors
       {
         "name": "CSS selectors",
@@ -181,7 +182,9 @@
       },
       {
         "name": "CSS selectors",
-        "scope": ["source.css.scss entity.other.attribute-name.class.css"],
+        "scope": [
+          "source.css.scss entity.other.attribute-name.class.css"
+        ],
         "settings": {
           "foreground": "#ff677b",
           "fontStyle": "bold"
@@ -250,108 +253,127 @@
       // Javascript punctuation
       {
         "name": "JS semicolons",
-        "scope": ["punctuation.terminator.statement.js"],
+        "scope": [
+          "punctuation.terminator.statement.js"
+        ],
         "settings": {
           "foreground": "#ff6f5c"
         }
       },
       {
         "name": ". in between functions/variables",
-        "scope": ["punctuation.accessor.js"],
+        "scope": [
+          "punctuation.accessor.js"
+        ],
         "settings": {
           "foreground": "#ff6f5c"
         }
       },
-
       {
         "name": "quotation marks",
-        "scope": ["punctuation.definition.string.begin.js"],
+        "scope": [
+          "punctuation.definition.string.begin.js"
+        ],
         "settings": {
           "foreground": "#9fb30e"
         }
       },
       {
         "name": "quotation marks",
-        "scope": ["punctuation.definition.string.end.js"],
+        "scope": [
+          "punctuation.definition.string.end.js"
+        ],
         "settings": {
           "foreground": "#9fb30e"
         }
       },
       {
         "name": "quotation marks",
-        "scope": [" punctuation.definition.string.begin.html"],
+        "scope": [
+          " punctuation.definition.string.begin.html"
+        ],
         "settings": {
           "foreground": "#9fb30e"
         }
       },
       {
         "name": "quotation marks",
-        "scope": [" punctuation.definition.string.end.html"],
+        "scope": [
+          " punctuation.definition.string.end.html"
+        ],
         "settings": {
           "foreground": "#9fb30e"
         }
       },
-
       {
         "name": "commas",
-        "scope": ["punctuation.separator.comma.js"],
+        "scope": [
+          "punctuation.separator.comma.js"
+        ],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
-
       {
         "name": "array brackets",
-        "scope": ["meta.array.literal.js meta.brace.square.js "],
+        "scope": [
+          "meta.array.literal.js meta.brace.square.js "
+        ],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
-
       {
         "name": "equals sign for assigning variables",
-        "scope": ["keyword.operator.assignment.js"],
+        "scope": [
+          "keyword.operator.assignment.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
       },
-
       {
         "name": "equals sign for assigning variables",
-        "scope": ["punctuation.separator.key-value.html"],
+        "scope": [
+          "punctuation.separator.key-value.html"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
       },
-
       {
         "name": "comparison sign",
-        "scope": ["keyword.operator.comparison.js"],
+        "scope": [
+          "keyword.operator.comparison.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
       },
-
       // fix missing array functions
       {
         "name": "array function",
-        "scope": ["support.variable.property.js"],
+        "scope": [
+          "support.variable.property.js"
+        ],
         "settings": {
           "foreground": "#ff677b"
         }
       },
-
       {
         "name": "variable being used with a function",
-        "scope": ["support.variable.property.js"],
+        "scope": [
+          "support.variable.property.js"
+        ],
         "settings": {
           "foreground": "#e94e8d"
         }
       },
-
       {
         "name": "operators",
-        "scope": ["keyword.operator.arithmetic.js"],
+        "scope": [
+          "keyword.operator.arithmetic.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -563,7 +585,7 @@
     //{ React Dynamic Variable styling }
     "(\\{[^\\}|^\\r|^\\n]*\\})(?!\\})": [
       {
-        "backgroundColor": "rgba(0, 217, 255, 0.95)",
+        "backgroundColor": "rgba(109, 158, 70, 0.71)",
         "color": "#001130",
         "fontWeight": "bold",
         "borderRadius": "10px"
@@ -711,7 +733,6 @@
     //- PHP Tag
     // <?php fdjfkldjsaf
     // fjdklsafjkld
-
     // ?>
     "(<\\?php)((.|\n|\r)*?)(\\?>)": [
       {
@@ -724,7 +745,6 @@
         "fontStyle": "bold",
         "fontWeight": "bold"
       },
-
       {
         "backgroundColor": "rgba(24, 33, 33, 0.4)"
         // "borderWidth": "0px 0 0 0",
@@ -825,10 +845,10 @@
   "guides.stack.style": "solid",
   "guides.active.style": "solid",
   "guides.normal.style": "dotted",
-  "guides.active.width": 8,
+  "guides.active.width": 0,
   "guides.stack.width": 2,
   "guides.normal.width": 2,
-  "guides.active.color.dark": "Gold",
+  "guides.active.color.dark": "#73f0ae",
   "guides.normal.color.dark": "rgba(53, 82, 156, 0.75)",
   "guides.stack.color.dark": "#060d22",
   "guides.indent.backgrounds": [
@@ -838,24 +858,81 @@
     "rgba(69, 39, 47, .75)"
   ],
   "guides.indent.hideBackgroundOnSelection": false,
+  //- Indenticator
+  /******************************************************/
+  /********** Standard Indent Highlight Config **********/
+  /******************************************************/
+  /* Whether to highlight the indent of the block enclosing the current line */
+  "indenticator.showHighlight": true,
+  /* Color of the indent marker for dark themes */
+  "indenticator.color.dark": "#000098",
+  /* Color of the indent marker for light themes */
+  "indenticator.color.light": "red",
+  /* Width of the indent marker in pixels */
+  "indenticator.width": 2,
+  /* Line style of the indent marker (e.g. "inset", "dashed", "dotted", ...) */
+  "indenticator.style": "solid",
+  /* Whether to display the hover near the indent line */
+  "indenticator.showHover": false,
+  /* Lines before the current indent to be shown on hover */
+  "indenticator.hover.peekBack": 1,
+  /* Lines after the current indent to be shown on hover */
+  "indenticator.hover.peekForward": 0,
+  /* Remove lines from the hover at the beginning and end that have less characters than this */
+  "indenticator.hover.trimLinesShorterThan": 2,
+  /* Block placeholder to be written between peeked lines */
+  "indenticator.hover.peekBlockPlaceholder": "...",
+  /***************************************************/
+  /********** Inner Indent Highlight Config **********/
+  /***************************************************/
+  /* Whether to highlight the indent of the block enclosed by the current line */
+  "indenticator.inner.showHighlight": true,
+  /* Color of the indent marker for dark themes */
+  "indenticator.inner.color.dark": "#1b91ff",
+  /* Color of the indent marker for light themes */
+  "indenticator.inner.color.light": "blue",
+  /* Width of the indent marker in pixels */
+  "indenticator.inner.width": 3,
+  /* Line style of the indent marker (e.g. "inset", "dashed", "dotted", ...) */
+  "indenticator.inner.style": "solid",
+  /* Whether to display the hover near the inner indent line */
+  "indenticator.inner.showHover": false,
+  /* Lines before the current inner indent to be shown on hover */
+  "indenticator.inner.hover.peekBack": 1,
+  /* Lines after the current inner indent to be shown on hover */
+  "indenticator.inner.hover.peekForward": 0,
+  /* Remove lines from the inner indent hover at the beginning and end that have less characters than this */
+  "indenticator.inner.hover.trimLinesShorterThan": 2,
+  /* Block placeholder to be written between peeked lines */
+  "indenticator.inner.hover.peekBlockPlaceholder": "...",
+  /* Whether to display the current indent depth on the statusbar */
+  //further configs
+  "indenticator.showCurrentDepthInStatusBar": true,
+  /* A construct with language identifiers as properties containing a subset of indenticator options to be applied for that language */
+  //"indenticator.languageSpecific": {},
   //--- Block Hilighter
   "blockhighlight.accentCurrentLine": true,
-  "blockhighlight.background": ["5", "25", "35", ".1"],
+  "blockhighlight.background": [
+    "5",
+    "25",
+    "35",
+    ".1"
+  ],
   "blockhighlight.isWholeLine": true,
   //- Bracket Pair Colorizer
-  "bracket-pair-colorizer-2.forceIterationColorCycle": true,
+  "bracket-pair-colorizer-2.forceIterationColorCycle": false,
   "editor.matchBrackets": false, //this is the built in match brackets
   "bracket-pair-colorizer-2.colors": [
-    "#9EE83C",
     "#F7A13D",
     "#FC6739",
     "rgba(255, 66, 82, 1)",
     "rgba(210, 52, 134, 1)",
-    "rgba(171, 35, 148, 1)",
-    "rgba(210, 52, 134, 1)",
-    "rgba(255, 66, 82, 1)",
-    "#FC6739",
-    "#F7A13D"
+    "rgba(171, 35, 148, 1)"
+    // "rgba(210, 52, 134, 1)",
+    // "rgba(255, 66, 82, 1)",
+    // "#FC6739",
+    // "#F7A13D",
+    // "#9EE83C"
   ],
   "bracket-pair-colorizer-2.activeScopeCSS": [
     "borderWidth : 2px",
@@ -883,7 +960,7 @@
   "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\bash.exe",
   "editor.dragAndDrop": false,
   "editor.tabCompletion": "on",
-  "php.validate.executablePath": "C:\\Users\\David\\Work\\Code\\JackalopePortfolio\\dev\\php\\php.exe",
+  "php.validate.executablePath": "C:\\laragon\\bin\\php\\php-7.2.19-Win32-VC15-x64\\php.exe",
   "javascript.implicitProjectConfig.experimentalDecorators": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
   "javascript.format.placeOpenBraceOnNewLineForFunctions": true,
@@ -921,7 +998,6 @@
           "borderRadius": "16px 0 0 0"
         }
       },
-
       "left": {
         "custom": {
           "backgroundColor": "rgba(180, 20, 80, 0.3)",
@@ -988,7 +1064,6 @@
       }
     }
   },
-
   //- File Explorer Settings
   "files.exclude": {
     "*.ico": true,
@@ -1004,9 +1079,7 @@
   // Icon theme
   "workbench.iconTheme": "simple-icons",
   "simpleIcons.simple.folder.color": "#6a88c4",
-
   //- LINTING SETTINGS
-
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -1016,14 +1089,14 @@
   },
   "html.format.wrapAttributes": "force-expand-multiline",
   "html.format.extraLiners": "head, body, /html, h1, h2, h3, h4, h5, -->",
-
   //- MISC SETTINGS
   "workbench.settings.editor": "json",
   "editor.snippetSuggestions": "top",
   "editor.suggestSelection": "first",
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-
   // code runner settings
   "code-runner.terminalRoot": "/mnt/",
-  "code-runner.runInTerminal": true
+  "code-runner.runInTerminal": true,
+  "workbench.colorTheme": "Hopscotch (TextMate Theme)",
+  "sync.forceUpload": true
 }
