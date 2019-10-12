@@ -110,8 +110,7 @@
   },
   //- Token Color customizations
   "editor.tokenColorCustomizations": {
-    "textMateRules": [
-      //Json Layers theming
+    "textMateRules": [ //Json Layers theming
       {
         "name": "JSON Value - Level 0",
         "scope": [
@@ -173,20 +172,11 @@
       {
         "name": "CSS selectors",
         "scope": [
-          "source.css.scss entity.other.attribute-name.class.css punctuation.definition.entity.css"
-        ],
-        "settings": {
-          "foreground": "#ff677b",
-          "fontStyle": "bold"
-        }
-      },
-      {
-        "name": "CSS selectors",
-        "scope": [
+          "source.css.scss entity.other.attribute-name.class.css punctuation.definition.entity.css",
           "source.css.scss entity.other.attribute-name.class.css"
         ],
         "settings": {
-          "foreground": "#ff677b",
+          "foreground": "#ff1677",
           "fontStyle": "bold"
         }
       },
@@ -204,16 +194,8 @@
       {
         "name": "SCSS property Level1",
         "scope": [
-          "support.type.property-name.css meta.property-name.scss meta.property-list.scss source.css.scss"
-        ],
-        "settings": {
-          "foreground": "#6790ff",
-          "fontStyle": "bold"
-        }
-      },
-      {
-        "name": "CSS property",
-        "scope": [
+          "support.type.property-name.css meta.property-name.scss meta.property-list.scss source.css.scss",
+          "support.type.property-name.css",
           "source.css.scss meta.property-list.scss meta.property-list.scss meta.property-list.scss meta.property-name.scss support.type.property-name.css"
         ],
         "settings": {
@@ -254,7 +236,9 @@
       {
         "name": "JS semicolons",
         "scope": [
-          "punctuation.terminator.statement.js"
+          "punctuation.terminator.statement.js",
+          "punctuation.terminator.rule.css",
+          "punctuation.terminator.expression.php"
         ],
         "settings": {
           "foreground": "#ff6f5c"
@@ -263,7 +247,8 @@
       {
         "name": ". in between functions/variables",
         "scope": [
-          "punctuation.accessor.js"
+          "punctuation.accessor.js",
+          "punctuation.definition.variable.php"
         ],
         "settings": {
           "foreground": "#ff6f5c"
@@ -272,34 +257,14 @@
       {
         "name": "quotation marks",
         "scope": [
-          "punctuation.definition.string.begin.js"
-        ],
-        "settings": {
-          "foreground": "#9fb30e"
-        }
-      },
-      {
-        "name": "quotation marks",
-        "scope": [
-          "punctuation.definition.string.end.js"
-        ],
-        "settings": {
-          "foreground": "#9fb30e"
-        }
-      },
-      {
-        "name": "quotation marks",
-        "scope": [
-          " punctuation.definition.string.begin.html"
-        ],
-        "settings": {
-          "foreground": "#9fb30e"
-        }
-      },
-      {
-        "name": "quotation marks",
-        "scope": [
-          " punctuation.definition.string.end.html"
+          "punctuation.definition.string.begin.js",
+          "punctuation.definition.string.end.js",
+          "punctuation.definition.string.begin.scss",
+          "punctuation.definition.string.end.scss",
+          "punctuation.definition.string.begin.html",
+          "punctuation.definition.string.end.html",
+          "punctuation.definition.string.begin.php",
+          "punctuation.definition.string.end.php"
         ],
         "settings": {
           "foreground": "#9fb30e"
@@ -478,6 +443,20 @@
         "color": "black"
       }
     ],
+    //REMOVE: styling
+    "(//?REMOVE:?)(.*)": [
+      {
+        "overviewRulerColor": "#4b553f",
+        "backgroundColor": "rgba(63, 75, 85, 1)",
+        "color": "#1f1f1f",
+        "fontWeight": "bold",
+        "borderRadius": "5px 0px 0px 5px"
+      },
+      {
+        "backgroundColor": "rgba(63, 75, 85, 0.5)",
+        "color": "#1f1f1f"
+      }
+    ],
     // @import styling
     "(// )(@\\w+)": [
       {},
@@ -563,8 +542,7 @@
       }
     ],
     //*- SCSS block commented code */
-    "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [
-      // */*
+    "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [ // */*
       {
         "overviewRulerColor": "Blue",
         "backgroundColor": "#181c21",
@@ -593,35 +571,34 @@
     ],
     // HTML Comment Block
     // -->
-    "(<!--(?!\\/\\/))((.|\n|\r)*?)(\\-\\->)": [
-      //-->
-      {
-        "backgroundColor": "rgba(59,64,82, .7)",
-        "borderStyle": "solid",
-        "borderWidth": "1px",
-        "borderColor": "rgba(59,64,82, .7)",
-        "color": "#385d74",
-        "isWholeLine": "true",
-        "overviewRulerColor": "rgba(59,64,82, .7)"
-      },
-      {
-        "borderWidth": "1px",
-        "borderStyle": "solid",
-        "borderColor": "rgba(59,64,82, .7)",
-        "borderRadius": "0px",
-        "backgroundColor": "33b4052",
-        "color": "#385d74",
-        "isWholeLine": "true"
-      },
-      {
-        "backgroundColor": "rgba(59,64,82, .7)",
-        "borderStyle": "solid",
-        "borderWidth": "1px",
-        "borderColor": "rgba(59,64,82, .7)",
-        "color": "#385d74",
-        "isWholeLine": "true"
-      }
-    ],
+    // "(<!--(?!\\/\\/))((.|\n|\r)*?)(\\-\\->)": [ //-->
+    //   {
+    //     "backgroundColor": "rgba(59,64,82, .7)",
+    //     "borderStyle": "solid",
+    //     "borderWidth": "1px",
+    //     "borderColor": "rgba(59,64,82, .7)",
+    //     "color": "#385d74",
+    //     "isWholeLine": "true",
+    //     "overviewRulerColor": "rgba(59,64,82, .7)"
+    //   },
+    //   {
+    //     "borderWidth": "1px",
+    //     "borderStyle": "solid",
+    //     "borderColor": "rgba(59,64,82, .7)",
+    //     "borderRadius": "0px",
+    //     "backgroundColor": "33b4052",
+    //     "color": "#385d74",
+    //     "isWholeLine": "true"
+    //   },
+    //   {
+    //     "backgroundColor": "rgba(59,64,82, .7)",
+    //     "borderStyle": "solid",
+    //     "borderWidth": "1px",
+    //     "borderColor": "rgba(59,64,82, .7)",
+    //     "color": "#385d74",
+    //     "isWholeLine": "true"
+    //   }
+    // ],
     //- Opening  HTML Tag
     //    <tag>
     // <?php
@@ -731,10 +708,11 @@
       }
     ],
     //- PHP Tag
-    // <?php fdjfkldjsaf
+    // <?php     fdjfkldjsaf
     // fjdklsafjkld
     // ?>
-    "(<\\?php)((.|\n|\r)*?)(\\?>)": [
+    // originally used this (<\\?php)()([\\s\\S]*?)(\\?>) for some reason not sure. making note of it here because sync plugin keeps breaking stuff
+    "(<\\?php)([\\s\\S]*?)(\\?>)": [
       {
         "borderWidth": "2px 0 0 2px",
         "borderStyle": "solid",
@@ -745,6 +723,14 @@
         "fontStyle": "bold",
         "fontWeight": "bold"
       },
+      // {
+      //   "backgroundColor": "rgba(24, 33, 33, 0.4)"
+      //   // "borderWidth": "0px 0 0 0",
+      //   // "borderStyle": "solid",
+      //   // "borderColor": "rgba(144, 117, 172, .5)",
+      //   // "borderRadius": "0px",
+      //   // "color": "rgba(144, 117, 172, .3)"
+      // },
       {
         "backgroundColor": "rgba(24, 33, 33, 0.4)"
         // "borderWidth": "0px 0 0 0",
@@ -763,31 +749,30 @@
       }
     ],
     // HTML Comment Block
-    "(<!--(?!\\/\\/))((.|\n|\\s|\r)*?)(-->)": [
-      {
-        "backgroundColor": "rgba(59,64,82, .7) ",
-        "borderStyle": "solid",
-        "borderWidth": "1px",
-        "borderColor": "rgba(59,64,82, .7)",
-        "color": "gold",
-        "isWholeLine": "true"
-      },
-      {
-        "borderWidth": "1px",
-        "borderStyle": "solid",
-        "borderColor": "rgba(59,64,82, .7)",
-        "backgroundColor": "rgba(59,64,82, .7)"
-      },
-      {
-        "backgroundColor": "rgba(59,64,82, .7)",
-        "borderStyle": "solid",
-        "borderWidth": "1px",
-        "borderColor": "rgba(59,64,82, .7)",
-        "color": "red",
-        "isWholeLine": "true"
-      }
-    ],
-    // <!--// stuff -->
+    // "(<!--(?!\\/\\/))((.|\n|\\s|\r)*?)(-->)": [
+    //   {
+    //     "backgroundColor": "rgba(59,64,82, .7) ",
+    //     "borderStyle": "solid",
+    //     "borderWidth": "1px",
+    //     "borderColor": "rgba(59,64,82, .7)",
+    //     "color": "gold",
+    //     "isWholeLine": "true"
+    //   },
+    //   {
+    //     "borderWidth": "1px",
+    //     "borderStyle": "solid",
+    //     "borderColor": "rgba(59,64,82, .7)",
+    //     "backgroundColor": "rgba(59,64,82, .7)"
+    //   },
+    //   {
+    //     "backgroundColor": "rgba(59,64,82, .7)",
+    //     "borderStyle": "solid",
+    //     "borderWidth": "1px",
+    //     "borderColor": "rgba(59,64,82, .7)",
+    //     "color": "red",
+    //     "isWholeLine": "true"
+    //   }
+    // ],
     //- HTML  Title
     "(<!--(?:\\/\\/))(.*?)(-->)": [
       {
@@ -921,7 +906,8 @@
   "blockhighlight.isWholeLine": true,
   //- Bracket Pair Colorizer
   "bracket-pair-colorizer-2.forceIterationColorCycle": false,
-  "editor.matchBrackets": false, //this is the built in match brackets
+  "editor.matchBrackets": false,
+  //this is the built in match brackets
   "bracket-pair-colorizer-2.colors": [
     "#F7A13D",
     "#FC6739",
@@ -973,6 +959,9 @@
   "editor.formatOnSave": true,
   "html.format.endWithNewline": true,
   "html.format.indentInnerHtml": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
   /////////////////////////////////////
   //- Sync Settings
   "explorer.confirmDelete": false,
@@ -1098,5 +1087,12 @@
   "code-runner.terminalRoot": "/mnt/",
   "code-runner.runInTerminal": true,
   "workbench.colorTheme": "Hopscotch (TextMate Theme)",
-  "sync.forceUpload": true
+  "sync.forceUpload": true,
+  //- React stuff
+  "ACReactComponentGenerator.indexFile.create": false,
+  "ACReactComponentGenerator.mainFile.extension": "js",
+  "ACReactComponentGenerator.styleFile.extension": "css",
+  "ACReactComponentGenerator.styleFile.suffix": "",
+  "ACReactComponentGenerator.styleFile.type": "standard (.css)",
+  "diffEditor.ignoreTrimWhitespace": true
 }
