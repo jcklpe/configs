@@ -150,10 +150,11 @@ apt-cache depends --no-pre-depends --no-recommends --no-suggests --no-conflicts 
 }
 
 
-##- Node related
+##- NPM related
 #NPM plain english aliases
-alias builder='npm run build'
-alias watcher='npm run watch'
+alias buildit='npm run build';
+alias watchit='npm run watch';
+alias npmrefresh='rm -rf node_modules/ && npm install && npm audit fix';
 
 ##- Nextcloud related
 # list all apps
