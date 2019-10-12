@@ -31,3 +31,12 @@
 [submodule "zsh/zsh-plugins/zsh-you-should-use"]
 	path = zsh/zsh-plugins/zsh-you-should-use
 	url = https://github.com/MichaelAquilina/zsh-you-should-use.git
+[submodule "hue/huesh"]
+	path = hue/huesh
+	url = https://github.com/niklasberglund/huesh.git
+[submodule "zsh/zsh-plugins/-f"]
+	path = zsh/zsh-plugins/-f
+	url = https://github.com/gsamokovarov/jump-ranger.git
+[submodule "zsh/zsh-plugins/jump-ranger"]
+	path = zsh/zsh-plugins/jump-ranger
+	url = https://github.com/gsamokovarov/jump-ranger.git

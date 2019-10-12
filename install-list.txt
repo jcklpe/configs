@@ -48,6 +48,8 @@ then source to .zshrc
 ## exa utility 
 https://the.exa.website/install/linux
 
+install homebrew and install from there
+
 ## colorls (perhaps switch off exa to this
 gem install colorls
 source $(dirname $(gem which colorls))/tab_complete.sh

@@ -14,8 +14,15 @@ pluginz="${CONFIGS}/zsh/shell-scripts"
 
 alias rm=trash
 
+
+
 ##- Imports
+
+#pull in utility zsh scripts
 source ${pluginz}/utilities.zsh
+
+# pull in hue scripts
+source ~/configs/hue/hue.zsh
 
 # Run nano with softwrapping always
 alias nano='nano -\$cwS'
@@ -212,7 +219,7 @@ source ~/configs/zsh/zsh-plugins/jump-ranger/jump-ranger.zsh
 
 ##- warp door
 wd() {
-  . $HOME/bin/wd/wd.sh;
+  source ~/configs/zsh/zsh-plugins/wd/wd.sh;
 
 }
 
@@ -243,6 +250,9 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     # fucking fancy-ass Mac OSX
+
+    # fix ngrok issue for work mac
+alias ngrok='/Applications/ngrok http --host-header=rewrite 8080'
 
 elif [[ "$OSTYPE" == "cygwin" ]]; then
     # POSIX compatibility layer and Linux environment emulation for Windows
