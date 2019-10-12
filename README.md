@@ -1,9 +1,20 @@
 # Configs
 
-This repo is a collection of configs, dotfiles, and other code snippets that I regularly use. This folder is then synced across all the different machines I use through a self hosted instance of the open-source personal cloud platform [[NextCloud]](https://nextcloud.com/) . It's a work in progress and I'm still figuring out my pipeline but I wanted to jump on the whole [[dotfiles]](https://dotfiles.github.io/) trend.
+This repo is a collection of configs, dotfiles, code snippets, and scripts. This folder is then synced across all the different machines I use through a self hosted instance of the open-source personal cloud platform [[NextCloud]](https://nextcloud.com/).
 
-My goal is to create something that's extremely modular and contained. I work in both Windows and Linux environments, and as I come from an art/design background I want to make what I have learned as easy to access for others as possible. This is in some ways a continuation of my [[Jumpstart Hack Pack]](https://github.com/jcklpe/Jumpstart-HackPack) project (which I plan on updating with new stuff soon).
+I work in windows, mac, and linux environments. My goal is to create something that's extremely modular and contained.
 
-Everything is still a bit of a mess. But it's my mess!
+I use zsh as my CLI shell. _(mac, windows, linux compatible)_
+I use ueli as my launcher. _(mac, windows compatible)_
+I use hyper as my terminal emulator. _(mac, windows, linux compatible)_
+I use vscode as my code editor. _(mac, windows, linux compatible)_
 
-If you have any critiques, comments, or info to share, please file an issue, or even a pull request! :)
+As you can see almost all of these programs work on all three operating systems. This is on purpose. I am trying to make it so that no matter what OS I'm on, my basic experience remains the same.
+
+I want to transcend operating systems! 💪🤓👍
+
+Someday I'd like to get the kinks so worked out that I can simply pull down this git repo on a machine, run a script and have everything basically fold out like George Jetson's briefcase car.
+
+![jetson](https://media0.giphy.com/media/20Mr9uJLkWfqWDs6Ul/source.gif)
+
+But until then this it's a work in progress, while I better figure out my pipeline. 

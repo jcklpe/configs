@@ -1,0 +1,257 @@
+{
+  "appearanceOptions": {
+    "maxSearchResultsPerPage": 8,
+    "searchResultHeight": "75",
+    "showDescriptionOnAllSearchResults": true,
+    "showSearchIcon": true,
+    "showSearchResultNumbers": false,
+    "smoothScrolling": true,
+    "userInputHeight": "75",
+    "windowWidth": "790"
+  },
+  "applicationSearchOptions": {
+    "applicationFileExtensions": [
+      ".lnk",
+      ".appref-ms",
+      ".url",
+      ".exe"
+    ],
+    "applicationFolders": [
+      "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
+      "C:\\Users\\aslan\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu",
+      "C:\\Users\\aslan\\Desktop"
+    ],
+    "enabled": true,
+    "showFullFilePath": false
+  },
+  "calculatorOptions": {
+    "isEnabled": true,
+    "precision": "8"
+  },
+  "colorConverterOptions": {
+    "hexEnabled": true,
+    "hslEnabled": true,
+    "isEnabled": true,
+    "rgbEnabled": true,
+    "rgbaEnabled": true,
+    "showColorPreview": true
+  },
+  "colorThemeOptions": {
+    "name": "Atom One Dark",
+    "userInputBackgroundColor": "#192227",
+    "userInputTextColor": "#73f0ae",
+    "searchResultsBackgroundColor": "#243B32",
+    "searchResultsItemActiveBackgroundColor": "#30492E",
+    "searchResultsItemActiveDescriptionColor": "#fff",
+    "searchResultsItemActiveTextColor": "#DDFF03",
+    "searchResultsItemDescriptionTextColor": "#2C6B66",
+    "searchResultsItemNameTextcolor": "#2B925F",
+    "scrollbarBackgroundColor": "#192227",
+    "scrollbarForegroundColor": "#192227"
+  },
+  "commandlineOptions": {
+    "isEnabled": true,
+    "prefix": ">"
+  },
+  "currencyConverterOptions": {
+    "isEnabled": true,
+    "precision": 2
+  },
+  "emailOptions": {
+    "isEnabled": true
+  },
+  "everythingSearchOptions": {
+    "enabled": false,
+    "maxSearchResults": 24,
+    "pathToEs": "C:\\es\\es.exe",
+    "prefix": "es?"
+  },
+  "fileBrowserOptions": {
+    "blackList": [
+      "desktop.ini"
+    ],
+    "isEnabled": true,
+    "maxSearchResults": 100,
+    "showFullFilePath": true,
+    "showHiddenFiles": false
+  },
+  "generalOptions": {
+    "autostart": true,
+    "clearCachesOnExit": false,
+    "hideMainWindowOnBlur": true,
+    "hotKey": {
+      "key": "Space",
+      "modifier": "Alt"
+    },
+    "language": "English",
+    "logExecution": true,
+    "persistentUserInput": false,
+    "rememberWindowPosition": false,
+    "rescanEnabled": true,
+    "rescanIntervalInSeconds": 300,
+    "showAlwaysOnPrimaryDisplay": false,
+    "showTrayIcon": true
+  },
+  "mdfindOptions": {
+    "debounceDelay": 250,
+    "enabled": false,
+    "maxSearchResults": 24,
+    "prefix": "md?"
+  },
+  "operatingSystemCommandsOptions": {
+    "isEnabled": true
+  },
+  "operatingSystemSettingsOptions": {
+    "isEnabled": false
+  },
+  "searchEngineOptions": {
+    "fuzzyness": 0.5,
+    "maxSearchResults": 24
+  },
+  "shortcutOptions": {
+    "isEnabled": true,
+    "shortcuts": [
+      {
+        "description": "",
+        "executionArgument": "https://gmail.com",
+        "icon": {
+          "parameter": "https://cdn4.iconfinder.com/data/icons/free-colorful-icons/360/gmail.png",
+          "type": "URL"
+        },
+        "name": "mail",
+        "tags": [],
+        "type": "URL"
+      },
+      {
+        "description": "",
+        "executionArgument": "https://www.jackalope.tech/hackerz/",
+        "icon": {
+          "parameter": "https://www.jackalope.tech/wp-content/themes/jackalope/assets/images/login.jpg",
+          "type": "URL"
+        },
+        "name": "blog",
+        "tags": [],
+        "type": "URL"
+      },
+      {
+        "description": "dsa techcomm slack",
+        "executionArgument": "https://app.slack.com/client/T4EF8RLHZ/C73TB75PX",
+        "icon": {
+          "parameter": "data:image/png;base64,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",
+          "type": "URL"
+        },
+        "name": "techcomm",
+        "needsUserConfirmationBeforeExecution": false,
+        "tags": [],
+        "type": "URL"
+      }
+    ]
+  },
+  "simpleFolderSearchOptions": {
+    "folders": [
+      {
+        "excludeHiddenFiles": true,
+        "folderPath": "C:\\Users\\aslan",
+        "recursive": false
+      }
+    ],
+    "isEnabled": true,
+    "showFullFilePath": true
+  },
+  "translationOptions": {
+    "debounceDelay": 250,
+    "enabled": true,
+    "minSearchTermLength": 3,
+    "prefix": "t?",
+    "sourceLanguage": "en",
+    "targetLanguage": "fr"
+  },
+  "urlOptions": {
+    "defaultProtocol": "https",
+    "isEnabled": true
+  },
+  "uwpSearchOptions": {
+    "isEnabled": true
+  },
+  "websearchOptions": {
+    "isEnabled": true,
+    "webSearchEngines": [
+      {
+        "encodeSearchTerm": true,
+        "icon": {
+          "parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 48 48\" version=\"1.1\">\n                <g id=\"surface1\">\n                <path style=\" fill:#FFC107;\" d=\"M 43.609375 20.082031 L 42 20.082031 L 42 20 L 24 20 L 24 28 L 35.304688 28 C 33.652344 32.65625 29.222656 36 24 36 C 17.371094 36 12 30.628906 12 24 C 12 17.371094 17.371094 12 24 12 C 27.058594 12 29.84375 13.152344 31.960938 15.039063 L 37.617188 9.382813 C 34.046875 6.054688 29.269531 4 24 4 C 12.953125 4 4 12.953125 4 24 C 4 35.046875 12.953125 44 24 44 C 35.046875 44 44 35.046875 44 24 C 44 22.660156 43.863281 21.351563 43.609375 20.082031 Z \"></path>\n                <path style=\" fill:#FF3D00;\" d=\"M 6.304688 14.691406 L 12.878906 19.511719 C 14.65625 15.109375 18.960938 12 24 12 C 27.058594 12 29.84375 13.152344 31.960938 15.039063 L 37.617188 9.382813 C 34.046875 6.054688 29.269531 4 24 4 C 16.316406 4 9.65625 8.335938 6.304688 14.691406 Z \"></path>\n                <path style=\" fill:#4CAF50;\" d=\"M 24 44 C 29.164063 44 33.859375 42.023438 37.410156 38.808594 L 31.21875 33.570313 C 29.210938 35.089844 26.714844 36 24 36 C 18.796875 36 14.382813 32.683594 12.71875 28.054688 L 6.195313 33.078125 C 9.503906 39.554688 16.226563 44 24 44 Z \"></path>\n                <path style=\" fill:#1976D2;\" d=\"M 43.609375 20.082031 L 42 20.082031 L 42 20 L 24 20 L 24 28 L 35.304688 28 C 34.511719 30.238281 33.070313 32.164063 31.214844 33.570313 C 31.21875 33.570313 31.21875 33.570313 31.21875 33.570313 L 37.410156 38.808594 C 36.972656 39.203125 44 34 44 24 C 44 22.660156 43.863281 21.351563 43.609375 20.082031 Z \"></path>\n                </g>\n                </svg>",
+          "type": "SVG"
+        },
+        "isFallback": false,
+        "name": "Google",
+        "prefix": "g",
+        "priority": 2,
+        "url": "https://google.com/search?q={{query}}"
+      },
+      {
+        "encodeSearchTerm": true,
+        "icon": {
+          "parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 48 48\" version=\"1.1\">\n                <g id=\"surface1\">\n                <path style=\" fill:#F44336;\" d=\"M 37 24 L 30.0625 24 C 26.714844 24 24 21.285156 24 17.9375 L 24 0.574219 C 24 0.355469 24.261719 0.238281 24.421875 0.390625 L 37 12 Z \"></path>\n                <path style=\" fill:#AD1457;\" d=\"M 37 24 L 30.0625 24 C 28.628906 24 27.308594 23.5 26.269531 22.667969 L 37 12 Z \"></path>\n                <path style=\" fill:#8BC34A;\" d=\"M 11 24 L 17.9375 24 C 21.285156 24 24 26.714844 24 30.0625 L 24 47.425781 C 24 47.644531 23.738281 47.757813 23.578125 47.609375 L 11 36 Z \"></path>\n                <path style=\" fill:#009688;\" d=\"M 11 24 L 17.9375 24 C 19.371094 24 20.691406 24.5 21.730469 25.332031 L 11 36 Z \"></path>\n                <path style=\" fill:#FFC107;\" d=\"M 24 11 L 24 17.9375 C 24 21.285156 21.285156 24 17.9375 24 L 0.574219 24 C 0.355469 24 0.238281 23.738281 0.390625 23.578125 L 12 11 Z \"></path>\n                <path style=\" fill:#FF9800;\" d=\"M 24 11 L 24 17.9375 C 24 19.371094 23.5 20.691406 22.667969 21.730469 L 12 11 Z \"></path>\n                <path style=\" fill:#448AFF;\" d=\"M 24 37 L 24 30.0625 C 24 26.714844 26.714844 24 30.0625 24 L 47.425781 24 C 47.644531 24 47.757813 24.261719 47.609375 24.421875 L 36 37 Z \"></path>\n                <path style=\" fill:#1565C0;\" d=\"M 24 37 L 24 30.0625 C 24 28.628906 24.5 27.308594 25.332031 26.269531 L 36 37 Z \"></path>\n                </g>\n                </svg>",
+          "type": "SVG"
+        },
+        "isFallback": false,
+        "name": "Google Images",
+        "prefix": "images ",
+        "priority": 3,
+        "url": "https://www.google.com/search?tbm=isch&q={{query}}"
+      },
+      {
+        "encodeSearchTerm": true,
+        "icon": {
+          "parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 32 32\" version=\"1.1\">\n                <g id=\"surface1\">\n                <path d=\"M 30 9.214844 C 30 9.386719 29.863281 9.523438 29.6875 9.523438 L 28.007813 9.523438 L 20.390625 25.738281 C 20.339844 25.847656 20.230469 25.917969 20.113281 25.917969 C 20.109375 25.917969 20.109375 25.917969 20.109375 25.917969 C 19.988281 25.917969 19.882813 25.851563 19.828125 25.746094 L 16.214844 18.578125 L 12.3125 25.757813 C 12.257813 25.859375 12.15625 25.917969 12.03125 25.917969 C 11.914063 25.914063 11.808594 25.847656 11.757813 25.742188 L 4.054688 9.523438 L 2.3125 9.523438 C 2.140625 9.523438 2 9.386719 2 9.214844 L 2 8.390625 C 2 8.21875 2.140625 8.082031 2.3125 8.082031 L 8.523438 8.082031 C 8.695313 8.082031 8.835938 8.21875 8.835938 8.390625 L 8.835938 9.214844 C 8.835938 9.386719 8.695313 9.523438 8.523438 9.523438 L 7.1875 9.523438 L 12.503906 21.785156 L 15.269531 16.617188 L 11.761719 9.527344 L 10.917969 9.527344 C 10.746094 9.527344 10.605469 9.386719 10.605469 9.214844 L 10.605469 8.394531 C 10.605469 8.222656 10.746094 8.082031 10.917969 8.082031 L 15.515625 8.082031 C 15.6875 8.082031 15.824219 8.222656 15.824219 8.394531 L 15.824219 9.214844 C 15.824219 9.386719 15.6875 9.523438 15.515625 9.523438 L 14.703125 9.523438 L 16.722656 13.9375 L 19.125 9.523438 L 17.652344 9.523438 C 17.476563 9.523438 17.339844 9.386719 17.339844 9.214844 L 17.339844 8.394531 C 17.339844 8.222656 17.476563 8.082031 17.652344 8.082031 L 22.117188 8.082031 C 22.289063 8.082031 22.425781 8.222656 22.425781 8.394531 L 22.425781 9.214844 C 22.425781 9.386719 22.289063 9.523438 22.117188 9.523438 L 21.136719 9.523438 L 17.632813 15.894531 L 20.488281 21.769531 L 26 9.523438 L 24.253906 9.523438 C 24.082031 9.523438 23.941406 9.386719 23.941406 9.214844 L 23.941406 8.394531 C 23.941406 8.222656 24.082031 8.082031 24.253906 8.082031 L 29.6875 8.082031 C 29.863281 8.082031 30 8.222656 30 8.394531 Z \"></path>\n                </g>\n                </svg>",
+          "type": "SVG"
+        },
+        "isFallback": false,
+        "name": "Wikipedia",
+        "prefix": "wiki ",
+        "priority": 4,
+        "url": "https://en.wikipedia.org/wiki/{{query}}"
+      },
+      {
+        "encodeSearchTerm": true,
+        "icon": {
+          "parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 48 48\" version=\"1.1\">\n                <g id=\"surface1\">\n                <path style=\" fill:#FF3D00;\" d=\"M 43.199219 33.898438 C 42.800781 36 41.101563 37.601563 39 37.898438 C 35.699219 38.398438 30.199219 39 24 39 C 17.898438 39 12.398438 38.398438 9 37.898438 C 6.898438 37.601563 5.199219 36 4.800781 33.898438 C 4.398438 31.601563 4 28.199219 4 24 C 4 19.800781 4.398438 16.398438 4.800781 14.101563 C 5.199219 12 6.898438 10.398438 9 10.101563 C 12.300781 9.601563 17.800781 9 24 9 C 30.199219 9 35.601563 9.601563 39 10.101563 C 41.101563 10.398438 42.800781 12 43.199219 14.101563 C 43.601563 16.398438 44.101563 19.800781 44.101563 24 C 44 28.199219 43.601563 31.601563 43.199219 33.898438 Z \"></path>\n                <path style=\" fill:#FFFFFF;\" d=\"M 20 31 L 20 17 L 32 24 Z \"></path>\n                </g>\n                </svg>",
+          "type": "SVG"
+        },
+        "isFallback": false,
+        "name": "YouTube",
+        "prefix": "video ",
+        "priority": 5,
+        "url": "https://www.youtube.com/results?search_query={{query}}"
+      },
+      {
+        "encodeSearchTerm": true,
+        "icon": {
+          "parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
+          "type": "URL"
+        },
+        "isFallback": false,
+        "name": "Go!",
+        "prefix": "go ",
+        "priority": 0,
+        "url": "https://www.google.com/search?btnI=1&q={{query}}"
+      },
+      {
+        "encodeSearchTerm": true,
+        "icon": {
+          "parameter": "https://image.flaticon.com/icons/svg/1983/1983140.svg",
+          "type": "URL"
+        },
+        "isFallback": false,
+        "name": "Search Email",
+        "prefix": "inbox ",
+        "priority": 0,
+        "url": "https://mail.google.com/mail/u/0/#search/{{query}}"
+      }
+    ]
+  },
+  "workflowOptions": {
+    "isEnabled": true,
+    "workflows": []
+  }
+}
