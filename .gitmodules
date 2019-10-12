@@ -34,3 +34,6 @@
 [submodule "zsh/zsh-plugins/jump-ranger"]
 	path = zsh/zsh-plugins/jump-ranger
 	url = https://github.com/gsamokovarov/jump-ranger.git
+[submodule "firefox/firefoxhax"]
+	path = firefox/firefoxhax
+	url = https://github.com/jcklpe/firefoxhax.git
