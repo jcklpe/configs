@@ -38,3 +38,6 @@
 [submodule "zsh/plugins/Color-Scripts"]
 	path = zsh/plugins/Color-Scripts
 	url = https://github.com/stark/Color-Scripts.git
+[submodule "zsh/zsh-scripts"]
+	path = zsh/zsh-scripts
+	url = https://github.com/jcklpe/zsh-scripts.git
