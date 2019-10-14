@@ -23,7 +23,8 @@ office="22"
 # 19 20 21  are set to a strip not yet plugged in.
 # 23 is the white value for 22 which can't take white values.
 
-# Run Hue on entire house
+# Run amby on entire house
 alias hue-house='amby 192.168.1.140 1 5 2 12 13 14 15 16 17 9 18 26 22 24 25 -e'
 
+# Run amby on just select lights for watching movies.
 alias hue-cinema='amby 192.168.1.140 13 9 26 18 22 2 -e'
