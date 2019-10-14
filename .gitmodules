@@ -4,7 +4,7 @@
 	ignore = dirty
 [submodule "zsh/plugins/powerlevel9k"]
 	path = zsh/plugins/powerlevel9k
-	url = https://github.com/bhilburn/powerlevel9k.git
+	url = https://github.com/Powerlevel9k/powerlevel9k.git
 	ignore = dirty
 [submodule "zsh/plugins/wd"]
 	path = zsh/plugins/wd
@@ -26,7 +26,7 @@
 	url = https://github.com/niklasberglund/huesh.git
 	ignore = dirty
 [submodule "zsh/plugins/jump-ranger"]
-	path = zsh/zsh-plugins/jump-ranger
+	path = zsh/plugins/jump-ranger
 	url = https://github.com/gsamokovarov/jump-ranger.git
 	ignore = dirty
 [submodule "firefox/firefoxhax"]
@@ -35,3 +35,6 @@
 [submodule "user-styles"]
 	path = user-styles
 	url = https://github.com/jcklpe/user-styles.git
+[submodule "zsh/plugins/Color-Scripts"]
+	path = zsh/plugins/Color-Scripts
+	url = https://github.com/stark/Color-Scripts.git
