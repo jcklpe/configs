@@ -36,3 +36,6 @@
 [submodule "firefox/firefoxhax"]
 	path = firefox/firefoxhax
 	url = https://github.com/jcklpe/firefoxhax.git
+[submodule "user-styles"]
+	path = user-styles
+	url = https://github.com/jcklpe/user-styles.git
