@@ -118,7 +118,7 @@
 			}
 		},
 		{
-			"executionCount": 23,
+			"executionCount": 24,
 			"item": {
 				"active": true,
 				"description": "Programs ▸ Google Chrome.lnk",
@@ -1118,7 +1118,7 @@
 			}
 		},
 		{
-			"executionCount": 8,
+			"executionCount": 10,
 			"item": {
 				"active": true,
 				"description": "dsa techcomm slack",
@@ -1289,7 +1289,7 @@
 			}
 		},
 		{
-			"executionCount": 3,
+			"executionCount": 4,
 			"item": {
 				"active": true,
 				"description": "Programs ▸ Pulse SMS.lnk",
@@ -1424,6 +1424,24 @@
 				},
 				"id": "search-result-item-1",
 				"name": "Google",
+				"originPluginType": "websearch-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on Go! for \"google%20calendar\"",
+				"executionArgument": "https://www.google.com/search?btnI=1&q=google%20calendar",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Go!",
 				"originPluginType": "websearch-plugin",
 				"resultNumber": 1,
 				"searchable": []

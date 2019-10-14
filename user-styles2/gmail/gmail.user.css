@@ -1,13 +1,14 @@
 /* ==UserStyle==
 @name         gmail.com -> jcklpe
 @namespace   https://github.com/jcklpe/Configs/tree/master/user-styles
-@version      1.0.0
+@version      1.0.1
 @license      GPLv3
 @preprocessor default
 @var color link-color "Link Color" red
 ==/UserStyle== */
 
-@-moz-document domain("mail.google.com") {
+@document domain("mail.google.com") {
+
   /* upper options bar */
   div.G-atb.D.E {
     top: 50px !important;
@@ -50,9 +51,9 @@
 
     margin-top: 50px;
   }
+
   /*limit width*/
-  div.nH.bkK.nn .nH {
-  }
+  div.nH.bkK.nn .nH {}
 
   div.aeF {
     max-width: 1080px;
@@ -102,6 +103,7 @@
   tr.zA.zE {
     padding: 20px;
   }
+
   /*add more margin to selector box*/
   td.oZ-x3.xY {
     margin-right: 35px;
@@ -151,6 +153,7 @@
     color: transparent;
     position: absolute;
   }
+
   /*add in icon for snoozed*/
   td.byZ.xY:before {
     content: "";
@@ -163,6 +166,16 @@
   }
 
   ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /*side buttons that interfere with normal mail operations */
+  adF {
+    display: none;
+  }
+
+  /* cloudHQ notifciation button*/
+  cloudHQ.Gmail.Apps {
     display: none;
   }
 }
