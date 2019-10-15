@@ -21,8 +21,6 @@ export WINHOME=$(wslpath $(cmd.exe /C "echo %USERPROFILE%"));
 export WINHOME=${WINHOME//$'\015'};
 # set home level config paths.
 CONFIGS="${WINHOME}/home/Documents/configs";
-SCRIPTS="${CONFIGS}/zsh/zsh-scripts";
-PLUGINS="${CONFIGS}/zsh/plugins";
 
 # background jobs run at lower priority
 #unsetopt BG_NICE
@@ -42,6 +40,7 @@ source $HOME/torch/install/bin/torch-activate
     fi
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
+##- macOS
 # variables
 CONFIGS="$HOME/configs"
 # fix ngrok issue for work mac
@@ -65,7 +64,8 @@ else
 fi
 
 ##- VARIABLES
-
+SCRIPTS="${CONFIGS}/zsh/zsh-scripts";
+PLUGINS="${CONFIGS}/zsh/plugins";
 
 
 
@@ -78,9 +78,10 @@ fi
  #tests
  alias testbold='bold=$(tput bold) && normal=$(tput sgr0) && echo "this is ${bold}bold${normal} but this aint"';
 
- alias test-color='${PLUGINS}/Color-Scripts/color-scripts/colorview';
+ alias testcolor='${PLUGINS}/Color-Scripts/color-scripts/colorview';
+ alias test256color='${PLUGINS}/Color-Scripts/test-color-support/color-support2';
 
-##- small fixes
+ ##- small fixes
 #make mount look prettier
 alias mount='mount |column -t';
 
@@ -91,14 +92,6 @@ alias nano='nano -\$cwS'
 
 # fix python2 to run python3
 #alias python=python3
-
-#- Necessary to enable 256 colors in terminal
- export TERM="xterm-256color"
-
-POWERLEVEL9K_MODE="nerdfont-complete"
-ZSH_DISABLE_COMPFIX=true
-
-
 
 
 ##- Scripts
@@ -116,8 +109,15 @@ source ${SCRIPTS}/git/git.zsh;
 
 
 ##- Theme Settings
+#- Necessary to enable 256 colors in terminal
+ export TERM="xterm-256color"
+
+POWERLEVEL9K_MODE="nerdfont-complete"
+ZSH_DISABLE_COMPFIX=true
 
 source ${SCRIPTS}/prompt.zsh
+
+
 
 
 ##- PLUGINS
@@ -134,10 +134,10 @@ eval "$(jump shell zsh)"
 source ${PLUGINS}/jump-ranger/jump-ranger.zsh
 
 ##- warp door
-wd() {
-  source ${PLUGINS}/wd/wd.sh;
+wd() { source ${PLUGINS}/wd/wd.sh; }
 
-}
+##- bd (cd for parent directories)
+source ${PLUGINS}/zsh-bd/bd.zsh
 
 ##- you should use
 source ${PLUGINS}/zsh-you-should-use/you-should-use.plugin.zsh
