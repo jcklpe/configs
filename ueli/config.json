@@ -80,7 +80,7 @@
 			}
 		},
 		{
-			"executionCount": 20,
+			"executionCount": 21,
 			"item": {
 				"active": true,
 				"description": "Accessories ▸ Notepad.lnk",
@@ -1026,7 +1026,7 @@
 			}
 		},
 		{
-			"executionCount": 3,
+			"executionCount": 4,
 			"item": {
 				"active": true,
 				"description": "Typora ▸ Typora.lnk",
@@ -1435,6 +1435,24 @@
 				"active": true,
 				"description": "Search on Go! for \"google%20calendar\"",
 				"executionArgument": "https://www.google.com/search?btnI=1&q=google%20calendar",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Go!",
+				"originPluginType": "websearch-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on Go! for \"discord\"",
+				"executionArgument": "https://www.google.com/search?btnI=1&q=discord",
 				"hideMainWindowAfterExecution": true,
 				"icon": {
 					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
