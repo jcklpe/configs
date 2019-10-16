@@ -208,7 +208,7 @@ module.exports = {
     "hyper-overlay",
 
     // give normal scrolling in nano
-    "hyperterm-alternatescroll",
+    //"hyperterm-alternatescroll",
 
     // Cool looking border
     "hyperborder",

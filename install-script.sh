@@ -1,6 +1,30 @@
 #!/bin/bash
 ##- INSTALL SCRIPT FOR CONFIGS
 
+#//TODO: pseudo code
+git clone configs gitrepo
+init all submodules recursively
+
+if have sudo then
+    install brew to /usr/local
+    install as many binaries as can using brew
+    if linux/WSL but not mac
+        install the rest via apt not covered by brew
+    fi
+else
+    install brew to ~/.brew
+    if program binary install requires building or sudo privileges
+        wget/gitclone program to ~/.bin/ and have conditoinal aliases in .zshrc to account for this (or add to path? I need to figure out how PATH works properly)
+fi
+
+if config file is for UNIX based program then
+    symlink to $HOME
+elseif config file is for Windows program then
+    symlink to $WINHOME
+fi
+
+
+
 ##- 𝖃𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     UNAMECHECK=$(uname -a);
