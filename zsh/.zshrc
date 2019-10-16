@@ -87,8 +87,8 @@ alias mount='mount |column -t';
 
 alias rm='trash';
 
-# Run nano with softwrapping always
-alias nano='nano -\$cwS'
+# Run nano cursor always visible, smooth scrolling on, use the mouse, and disable hard wrapping.
+alias nano='nano --const --smooth --mouse'
 
 # fix python2 to run python3
 #alias python=python3
