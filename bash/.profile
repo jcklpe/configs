@@ -21,6 +21,8 @@ fi
 # fi
 
 if [[ $- == *i* ]]; then
-    export SHELL=zsh
-    exec zsh -l
+   export SHELL=zsh
+   exec zsh -l
 fi
+
+exa;
