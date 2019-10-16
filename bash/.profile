@@ -1,8 +1,7 @@
-## kept empty right now because this only applies for login shells and I want to have consistent use of bash when I switch to it from bashrc
-
 # ~/.profile: executed by the command interpreter for login shells.
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
+# Everything useful is put in .bashrc but this allows me to selectively trigger scripts only at shell start up
 
 
 ##- import .bashrc
