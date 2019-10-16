@@ -4,14 +4,8 @@
 ## ██╔══██╗██╔══██║╚════██║██╔══██║
 ##██████╔╝██║  ██║███████║██║  ██║
 ## ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-# export SHELL=/bin/zsh
-# exec /bin/zsh -l
 
-# start zsh
-#  if [ -t 1 ]; then
-#  exec zsh
-#  fi
-
+##- Movement
 function cd {
     builtin cd "$@" && exa
     }
@@ -23,17 +17,6 @@ function mkcdir ()
       cd -P -- "$1"
       exa
 }
-
-
-# if [ "$color_prompt" = yes ]; then
-#     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-# else
-#     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-# fi
-# unset color_prompt force_color_prompt
-
-
-##- Movement
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -67,12 +50,6 @@ fi
     PATH="$HOME/bin/wp:$PATH"
 fi
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
-
-# Load RVM into a shell session *as a function*
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-
 ##- MISC Settings
 # Hist file length and size
 HISTSIZE=1000
@@ -99,18 +76,19 @@ shopt -s checkwinsize
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
 if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
+    source /usr/share/bash-completion/bash_completion
 elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
+    source /etc/bash_completion
 fi
 fi
 
 ##- 𝗕𝗔𝗦𝗛 𝗣𝗥𝗢𝗠𝗣𝗧
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
+# check if SSH
+if [ -n "$SSH_CLIENT" ]; then
+export SSHstatus="\e[30;103m ♆"
+else
+export SSHstatus="\e[30;103m ⚡";
 fi
-
 
 
 # not sure what this does
@@ -130,11 +108,11 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='\n\e[30;103m ⚡ \e[30;44m  \w \[\033[00m\]\n   \e[96m⭄>> \e[0m \[\033[00m\]'
+    PS1="\n ${SSHstatus} \e[30;44m \w \[\033[00m\]\n    \e[96m⭄>> \e[0m \[\033[00m\]";
 
     # export PS1=$'   \e[0;34m \u2692\e[m\e[0;31m \u26A1  [\w] \e[m\e[0;36m >>>'
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='\n \w>>> '
 fi
 # unset color_prompt force_color_prompt
 

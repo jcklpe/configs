@@ -27,7 +27,12 @@ exa
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 ##- macOS
-exa
+#prevents error of % popping up in terminal on login
+setopt PROMPT_CR
+setopt PROMPT_SP
+export PROMPT_EOL_MARK=""
+# run exa on start up to get context
+exa;
 
 elif [[ "$OSTYPE" == "cygwin" ]]; then
     # POSIX compatibility layer and Linux environment emulation for Windows
