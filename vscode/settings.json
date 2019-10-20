@@ -541,6 +541,20 @@
         "fontSize": "2em"
       }
     ],
+    // #--  hash comments titles
+    "(#--.*?)(.+(?=\n|\r))": [
+      {
+        "overviewRulerColor": "gold",
+        "backgroundColor": "gold",
+        "color": "#181c21",
+        "fontWeight": "bold"
+      },
+      {
+        "backgroundColor": "#181c21",
+        "color": "#1BB4C0",
+        "fontSize": "1.5em"
+      }
+    ],
     //*- SCSS block commented code */
     "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [ // */*
       {
