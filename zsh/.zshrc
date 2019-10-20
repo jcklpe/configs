@@ -36,6 +36,8 @@ else
 ##- Normal Linux
 #variables
 CONFIGS="$HOME/configs";
+
+# add torch to commands available
 source $HOME/torch/install/bin/torch-activate
     fi
 
@@ -70,7 +72,7 @@ PLUGINS="${CONFIGS}/zsh/plugins";
 
 
 ##- zsh related
- alias config="~/.zshrc";
+ alias config="nano ~/.zshrc";
 
  # update zsh settings
  alias reload='source ~/.zshrc';
@@ -85,10 +87,14 @@ PLUGINS="${CONFIGS}/zsh/plugins";
 #make mount look prettier
 alias mount='mount |column -t';
 
-alias rm='trash';
+#alias rm='trash';
 
 # Run nano cursor always visible, smooth scrolling on, use the mouse, and disable hard wrapping.
-alias nano='nano --const --smooth --mouse'
+alias nano='nano --const --smooth --mouse';
+
+if [ -x "$(command -v micro)" ]; then
+    alias nano='micro';
+fi
 
 # fix python2 to run python3
 #alias python=python3
