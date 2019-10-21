@@ -110,8 +110,7 @@ source ${SCRIPTS}/list/list.zsh;
 source ${SCRIPTS}/npm/npm.zsh;
 source ${SCRIPTS}/nextcloud/nextcloud.zsh;
 source ${SCRIPTS}/git/git.zsh;
-
-
+source ${SCRIPTS}/secrets/ssh.zsh
 
 
 ##- Theme Settings
