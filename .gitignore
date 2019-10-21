@@ -39,6 +39,7 @@ Windows/Registry/
 .hyper_plugins/
 OldConfigs/
 .vscode/extensions/
+secrets/
 
 # TypeScript v1 declaration files
 typings/
