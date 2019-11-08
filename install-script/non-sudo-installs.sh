@@ -6,11 +6,9 @@ cd ~/.bin;
 # Jump
 mkdir -p jump;
 cd jump;
-#//TODO: add wget install for mac
-#//TODO: make wget grab latest
 wget https://github.com/gsamokovarov/jump/releases/download/v0.23.0/jump_0.23.0_amd64.deb;
 
-dpkg -x jump*.deb .
+dpkg -x jump_0.23.0_amd64.deb .
 
 cd ..;
 
@@ -19,9 +17,9 @@ mkdir -p exa;
 cd exa;
 wget https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip;
 
-unzip exa*.zip;
+unzip exa-linux-x86_64-0.9.0.zip;
 
-mv exa* exa;
+mv exa-linux-x86_64-0.9.0 exa;
 
 cd .. ;
 
@@ -29,3 +27,11 @@ cd .. ;
 wget https://ranger.github.io/ranger-stable.tar.gz;
 tar xvf ranger-stable.tar.gz
 ADD symlink or alias
+
+
+# zsh
+wget -O zsh.tar.xz https://sourceforge.net/projects/zsh/files/latest/download
+mkdir zsh && unxz zsh.tar.xz && tar -xvf zsh.tar -C zsh --strip-components 1
+cd zsh
+
+# midnight commander
