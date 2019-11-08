@@ -80,7 +80,7 @@
 			}
 		},
 		{
-			"executionCount": 22,
+			"executionCount": 25,
 			"item": {
 				"active": true,
 				"description": "Accessories ▸ Notepad.lnk",
@@ -99,7 +99,7 @@
 			}
 		},
 		{
-			"executionCount": 2,
+			"executionCount": 3,
 			"item": {
 				"active": true,
 				"description": "Programs ▸ Nextcloud.lnk",
@@ -118,7 +118,7 @@
 			}
 		},
 		{
-			"executionCount": 24,
+			"executionCount": 25,
 			"item": {
 				"active": true,
 				"description": "Programs ▸ Google Chrome.lnk",
@@ -835,7 +835,7 @@
 			}
 		},
 		{
-			"executionCount": 3,
+			"executionCount": 4,
 			"item": {
 				"active": true,
 				"description": "",
@@ -1026,7 +1026,7 @@
 			}
 		},
 		{
-			"executionCount": 4,
+			"executionCount": 5,
 			"item": {
 				"active": true,
 				"description": "Typora ▸ Typora.lnk",
@@ -1118,7 +1118,7 @@
 			}
 		},
 		{
-			"executionCount": 13,
+			"executionCount": 19,
 			"item": {
 				"active": true,
 				"description": "dsa techcomm slack",
@@ -1463,6 +1463,27 @@
 				"originPluginType": "websearch-plugin",
 				"resultNumber": 1,
 				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Steam ▸ Steam.lnk",
+				"executionArgument": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Steam\\Steam.lnk",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "C:\\Users\\aslan\\.ueli\\application-icons\\steam-a82563d76d1e7efd0bff70a91153a976.png",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Steam",
+				"originPluginType": "application-search-plugin",
+				"resultNumber": 1,
+				"searchable": [
+					"Steam"
+				],
+				"supportsOpenLocation": true
 			}
 		}
 	],
