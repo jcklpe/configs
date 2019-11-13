@@ -138,7 +138,9 @@ eval "$(jump shell zsh)"
 source ${PLUGINS}/jump-ranger/jump-ranger.zsh
 
 ##- warp door
-wd() { source ${PLUGINS}/wd/wd.sh; }
+wd() {
+    source ${PLUGINS}/wd/wd.sh;
+    }
 
 ##- bd (cd for parent directories)
 source ${PLUGINS}/zsh-bd/bd.zsh
