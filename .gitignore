@@ -39,7 +39,7 @@ Windows/Registry/
 .hyper_plugins/
 OldConfigs/
 .vscode/extensions/
-secrets/
+
 
 # TypeScript v1 declaration files
 typings/
@@ -85,6 +85,7 @@ Windows/Shortcuts/Firefox
 Windows/Shortcuts/PotPlayer
 Windows/Shortcuts/Rainmeter
 Windows/Themes
+secrets/
 
 # Mac crap
 .DS_Store*
