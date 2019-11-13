@@ -80,7 +80,7 @@
 			}
 		},
 		{
-			"executionCount": 25,
+			"executionCount": 26,
 			"item": {
 				"active": true,
 				"description": "Accessories ▸ Notepad.lnk",
@@ -99,7 +99,7 @@
 			}
 		},
 		{
-			"executionCount": 3,
+			"executionCount": 4,
 			"item": {
 				"active": true,
 				"description": "Programs ▸ Nextcloud.lnk",
@@ -1118,7 +1118,7 @@
 			}
 		},
 		{
-			"executionCount": 19,
+			"executionCount": 23,
 			"item": {
 				"active": true,
 				"description": "dsa techcomm slack",
@@ -1484,6 +1484,24 @@
 					"Steam"
 				],
 				"supportsOpenLocation": true
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on Go! for \"kickstarter\"",
+				"executionArgument": "https://www.google.com/search?btnI=1&q=kickstarter",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Go!",
+				"originPluginType": "websearch-plugin",
+				"resultNumber": 1,
+				"searchable": []
 			}
 		}
 	],
