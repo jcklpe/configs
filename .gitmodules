@@ -1,32 +1,32 @@
-[submodule "zsh/plugins/no-more-secrets"]
-	path = zsh/plugins/no-more-secrets
+[submodule "plugins/no-more-secrets"]
+	path = plugins/no-more-secrets
 	url = https://github.com/bartobri/no-more-secrets.git
 	ignore = dirty
-[submodule "zsh/plugins/powerlevel9k"]
-	path = zsh/plugins/powerlevel9k
+[submodule "plugins/powerlevel9k"]
+	path = plugins/powerlevel9k
 	url = https://github.com/Powerlevel9k/powerlevel9k.git
 	ignore = dirty
-[submodule "zsh/plugins/wd"]
-	path = zsh/plugins/wd
+[submodule "plugins/wd"]
+	path = plugins/wd
 	url = https://github.com/mfaerevaag/wd.git
 	ignore = dirty
-[submodule "zsh/plugins/zsh-autosuggestions"]
-	path = zsh/plugins/zsh-autosuggestions
+[submodule "plugins/zsh-autosuggestions"]
+	path = plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
 	ignore = dirty
-[submodule "zsh/plugins/zsh-syntax-highlighting"]
-	path = zsh/plugins/zsh-syntax-highlighting
+[submodule "plugins/zsh-syntax-highlighting"]
+	path = plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
 	ignore = dirty
-[submodule "zsh/plugins/zsh-you-should-use"]
-	path = zsh/plugins/zsh-you-should-use
+[submodule "plugins/zsh-you-should-use"]
+	path = plugins/zsh-you-should-use
 	url = https://github.com/MichaelAquilina/zsh-you-should-use.git
 [submodule "hue/huesh"]
 	path = hue/huesh
 	url = https://github.com/niklasberglund/huesh.git
 	ignore = dirty
-[submodule "zsh/plugins/jump-ranger"]
-	path = zsh/plugins/jump-ranger
+[submodule "plugins/jump-ranger"]
+	path = plugins/jump-ranger
 	url = https://github.com/gsamokovarov/jump-ranger.git
 	ignore = dirty
 [submodule "firefox/firefoxhax"]
@@ -35,12 +35,9 @@
 [submodule "user-styles"]
 	path = user-styles
 	url = https://github.com/jcklpe/user-styles.git
-[submodule "zsh/plugins/Color-Scripts"]
-	path = zsh/plugins/Color-Scripts
+[submodule "plugins/Color-Scripts"]
+	path = plugins/Color-Scripts
 	url = https://github.com/stark/Color-Scripts.git
-[submodule "zsh/zsh-scripts"]
-	path = zsh/zsh-scripts
-	url = https://github.com/jcklpe/zsh-scripts.git
-[submodule "zsh/plugins/zsh-bd"]
-	path = zsh/plugins/zsh-bd
+[submodule "plugins/zsh-bd"]
+	path = plugins/zsh-bd
 	url = https://github.com/Tarrasch/zsh-bd.git

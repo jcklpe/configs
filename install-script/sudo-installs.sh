@@ -16,12 +16,12 @@ git submodule update --recursive ;
         #ranger
         apt install ranger;
 
+        #install brew deps
+        apt install build-essential;
+
         ##- brew installs
         #install brew
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)";
-
-        #install brew deps
-        sudo apt install build-essential;
 
         # add brew to path
         eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
@@ -34,24 +34,14 @@ git submodule update --recursive ;
          brew install jump;
          brew install micro;
 
-         # the following can be installed in other ways than brew and will install in non standard locations but maybe that's okay?
-         #brew install visual-studio-code;
 
-        ##- manual installations
-        install stuff by wget etc that cant be installed via apt/brew
 
         ##- symlink stuff to $HOME
         .bashrc
         .profile
         .gitconfig
-        .hyper.js
         .zshrc
         .zprofile
-
-        vscode settings
-        micro which is under .config
-
-
 
     ##- Windows Subystem Layer Only
         if [[ $UNAMECHECK == *"Microsoft"* ]] then
@@ -60,18 +50,29 @@ git submodule update --recursive ;
         export WINHOME=${WINHOME//$'\015'};
         CONFIGS="${WINHOME}/home/Documents/configs";
 
-        ##- symlink config files
-        #symlink normal linux configs to $HOME
 
-        #symlink Windows configs to $WINHOME
+
+        ##- symlink stuff to $WINHOME
+        ${WINHOME}/AppData/Roaming/Hyper -> ${CONFIGS}/hyper-js/.hyper.js
+        ${WINHOME}/AppData/Roaming/Nextcloud -> ${CONFIGS}/nextcloud/sync-exlude.lst
+        ${WINHOME}/AppData/Roaming/ueli/config.json -> ${CONFIGS}/ueli/config.json
+        ${WINHOME}/AppData/Roaming/Code/User/settings.json -> ${CONFIGS}/vscodesettings.json
+
+ #/AppData/Roaming/Blender/user-pref.blend
 
     ##- Linux ONLY
     else
         #set variables
         CONFIGS="$HOME/configs";
 
+        #install preferred Linux programs
+        brew install visual-studio-code;
+
         ##- symlink config files
-        #symlink configs to $HOME
+        .hyper.js
+        $HOME/.config/Code/User/settings.json
+        .config/micro
+        .config/nextcloud/sync-exclude.lst
 
     fi #end of checking linux or WSL
 
@@ -87,15 +88,39 @@ git submodule update --recursive ;
         #install brew
         /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-        # need to include the after install message here but can't until I run this on a sudo-able mac again.
+         # add brew to path
+        eval $(/usr/local/Homebrew/bin/brew shellenv);
+
+        #install brew version of gcc for easier building
+        brew install gcc
+
+        #install stuff via brew that cant be install via apt
+         brew install exa;
+         brew install jump;
+         brew install micro;
 
         # symlink configs to $HOME
-        .bashrc
-        .profile
-        .gitconfig
-        .hyper.js
-        .zprofile
-        .zshrc
+        $HOME/.bashrc
+        ${CONFIGS}/bash/bashrc.sh
+
+        $HOME/.profile
+        ${CONFIGS}/bash/profile.sh
+
+        $HOME/.gitconfig
+        ${CONFIGS}/git/gitconfig.gitconfig
+
+        $HOME/.hyper.js
+        ${CONFIGS}/hyper/hyper.js
+
+        $HOME/.zprofile
+        ${CONFIGS}/zsh/zprofile.zsh
+
+        $HOME/.zshrc
+        ${CONFIGS}/zsh/zshrc.zsh
+
+        $HOME/Library/Application Support/Code/User/settings.json
+        ${CONFIGS}/vscode/settings.json
+
     else
     echo "this install script doesn't support this OS";
     exit;
