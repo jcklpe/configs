@@ -1,0 +1,25 @@
+]Thumbs.db
+System Volume Information
+].Trashes
+].DocumentRevisions-V100
+].Trash-*
+.fseventd
+.apdisk
+.htaccess
+.directory
+*.part
+*.filepart
+*.crdownload
+*.kate-swp
+*.gnucash.tmp-*
+.synkron.*
+.sync.ffs_db
+.symform
+.symform-store
+.fuse_hidden*
+*.unison
+.nfs*
+**/node_modules/
+**/cache/
+**/.git/~~~disabled
+**/.thumbnails/
