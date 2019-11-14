@@ -72,5 +72,5 @@ alias go-bin="cd ${MYBIN}";
     exit;
     fi
 
-    ##- ADD symlink or alias for bin files
-        # aliases for the bin files. This might need to be a separate file that then gets sourced based upon some kind of env variable which gets set here by the install script.
+    ##- add MYBIN to PATH
+    export PATH="${MYBIN}:$PATH"

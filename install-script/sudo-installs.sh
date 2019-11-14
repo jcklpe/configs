@@ -17,11 +17,41 @@ git submodule update --recursive ;
         apt install ranger;
 
         ##- brew installs
-        install brew
-        install stuff via brew that cant be install via apt
+        #install brew
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)";
+
+        #install brew deps
+        sudo apt install build-essential;
+
+        # add brew to path
+        eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
+
+        #install brew version of gcc for easier building
+        brew install gcc
+
+        #install stuff via brew that cant be install via apt
+         brew install exa;
+         brew install jump;
+         brew install micro;
+
+         # the following can be installed in other ways than brew and will install in non standard locations but maybe that's okay?
+         #brew install visual-studio-code;
 
         ##- manual installations
         install stuff by wget etc that cant be installed via apt/brew
+
+        ##- symlink stuff to $HOME
+        .bashrc
+        .profile
+        .gitconfig
+        .hyper.js
+        .zshrc
+        .zprofile
+
+        vscode settings
+        micro which is under .config
+
+
 
     ##- Windows Subystem Layer Only
         if [[ $UNAMECHECK == *"Microsoft"* ]] then
@@ -52,12 +82,20 @@ git submodule update --recursive ;
         #settings variables
         CONFIGS="$HOME/configs";
 
-        #install brew
 
         ##- brew installs
+        #install brew
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+        # need to include the after install message here but can't until I run this on a sudo-able mac again.
 
         # symlink configs to $HOME
-        symlink configs to $HOME
+        .bashrc
+        .profile
+        .gitconfig
+        .hyper.js
+        .zprofile
+        .zshrc
     else
     echo "this install script doesn't support this OS";
     exit;
