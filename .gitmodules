@@ -8,3 +8,30 @@
 [submodule "user-styles"]
 	path = user-styles
 	url = https://github.com/jcklpe/user-styles.git
+[submodule "plugins/no-more-secrets"]
+	path = plugins/no-more-secrets
+	url = https://github.com/bartobri/no-more-secrets.git
+[submodule "plugins/powerlevel9k"]
+	path = plugins/powerlevel9k
+	url = https://github.com/Powerlevel9k/powerlevel9k.git
+[submodule "plugins/wd"]
+	path = plugins/wd
+	url = https://github.com/mfaerevaag/wd.git
+[submodule "plugins/zsh-autosuggestions"]
+	path = plugins/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "plugins/zsh-syntax-highlighting"]
+	path = plugins/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "plugins/zsh-you-should-use"]
+	path = plugins/zsh-you-should-use
+	url = https://github.com/MichaelAquilina/zsh-you-should-use.git
+[submodule "plugins/jump-ranger"]
+	path = plugins/jump-ranger
+	url = https://github.com/gsamokovarov/jump-ranger.git
+[submodule "plugins/Color-Scripts"]
+	path = plugins/Color-Scripts
+	url = https://github.com/stark/Color-Scripts.git
+[submodule "plugins/zsh-bd"]
+	path = plugins/zsh-bd
+	url = https://github.com/Tarrasch/zsh-bd.git
