@@ -86,14 +86,19 @@ PLUGINS="${CONFIGS}/plugins";
 #make mount look prettier
 alias mount='mount |column -t';
 
-#alias rm='trash';
+#replace rm with trash
+if [ -x "$(command -v trash)" ]; then
+  alias rm='trash';
+fi
+
 
 # Run nano cursor always visible, smooth scrolling on, use the mouse, and disable hard wrapping.
 alias nano='nano --const --smooth --mouse';
 
-if [ -x "$(command -v micro)" ]; then
-    alias nano='micro';
-fi
+# replace nano with micro
+# if [ -x "$(command -v micro)" ]; then
+#     alias nano='micro';
+# fi
 
 # fix python2 to run python3
 #alias python=python3
