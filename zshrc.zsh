@@ -42,6 +42,9 @@ if [ -d "$HOME/torch" ]; then
  source $HOME/torch/install/bin/torch-activate
 fi
 
+if [ -d "$HOME/.linuxbrew" ]; then
+export PATH=~/.linuxbrew/Homebrew/bin:$PATH
+fi
 
 
 fi # end of linux-gnu
@@ -74,7 +77,6 @@ fi
 PLUGINS="${CONFIGS}/plugins";
 
 
-
 ##- zsh related
  alias config="nano ~/.zshrc";
 
@@ -95,7 +97,6 @@ alias mount='mount |column -t';
 if [ -x "$(command -v trash)" ]; then
   alias rm='trash';
 fi
-
 
 # Run nano cursor always visible, smooth scrolling on, use the mouse, and disable hard wrapping.
 alias nano='nano --const --smooth --mouse';
