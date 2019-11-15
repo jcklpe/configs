@@ -38,8 +38,13 @@ else
 CONFIGS="$HOME/configs";
 
 # add torch to commands available
-source $HOME/torch/install/bin/torch-activate
-    fi
+if [ -d "$HOME/torch" ]; then
+ source $HOME/torch/install/bin/torch-activate
+fi
+
+
+
+fi # end of linux-gnu
 
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 ##- macOS
