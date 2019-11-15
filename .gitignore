@@ -68,6 +68,7 @@ typings/
 
 # Security issues
 .gitconfig
+*.gitconfig
 *.sql
 *.sqlite3
 *.sqlite3-journal
@@ -79,7 +80,6 @@ _gsdata_
 Code/CachedData/*
 */Code/CachedData/*
 *.code
-newstuff/*
 Windows/Shortcuts/*
 Windows/Shortcuts/Firefox
 Windows/Shortcuts/PotPlayer
