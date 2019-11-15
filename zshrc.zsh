@@ -114,7 +114,10 @@ source ${CONFIGS}/list/list.zsh;
 source ${CONFIGS}/npm/npm.zsh;
 source ${CONFIGS}/nextcloud/nextcloud.zsh;
 source ${CONFIGS}/git/git.zsh;
+
+if ! [ -n "$SSH_CLIENT" ]; then
 source ${CONFIGS}/secrets/ssh.zsh
+fi
 
 
 ##- Theme Settings
