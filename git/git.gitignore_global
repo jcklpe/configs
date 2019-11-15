@@ -21,6 +21,8 @@
 # Environment files that may contain sensitive data
 .env
 .powenv
+.gitconfig
+.git-credentials
 
 # Ignore application configuration
 /config/application.yml
