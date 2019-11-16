@@ -35,3 +35,6 @@
 [submodule "plugins/zsh-bd"]
 	path = plugins/zsh-bd
 	url = https://github.com/Tarrasch/zsh-bd.git
+[submodule "neural-art-scripts"]
+	path = neural-art-scripts
+	url = https://github.com/jcklpe/neural-art-scripts.git
