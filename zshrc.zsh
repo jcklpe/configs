@@ -115,6 +115,7 @@ source ${CONFIGS}/list/list.zsh;
 source ${CONFIGS}/npm/npm.zsh;
 source ${CONFIGS}/nextcloud/nextcloud.zsh;
 source ${CONFIGS}/git/git.zsh;
+source ${CONFIGS}/neural-art-scripts/load-neural-art-scripts.zsh
 
 if ! [ -n "$SSH_CLIENT" ]; then
 source ${CONFIGS}/secrets/ssh.zsh
