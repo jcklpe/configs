@@ -1,0 +1,15 @@
+Install Instructions:
+
+Save Material file here:
+C:\Program Files\Pixologic\ZBrush 4R8\ZStartup\Materials
+
+Save Brush files here:
+C:\Program Files\Pixologic\ZBrush 4R8\ZStartup\BrushPresets
+
+Load UI file inside Zbrush:
+Preferences -> Config -> Load UI
+Preferences -> Config -> Store Config
+
+Load StartUp doc:
+Document -> Open
+Document -> Save As StartUp Doc
