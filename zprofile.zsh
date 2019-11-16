@@ -11,15 +11,30 @@
     source "$HOME/.zshrc"
     fi
 
+# make homebrew available in sudo install
+if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+#export PATH=/home/linuxbrew/.linuxbrew/Homebrew/bin:$PATH
+fi
+
+# make homebrew available in non-sudo installs
+if [ -d "${HOME}/.linuxbrew" ]; then
+eval $(${HOME}/.linuxbrew/bin/brew shellenv);
+fi
+
+
 
 
 ##- 𝖃𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     UNAMECHECK=$(uname -a);
+
+
+
 ##- Windows Subystem Layer
 if [[ $UNAMECHECK == *"Microsoft"* ]] then
 cd home;
-exa;
+
 ##- Normal Linux
 else
 exa;

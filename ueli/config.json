@@ -1503,6 +1503,42 @@
 				"resultNumber": 1,
 				"searchable": []
 			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on Go! for \"semi%20colon%20versus%20slash%20bash%20end%20line\"",
+				"executionArgument": "https://www.google.com/search?btnI=1&q=semi%20colon%20versus%20slash%20bash%20end%20line",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Go!",
+				"originPluginType": "websearch-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on Go! for \"vr%20capable%20laptop\"",
+				"executionArgument": "https://www.google.com/search?btnI=1&q=vr%20capable%20laptop",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Go!",
+				"originPluginType": "websearch-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
 		}
 	],
 	"userConfigOptions": {

@@ -1,16 +1,7 @@
 
-##   ______ _____  _   _   _____               _  _ ______                _
-##  |___  //  ___|| | | | /  ___|             | || || ___ \              | |
-##     / / \ `--. | |_| | \ `--.  _ __    ___ | || || |_/ /  ___    ___  | | __
-##    / /   `--. \|  _  |  `--. \| '_ \  / _ \| || || ___ \ / _ \  / _ \ | |/ /
-##  ./ /___/\__/ /| | | | /\__/ /| |_) ||  __/| || || |_/ /| (_) || (_) ||   <
-##  \_____/\____/ \_| |_/ \____/ | .__/  \___||_||_|\____/  \___/  \___/ |_|\_\
-##                               | |
-##                               |_|
+##- 𝒛𝖘𝖍 𝖘𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
-
-
-##- 𝖃𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
+##- CROSS-𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     UNAMECHECK=$(uname -a);
     if [[ $UNAMECHECK == *"Microsoft"* ]] then
@@ -42,9 +33,13 @@ if [ -d "$HOME/torch" ]; then
  source $HOME/torch/install/bin/torch-activate
 fi
 
+# make homebrew path available in ssh
 if [ -d "$HOME/.linuxbrew" ]; then
 export PATH=~/.linuxbrew/Homebrew/bin:$PATH
 fi
+
+
+
 
 
 fi # end of linux-gnu
