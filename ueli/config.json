@@ -1539,6 +1539,23 @@
 				"resultNumber": 1,
 				"searchable": []
 			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "RGBA",
+				"executionArgument": "rgba(63, 72, 137, 1)",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "rgba(63, 72, 137, 1)",
+					"type": "color"
+				},
+				"id": "search-result-item-3",
+				"name": "rgba(63, 72, 137, 1)",
+				"resultNumber": 3,
+				"searchable": []
+			}
 		}
 	],
 	"userConfigOptions": {

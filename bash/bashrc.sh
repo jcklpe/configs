@@ -6,6 +6,7 @@
 ## ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 
 ##- Movement
+
 function cd {
     builtin cd "$@" && exa
     }
