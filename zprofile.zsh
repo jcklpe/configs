@@ -20,7 +20,6 @@ fi
 # make homebrew available in sudo mac install
 if [ -d "/usr/local/Cellar" ]; then
 eval $(/usr/local/bin/brew shellenv)
-#export PATH=/home/linuxbrew/.linuxbrew/Homebrew/bin:$PATH
 fi
 
 # make homebrew available in non-sudo installs
