@@ -50,3 +50,6 @@
 	path = neural-art-scripts
 	url = https://github.com/jcklpe/neural-art-scripts.git
 	ignore = dirty
+[submodule "vscode/vscode-enzo"]
+	path = vscode/vscode-enzo
+	url = https://github.com/jcklpe/vscode-enzo.git

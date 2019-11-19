@@ -13,9 +13,7 @@
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
   //-- BACKGROUND
-  "background.customImages": [
-    "https://imgur.com/TLozdBw.jpg"
-  ],
+  "background.customImages": ["https://imgur.com/TLozdBw.jpg"],
   "background.enabled": true,
   "background.style": {
     "content": "''",
@@ -79,11 +77,13 @@
     "editor.lineHighlightBackground": "#251e4d",
     "editor.rangeHighlightBackground": "#101731",
     "editor.rangeHighlightBorder": "#72edeb",
-    "editor.selectionBackground": "#ac2a32",
+    "editor.selectionBackground": "#ac2a32", //Current SELECTED text
     "editor.selectionForeground": "#101731",
-    "editor.selectionHighlightBackground": "#211a5766",
+    "editor.selectionHighlightBackground": "#e24f4780", // matching text of selection
     //"editor.selectionHighlightBorder": "#72edeb",
-    "editorCursor.foreground": "#e9f56f",
+    "editor.wordHighlightStrongBackground": "#73f0ad00",
+    "editor.wordHighlightBackground": "#73f0ad10",
+    "editorCursor.foreground": "#DDFF03",
     //- bottom status bar
     "editorWidget.background": "#332932",
     "statusBar.background": "#24222f",
@@ -110,7 +110,8 @@
   },
   //- Token Color customizations
   "editor.tokenColorCustomizations": {
-    "textMateRules": [ //Json Layers theming
+    "textMateRules": [
+      //Json Layers theming
       {
         "name": "JSON Value - Level 0",
         "scope": [
@@ -272,45 +273,35 @@
       },
       {
         "name": "commas",
-        "scope": [
-          "punctuation.separator.comma.js"
-        ],
+        "scope": ["punctuation.separator.comma.js"],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "array brackets",
-        "scope": [
-          "meta.array.literal.js meta.brace.square.js "
-        ],
+        "scope": ["meta.array.literal.js meta.brace.square.js "],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "equals sign for assigning variables",
-        "scope": [
-          "keyword.operator.assignment.js"
-        ],
+        "scope": ["keyword.operator.assignment.js"],
         "settings": {
           "foreground": "#ffa342"
         }
       },
       {
         "name": "equals sign for assigning variables",
-        "scope": [
-          "punctuation.separator.key-value.html"
-        ],
+        "scope": ["punctuation.separator.key-value.html"],
         "settings": {
           "foreground": "#ffa342"
         }
       },
       {
         "name": "comparison sign",
-        "scope": [
-          "keyword.operator.comparison.js"
-        ],
+        "scope": ["keyword.operator.comparison.js"],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -318,27 +309,21 @@
       // fix missing array functions
       {
         "name": "array function",
-        "scope": [
-          "support.variable.property.js"
-        ],
+        "scope": ["support.variable.property.js"],
         "settings": {
           "foreground": "#ff677b"
         }
       },
       {
         "name": "variable being used with a function",
-        "scope": [
-          "support.variable.property.js"
-        ],
+        "scope": ["support.variable.property.js"],
         "settings": {
           "foreground": "#e94e8d"
         }
       },
       {
         "name": "operators",
-        "scope": [
-          "keyword.operator.arithmetic.js"
-        ],
+        "scope": ["keyword.operator.arithmetic.js"],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -393,97 +378,44 @@
         "color": "#1f1f1f"
       }
     ],
-    //NOTE: styling
-    "(/)(/?)(N)(O?)(T)(E)(:?)(.*)": [
+    //NOTE: this is a note
+    "(//?NOTE:?)(.*)": [
       {
-        "overviewRulerColor": "#45304C",
-        "backgroundColor": "#45304C",
+        "overviewRulerColor": "rgba(63, 72, 137, 1)",
+        "backgroundColor": "rgba(63, 72, 137, 1)",
         "color": "#1f1f1f",
         "fontWeight": "bold",
         "borderRadius": "5px 0px 0px 5px"
       },
       {
-        "overviewRulerColor": "#4A3862",
-        "backgroundColor": "#4A3862",
-        "color": "#1f1f1f",
-        "fontWeight": "bold"
-      },
-      {
-        "overviewRulerColor": "#3F4889",
-        "backgroundColor": "#3F4889",
-        "color": "#1f1f1f",
-        "fontWeight": "bold"
-      },
-      {
-        "overviewRulerColor": "#3F73A4",
-        "backgroundColor": "#3F73A4",
-        "color": "#1f1f1f",
-        "fontWeight": "bold"
-      },
-      {
-        "overviewRulerColor": "#37C2C3",
-        "backgroundColor": "#37C2C3",
-        "color": "#1f1f1f",
-        "fontWeight": "bold"
-      },
-      {
-        "overviewRulerColor": "#28E27D",
-        "backgroundColor": "#28E27D",
-        "color": "#1f1f1f",
-        "fontWeight": "bold"
-      },
-      {
-        "overviewRulerColor": "rgba(30, 241, 68, 0.9)",
-        "backgroundColor": "rgba(30, 241, 68, 0.9)",
-        "color": "#1f1f1f",
-        "fontWeight": "bold"
-      },
-      {
-        "backgroundColor": "rgba(30, 241, 68, 0.09)",
-        "color": "black"
+        "backgroundColor": "rgba(63, 72, 137, .5)",
+        "color": "#1f1f1f"
       }
     ],
     //REMOVE: styling
     "(//?REMOVE:?)(.*)": [
       {
-        "overviewRulerColor": "#4b553f",
-        "backgroundColor": "rgba(63, 75, 85, 1)",
+        "overviewRulerColor": "rgba(160, 17, 77, .8)",
+        "backgroundColor": "rgba(160, 17, 77, .5)",
         "color": "#1f1f1f",
         "fontWeight": "bold",
         "borderRadius": "5px 0px 0px 5px"
       },
       {
-        "backgroundColor": "rgba(63, 75, 85, 0.5)",
+        "backgroundColor": "rgba(160, 17, 77, .2)",
         "color": "#1f1f1f"
       }
     ],
     // @import styling
     "(// )(@\\w+)": [
-      {},
+      {
+        "color": "#4de0ff"
+      },
       {
         "color": "#4de0ff"
       }
     ],
-    // HTML  Title
-    "(<!--(?:\\/\\/))(.*?)(-->)": [
-      {
-        "backgroundColor": "cyan",
-        "color": "black",
-        "overviewRulerColor": "yellow"
-      },
-      {
-        "backgroundColor": "cyan",
-        "color": "black",
-        "overviewRulerColor": "yellow"
-      },
-      {
-        "backgroundColor": "red",
-        "color": "black",
-        "overviewRulerColor": "yellow"
-      }
-    ],
-    ///////////////////////////////
-    //-  Title styling
+    //h1 comment
     "(\\/\\/\\-)(.*)": [
       {
         "overviewRulerColor": "yellow",
@@ -499,22 +431,45 @@
         "fontSize": "2em"
       }
     ],
-    //////////////////////////////
-    //- Additional styling for signage
-    "(\\/\\/\\/\\/.*)(.*)": [
-      {
-        "overviewRulerColor": "yellow",
-        "backgroundColor": "yellow",
-        "color": "yellow",
-        "fontWeight": "bold"
-      },
-      {
-        "backgroundColor": "black",
-        "color": "yellow",
-        "fontWeight": "bold",
-        "isWholeLine": true
-      }
-    ],
+
+    //h1 shell
+    "(##-.*?)(.+(?=\n|\r))": {
+      "filterLanguageRegex": "shell", // Apply only if current file's language matches this regex. Requires double escaping
+      "decorations": [
+        // Decoration options to apply to the capturing groups
+        {
+          "filterLanguageRegex": "bash",
+          "overviewRulerColor": "yellow",
+          "backgroundColor": "yellow",
+          "color": "black",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "black",
+          "color": "#72edeb",
+          "fontWeight": "bold",
+          "isWholeLine": true,
+          "fontSize": "2em"
+        }
+      ]
+    },
+    //h2 shell
+    "(#--.*?)(.+(?=\n|\r))": {
+      "filterLanguageRegex": "shell",
+      "decorations": [
+        {
+          "overviewRulerColor": "rgba(244, 208, 63, .7)",
+          "backgroundColor": "rgba(244, 208, 63, .7)",
+          "color": "#181c21",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#181c21",
+          "color": "#1BB4C0",
+          "fontSize": "1.5em"
+        }
+      ]
+    },
     //## monospaced hash comments
     "(^##(?!-).+(?=\n|\r))": [
       {
@@ -525,38 +480,9 @@
         "isWholeLine": true
       }
     ],
-    // ##-  hash comments titles
-    "(##-.*?)(.+(?=\n|\r))": [
-      {
-        "overviewRulerColor": "yellow",
-        "backgroundColor": "yellow",
-        "color": "black",
-        "fontWeight": "bold"
-      },
-      {
-        "backgroundColor": "black",
-        "color": "#72edeb",
-        "fontWeight": "bold",
-        "isWholeLine": true,
-        "fontSize": "2em"
-      }
-    ],
-    // #--  hash comments titles
-    "(#--.*?)(.+(?=\n|\r))": [
-      {
-        "overviewRulerColor": "gold",
-        "backgroundColor": "gold",
-        "color": "#181c21",
-        "fontWeight": "bold"
-      },
-      {
-        "backgroundColor": "#181c21",
-        "color": "#1BB4C0",
-        "fontSize": "1.5em"
-      }
-    ],
-    //*- SCSS block commented code */
-    "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [ // */*
+    //SCSS block commented code
+    "((\\/\\*-)([^/*][^*]*\\*+)*\\/)": [
+      // */*
       {
         "overviewRulerColor": "Blue",
         "backgroundColor": "#181c21",
@@ -565,61 +491,57 @@
         "isWholeLine": true
       }
     ],
-    //{{ Angular Dynamic Variable styling}}
-    "(\\{\\{[^\\}|^\\r|^\\n]*\\}\\})(?!\\})": [
+    //{{Angular Dynamic Variable styling}}
+    "(\\{\\{)(.+)(\\}\\})": [
       {
-        "backgroundColor": "rgba(109, 158, 70, 0.71)",
-        "color": "#000",
+        "backgroundColor": "rgba(70, 130, 109, 0.71)",
+        "color": "#001130",
         "fontWeight": "bold",
-        "borderRadius": "10px"
+        "borderRadius": "10px 0 0 10px"
+      },
+      {
+        "backgroundColor": "rgba(70, 130, 109, 0.71)",
+        "color": "#001130",
+        "fontWeight": "bold"
+      },
+      {
+        "backgroundColor": "rgba(70, 130, 109, 0.71)",
+        "color": "#001130",
+        "fontWeight": "bold",
+        "borderRadius": "0 10px 10px 0"
       }
     ],
-    //{ React Dynamic Variable styling }
-    "(\\{[^\\}|^\\r|^\\n]*\\})(?!\\})": [
+    //{React Dynamic Variable styling}
+    "([^\\$|\\{])(\\{(?!{))([^\\r\\n\\s]+)(\\})": [
+      {},
       {
-        "backgroundColor": "rgba(109, 158, 70, 0.71)",
+        "backgroundColor": "rgba(80, 158, 80, 0.71)",
+        "color": "#001130",
+        "fontWeight": "bold",
+        "borderRadius": "10px 0 0 10px"
+      },
+      {
+        "backgroundColor": "rgba(80, 158, 80, 0.71)",
+        "color": "#001130",
+        "fontWeight": "bold"
+      },
+      {
+        "backgroundColor": "rgba(80, 158, 80, 0.71)",
+        "color": "#001130",
+        "fontWeight": "bold",
+        "borderRadius": "0 10px 10px 0"
+      }
+    ],
+    // ${teamplate insertion}
+    "(\\$\\{[^\\}|^\\r|^\\n]*\\})(?!\\})": [
+      {
+        "backgroundColor": "rgba(119, 158, 70, 0.71)",
         "color": "#001130",
         "fontWeight": "bold",
         "borderRadius": "10px"
       }
     ],
-    // HTML Comment Block
-    // -->
-    // "(<!--(?!\\/\\/))((.|\n|\r)*?)(\\-\\->)": [ //-->
-    //   {
-    //     "backgroundColor": "rgba(59,64,82, .7)",
-    //     "borderStyle": "solid",
-    //     "borderWidth": "1px",
-    //     "borderColor": "rgba(59,64,82, .7)",
-    //     "color": "#385d74",
-    //     "isWholeLine": "true",
-    //     "overviewRulerColor": "rgba(59,64,82, .7)"
-    //   },
-    //   {
-    //     "borderWidth": "1px",
-    //     "borderStyle": "solid",
-    //     "borderColor": "rgba(59,64,82, .7)",
-    //     "borderRadius": "0px",
-    //     "backgroundColor": "33b4052",
-    //     "color": "#385d74",
-    //     "isWholeLine": "true"
-    //   },
-    //   {
-    //     "backgroundColor": "rgba(59,64,82, .7)",
-    //     "borderStyle": "solid",
-    //     "borderWidth": "1px",
-    //     "borderColor": "rgba(59,64,82, .7)",
-    //     "color": "#385d74",
-    //     "isWholeLine": "true"
-    //   }
-    // ],
-    //- Opening  HTML Tag
-    //    <tag>
-    // <?php
-    // ?>
-    //      <img/>
-    //      testing
-    //    </tag>
+    // Opening  HTML Tag
     "(<(?!\\?php|\\!|/))(\\w+)([\\s\\S]*?)(>(?=/?))": [
       {
         "borderWidth": "1px 0 0 1px",
@@ -633,7 +555,8 @@
         "margin": "50px"
       },
       {
-        "backgroundColor": "rgba(33, 18, 30, 0.5)",
+        "backgroundColor": "rgba(33, 18, 30, 0.1)",
+        "backgroundColor": "rgba(33, 18, 30, 0.1)",
         "borderWidth": "1px 0 0 0",
         "borderStyle": "solid",
         "borderColor": "rgba(212,64,64, 0.5)",
@@ -644,24 +567,13 @@
       },
       {
         "backgroundColor": "rgba(33, 18, 30, 0.3)"
-        // "borderWidth": "0 0 0 0",
-        // "borderStyle": "solid",
-        // "borderColor": "rgba(255, 103, 123, 0.5)",
-        // "borderRadius": "0px",
-        //"color": "rgba(212,64,64, 0.5)"
       },
       {
         "backgroundColor": "rgba(15, 21, 31, 0.3)",
         "color": "rgba(40, 68, 85, 0.7)"
       }
     ],
-    //- Self-closing HTML Tags
-    // <img/>
-    // <?php
-    // ?>
-    // </ app>
-    //([abc])
-    // </ app>
+    // Self-closing HTML Tags
     "(<(?!\\/p\\!))(.*|\n*|\r)(\\/>)": [
       {
         "borderWidth": "1px 0 1px 1px",
@@ -688,14 +600,7 @@
         "fontWeight": "bold"
       }
     ],
-    //- Closing HTML Tags
-    //  <tag>
-    //<?php
-    // ?>
-    // <?php
-    // ?>
-    // </ app>
-    // </tag>
+    // Closing HTML Tags
     "(<\\/)(\\w+)(>)": [
       {
         "backgroundColor": "rgba(15, 21, 31, 0.45)",
@@ -721,11 +626,7 @@
         "fontWeight": "bold"
       }
     ],
-    //- PHP Tag
-    // <?php     fdjfkldjsaf
-    // fjdklsafjkld
-    // ?>
-    // originally used this (<\\?php)()([\\s\\S]*?)(\\?>) for some reason not sure. making note of it here because sync plugin keeps breaking stuff
+    // PHP Tag
     "(<\\?php)([\\s\\S]*?)(\\?>)": [
       {
         "borderWidth": "2px 0 0 2px",
@@ -737,21 +638,8 @@
         "fontStyle": "bold",
         "fontWeight": "bold"
       },
-      // {
-      //   "backgroundColor": "rgba(24, 33, 33, 0.4)"
-      //   // "borderWidth": "0px 0 0 0",
-      //   // "borderStyle": "solid",
-      //   // "borderColor": "rgba(144, 117, 172, .5)",
-      //   // "borderRadius": "0px",
-      //   // "color": "rgba(144, 117, 172, .3)"
-      // },
       {
         "backgroundColor": "rgba(24, 33, 33, 0.4)"
-        // "borderWidth": "0px 0 0 0",
-        // "borderStyle": "solid",
-        // "borderColor": "rgba(144, 117, 172, .5)",
-        // "borderRadius": "0px",
-        // "color": "rgba(144, 117, 172, .3)"
       },
       {
         "borderWidth": "0 2px 2px 0",
@@ -762,32 +650,7 @@
         "color": "rgba(144, 117, 172, 1)"
       }
     ],
-    // HTML Comment Block
-    // "(<!--(?!\\/\\/))((.|\n|\\s|\r)*?)(-->)": [
-    //   {
-    //     "backgroundColor": "rgba(59,64,82, .7) ",
-    //     "borderStyle": "solid",
-    //     "borderWidth": "1px",
-    //     "borderColor": "rgba(59,64,82, .7)",
-    //     "color": "gold",
-    //     "isWholeLine": "true"
-    //   },
-    //   {
-    //     "borderWidth": "1px",
-    //     "borderStyle": "solid",
-    //     "borderColor": "rgba(59,64,82, .7)",
-    //     "backgroundColor": "rgba(59,64,82, .7)"
-    //   },
-    //   {
-    //     "backgroundColor": "rgba(59,64,82, .7)",
-    //     "borderStyle": "solid",
-    //     "borderWidth": "1px",
-    //     "borderColor": "rgba(59,64,82, .7)",
-    //     "color": "red",
-    //     "isWholeLine": "true"
-    //   }
-    // ],
-    //- HTML  Title
+    // HTML  Title
     "(<!--(?:\\/\\/))(.*?)(-->)": [
       {
         "backgroundColor": "yellow",
@@ -815,7 +678,6 @@
       {}
     ]
   },
-  ////////////////////////////////////
   //- Visual organization Defaults
   "editor.renderIndentGuides": false,
   "editor.formatOnType": true,
@@ -831,7 +693,7 @@
     "editor.wordWrapColumn": 60,
     "editor.wrappingIndent": "indent"
   },
-  //---Guides and Indents
+  //- Guides and Indents
   "guides.enabled": true,
   "guides.active.extraIndent": false,
   "guides.active.gutter": false,
@@ -911,12 +773,7 @@
   //"indenticator.languageSpecific": {},
   //--- Block Hilighter
   "blockhighlight.accentCurrentLine": true,
-  "blockhighlight.background": [
-    "5",
-    "25",
-    "35",
-    ".1"
-  ],
+  "blockhighlight.background": ["5", "25", "35", ".1"],
   "blockhighlight.isWholeLine": true,
   //- Bracket Pair Colorizer
   "bracket-pair-colorizer-2.forceIterationColorCycle": false,

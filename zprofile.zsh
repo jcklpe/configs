@@ -11,9 +11,15 @@
     source "$HOME/.zshrc"
     fi
 
-# make homebrew available in sudo install
+# make homebrew available in sudo linux install
 if [ -d "/home/linuxbrew/.linuxbrew" ]; then
 eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+#export PATH=/home/linuxbrew/.linuxbrew/Homebrew/bin:$PATH
+fi
+
+# make homebrew available in sudo mac install
+if [ -d "/usr/local/Cellar" ]; then
+eval $(/usr/local/bin/brew shellenv)
 #export PATH=/home/linuxbrew/.linuxbrew/Homebrew/bin:$PATH
 fi
 
