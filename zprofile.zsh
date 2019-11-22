@@ -11,38 +11,39 @@
     source "$HOME/.zshrc"
     fi
 
-# make homebrew available in sudo linux install
-if [ -d "/home/linuxbrew/.linuxbrew" ]; then
-eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-#export PATH=/home/linuxbrew/.linuxbrew/Homebrew/bin:$PATH
-fi
 
-# make homebrew available in sudo mac install
-if [ -d "/usr/local/Cellar" ]; then
-eval $(/usr/local/bin/brew shellenv)
-fi
+##- 𝔠𝔯𝔬𝔰𝔰𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    UNAMECHECK=$(uname -a);
 
 # make homebrew available in non-sudo installs
 if [ -d "${HOME}/.linuxbrew" ]; then
 eval $(${HOME}/.linuxbrew/bin/brew shellenv);
+exa;
 fi
-
-
-
-
-##- 𝖃𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    UNAMECHECK=$(uname -a);
-
 
 
 ##- Windows Subystem Layer
 if [[ $UNAMECHECK == *"Microsoft"* ]] then
-cd home;
+# make homebrew available in sudo linux install
+# make homebrew available in sudo linux install
+if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+    eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
+    if [ -d "./home" ]; then
+        cd home;
+    else
+        exa;
+    fi
+fi
 
 ##- Normal Linux
 else
+# make homebrew available in sudo linux install
+if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
 exa;
+fi
+
 fi
 ##- macOS
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -50,9 +51,14 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 setopt PROMPT_CR
 setopt PROMPT_SP
 export PROMPT_EOL_MARK=""
+# make homebrew available in sudo mac install
+if [ -d "/usr/local/Cellar" ]; then
+eval $(/usr/local/bin/brew shellenv);
 # run exa on start up to get context
 exa;
+fi
 
+##- Error State
 else
    echo "current operating system is not accounted for in zsh config";
 fi

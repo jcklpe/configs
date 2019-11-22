@@ -1,7 +1,5 @@
 
 ##- 𝒛𝖘𝖍 𝖘𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
-#-- stuff
-
 
 ##- CROSS-𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
