@@ -17,7 +17,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/i
 if [ -d "/home/linuxbrew/.linuxbrew" ]; then
     #install brew deps
     apt install build-essential;
-    eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+    eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
     #export PATH=/home/linuxbrew/.linuxbrew/Homebrew/bin:$PATH
 fi
 
@@ -26,8 +26,7 @@ if [ -d "${HOME}/.linuxbrew" ]; then
 eval $(${HOME}/.linuxbrew/bin/brew shellenv);
 fi
 
-# add brew to path
-eval $(${HOME}/.linuxbrew/bin/brew shellenv);
+
 
 #install brew version of gcc for easier building
 brew install gcc;
