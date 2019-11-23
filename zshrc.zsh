@@ -108,6 +108,8 @@ alias nano='nano --const --smooth --mouse';
 ##- Scripts
 
 source ${CONFIGS}/movement/movement.zsh;
+alias .='cd ..'; # this is here because it messes up bash
+
 source ${CONFIGS}/apt/apt.zsh;
 source ${CONFIGS}/image-utilities/image-utilities.zsh
 source ${CONFIGS}/hue/hue.zsh

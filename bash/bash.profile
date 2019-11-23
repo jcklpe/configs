@@ -4,6 +4,8 @@
 # Everything useful is put in .bashrc but this allows me to selectively trigger scripts only at shell start up
 
 #variables
+
+
 UNAMECHECK=$(uname -a);
 
 
