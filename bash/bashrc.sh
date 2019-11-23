@@ -7,6 +7,7 @@
 
 ##- Movement
 
+alias exa='exa --grid --sort=ext --group-directories-first --icons';
 function cd {
     builtin cd "$@" && exa
     }
