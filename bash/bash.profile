@@ -3,6 +3,9 @@
 # exists.
 # Everything useful is put in .bashrc but this allows me to selectively trigger scripts only at shell start up
 
+#variables
+UNAMECHECK=$(uname -a);
+
 
 ##- import .bashrc
 if [ -n "$BASH_VERSION" ]; then
@@ -14,7 +17,7 @@ fi
 
 ##- 𝔠𝔯𝔬𝔰𝔰𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    UNAMECHECK=$(uname -a);
+
 
 # make homebrew available in non-sudo installs
 if [ -d "${HOME}/.linuxbrew" ]; then
@@ -72,5 +75,3 @@ if [[ $- == *i* ]]; then
    export SHELL=zsh
    exec zsh -l
 fi
-
-exa;
