@@ -1,24 +1,7 @@
 ##- Movement
-alias exa='exa --grid --sort=ext --group-directories-first --icons';
-
-#  add exa auto to cd command
-function cd {
-    builtin cd "$@" && exa
-    }
-
-# make a directory and then go inside it
-function mkcdir ()
-{
-    mkdir -p -- "$1" &&
-      cd -P -- "$1"
-      exa
-}
-
-# add exa to git cd
 
 
-
-
+##- ls baselines
 
 # Add  color to ls
 if [ -x /usr/bin/dircolors ]; then
@@ -29,7 +12,7 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 #List everything including hidden stuff
-lh() {
+function lx() {
     ls -AlF --color=always | awk '
         BEGIN {
             FPAT = "([[:space:]]*[^[:space:]]+)";
@@ -50,23 +33,53 @@ lh() {
     '
 }
 
-alias exa-lo='exa --long --grid --sort=ext --header --git --color-scale';
+alias exa='exa --grid --sort=ext --group-directories-first --icons --color-scale';
+##- exa improvement overrides
+# check to see if exa is installed
+if [[ $(LC_ALL=C type exa) = *icon* ]]; then
+
+    alias ls="exa";
+
+    function lx() {
+     exa --long  --header --git --color-scale;
+        }
+
+fi
+
+
+#  add exa auto to cd command
+function cd {
+     builtin cd "$@" && ls
+    }
+
+# make a directory and then go inside it
+function mkcdir ()
+{
+    mkdir -p -- "$1" &&
+      cd -P -- "$1"
+}
+
+function peek() {
+    ls -a
+}
+
+
 
 # get rid of command not found
-alias cd..='cd ..'
+alias cd..='cd ..';
 
 # a quick way to get out of current directory
-alias .='cd ..';
- alias ..='cd ../../'
- alias ...='cd ../../../'
- alias ....='cd ../../../../'
- alias .....='cd ../../../../'
- alias .4='cd ../../../../'
- alias .5='cd ../../../../..'
 
- alias cd2="cd ../.."
- alias cd3='cd ../../../'
- alias cd4='cd ../../../../'
- alias cd5='cd ../../../../..'
- alias cd6='cd ../../../../../..'
- alias cd7='cd ../../../../../../..'
+ alias ..='cd ../../';
+ alias ...='cd ../../../';
+ alias ....='cd ../../../../';
+ alias .....='cd ../../../../';
+ alias .4='cd ../../../../';
+ alias .5='cd ../../../../..';
+
+ alias cd2="cd ../..";
+ alias cd3='cd ../../../';
+ alias cd4='cd ../../../../';
+ alias cd5='cd ../../../../..';
+ alias cd6='cd ../../../../../..';
+ alias cd7='cd ../../../../../../..';
