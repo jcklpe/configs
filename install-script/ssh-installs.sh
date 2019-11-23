@@ -16,8 +16,8 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/i
 # make homebrew available in sudo installs
 if [ -d "/home/linuxbrew/.linuxbrew" ]; then
     #install brew deps
-    apt install build-essential;
-    eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
+    sudo apt install build-essential;
+    sudo eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
     #export PATH=/home/linuxbrew/.linuxbrew/Homebrew/bin:$PATH
 fi
 

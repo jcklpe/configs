@@ -27,14 +27,14 @@ fi
 if [[ $UNAMECHECK == *"Microsoft"* ]] then
 # make homebrew available in sudo linux install
 # make homebrew available in sudo linux install
-if [ -d "/home/linuxbrew/.linuxbrew" ]; then
-    eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
-    if [ -d "./home" ]; then
-        cd home;
-    else
-        exa;
-    fi
-fi
+# if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+#     eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv);
+#     if [ -d "./home" ]; then
+#         cd home;
+#     else
+#         exa;
+#     fi
+# fi
 
 ##- Normal Linux
 else
