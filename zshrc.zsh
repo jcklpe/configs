@@ -119,8 +119,11 @@ source ${CONFIGS}/nextcloud/nextcloud.zsh;
 source ${CONFIGS}/git/git.zsh;
 source ${CONFIGS}/neural-art-scripts/load-neural-art-scripts.zsh
 
-if ! [ -n "$SSH_CLIENT" ]; then
+
+
+if [ -d "${CONFIGS}./secrets/ssh.sh" ]; then
 source ${CONFIGS}/secrets/ssh.zsh
+
 fi
 
 

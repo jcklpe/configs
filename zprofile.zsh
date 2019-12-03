@@ -3,7 +3,9 @@
 # exists.
 # All my real stuff is kept in .zshrc but login only runs on first terminal open so this is a good place to put things that I only want to run on a new terminal, such as moving WSL to my custom home folder, running exa
 
-
+setopt PROMPT_CR
+setopt PROMPT_SP
+export PROMPT_EOL_MARK=""
 ##- import .zshrc
 
     # include .bashrc if it exists
