@@ -1,13 +1,5 @@
 ##- Movement
 
-# # set variables
-# if [[ $(LC_ALL=C type exa) = *icons* ]]; then
-# MOVEMENT="exa";
-# echo "test";
-# else
-# MOVEMENT="ls";
-# fi
-
 ##- ls baselines
 
 # Add  color to ls
