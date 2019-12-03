@@ -21,7 +21,7 @@ module.exports = {
     fontSize: 19,
 
     // font family with optional fallbacks
-    fontFamily: "FuraCode Nerd Font Mono",
+    fontFamily: "FuraCode Nerd Font, Courier",
 
     // default font weight: 'normal' or 'bold'
     fontWeight: "normal",
@@ -108,7 +108,7 @@ module.exports = {
     //
     // PowerShell on Windows
     // - Example: `C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`
-    shell: `C:\\Windows\\System32\\bash.exe`,
+    shell: ``,
 
     // for setting shell arguments (i.e. for using interactive shellArgs: `['-i']`)
     // by default `['--login']` will be used
@@ -121,7 +121,7 @@ module.exports = {
     // set to `false` for no bell
     bell: "SOUND",
 
-    // summon: {
+    //   summon: {
     //   hideDock: true,
     //   hideOnBlur: true,
     //   hotkey: 'Ctrl+.'

@@ -1,6 +1,7 @@
 ##- Custom ZSH Prompt
 
 source  ${PLUGINS}/powerlevel9k/powerlevel9k.zsh-theme
+
 ZSH_THEME="powerlevel9k/powerlevel9k"
 
 POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=1

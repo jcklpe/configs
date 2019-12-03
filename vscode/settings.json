@@ -2,8 +2,8 @@
   //Settings
   "editor.fontSize": 16,
   "editor.lineHeight": 29,
-  "editor.fontFamily": "BlexMono NF, FuraCode Nerd Font,liga-input-sans,monospace",
-  "terminal.integrated.fontFamily": "ProFontWindows Nerd Font Mono",
+  "editor.fontFamily": "BlexMono NF, FuraCode Nerd Font,liga-input-sans, sans serif",
+  "terminal.integrated.fontFamily": "FuraCode Nerd Font, ProFontWindows Nerd Font Mono",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
     "file:///C:/Users/aslan/home/Documents/configs/vscode/injectedTheme/styles.css"
@@ -13,7 +13,9 @@
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
   //-- BACKGROUND
-  "background.customImages": ["https://imgur.com/TLozdBw.jpg"],
+  "background.customImages": [
+    "https://imgur.com/TLozdBw.jpg"
+  ],
   "background.enabled": true,
   "background.style": {
     "content": "''",
@@ -273,35 +275,55 @@
       },
       {
         "name": "commas",
-        "scope": ["punctuation.separator.comma.js"],
+        "scope": [
+          "punctuation.separator.comma.js"
+        ],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "array brackets",
-        "scope": ["meta.array.literal.js meta.brace.square.js "],
+        "scope": [
+          "meta.array.literal.js meta.brace.square.js "
+        ],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "equals sign for assigning variables",
-        "scope": ["keyword.operator.assignment.js"],
+        "scope": [
+          "keyword.operator.assignment.js"
+        ],
+        "settings": {
+          "foreground": "#ffa342"
+        }
+      },
+      //- HTML
+      {
+        "name": "equals sign for assigning variables",
+        "scope": [
+          "punctuation.separator.key-value.html"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
       },
       {
-        "name": "equals sign for assigning variables",
-        "scope": ["punctuation.separator.key-value.html"],
+        "name": "ending html tag",
+        "scope": [
+          "punctuation.definition.tag.end.html"
+        ],
         "settings": {
-          "foreground": "#ffa342"
+          "foreground": "#D44040"
         }
       },
       {
         "name": "comparison sign",
-        "scope": ["keyword.operator.comparison.js"],
+        "scope": [
+          "keyword.operator.comparison.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -309,21 +331,27 @@
       // fix missing array functions
       {
         "name": "array function",
-        "scope": ["support.variable.property.js"],
+        "scope": [
+          "support.variable.property.js"
+        ],
         "settings": {
           "foreground": "#ff677b"
         }
       },
       {
         "name": "variable being used with a function",
-        "scope": ["support.variable.property.js"],
+        "scope": [
+          "support.variable.property.js"
+        ],
         "settings": {
           "foreground": "#e94e8d"
         }
       },
       {
         "name": "operators",
-        "scope": ["keyword.operator.arithmetic.js"],
+        "scope": [
+          "keyword.operator.arithmetic.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -375,6 +403,20 @@
       },
       {
         "backgroundColor": "rgba(75, 85, 63, .5)",
+        "color": "#1f1f1f"
+      }
+    ],
+    //JUNK?
+    "(\\/\\/JUNK\\?)(.*)": [
+      {
+        "overviewRulerColor": "#555533",
+        "backgroundColor": "rgba(85, 85, 50, 1)",
+        "color": "#1f1f1f",
+        "fontWeight": "bold",
+        "borderRadius": "5px 0px 0px 5px"
+      },
+      {
+        "backgroundColor": "rgba(85, 85, 50, .5)",
         "color": "#1f1f1f"
       }
     ],
@@ -431,7 +473,6 @@
         "fontSize": "2em"
       }
     ],
-
     //h1 shell
     "(##-.*?)(.+(?=\n|\r))": {
       "filterLanguageRegex": "shell", // Apply only if current file's language matches this regex. Requires double escaping
@@ -556,7 +597,6 @@
       },
       {
         "backgroundColor": "rgba(33, 18, 30, 0.1)",
-        "backgroundColor": "rgba(33, 18, 30, 0.1)",
         "borderWidth": "1px 0 0 0",
         "borderStyle": "solid",
         "borderColor": "rgba(212,64,64, 0.5)",
@@ -626,8 +666,8 @@
         "fontWeight": "bold"
       }
     ],
-    // PHP Tag
-    "(<\\?php)([\\s\\S]*?)(\\?>)": [
+    // PHP Tag multilines
+    "(<\\?php\\r)([\\s\\S]+?)(\\?>)": [
       {
         "borderWidth": "2px 0 0 2px",
         "borderStyle": "solid",
@@ -639,7 +679,32 @@
         "fontWeight": "bold"
       },
       {
-        "backgroundColor": "rgba(24, 33, 33, 0.4)"
+        "backgroundColor": "rgba(200, 100, 210, 0.1)",
+        "isWholeLine": true,
+      },
+      {
+        "borderWidth": "0 2px 2px 0",
+        "borderStyle": "solid",
+        "borderColor": "rgba(144, 117, 172, .5)",
+        "borderRadius": "0px",
+        "backgroundColor": "rgba(33, 24, 28, 0.6)",
+        "color": "rgba(144, 117, 172, 1)"
+      }
+    ],
+    // PHP Tag single line
+    "(<\\?php)([^\\n\\t\\r]*?)(\\?>)": [
+      {
+        "borderWidth": "2px 0 0 2px",
+        "borderStyle": "solid",
+        "borderColor": "rgba(144, 117, 172, .5)",
+        "borderRadius": "0px",
+        "backgroundColor": "rgba(33, 24, 28, 0.6)",
+        "color": "rgba(144, 117, 172, 1)",
+        "fontStyle": "bold",
+        "fontWeight": "bold"
+      },
+      {
+        "backgroundColor": "rgba(200, 100, 210, 0.1)",
       },
       {
         "borderWidth": "0 2px 2px 0",
@@ -773,7 +838,12 @@
   //"indenticator.languageSpecific": {},
   //--- Block Hilighter
   "blockhighlight.accentCurrentLine": true,
-  "blockhighlight.background": ["5", "25", "35", ".1"],
+  "blockhighlight.background": [
+    "5",
+    "25",
+    "35",
+    ".1"
+  ],
   "blockhighlight.isWholeLine": true,
   //- Bracket Pair Colorizer
   "bracket-pair-colorizer-2.forceIterationColorCycle": false,
@@ -851,11 +921,11 @@
     "opening": {
       "full": {
         "custom": {
-          "backgroundColor": "rgba(180, 20, 80, 0.3)",
+          "backgroundColor": "rgba(180, 20, 80, 0.1)",
           // "borderWidth": "2px 0 0 0",
           // "borderColor": "rgba(180, 20, 80, 0.6)",
           // "borderStyle": "solid",
-          "borderRadius": "16px 0 0 0"
+          // "borderRadius": "16px 0 0 0"
         }
       },
       "left": {

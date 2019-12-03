@@ -1,5 +1,12 @@
 ##- Movement
 
+# # set variables
+# if [[ $(LC_ALL=C type exa) = *icons* ]]; then
+# MOVEMENT="exa";
+# echo "test";
+# else
+# MOVEMENT="ls";
+# fi
 
 ##- ls baselines
 
@@ -11,7 +18,7 @@ if [ -x /usr/bin/dircolors ]; then
 
 fi
 
-#List everything including hidden stuff
+#List everything including hidden stuff in long view with neat columns
 function lx() {
     ls -AlF --color=always | awk '
         BEGIN {
@@ -33,16 +40,22 @@ function lx() {
     '
 }
 
-alias exa='exa --grid --sort=ext --group-directories-first --icons --color-scale';
+
 ##- exa improvement overrides
 # check to see if exa is installed
-if [[ $(LC_ALL=C type exa) = *icon* ]]; then
-
+if [[ $(LC_ALL=C type exa) = *icons* ]]; then
+    #set exa defaults
+    alias exa='exa --grid --sort=ext --group-directories-first --icons --color-scale';
+    #set exa to ls for cross compatible scripts
     alias ls="exa";
 
     function lx() {
      exa --long  --header --git --color-scale;
         }
+
+    function tree() {
+     exa --tree --level=2  --header --git --color-scale;
+    }
 
 fi
 
@@ -60,7 +73,7 @@ function mkcdir ()
 }
 
 function peek() {
-    ls -a
+  ls -a
 }
 
 
