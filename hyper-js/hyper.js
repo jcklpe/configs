@@ -21,7 +21,7 @@ module.exports = {
     fontSize: 19,
 
     // font family with optional fallbacks
-    fontFamily: "FuraCode Nerd Font, Courier",
+    fontFamily: "FiraCode Nerd Font, Courier",
 
     // default font weight: 'normal' or 'bold'
     fontWeight: "normal",
