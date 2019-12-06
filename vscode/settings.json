@@ -2,8 +2,8 @@
   //Settings
   "editor.fontSize": 16,
   "editor.lineHeight": 29,
-  "editor.fontFamily": "BlexMono NF, FuraCode Nerd Font,liga-input-sans, sans serif",
-  "terminal.integrated.fontFamily": "FuraCode Nerd Font, ProFontWindows Nerd Font Mono",
+  "editor.fontFamily": "BlexMono NF, FiraCode Nerd Font,liga-input-sans, sans serif",
+  "terminal.integrated.fontFamily": "FiraCode Nerd Font, ProFontWindows Nerd Font Mono",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
     "file:///C:/Users/aslan/home/Documents/configs/vscode/injectedTheme/styles.css"
@@ -13,9 +13,7 @@
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
   //-- BACKGROUND
-  "background.customImages": [
-    "https://imgur.com/TLozdBw.jpg"
-  ],
+  "background.customImages": ["https://imgur.com/TLozdBw.jpg"],
   "background.enabled": true,
   "background.style": {
     "content": "''",
@@ -275,27 +273,21 @@
       },
       {
         "name": "commas",
-        "scope": [
-          "punctuation.separator.comma.js"
-        ],
+        "scope": ["punctuation.separator.comma.js"],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "array brackets",
-        "scope": [
-          "meta.array.literal.js meta.brace.square.js "
-        ],
+        "scope": ["meta.array.literal.js meta.brace.square.js "],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "equals sign for assigning variables",
-        "scope": [
-          "keyword.operator.assignment.js"
-        ],
+        "scope": ["keyword.operator.assignment.js"],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -303,27 +295,21 @@
       //- HTML
       {
         "name": "equals sign for assigning variables",
-        "scope": [
-          "punctuation.separator.key-value.html"
-        ],
+        "scope": ["punctuation.separator.key-value.html"],
         "settings": {
           "foreground": "#ffa342"
         }
       },
       {
         "name": "ending html tag",
-        "scope": [
-          "punctuation.definition.tag.end.html"
-        ],
+        "scope": ["punctuation.definition.tag.end.html"],
         "settings": {
           "foreground": "#D44040"
         }
       },
       {
         "name": "comparison sign",
-        "scope": [
-          "keyword.operator.comparison.js"
-        ],
+        "scope": ["keyword.operator.comparison.js"],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -331,27 +317,21 @@
       // fix missing array functions
       {
         "name": "array function",
-        "scope": [
-          "support.variable.property.js"
-        ],
+        "scope": ["support.variable.property.js"],
         "settings": {
           "foreground": "#ff677b"
         }
       },
       {
         "name": "variable being used with a function",
-        "scope": [
-          "support.variable.property.js"
-        ],
+        "scope": ["support.variable.property.js"],
         "settings": {
           "foreground": "#e94e8d"
         }
       },
       {
         "name": "operators",
-        "scope": [
-          "keyword.operator.arithmetic.js"
-        ],
+        "scope": ["keyword.operator.arithmetic.js"],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -680,7 +660,7 @@
       },
       {
         "backgroundColor": "rgba(200, 100, 210, 0.1)",
-        "isWholeLine": true,
+        "isWholeLine": true
       },
       {
         "borderWidth": "0 2px 2px 0",
@@ -704,7 +684,7 @@
         "fontWeight": "bold"
       },
       {
-        "backgroundColor": "rgba(200, 100, 210, 0.1)",
+        "backgroundColor": "rgba(200, 100, 210, 0.1)"
       },
       {
         "borderWidth": "0 2px 2px 0",
@@ -838,12 +818,7 @@
   //"indenticator.languageSpecific": {},
   //--- Block Hilighter
   "blockhighlight.accentCurrentLine": true,
-  "blockhighlight.background": [
-    "5",
-    "25",
-    "35",
-    ".1"
-  ],
+  "blockhighlight.background": ["5", "25", "35", ".1"],
   "blockhighlight.isWholeLine": true,
   //- Bracket Pair Colorizer
   "bracket-pair-colorizer-2.forceIterationColorCycle": false,
@@ -921,7 +896,7 @@
     "opening": {
       "full": {
         "custom": {
-          "backgroundColor": "rgba(180, 20, 80, 0.1)",
+          "backgroundColor": "rgba(180, 20, 80, 0.1)"
           // "borderWidth": "2px 0 0 0",
           // "borderColor": "rgba(180, 20, 80, 0.6)",
           // "borderStyle": "solid",
