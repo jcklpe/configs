@@ -6,6 +6,11 @@ function gitall() {
     git push origin
 }
 
+function gitreset() {
+    git fetch origin
+    git reset --hard origin/master
+}
+
 # git submodule add
 alias gsub='git submodule add'
 
