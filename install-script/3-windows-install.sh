@@ -7,7 +7,9 @@ CONFIGS="${WINHOME}/home/Documents/configs";
 
 
 ##- symlink stuff to $WINHOME
-ln -sf  ${CONFIGS}/hyper-js/hyper.js ${WINHOME}/AppData/Roaming/Hyper/.hyper.js
+# this is currently not working so I'm going to change it to cp
+# ln -sf  ${CONFIGS}/hyper-js/windoze.hyper.js ${WINHOME}/AppData/Roaming/Hyper/.hyper.js
+cp -f ${CONFIGS}/hyper-js/windows.hyper.js ${WINHOME}/AppData/Roaming/Hyper/.hyper.js
 ln -sf  ${CONFIGS}/vscode/settings.json ${WINHOME}/AppData/Roaming/Code/User/settings.json
 
 ln -sf ${CONFIGS}/nextcloud/sync-exclude.lst ${WINHOME}/AppData/Roaming/Nextcloud/sync-exclude.lst
