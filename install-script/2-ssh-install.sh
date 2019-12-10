@@ -27,6 +27,7 @@ brew install exa;
 brew install jump;
 brew install micro;
 brew install mc;
+brew install ranger;
 
 ##- symlink stuff to $HOME
 ln -sf  ${CONFIGS}/bash/bashrc.sh ${HOME}/.bashrc;
@@ -38,4 +39,4 @@ ln -sf ${CONFIGS}/zprofile.zsh ${HOME}/.zprofile;
 mkdir  ${HOME}/.config/micro/
 ln -sf ${CONFIGS}/micro/settings.json ${HOME}/.config/micro/settings.json;
 mkdir  ${HOME}/.config/micro/colorschemes
-ln -sf ${CONFIGS}/micro/colorschemes ${HOME}/.config/micro/colorschemes;
+ln -sf ${CONFIGS}/micro/colorschemes/* ${HOME}/config/micro/colorschemes/*;
