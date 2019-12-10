@@ -1,7 +1,7 @@
 ##//- NANO CONFIGS
 
 # Smooth Scrolling
-set smooth
+#set smooth
 
 # Set tabs to spaces
 set tabstospaces
