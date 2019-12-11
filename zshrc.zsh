@@ -121,10 +121,9 @@ source ${CONFIGS}/neural-art-scripts/load-neural-art-scripts.zsh
 
 
 
-if [ -d "${CONFIGS}./secrets/ssh.sh" ]; then
 source ${CONFIGS}/secrets/ssh.zsh
 
-fi
+
 
 
 ##- Theme Settings
