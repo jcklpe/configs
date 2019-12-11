@@ -17,8 +17,6 @@ alias gsub='git submodule add'
 # create a new branch of a git you are currently on
 alias git-create='git checkout -b master'
 
-# pull from master branch and discard old changes
-alias git-pull-refresh='git stash && git pull'
 
 alias git-uncommit=' git reset --soft HEAD^'
 
