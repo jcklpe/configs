@@ -8,13 +8,6 @@
 #ref: https://unix.stackexchange.com/questions/167582/why-zsh-ends-a-line-with-a-highlighted-percent-symbol/167600#167600
 PROMPT_EOL_MARK=''
 
-#varaible for configs folder
-CONFIGS="$HOME/configs";
-
-
-##- set up cross os mappings
-source $CONFIGS/bash/x-OS-mapping.sh;
-
 
 ##- import .bashrc
 if [ -n "$BASH_VERSION" ]; then
@@ -24,14 +17,19 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-
+##- login startup scripts
+source ${CONFIGS}/bash/x-OS-startup.sh;
 
 ##- Launch Zsh on bash startup
-# not sure the difference between these two
+#not sure the difference between these two
 # if [ -t 1 ]; then
 #     exec zsh
 # fi
+if ! [[ $OSis == *"Microsoft"* ]]; then
+    exa --grid --sort=ext --group-directories-first --icons --color-scale;
+fi
 
+#this is the one I generally use
 if [[ $- == *i* ]]; then
     export SHELL=zsh
     exec zsh -l

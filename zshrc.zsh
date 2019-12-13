@@ -1,72 +1,11 @@
 
 ##- 𝒛𝖘𝖍 𝖘𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
-##- CROSS-𝕆𝕊 𝔪𝔞𝔭𝔭𝔦𝔫𝔤𝔰
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    UNAMECHECK=$(uname -a);
-    if [[ $UNAMECHECK == *"Microsoft"* ]] then
-##- Windows Subystem Layer
-# variables
-export WINHOME=$(wslpath $(cmd.exe /C "echo %USERPROFILE%"));
-# clean up winhome carriage return error
-export WINHOME=${WINHOME//$'\015'};
-# set home level config paths.
-CONFIGS="${WINHOME}/home/Documents/configs";
-
-# background jobs run at lower priority
-#unsetopt BG_NICE
-
-# add X server to WSL to open Linux GUI apps
-# export DISPLAY=localhost:0.0
-
-# CMD binding
-alias cmd='/mnt/c/Windows/System32/cmd.exe';
-alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe";
-
-else
-##- Normal Linux
-#variables
+#varaible for configs folder
 CONFIGS="$HOME/configs";
 
-# add torch to commands available
-if [ -d "$HOME/torch" ]; then
- source $HOME/torch/install/bin/torch-activate
-fi
-
-# make homebrew path available in ssh
-if [ -d "$HOME/.linuxbrew" ]; then
-export PATH=~/.linuxbrew/Homebrew/bin:$PATH
-fi
-
-
-
-
-
-fi # end of linux-gnu
-
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-##- macOS
-# variables
-CONFIGS="$HOME/configs"
-# fix ngrok issue for work mac
-alias ngrok-8080='/Applications/ngrok http --host-header=rewrite 8080';
-alias ngrok-3000='/Applications/ngrok http --host-header=rewrite 3000'
-
-elif [[ "$OSTYPE" == "cygwin" ]]; then
-    # POSIX compatibility layer and Linux environment emulation for Windows
-
-elif [[ "$OSTYPE" == "msys" ]]; then
-    # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
-
-elif [[ "$OSTYPE" == "win32" ]]; then
-    # lol
-
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
-    # Maybe a Nintendo Switch?
-
-else
-    # Unknown.
-fi
+##- set up cross os mappings
+source ${CONFIGS}/bash/x-OS-mapping.sh;
 
 ##- VARIABLES
 PLUGINS="${CONFIGS}/plugins";
