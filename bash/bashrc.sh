@@ -4,9 +4,11 @@
 ## ██╔══██╗██╔══██║╚════██║██╔══██║
 ##██████╔╝██║  ██║███████║██║  ██║
 ## ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+#varaible for configs folder
+CONFIGS="$HOME/configs";
 
-CONFIGS=${HOME}/configs;
-source $CONFIGS/bash/x-OS-mapping.sh;
+##- set up cross os mappings
+source ${CONFIGS}/bash/x-OS-mapping.sh;
 
 source ${CONFIGS}/movement/movement.zsh;
 

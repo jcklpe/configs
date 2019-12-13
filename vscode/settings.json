@@ -859,7 +859,7 @@
   "window.restoreWindows": "all",
   "files.trimTrailingWhitespace": true,
   "files.trimFinalNewlines": true,
-  "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\bash.exe",
+  "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\wsl.exe",
   "editor.dragAndDrop": false,
   "editor.tabCompletion": "on",
   "php.validate.executablePath": "C:\\laragon\\bin\\php\\php-7.2.19-Win32-VC15-x64\\php.exe",
