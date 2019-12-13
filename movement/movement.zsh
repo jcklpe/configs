@@ -8,7 +8,7 @@ if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls -F --color=auto 2>/dev/null -I "*NTUSER*" -I "*ntuser*"'
     alias grep='grep --color=auto'
-    
+
 fi
 
 #List everything including hidden stuff in long view with neat columns
@@ -33,30 +33,9 @@ function lx() {
     '
 }
 
-
-##- exa improvement overrides
-# check to see if exa is installed
-if [[ $(type exa) = *linuxbrew* ]]; then
-    #set exa defaults
-    alias exa='exa --grid --sort=ext --group-directories-first --icons --color-scale';
-    
-    #set exa to ls for cross compatible scripts
-    alias ls="exa";
-    
-    function lx() {
-        exa --long  --header --git --color-scale;
-    }
-    
-    function tree() {
-        exa --tree --level=2  --header --git --color-scale;
-    }
-    
-fi
-
-
 #  add exa auto to cd command
 function cd {
-    builtin cd "$@" && ls
+    builtin cd "$@" && ls;
 }
 
 # make a directory and then go inside it
@@ -71,6 +50,28 @@ function peek() {
 }
 
 
+##- exa improvement overrides
+# check to see if exa is installed
+if [[ $(type exa) = *bin/exa* ]]; then
+
+    #set default exa to ls for better compatibility between scripts
+    function ls() {
+        command exa --grid --sort=ext --group-directories-first --icons --color-scale;
+    }
+
+    function lx() {
+        exa --long  --header --git --color-scale -a;
+    }
+
+    function tree() {
+        exa --tree --level=2  --header --git --color-scale;
+    }
+
+    function peek() {
+    exa --grid --sort=ext --group-directories-first --icons --color-scale -a
+}
+
+fi
 
 # get rid of command not found
 alias cd..='cd ..';
