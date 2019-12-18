@@ -25,8 +25,10 @@ source ${CONFIGS}/bash/x-OS-startup.sh;
 # if [ -t 1 ]; then
 #     exec zsh
 # fi
+if [ -d "${HOME}/.zshrc" ]; then
 if ! [[ $OSis == *"Microsoft"* ]]; then
     exa --grid --sort=ext --group-directories-first --icons --color-scale;
+fi
 fi
 
 #this is the one I generally use
