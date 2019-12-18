@@ -118,7 +118,7 @@
 			}
 		},
 		{
-			"executionCount": 41,
+			"executionCount": 43,
 			"item": {
 				"active": true,
 				"description": "Programs ▸ Google Chrome.lnk",
@@ -1118,7 +1118,7 @@
 			}
 		},
 		{
-			"executionCount": 43,
+			"executionCount": 48,
 			"item": {
 				"active": true,
 				"description": "dsa techcomm slack",
@@ -1616,6 +1616,24 @@
 				"active": true,
 				"description": "Search on Go! for \"craven\"",
 				"executionArgument": "https://www.google.com/search?btnI=1&q=craven",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Go!",
+				"originPluginType": "websearch-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on Go! for \"towel%20cabinet\"",
+				"executionArgument": "https://www.google.com/search?btnI=1&q=towel%20cabinet",
 				"hideMainWindowAfterExecution": true,
 				"icon": {
 					"parameter": "https://image.flaticon.com/icons/svg/1458/1458906.svg",
