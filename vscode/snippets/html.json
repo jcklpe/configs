@@ -1,12 +1,30 @@
 {
-  "comment block title": {
-    "prefix": "h#",
-    "body": "<!--////////////////////\n //- ${1:Title} -->\n${0}",
-    "description": "Comment - Block comment"
-  },
-  "comment block subheading": {
-    "prefix": "h##",
-    "body": "<!--// ${1:Title} -->\n${0}",
-    "description": "Comment - Block comment"
-  }
+	"comment block title": {
+		"prefix": "h#",
+		"body": "<!--////////////////////\n //- ${1:Title} -->\n${0}",
+		"description": "Comment - Block comment"
+	},
+	"comment block subheading": {
+		"prefix": "h##",
+		"body": "<!--// ${1:Title} -->\n${0}",
+		"description": "Comment - Block comment"
+	},
+	"html": {
+		"prefix": "default html",
+		"body": [
+			"<!DOCTYPE html>\r",
+			"<html lang=\"en\">\r",
+			"  <head>\r",
+			"    <meta charset=\"utf-8\">\r",
+			"    <title>title</title>\r",
+			"    <link rel=\"stylesheet\" href=\"style.css\">\r",
+			"    <script src=\"script.js\"></script>\r",
+			"  </head>\r",
+			"  <body>\r",
+			"    <!-- page content -->\r",
+			"  </body>\r",
+			"</html>"
+		],
+		"description": "default html page"
+	}
 }

@@ -13,7 +13,9 @@
   "vscode_custom_css.statusbar": true,
   "window.titleBarStyle": "custom",
   //-- BACKGROUND
-  "background.customImages": ["https://imgur.com/TLozdBw.jpg"],
+  "background.customImages": [
+    "https://imgur.com/TLozdBw.jpg"
+  ],
   "background.enabled": true,
   "background.style": {
     "content": "''",
@@ -273,21 +275,27 @@
       },
       {
         "name": "commas",
-        "scope": ["punctuation.separator.comma.js"],
+        "scope": [
+          "punctuation.separator.comma.js"
+        ],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "array brackets",
-        "scope": ["meta.array.literal.js meta.brace.square.js "],
+        "scope": [
+          "meta.array.literal.js meta.brace.square.js "
+        ],
         "settings": {
           "foreground": "#e2da4b"
         }
       },
       {
         "name": "equals sign for assigning variables",
-        "scope": ["keyword.operator.assignment.js"],
+        "scope": [
+          "keyword.operator.assignment.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -295,21 +303,27 @@
       //- HTML
       {
         "name": "equals sign for assigning variables",
-        "scope": ["punctuation.separator.key-value.html"],
+        "scope": [
+          "punctuation.separator.key-value.html"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
       },
       {
         "name": "ending html tag",
-        "scope": ["punctuation.definition.tag.end.html"],
+        "scope": [
+          "punctuation.definition.tag.end.html"
+        ],
         "settings": {
           "foreground": "#D44040"
         }
       },
       {
         "name": "comparison sign",
-        "scope": ["keyword.operator.comparison.js"],
+        "scope": [
+          "keyword.operator.comparison.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -317,21 +331,27 @@
       // fix missing array functions
       {
         "name": "array function",
-        "scope": ["support.variable.property.js"],
+        "scope": [
+          "support.variable.property.js"
+        ],
         "settings": {
           "foreground": "#ff677b"
         }
       },
       {
         "name": "variable being used with a function",
-        "scope": ["support.variable.property.js"],
+        "scope": [
+          "support.variable.property.js"
+        ],
         "settings": {
           "foreground": "#e94e8d"
         }
       },
       {
         "name": "operators",
-        "scope": ["keyword.operator.arithmetic.js"],
+        "scope": [
+          "keyword.operator.arithmetic.js"
+        ],
         "settings": {
           "foreground": "#ffa342"
         }
@@ -818,11 +838,16 @@
   //"indenticator.languageSpecific": {},
   //--- Block Hilighter
   "blockhighlight.accentCurrentLine": true,
-  "blockhighlight.background": ["5", "25", "35", ".1"],
+  "blockhighlight.background": [
+    "5",
+    "25",
+    "35",
+    ".1"
+  ],
   "blockhighlight.isWholeLine": true,
   //- Bracket Pair Colorizer
   "bracket-pair-colorizer-2.forceIterationColorCycle": false,
-  "editor.matchBrackets": false,
+  "editor.matchBrackets": "always",
   //this is the built in match brackets
   "bracket-pair-colorizer-2.colors": [
     "#F7A13D",
@@ -872,7 +897,6 @@
   "favorites.sortDirection": "ASC",
   "favorites.groupsFirst": true,
   "workbench.startupEditor": "newUntitledFile",
-  "editor.formatOnSave": true,
   "html.format.endWithNewline": true,
   "html.format.indentInnerHtml": true,
   "emmet.includeLanguages": {
@@ -994,6 +1018,24 @@
   },
   "html.format.wrapAttributes": "force-expand-multiline",
   "html.format.extraLiners": "head, body, /html, h1, h2, h3, h4, h5, -->",
+  // These are all my auto-save configs
+  "editor.formatOnSave": true,
+  // turn it off for JS and JSX, we will do this via eslint
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": false
+  },
+  // tell the ESLint plugin to run on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  // Optional BUT IMPORTANT: If you have the prettier extension enabled for other languages like CSS and HTML, turn it off for JS since we are doing it through Eslint already
+  "prettier.disableLanguages": [
+    "javascript",
+    "javascriptreact"
+  ],
   //- MISC SETTINGS
   "workbench.settings.editor": "json",
   "editor.snippetSuggestions": "top",
@@ -1010,5 +1052,7 @@
   "ACReactComponentGenerator.styleFile.extension": "css",
   "ACReactComponentGenerator.styleFile.suffix": "",
   "ACReactComponentGenerator.styleFile.type": "standard (.css)",
-  "diffEditor.ignoreTrimWhitespace": true
+  "diffEditor.ignoreTrimWhitespace": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "todo-tree.tree.showScanModeButton": false
 }
