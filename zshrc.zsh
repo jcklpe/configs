@@ -96,7 +96,7 @@ wd() {
     }
 
 ##- bd (cd for parent directories)
-source ${PLUGINS}/zsh-bd/bd.zsh
+#source ${PLUGINS}/zsh-bd/bd.zsh
 
 ##- you should use
 source ${PLUGINS}/zsh-you-should-use/you-should-use.plugin.zsh
