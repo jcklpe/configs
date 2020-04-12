@@ -267,7 +267,9 @@
           "punctuation.definition.string.begin.html",
           "punctuation.definition.string.end.html",
           "punctuation.definition.string.begin.php",
-          "punctuation.definition.string.end.php"
+          "punctuation.definition.string.end.php",
+          "punctuation.definition.string.template.begin.js",
+          "punctuation.definition.string.template.end.js"
         ],
         "settings": {
           "foreground": "#9fb30e"
@@ -890,8 +892,6 @@
   "php.validate.executablePath": "C:\\laragon\\bin\\php\\php-7.2.19-Win32-VC15-x64\\php.exe",
   "javascript.implicitProjectConfig.experimentalDecorators": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "javascript.format.placeOpenBraceOnNewLineForFunctions": true,
-  "javascript.format.placeOpenBraceOnNewLineForControlBlocks": true,
   "window.zoomLevel": 1,
   "explorer.confirmDragAndDrop": false,
   "favorites.sortDirection": "ASC",
@@ -1010,7 +1010,7 @@
   "simpleIcons.simple.folder.color": "#6a88c4",
   //- LINTING SETTINGS
   "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.html-language-features"
   },
   "files.associations": {
     ".jsbeautifyrc": "jsonc",
@@ -1018,8 +1018,6 @@
   },
   "html.format.wrapAttributes": "force-expand-multiline",
   "html.format.extraLiners": "head, body, /html, h1, h2, h3, h4, h5, -->",
-  // These are all my auto-save configs
-  "editor.formatOnSave": true,
   // turn it off for JS and JSX, we will do this via eslint
   "[javascript]": {
     "editor.formatOnSave": false
@@ -1044,7 +1042,7 @@
   // code runner settings
   "code-runner.terminalRoot": "/mnt/",
   "code-runner.runInTerminal": true,
-  "workbench.colorTheme": "Hopscotch (TextMate Theme)",
+  "workbench.colorTheme": "Hopscotch (TextMate)",
   "sync.forceUpload": true,
   //- React stuff
   "ACReactComponentGenerator.indexFile.create": false,
@@ -1054,5 +1052,11 @@
   "ACReactComponentGenerator.styleFile.type": "standard (.css)",
   "diffEditor.ignoreTrimWhitespace": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
-  "todo-tree.tree.showScanModeButton": false
+  "todo-tree.tree.showScanModeButton": false,
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
