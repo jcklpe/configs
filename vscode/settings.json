@@ -302,6 +302,38 @@
           "foreground": "#ffa342"
         }
       },
+
+      {
+        "name": "Javascript function parameter parentheses",
+        "scope": [
+          "punctuation.definition.parameters.begin.js",
+          "punctuation.definition.parameters.end.js",
+          "meta.brace.round.js"
+        ],
+        "settings": {
+          "foreground": "#7472E8"
+        },
+      },
+
+      {
+        "name": "Javascript function keyword for declaration",
+        "scope": [
+          "storage.type.function.js"
+        ],
+        "settings": {
+          "foreground": "#a472e8"
+        },
+      },
+
+      {
+        "name": "javascript function definition block curly braces",
+        "scope": [
+          "punctuation.definition.block.js"
+        ],
+        "settings": {
+          "foreground": "#a472e8"
+        },
+      },
       //- HTML
       {
         "name": "equals sign for assigning variables",
