@@ -171,6 +171,18 @@
           "fontStyle": "bold"
         }
       },
+      //PHP Stuff
+      {
+        "name": "PHP open tag",
+        "scope": [
+          "punctuation.section.embedded.begin.php",
+          "punctuation.section.embedded.end.php"
+        ],
+        "settings": {
+          "foreground": "#9075AC",
+          "fontStyle": "bold"
+        }
+      },
       //CSS selectors
       {
         "name": "CSS selectors",
@@ -303,17 +315,17 @@
         }
       },
 
-      {
-        "name": "Javascript function parameter parentheses",
-        "scope": [
-          "punctuation.definition.parameters.begin.js",
-          "punctuation.definition.parameters.end.js",
-          "meta.brace.round.js"
-        ],
-        "settings": {
-          "foreground": "#7472E8"
-        },
-      },
+      // {
+      //   "name": "Javascript function parameter parentheses",
+      //   "scope": [
+      //     "punctuation.definition.parameters.begin.js",
+      //     "punctuation.definition.parameters.end.js",
+      //     "meta.brace.round.js"
+      //   ],
+      //   "settings": {
+      //     "foreground": "#7472E8"
+      //   },
+      // },
 
       {
         "name": "Javascript function keyword for declaration",
@@ -325,15 +337,15 @@
         },
       },
 
-      {
-        "name": "javascript function definition block curly braces",
-        "scope": [
-          "punctuation.definition.block.js"
-        ],
-        "settings": {
-          "foreground": "#a472e8"
-        },
-      },
+      // {
+      //   "name": "javascript function definition block curly braces",
+      //   "scope": [
+      //     "punctuation.definition.block.js"
+      //   ],
+      //   "settings": {
+      //     "foreground": "#a472e8"
+      //   },
+      // },
       //- HTML
       {
         "name": "equals sign for assigning variables",
@@ -1061,11 +1073,13 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
+
   // Optional BUT IMPORTANT: If you have the prettier extension enabled for other languages like CSS and HTML, turn it off for JS since we are doing it through Eslint already
   "prettier.disableLanguages": [
     "javascript",
     "javascriptreact"
   ],
+  "eslint.validate": ["javascript"],
   //- MISC SETTINGS
   "workbench.settings.editor": "json",
   "editor.snippetSuggestions": "top",
@@ -1090,5 +1104,9 @@
   },
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "[css]": {
+    "editor.defaultFormatter": "michelemelluso.code-beautifier"
+  },
+  "python.languageServer": "Microsoft"
 }

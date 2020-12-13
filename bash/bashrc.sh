@@ -57,3 +57,4 @@ source ${CONFIGS}/git/git.zsh;
 
 
 alias reload="source ~/.bashrc";
+complete -C /usr/local/bin/bit bit
