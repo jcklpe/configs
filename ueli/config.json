@@ -450,7 +450,7 @@
 			}
 		},
 		{
-			"executionCount": 8,
+			"executionCount": 9,
 			"item": {
 				"active": true,
 				"description": "ZEIT, Inc ▸ Hyper.lnk",
@@ -1289,7 +1289,7 @@
 			}
 		},
 		{
-			"executionCount": 5,
+			"executionCount": 6,
 			"item": {
 				"active": true,
 				"description": "Programs ▸ Pulse SMS.lnk",
@@ -1716,6 +1716,189 @@
 				"id": "search-result-item-1",
 				"name": "= 3000000",
 				"originPluginType": "calculator-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 2,
+			"item": {
+				"active": true,
+				"description": "Press enter to copy to clipboard",
+				"executionArgument": "10000000",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 40 40\" style=\"enable-background:new 0 0 40 40;\" xml:space=\"preserve\"> <g> <path style=\"fill:#B0C1D4;\" d=\"M9,38.5c-1.379,0-2.5-1.122-2.5-2.5V4c0-1.378,1.121-2.5,2.5-2.5h22c1.379,0,2.5,1.122,2.5,2.5v32 c0,1.378-1.121,2.5-2.5,2.5H9z\"></path> <g> <path style=\"fill:#66798F;\" d=\"M31,2c1.103,0,2,0.897,2,2v32c0,1.103-0.897,2-2,2H9c-1.103,0-2-0.897-2-2V4c0-1.103,0.897-2,2-2 H31 M31,1H9C7.343,1,6,2.343,6,4v32c0,1.657,1.343,3,3,3h22c1.657,0,3-1.343,3-3V4C34,2.343,32.657,1,31,1L31,1z\"></path> </g> </g> <g> <path style=\"fill:#D6DFEB;\" d=\"M7,14V4c0-1.105,0.895-2,2-2h22c1.105,0,2,0.895,2,2v10H7z\"></path> </g> <g> <rect x=\"10.5\" y=\"5.5\" style=\"fill:#BAE0BD;\" width=\"19\" height=\"5\"></rect> <path style=\"fill:#5E9C76;\" d=\"M29,6v4H11V6H29 M30,5H10v6h20V5L30,5z\"></path> </g> <g> <rect x=\"15\" y=\"17\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"17\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"17\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"17\" style=\"fill:#FFEEA3;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"15\" y=\"22\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"22\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"22\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"22\" style=\"fill:#FFEEA3;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"15\" y=\"27\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"27\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"27\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"27\" style=\"fill:#FFEEA3;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"15\" y=\"32\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"32\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"32\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"32\" style=\"fill:#F78F8F;\" width=\"3\" height=\"3\"></rect> </g> <rect x=\"27\" y=\"8\" style=\"fill:#5E9C76;\" width=\"1\" height=\"1\"></rect> <rect x=\"25\" y=\"8\" style=\"fill:#5E9C76;\" width=\"1\" height=\"1\"></rect> <rect x=\"23\" y=\"8\" style=\"fill:#5E9C76;\" width=\"1\" height=\"1\"></rect> </svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "= 10000000",
+				"originPluginType": "calculator-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Press enter to copy to clipboard",
+				"executionArgument": "1000000",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" viewBox=\"0 0 40 40\" style=\"enable-background:new 0 0 40 40;\" xml:space=\"preserve\"> <g> <path style=\"fill:#B0C1D4;\" d=\"M9,38.5c-1.379,0-2.5-1.122-2.5-2.5V4c0-1.378,1.121-2.5,2.5-2.5h22c1.379,0,2.5,1.122,2.5,2.5v32 c0,1.378-1.121,2.5-2.5,2.5H9z\"></path> <g> <path style=\"fill:#66798F;\" d=\"M31,2c1.103,0,2,0.897,2,2v32c0,1.103-0.897,2-2,2H9c-1.103,0-2-0.897-2-2V4c0-1.103,0.897-2,2-2 H31 M31,1H9C7.343,1,6,2.343,6,4v32c0,1.657,1.343,3,3,3h22c1.657,0,3-1.343,3-3V4C34,2.343,32.657,1,31,1L31,1z\"></path> </g> </g> <g> <path style=\"fill:#D6DFEB;\" d=\"M7,14V4c0-1.105,0.895-2,2-2h22c1.105,0,2,0.895,2,2v10H7z\"></path> </g> <g> <rect x=\"10.5\" y=\"5.5\" style=\"fill:#BAE0BD;\" width=\"19\" height=\"5\"></rect> <path style=\"fill:#5E9C76;\" d=\"M29,6v4H11V6H29 M30,5H10v6h20V5L30,5z\"></path> </g> <g> <rect x=\"15\" y=\"17\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"17\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"17\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"17\" style=\"fill:#FFEEA3;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"15\" y=\"22\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"22\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"22\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"22\" style=\"fill:#FFEEA3;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"15\" y=\"27\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"27\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"27\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"27\" style=\"fill:#FFEEA3;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"15\" y=\"32\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"10\" y=\"32\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"20\" y=\"32\" style=\"fill:#FFFFFF;\" width=\"3\" height=\"3\"></rect> </g> <g> <rect x=\"27\" y=\"32\" style=\"fill:#F78F8F;\" width=\"3\" height=\"3\"></rect> </g> <rect x=\"27\" y=\"8\" style=\"fill:#5E9C76;\" width=\"1\" height=\"1\"></rect> <rect x=\"25\" y=\"8\" style=\"fill:#5E9C76;\" width=\"1\" height=\"1\"></rect> <rect x=\"23\" y=\"8\" style=\"fill:#5E9C76;\" width=\"1\" height=\"1\"></rect> </svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "= 1000000",
+				"originPluginType": "calculator-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Open with web browser",
+				"executionArgument": "https://meetup.com",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"Layer_1\" x=\"0px\" y=\"0px\" viewBox=\"0 0 48 48\" style=\"enable-background:new 0 0 48 48;\" xml:space=\"preserve\"><path style=\"fill:#455A64;\" d=\"M42,19H6V9c0-1.657,1.343-3,3-3h30c1.657,0,3,1.343,3,3V19z\"></path><path style=\"fill:#BBDEFB;\" d=\"M6,16h36v23c0,1.657-1.343,3-3,3H9c-1.657,0-3-1.343-3-3V16z\"></path><circle style=\"fill:#8BC34A;\" cx=\"11\" cy=\"11\" r=\"2\"></circle><circle style=\"fill:#FFEB3B;\" cx=\"17\" cy=\"11\" r=\"2\"></circle><path style=\"fill:#FAFAFA;\" d=\"M39,12c0,0.553-0.447,1-1,1H23c-0.553,0-1-0.447-1-1v-2c0-0.553,0.447-1,1-1h15c0.553,0,1,0.447,1,1  V12z\"></path><path style=\"fill:#3F51B5;\" d=\"M30.924,33.235l-5.507-8c-0.182-0.293-0.666-0.293-0.848,0l-5.507,8  c-0.097,0.153-0.088,0.348,0,0.507S19.318,34,19.5,34H23c0,7.375-2.377,10.49-9,10c1.604,0.667,3.712,0.986,5.125,0.996  C25.482,45.041,27,39.921,27,34h3.5c0.182,0,0.35-0.099,0.438-0.258S31.021,33.388,30.924,33.235z\"></path></svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "https://meetup.com",
+				"originPluginType": "url-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Open with web browser",
+				"executionArgument": "https://instagram.com",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"Layer_1\" x=\"0px\" y=\"0px\" viewBox=\"0 0 48 48\" style=\"enable-background:new 0 0 48 48;\" xml:space=\"preserve\"><path style=\"fill:#455A64;\" d=\"M42,19H6V9c0-1.657,1.343-3,3-3h30c1.657,0,3,1.343,3,3V19z\"></path><path style=\"fill:#BBDEFB;\" d=\"M6,16h36v23c0,1.657-1.343,3-3,3H9c-1.657,0-3-1.343-3-3V16z\"></path><circle style=\"fill:#8BC34A;\" cx=\"11\" cy=\"11\" r=\"2\"></circle><circle style=\"fill:#FFEB3B;\" cx=\"17\" cy=\"11\" r=\"2\"></circle><path style=\"fill:#FAFAFA;\" d=\"M39,12c0,0.553-0.447,1-1,1H23c-0.553,0-1-0.447-1-1v-2c0-0.553,0.447-1,1-1h15c0.553,0,1,0.447,1,1  V12z\"></path><path style=\"fill:#3F51B5;\" d=\"M30.924,33.235l-5.507-8c-0.182-0.293-0.666-0.293-0.848,0l-5.507,8  c-0.097,0.153-0.088,0.348,0,0.507S19.318,34,19.5,34H23c0,7.375-2.377,10.49-9,10c1.604,0.667,3.712,0.986,5.125,0.996  C25.482,45.041,27,39.921,27,34h3.5c0.182,0,0.35-0.099,0.438-0.258S31.021,33.388,30.924,33.235z\"></path></svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "https://instagram.com",
+				"originPluginType": "url-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Open with web browser",
+				"executionArgument": "https://spotify.com",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"Layer_1\" x=\"0px\" y=\"0px\" viewBox=\"0 0 48 48\" style=\"enable-background:new 0 0 48 48;\" xml:space=\"preserve\"><path style=\"fill:#455A64;\" d=\"M42,19H6V9c0-1.657,1.343-3,3-3h30c1.657,0,3,1.343,3,3V19z\"></path><path style=\"fill:#BBDEFB;\" d=\"M6,16h36v23c0,1.657-1.343,3-3,3H9c-1.657,0-3-1.343-3-3V16z\"></path><circle style=\"fill:#8BC34A;\" cx=\"11\" cy=\"11\" r=\"2\"></circle><circle style=\"fill:#FFEB3B;\" cx=\"17\" cy=\"11\" r=\"2\"></circle><path style=\"fill:#FAFAFA;\" d=\"M39,12c0,0.553-0.447,1-1,1H23c-0.553,0-1-0.447-1-1v-2c0-0.553,0.447-1,1-1h15c0.553,0,1,0.447,1,1  V12z\"></path><path style=\"fill:#3F51B5;\" d=\"M30.924,33.235l-5.507-8c-0.182-0.293-0.666-0.293-0.848,0l-5.507,8  c-0.097,0.153-0.088,0.348,0,0.507S19.318,34,19.5,34H23c0,7.375-2.377,10.49-9,10c1.604,0.667,3.712,0.986,5.125,0.996  C25.482,45.041,27,39.921,27,34h3.5c0.182,0,0.35-0.099,0.438-0.258S31.021,33.388,30.924,33.235z\"></path></svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "https://spotify.com",
+				"originPluginType": "url-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 5,
+			"item": {
+				"active": true,
+				"description": "Open with web browser",
+				"executionArgument": "https://youtube.com",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"Layer_1\" x=\"0px\" y=\"0px\" viewBox=\"0 0 48 48\" style=\"enable-background:new 0 0 48 48;\" xml:space=\"preserve\"><path style=\"fill:#455A64;\" d=\"M42,19H6V9c0-1.657,1.343-3,3-3h30c1.657,0,3,1.343,3,3V19z\"></path><path style=\"fill:#BBDEFB;\" d=\"M6,16h36v23c0,1.657-1.343,3-3,3H9c-1.657,0-3-1.343-3-3V16z\"></path><circle style=\"fill:#8BC34A;\" cx=\"11\" cy=\"11\" r=\"2\"></circle><circle style=\"fill:#FFEB3B;\" cx=\"17\" cy=\"11\" r=\"2\"></circle><path style=\"fill:#FAFAFA;\" d=\"M39,12c0,0.553-0.447,1-1,1H23c-0.553,0-1-0.447-1-1v-2c0-0.553,0.447-1,1-1h15c0.553,0,1,0.447,1,1  V12z\"></path><path style=\"fill:#3F51B5;\" d=\"M30.924,33.235l-5.507-8c-0.182-0.293-0.666-0.293-0.848,0l-5.507,8  c-0.097,0.153-0.088,0.348,0,0.507S19.318,34,19.5,34H23c0,7.375-2.377,10.49-9,10c1.604,0.667,3.712,0.986,5.125,0.996  C25.482,45.041,27,39.921,27,34h3.5c0.182,0,0.35-0.099,0.438-0.258S31.021,33.388,30.924,33.235z\"></path></svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "https://youtube.com",
+				"originPluginType": "url-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on YouTube for \"among%20us%20mcelroy\"",
+				"executionArgument": "https://www.youtube.com/results?search_query=among%20us%20mcelroy",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 48 48\" version=\"1.1\">\n                <g id=\"surface1\">\n                <path style=\" fill:#FF3D00;\" d=\"M 43.199219 33.898438 C 42.800781 36 41.101563 37.601563 39 37.898438 C 35.699219 38.398438 30.199219 39 24 39 C 17.898438 39 12.398438 38.398438 9 37.898438 C 6.898438 37.601563 5.199219 36 4.800781 33.898438 C 4.398438 31.601563 4 28.199219 4 24 C 4 19.800781 4.398438 16.398438 4.800781 14.101563 C 5.199219 12 6.898438 10.398438 9 10.101563 C 12.300781 9.601563 17.800781 9 24 9 C 30.199219 9 35.601563 9.601563 39 10.101563 C 41.101563 10.398438 42.800781 12 43.199219 14.101563 C 43.601563 16.398438 44.101563 19.800781 44.101563 24 C 44 28.199219 43.601563 31.601563 43.199219 33.898438 Z \"></path>\n                <path style=\" fill:#FFFFFF;\" d=\"M 20 31 L 20 17 L 32 24 Z \"></path>\n                </g>\n                </svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "YouTube",
+				"originPluginType": "websearch-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Open with web browser",
+				"executionArgument": "https://amazon.com",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" id=\"Layer_1\" x=\"0px\" y=\"0px\" viewBox=\"0 0 48 48\" style=\"enable-background:new 0 0 48 48;\" xml:space=\"preserve\"><path style=\"fill:#455A64;\" d=\"M42,19H6V9c0-1.657,1.343-3,3-3h30c1.657,0,3,1.343,3,3V19z\"></path><path style=\"fill:#BBDEFB;\" d=\"M6,16h36v23c0,1.657-1.343,3-3,3H9c-1.657,0-3-1.343-3-3V16z\"></path><circle style=\"fill:#8BC34A;\" cx=\"11\" cy=\"11\" r=\"2\"></circle><circle style=\"fill:#FFEB3B;\" cx=\"17\" cy=\"11\" r=\"2\"></circle><path style=\"fill:#FAFAFA;\" d=\"M39,12c0,0.553-0.447,1-1,1H23c-0.553,0-1-0.447-1-1v-2c0-0.553,0.447-1,1-1h15c0.553,0,1,0.447,1,1  V12z\"></path><path style=\"fill:#3F51B5;\" d=\"M30.924,33.235l-5.507-8c-0.182-0.293-0.666-0.293-0.848,0l-5.507,8  c-0.097,0.153-0.088,0.348,0,0.507S19.318,34,19.5,34H23c0,7.375-2.377,10.49-9,10c1.604,0.667,3.712,0.986,5.125,0.996  C25.482,45.041,27,39.921,27,34h3.5c0.182,0,0.35-0.099,0.438-0.258S31.021,33.388,30.924,33.235z\"></path></svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "https://amazon.com",
+				"originPluginType": "url-plugin",
+				"resultNumber": 1,
+				"searchable": []
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Programs ▸ Outlook.lnk",
+				"executionArgument": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Outlook.lnk",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "C:\\Users\\aslan\\.ueli\\application-icons\\outlook-19e7f24f17b74d0c95f910f97e9bfdfd.png",
+					"type": "URL"
+				},
+				"id": "search-result-item-1",
+				"name": "Outlook",
+				"originPluginType": "application-search-plugin",
+				"resultNumber": 1,
+				"searchable": [
+					"Outlook"
+				],
+				"supportsOpenLocation": true
+			}
+		},
+		{
+			"executionCount": 1,
+			"item": {
+				"active": true,
+				"description": "Search on Google for \"%20birb\"",
+				"executionArgument": "https://google.com/search?q=%20birb",
+				"hideMainWindowAfterExecution": true,
+				"icon": {
+					"parameter": "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 48 48\" version=\"1.1\">\n                <g id=\"surface1\">\n                <path style=\" fill:#FFC107;\" d=\"M 43.609375 20.082031 L 42 20.082031 L 42 20 L 24 20 L 24 28 L 35.304688 28 C 33.652344 32.65625 29.222656 36 24 36 C 17.371094 36 12 30.628906 12 24 C 12 17.371094 17.371094 12 24 12 C 27.058594 12 29.84375 13.152344 31.960938 15.039063 L 37.617188 9.382813 C 34.046875 6.054688 29.269531 4 24 4 C 12.953125 4 4 12.953125 4 24 C 4 35.046875 12.953125 44 24 44 C 35.046875 44 44 35.046875 44 24 C 44 22.660156 43.863281 21.351563 43.609375 20.082031 Z \"></path>\n                <path style=\" fill:#FF3D00;\" d=\"M 6.304688 14.691406 L 12.878906 19.511719 C 14.65625 15.109375 18.960938 12 24 12 C 27.058594 12 29.84375 13.152344 31.960938 15.039063 L 37.617188 9.382813 C 34.046875 6.054688 29.269531 4 24 4 C 16.316406 4 9.65625 8.335938 6.304688 14.691406 Z \"></path>\n                <path style=\" fill:#4CAF50;\" d=\"M 24 44 C 29.164063 44 33.859375 42.023438 37.410156 38.808594 L 31.21875 33.570313 C 29.210938 35.089844 26.714844 36 24 36 C 18.796875 36 14.382813 32.683594 12.71875 28.054688 L 6.195313 33.078125 C 9.503906 39.554688 16.226563 44 24 44 Z \"></path>\n                <path style=\" fill:#1976D2;\" d=\"M 43.609375 20.082031 L 42 20.082031 L 42 20 L 24 20 L 24 28 L 35.304688 28 C 34.511719 30.238281 33.070313 32.164063 31.214844 33.570313 C 31.21875 33.570313 31.21875 33.570313 31.21875 33.570313 L 37.410156 38.808594 C 36.972656 39.203125 44 34 44 24 C 44 22.660156 43.863281 21.351563 43.609375 20.082031 Z \"></path>\n                </g>\n                </svg>",
+					"type": "SVG"
+				},
+				"id": "search-result-item-1",
+				"name": "Google",
+				"originPluginType": "websearch-plugin",
 				"resultNumber": 1,
 				"searchable": []
 			}
