@@ -40,8 +40,12 @@ alias nano='nano --const --smooth --mouse';
 #     alias nano='micro';
 # fi
 
-# fix python2 to run python3
-#alias python=python3
+# function to run vscode as admin
+function sudocode () {
+  sudo code --user-data-dir="~/.vscode-root"
+}
+
+
 
 
 ##- Scripts
