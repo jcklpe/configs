@@ -1,7 +1,7 @@
 {
   //Settings
-  "editor.fontSize": 16,
-  "editor.lineHeight": 29,
+  "editor.fontSize": 14,
+  "editor.lineHeight": 26,
   "editor.fontFamily": "BlexMono NF, FiraCode Nerd Font,liga-input-sans, sans serif",
   "terminal.integrated.fontFamily": "FiraCode Nerd Font, ProFontWindows Nerd Font Mono",
   "editor.fontLigatures": true,
