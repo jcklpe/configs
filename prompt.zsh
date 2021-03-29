@@ -1,8 +1,8 @@
 ##- Custom ZSH Prompt
 
-source  ${PLUGINS}/powerlevel9k/powerlevel9k.zsh-theme
+source  ${PLUGINS}/powerlevel10k/powerlevel10k.zsh-theme
 
-ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=1
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(ssh os_icon root_indicator dir_writable dir)
