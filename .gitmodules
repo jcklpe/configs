@@ -58,3 +58,6 @@
 	path = video-crossfade
 	url = https://github.com/joeyhoer/video-crossfade.git
 	ignore = dirty
+[submodule "plugins/powerlevel10k"]
+	path = plugins/powerlevel10k
+	url = https://github.com/romkatv/powerlevel10k.git
