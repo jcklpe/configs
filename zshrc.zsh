@@ -40,11 +40,6 @@ fi
 # Run nano cursor always visible, smooth scrolling on, use the mouse, and disable hard wrapping.
 alias nano='nano --const --smooth --mouse';
 
-# replace nano with micro
-# if [ -x "$(command -v micro)" ]; then
-#     alias nano='micro';
-# fi
-
 # function to run vscode as admin
 function sudocode () {
   sudo code --user-data-dir="~/.vscode-root"

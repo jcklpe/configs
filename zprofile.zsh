@@ -9,18 +9,9 @@
  export PROMPT_EOL_MARK=""
 
 
-
-
-
-
-
 ##- import .zshrc
 if [ -f "$HOME/.zshrc" ]; then
     source "$HOME/.zshrc"
 fi
 ##- login startup scripts
 source ${CONFIGS}/bash/x-OS-startup.sh;
-
-if ! [[ $OSis == *"Microsoft"* ]]; then
-    exa --grid --sort=ext --group-directories-first --icons --color-scale;
-fi
