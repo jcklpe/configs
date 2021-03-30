@@ -6,7 +6,6 @@ OSis=$(uname -a);
     if [[ $OSis == *"Microsoft"* ]]; then
         if [ -d "./home" ]; then
             cd home;
-        else
-            exa --grid --sort=ext --group-directories-first --icons --color-scale;
+
         fi
     fi
