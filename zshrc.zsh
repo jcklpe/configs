@@ -4,6 +4,11 @@
 #varaible for configs folder
 CONFIGS="$HOME/configs";
 
+##- Fix compdef issue.
+# see here for more info: https://apple.stackexchange.com/questions/296477/my-command-line-says-complete13-command-not-found-compdef/340718
+autoload -Uz compinit
+compinit
+
 ##- set up cross os mappings
 source ${CONFIGS}/bash/x-OS-mapping.sh;
 
