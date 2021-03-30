@@ -4,10 +4,6 @@
 #varaible for configs folder
 CONFIGS="$HOME/configs";
 
-##- Fix compdef issue.
-# see here for more info: https://apple.stackexchange.com/questions/296477/my-command-line-says-complete13-command-not-found-compdef/340718
-autoload -Uz compinit
-compinit
 
 ##- set up cross os mappings
 source ${CONFIGS}/bash/x-OS-mapping.sh;
@@ -83,7 +79,7 @@ source ${CONFIGS}/prompt.zsh
 source ${PLUGINS}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ##- Zsh Auto-suggestions
-source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
+#source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ##- jump directories
 eval "$(jump shell zsh)"
@@ -96,10 +92,10 @@ wd() {
     source ${PLUGINS}/wd/wd.sh;
     }
 
-##- bd (cd for parent directories)
-#source ${PLUGINS}/zsh-bd/bd.zsh
 
 ##- you should use
 source ${PLUGINS}/zsh-you-should-use/you-should-use.plugin.zsh
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/bit bit
+
+
+##### this is the end of the file. anything beyond here has been auto appended by some trash scripts
+#######################
