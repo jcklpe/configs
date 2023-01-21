@@ -15,3 +15,4 @@ if [ -f "$HOME/.zshrc" ]; then
 fi
 ##- login startup scripts
 source ${CONFIGS}/bash/x-OS-startup.sh;
+eval "$(/opt/homebrew/bin/brew shellenv)"
