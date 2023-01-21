@@ -197,7 +197,7 @@ module.exports = {
     "hyper-pane",
 
     //enhances tab styling
-    "hyper-tabs-enhanced",
+    //"hyper-tabs-enhanced",
     "hyperterm-bold-tab",
     "hyperterm-dibdabs",
 
@@ -205,7 +205,7 @@ module.exports = {
     "hypercwd",
 
     // adds overlay hotkey abilities
-    "hyper-overlay",
+    //"hyper-overlay",
 
     // give normal scrolling in nano
     //"hyperterm-alternatescroll",

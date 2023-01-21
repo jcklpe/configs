@@ -5,6 +5,9 @@ CONFIGS="${HOME}/configs";
 # install brew
  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
+ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/aslan/.zprofile
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+
 #-- root installs
 if [ -d "/usr/local/Homebrew/bin/brew" ]; then
     eval $(/usr/local/Homebrew/bin/brew shellenv);
