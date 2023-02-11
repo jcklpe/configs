@@ -14,6 +14,5 @@ if [ -f "$HOME/.zshrc" ]; then
     source "$HOME/.zshrc"
 fi
 ##- login startup scripts
-eval "$(jump shell)"
 source ${CONFIGS}/bash/x-OS-startup.sh;
 eval "$(/opt/homebrew/bin/brew shellenv)"
