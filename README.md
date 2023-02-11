@@ -15,26 +15,3 @@ I use [[vscode]](https://code.visualstudio.com/) as my code editor. _(mac, windo
 As you can see almost all of these programs work on all three operating systems. This is on purpose. I am trying to make it so that no matter what OS I'm on, my basic experience remains the same.
 
 I want to transcend operating systems! :alien:
-
-Someday I'd like to get the kinks so worked out that I can simply pull down this git repo on a machine, run a script and have everything basically fold out like George Jetson's briefcase car.
-
-But until then this it's a work in progress, while I better figure out my pipeline.
-
-##TODO:
-
-- [ ] break out parts of bashrc/profile.
-- [ ] build bashrc/zshrc structure to be intercompatible and rely on the same sources.
-- [ ] integrate vscode-enzo extension as submodule.
-
-Short term fix:
-
-- [ ] fix vscode-enzo theme errors when used as an extension.
-- [ ] extend theme build process to produce custom css/js injection files.
-- [ ] make css/js injection files available via github cdn
-- [ ] extend theme build process to produce a neutral settings.json file for easy symlinking (this will basically mean that the settings file produced for symlinking will not have theme file stuff in it, but will have commented out code for examples in case I on the file need to make some changes and want to see the results immediately).
-
-Long term fix:
-
-- [ ] rip out highlighter extension and integrate into my extension directly.
-- [ ] rip out css/js injection extension and integrate into my extension directly.
-- [ ] extend theme build process to produce a neutral settings.json file for easy symlinking (this will basically mean that the settings file produced for symlinking will not have theme file stuff in it, but will have commented out code for examples in case I on the file need to make some changes and want to see the results immediately).
