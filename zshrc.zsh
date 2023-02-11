@@ -51,7 +51,6 @@ alias .='cd ..'; # this is here because it messes up bash
 
 source ${CONFIGS}/apt/apt.zsh;
 source ${CONFIGS}/image-utilities/image-utilities.zsh
-source ${CONFIGS}/hue/hue.zsh
 source ${CONFIGS}/list/list.zsh;
 source ${CONFIGS}/npm/npm.zsh;
 source ${CONFIGS}/nextcloud/nextcloud.zsh;
@@ -79,7 +78,7 @@ source ${CONFIGS}/prompt.zsh
 source ${PLUGINS}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ##- Zsh Auto-suggestions
-#source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ##- jump directories
 eval "$(jump shell zsh)"
