@@ -81,7 +81,7 @@ source ${PLUGINS}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ##- jump directories
-eval "$(jump shell)"
+# eval "$(jump shell)"
 
 # add jump integration to ranger
 source ${PLUGINS}/jump-ranger/jump-ranger.zsh
