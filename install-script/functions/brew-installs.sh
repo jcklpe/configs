@@ -7,6 +7,5 @@ brew install gcc;
 brew install zsh;
 brew install exa;
 brew install jump;
-brew install micro;
 brew install mc;
 brew install ranger;

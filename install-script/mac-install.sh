@@ -18,7 +18,7 @@ if [ -d "${HOME}/.linuxbrew" ]; then
 fi
 
 # install brew
-source ./functions/linux-install-brew.sh;
+# source ./functions/linux-install-brew.sh;
 
 # install apps using brew
 source ./functions/brew-installs.sh;
