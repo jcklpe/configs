@@ -98,3 +98,7 @@ source ${PLUGINS}/zsh-you-should-use/you-should-use.plugin.zsh
 
 ##### this is the end of the file. anything beyond here has been auto appended by some trash scripts
 #######################
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
