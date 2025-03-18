@@ -33,8 +33,8 @@ if [ -x "$(command -v trash)" ]; then
   alias rm='trash';
 fi
 
-# Run nano cursor always visible, smooth scrolling on, use the mouse, and disable hard wrapping.
-alias nano='nano --const --smooth --mouse';
+# Run nano cursor always visible, use the mouse, and disable hard wrapping.
+alias nano='nano --const --mouse';
 
 # function to run vscode as admin
 function sudocode () {
