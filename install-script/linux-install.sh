@@ -8,10 +8,10 @@ git submodule init;
 git submodule update --recursive ;
 
 # install brew
-source ./functions/linux-install-brew.sh;
+source ./install-script/functions/linux-install-brew.sh;
 
 # install apps using brew
-source ./functions/brew-installs.sh;
+source ./install-script/functions/brew-installs.sh;
 
 # symlink stuff
-source ./functions/linux-symlinks.sh;
+source ./install-script/functions/linux-symlinks.sh;
