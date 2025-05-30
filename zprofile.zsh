@@ -16,3 +16,6 @@ fi
 ##- login startup scripts
 source ${CONFIGS}/bash/x-OS-startup.sh;
 eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Created by `pipx` on 2025-05-30 18:40:22
+export PATH="$PATH:/Users/aslan/.local/bin"
