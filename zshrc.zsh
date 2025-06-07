@@ -105,3 +105,4 @@ export NVM_DIR="$HOME/.nvm"
 
 # Created by `pipx` on 2025-05-30 18:40:22
 export PATH="$PATH:/Users/aslan/.local/bin"
+export PATH="/Users/aslan/.pixi/bin:$PATH"
