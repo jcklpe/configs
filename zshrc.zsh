@@ -108,4 +108,6 @@ export PATH="$PATH:/Users/aslan/.local/bin"
 export PATH="/Users/aslan/.pixi/bin:$PATH"
 
 # stuff for enzo lang development
-alias run='poetry run enzo';
+alias run='poetry run';
+
+alias python='python3';

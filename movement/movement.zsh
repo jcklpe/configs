@@ -34,7 +34,7 @@ function lx() {
 }
 
 #  add exa auto to cd command
-function cd {
+function go {
     builtin cd "$@" && ls;
 }
 
