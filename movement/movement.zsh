@@ -33,7 +33,7 @@ function lx() {
     '
 }
 
-#  add exa auto to cd command
+#  add eza auto to cd command
 function go {
     builtin cd "$@" && ls;
 }
@@ -50,25 +50,25 @@ function peek() {
 }
 
 
-##- exa improvement overrides
-# check to see if exa is installed
-if [[ $(type exa) = *bin/exa* ]]; then
+##- eza improvement overrides
+# check to see if eza is installed
+if [[ $(type eza) = *bin/eza* ]]; then
 
-    #set default exa to ls for better compatibility between scripts
+    #set default eza to ls for better compatibility between scripts
     function ls() {
-        command exa --grid --sort=ext --group-directories-first --icons --color-scale;
+        command eza --grid --sort=ext --group-directories-first --icons --color-scale;
     }
 
     function lx() {
-        exa --long  --header --git --color-scale -a;
+        eza --long  --header --git --color-scale -a;
     }
 
     function tree() {
-        exa --tree --level=2  --header --git --color-scale;
+        eza --tree --level=2  --header --git --color-scale;
     }
 
     function peek() {
-    exa --grid --sort=ext --group-directories-first --icons --color-scale -a
+    eza --grid --sort=ext --group-directories-first --icons --color-scale -a
 }
 
 fi
