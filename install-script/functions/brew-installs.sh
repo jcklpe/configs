@@ -5,7 +5,7 @@ brew install gcc;
 
 #install stuff
 brew install zsh;
-brew install exa;
+brew install eza;
 brew install jump;
 brew install mc;
 brew install ranger;

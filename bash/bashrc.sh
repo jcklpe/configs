@@ -49,7 +49,6 @@ source ${CONFIGS}/bash/prompt.sh;
 ##-PLUGINS
 source ${CONFIGS}/apt/apt.zsh;
 source ${CONFIGS}/image-utilities/image-utilities.zsh;
-source ${CONFIGS}/hue/hue.zsh;
 source ${CONFIGS}/list/list.zsh;
 source ${CONFIGS}/npm/npm.zsh;
 source ${CONFIGS}/nextcloud/nextcloud.zsh;

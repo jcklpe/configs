@@ -27,7 +27,7 @@ source ${CONFIGS}/bash/x-OS-startup.sh;
 # fi
 if [ -d "${HOME}/.zshrc" ]; then
 if ! [[ $OSis == *"Microsoft"* ]]; then
-    exa --grid --sort=ext --group-directories-first --icons --color-scale;
+    eza --grid --sort=ext --group-directories-first --icons --color-scale;
 fi
 fi
 
