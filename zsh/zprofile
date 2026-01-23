@@ -13,11 +13,6 @@
 if [ -f "$HOME/.zshrc" ]; then
     source "$HOME/.zshrc"
 fi
-##- login startup scripts
-source ${CONFIGS}/bash/x-OS-startup.sh;
-if command -v brew >/dev/null 2>&1; then
-  eval "$(brew shellenv)"
-fi
 
 # Created by `pipx` on 2025-05-30 18:40:22
 export PATH="$PATH:/Users/aslan/.local/bin"
