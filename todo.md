@@ -1,7 +1,4 @@
 # Configs Improvements TODO
-- [ ] maybe figure out a way so that I can use trash instead of rm but also won't get confused if someone runs rm -rf since trash doesn't have -rf
-
-
 ### Documentation
 - [x] Update README.md with current install process
 - [x] Document which modules work in bash vs zsh vs both
