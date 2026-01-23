@@ -33,11 +33,6 @@ alias testcolor='${PLUGINS}/Color-Scripts/color-scripts/colorview'
 alias test256color='${PLUGINS}/Color-Scripts/test-color-support/color-support2'
 alias mount='mount |column -t'
 
-# Replace rm with trash if available
-if [ -x "$(command -v trash)" ]; then
-  alias rm='trash'
-fi
-
 # function to run vscode as admin
 function sudocode () {
   sudo code --user-data-dir="~/.vscode-root"
