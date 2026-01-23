@@ -3,14 +3,8 @@
 
 ##- 𝒛𝖘𝖍 𝖘𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
-#varaible for configs folder
-CONFIGS="$HOME/configs";
-
-##- set up cross os mappings
-source ${CONFIGS}/bash/x-OS-mapping.sh;
-
-##- VARIABLES
-PLUGINS="${CONFIGS}/plugins";
+# Initialize CONFIGS and PLUGINS (includes OS detection and setup)
+source ~/configs/init.sh
 
 ##- zsh related
 alias config="nano ~/.zshrc";
@@ -22,14 +16,15 @@ alias nano='nano --const --mouse';
 ##- Theme Settings
 export TERM="xterm-256color"
 
-# Use Powerlevel10k only outside VS Code (it breaks terminal integration)
-if [[ "$TERM_PROGRAM" != "vscode" ]]; then
+# Load appropriate prompt based on environment
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    # VS Code needs simple prompt (Powerlevel10k breaks terminal integration)
+    source ${CONFIGS}/vscode/prompt.zsh
+else
+    # Use Powerlevel10k in regular terminals
     POWERLEVEL9K_MODE="nerdfont-complete"
     ZSH_DISABLE_COMPFIX=true
-    source ${CONFIGS}/prompt.zsh
-else
-    # Simple prompt for VS Code
-    PROMPT='%F{green}%~%f %# '
+    source ${CONFIGS}/zsh/prompt.zsh
 fi
 
 ##- Additional aliases
@@ -50,14 +45,7 @@ function sudocode () {
 
 ##- Scripts
 
-source ${CONFIGS}/movement/movement.zsh;
-
-source ${CONFIGS}/apt/apt.zsh;
-source ${CONFIGS}/image-utilities/image-utilities.zsh;
-source ${CONFIGS}/list/list.zsh;
-source ${CONFIGS}/npm/npm.zsh;
-source ${CONFIGS}/nextcloud/nextcloud.zsh;
-source ${CONFIGS}/git/git.zsh;
+source ${CONFIGS}/load-shell-modules.sh
 
 ##- PLUGINS
 ##- syntax highlighting
