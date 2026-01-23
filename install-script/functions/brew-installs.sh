@@ -14,8 +14,12 @@ brew_install_if_needed() {
 # Install brew version of gcc for easier building
 brew_install_if_needed gcc
 
+# Install zsh on Linux/WSL only (macOS has it pre-installed)
+if [ "${OS_TYPE}" != "mac" ]; then
+    brew_install_if_needed zsh
+fi
+
 # Install other packages
-brew_install_if_needed zsh
 brew_install_if_needed eza
 brew_install_if_needed jump
 brew_install_if_needed mc
