@@ -1,5 +1,10 @@
 ##- Custom ZSH Prompt
 
+# Disable instant prompt in VS Code to fix terminal integration
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+  POWERLEVEL9K_INSTANT_PROMPT=off
+fi
+
 source  ${PLUGINS}/powerlevel10k/powerlevel10k.zsh-theme
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
