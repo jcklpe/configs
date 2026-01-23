@@ -74,20 +74,4 @@ if [[ $(type eza) = *bin/eza* ]]; then
 fi
 
 # get rid of command not found
-alias cd..='cd ..';
-
-# a quick way to get out of current directory
-
-alias ..='cd ../../';
-alias ...='cd ../../../';
-alias ....='cd ../../../../';
-alias .....='cd ../../../../';
-alias .4='cd ../../../../';
-alias .5='cd ../../../../..';
-
-alias cd2="cd ../..";
-alias cd3='cd ../../../';
-alias cd4='cd ../../../../';
-alias cd5='cd ../../../../..';
-alias cd6='cd ../../../../../..';
-alias cd7='cd ../../../../../../..';
+alias up='cd ..';
