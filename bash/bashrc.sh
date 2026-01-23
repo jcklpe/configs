@@ -4,8 +4,9 @@
 ## ██╔══██╗██╔══██║╚════██║██╔══██║
 ## ██████╔╝██║  ██║███████║██║  ██║
 ## ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-#varaible for configs folder
-CONFIGS="$HOME/configs";
+
+# Initialize CONFIGS and PLUGINS
+source ~/configs/init.sh
 
 ##- set up cross os mappings
 source ${CONFIGS}/bash/x-OS-mapping.sh;
@@ -44,16 +45,10 @@ if ! shopt -oq posix; then
 fi
 
 ##- Prompt/Theme
-source ${CONFIGS}/bash/prompt.sh;
+source ${CONFIGS}/bash/prompt.bash;
 
-##-PLUGINS
-source ${CONFIGS}/apt/apt.zsh;
-source ${CONFIGS}/image-utilities/image-utilities.zsh;
-source ${CONFIGS}/list/list.zsh;
-source ${CONFIGS}/npm/npm.zsh;
-source ${CONFIGS}/nextcloud/nextcloud.zsh;
-source ${CONFIGS}/git/git.zsh;
-
+##- Load shell modules
+source ${CONFIGS}/load-shell-modules.sh
 
 alias reload="source ~/.bashrc";
 complete -C /usr/local/bin/bit bit

@@ -1,26 +1,30 @@
 #!/bin/bash
-# set variables
-CONFIGS="${HOME}/configs";
+##- Mac installation script
+# Note: CONFIGS is set by sourcing init.sh
+source ~/configs/init.sh
 
-# install brew
- /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# Init all submodules recursively
+echo "Initializing git submodules..."
+git submodule init
+git submodule update --recursive
 
- echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/aslan/.zprofile
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-
-#-- root installs
-if [ -d "/usr/local/Homebrew/bin/brew" ]; then
-    eval $(/usr/local/Homebrew/bin/brew shellenv);
-fi
-#-- peasant installs
-if [ -d "${HOME}/.linuxbrew" ]; then
-    eval $(${HOME}/.linuxbrew/bin/brew shellenv);
+# Install Homebrew if not already installed
+echo "Setting up Homebrew..."
+if ! command -v brew &>/dev/null; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-# install brew
-# source ./functions/linux-install-brew.sh;
+# Set up Homebrew environment (Apple Silicon)
+eval "$(/opt/homebrew/bin/brew shellenv)"
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "${HOME}/.zprofile"
 
-# install apps using brew
-source ./functions/brew-installs.sh;
+# Install apps using brew
+source ${CONFIGS}/install-script/functions/brew-installs.sh
 
-source ./functions/linux-symlinks.sh;
+# Symlink stuff
+source ${CONFIGS}/install-script/functions/symlinks.sh
+
+# Configure git
+source ${CONFIGS}/install-script/functions/git-config.sh
+
+echo "✓ Mac installation complete!"

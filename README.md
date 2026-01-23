@@ -1,17 +1,47 @@
 # Configs
 
-This repo is a collection of configs, dotfiles, code snippets, and scripts. This folder is then synced across all the different machines I use through a self hosted instance of the open-source personal cloud platform [[NextCloud]](https://nextcloud.com/).
+Portable dotfiles and shell configuration that works across macOS, Linux, and WSL. Clone once, run anywhere.
 
-I work in windows, mac, and linux environments. My goal is to create something that's extremely modular and contained.
+## What Gets Installed
+- **Homebrew** (package manager)
+- **zsh** with Powerlevel10k prompt
+- **Command-line tools:** eza, jump, mc (Midnight Commander), ranger
+- **Symlinked configs:** .zshrc, .bashrc, .hyper.js, .gitignore_global, etc.
 
-I use [[zsh]](https://www.zsh.org/) as my CLI shell. _(mac, windows, linux compatible)_
+All install scripts are **idempotent** - safe to run multiple times.
 
-I use [ueli](https://github.com/oliverschwendener/ueli) as my launcher. _(mac, windows compatible)_
+## OS-Specific Features
 
-I use [[hyper]](https://hyper.is/) as my terminal emulator. _(mac, windows, linux compatible)_
+**macOS:**
+- Homebrew installed to `/opt/homebrew` (Apple Silicon)
 
-I use [[vscode]](https://code.visualstudio.com/) as my code editor. _(mac, windows, linux compatible)_
+**Linux:**
+- Homebrew support via linuxbrew
+- Optional torch activation (if ~/torch exists)
 
-As you can see almost all of these programs work on all three operating systems. This is on purpose. I am trying to make it so that no matter what OS I'm on, my basic experience remains the same.
+**WSL:**
+- `$WINHOME` environment variable (Windows user directory)
+- `cmd` and `vscode` aliases for Windows executables
+- Auto-navigation to proper home directory on login
 
-I want to transcend operating systems! :alien:
+## VS Code Terminal Integration
+The config automatically detects VS Code's integrated terminal and loads a simplified prompt for compatibility. Powerlevel10k is skipped in VS Code to prevent terminal integration issues.
+
+## Tools
+
+- **Shell:** [zsh](https://www.zsh.org/) (primary), bash (fallback)
+- **Terminal:** [Hyper](https://hyper.is/), VS Code integrated terminal
+- **Editor:** [VS Code](https://code.visualstudio.com/)
+- **Launcher:** [ueli](https://github.com/oliverschwendener/ueli) (macOS/Windows)
+
+## Troubleshooting
+
+### Prompts look broken
+- **In VS Code terminal:** Normal - uses simplified prompt for compatibility
+- **In regular terminal:** Ensure Powerlevel10k fonts are installed (see `plugins/powerlevel10k/font.md`)
+
+### Homebrew not found after install
+Run `source ~/.zshrc` or open a new terminal session.
+
+### WSL: Wrong home directory on login
+The config automatically detects this and navigates to the correct directory in `zprofile`.
