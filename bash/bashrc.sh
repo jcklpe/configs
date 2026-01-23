@@ -8,9 +8,6 @@
 # Initialize CONFIGS and PLUGINS
 source ~/configs/init.sh
 
-##- set up cross os mappings
-source ${CONFIGS}/bash/x-OS-mapping.sh;
-
 source ${CONFIGS}/movement/movement.zsh;
 
 
