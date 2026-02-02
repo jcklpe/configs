@@ -24,3 +24,4 @@ brew_install_if_needed eza
 brew_install_if_needed jump
 brew_install_if_needed mc
 brew_install_if_needed ranger
+brew_install_if_needed fnm

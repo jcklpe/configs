@@ -11,6 +11,9 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 # Initialize CONFIGS and PLUGINS
 source ~/configs/init.sh
 
+# Load PATH tools and environment managers
+source ${CONFIGS}/path.sh
+
 source ${CONFIGS}/movement/movement.zsh;
 
 
@@ -52,7 +55,3 @@ source ${CONFIGS}/load-shell-modules.sh
 
 alias reload="source ~/.bashrc";
 complete -C /usr/local/bin/bit bit
-
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
