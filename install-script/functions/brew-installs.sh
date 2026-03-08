@@ -11,6 +11,17 @@ brew_install_if_needed() {
     fi
 }
 
+# Helper function to install cask only if not already installed
+brew_cask_install_if_needed() {
+    if brew list --cask "$1" &>/dev/null; then
+        echo "✓ $1 already installed, skipping"
+    else
+        echo "Installing $1..."
+        brew install --cask "$1"
+    fi
+}
+
+
 # Install brew version of gcc for easier building
 brew_install_if_needed gcc
 
@@ -25,3 +36,10 @@ brew_install_if_needed jump
 brew_install_if_needed mc
 brew_install_if_needed ranger
 brew_install_if_needed fnm
+brew_cask_install_if_needed wezterm
+brew_cask_install_if_needed tabby
+
+# Mac-only GUI apps
+if [ "${OS_TYPE}" = "mac" ]; then
+    brew_cask_install_if_needed visual-studio-code
+fi
