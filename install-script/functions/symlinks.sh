@@ -1,6 +1,8 @@
 #!/bin/bash
 ##- Symlink stuff to $HOME (idempotent - checks before creating)
 
+source "${CONFIGS}/install-script/functions/detect-os.sh"
+
 # Helper function to create symlink only if needed
 create_symlink_if_needed() {
     local source="$1"
@@ -22,22 +24,25 @@ ensure_dir() {
     fi
 }
 
-# Create symlinks
+##- Cross-platform symlinks
 create_symlink_if_needed "${CONFIGS}/bash/bashrc.sh" "${HOME}/.bashrc"
-create_symlink_if_needed "${CONFIGS}/hyper/hyper.js" "${HOME}/.hyper.js"
 create_symlink_if_needed "${CONFIGS}/bash/bash.profile" "${HOME}/.profile"
 create_symlink_if_needed "${CONFIGS}/git/git.gitignore_global" "${HOME}/.gitignore_global"
 create_symlink_if_needed "${CONFIGS}/zsh/zshrc" "${HOME}/.zshrc"
 create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
 
-# WezTerm config (uses XDG config directory)
+# WezTerm uses XDG on all platforms
 ensure_dir "${HOME}/.config/wezterm"
 create_symlink_if_needed "${CONFIGS}/wezterm/wezterm.lua" "${HOME}/.config/wezterm/wezterm.lua"
 
-# Tabby config (macOS: ~/Library/Application Support/tabby)
-ensure_dir "${HOME}/Library/Application Support/tabby"
-create_symlink_if_needed "${CONFIGS}/tabby/config.yaml" "${HOME}/Library/Application Support/tabby/config.yaml"
+##- Mac-specific symlinks
+if [ "${OS_TYPE}" = "mac" ]; then
+    ensure_dir "${HOME}/Library/Application Support/tabby"
+    create_symlink_if_needed "${CONFIGS}/tabby/config.yaml" "${HOME}/Library/Application Support/tabby/config.yaml"
+fi
 
-# VSCode settings
-ensure_dir "${HOME}/Library/Application Support/Code/User"
-create_symlink_if_needed "${CONFIGS}/vscode/settings.json" "${HOME}/Library/Application Support/Code/User/settings.json"
+##- Linux-specific symlinks (includes NixOS and WSL)
+if [ "${OS_TYPE}" = "linux" ] || [ "${OS_TYPE}" = "nixos" ] || [ "${OS_TYPE}" = "wsl" ]; then
+    ensure_dir "${HOME}/.config/tabby"
+    create_symlink_if_needed "${CONFIGS}/tabby/config.yaml" "${HOME}/.config/tabby/config.yaml"
+fi
