@@ -17,43 +17,28 @@ fi
 export CONFIGS
 export PLUGINS="${CONFIGS}/plugins"
 
-# Detect OS for conditional loading
-case "$(uname -s)" in
-    Darwin*)
-        export OS_TYPE="mac"
-        ;;
+# Detect OS and export OS_TYPE (mac | nixos | wsl | linux | unknown)
+source "${CONFIGS}/install-script/functions/detect-os.sh"
 
-    Linux*)
-        # Check if WSL
-        if grep -qi microsoft /proc/version 2>/dev/null; then
-            export OS_TYPE="wsl"
+# WSL-specific shell setup
+if [ "${OS_TYPE}" = "wsl" ]; then
+    export WINHOME=$(wslpath $(cmd.exe /C "echo %USERPROFILE%") 2>/dev/null)
+    export WINHOME=${WINHOME//$'\015'}
 
-            # WSL-specific setup
-            export WINHOME=$(wslpath $(cmd.exe /C "echo %USERPROFILE%") 2>/dev/null)
-            export WINHOME=${WINHOME//$'\015'}
+    alias cmd='/mnt/c/Windows/System32/cmd.exe'
+    alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe"
 
-            # WSL-specific aliases
-            alias cmd='/mnt/c/Windows/System32/cmd.exe'
-            alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe"
+    if [ -d "./home" ]; then
+        cd home
+    fi
+fi
 
-            # Change to home directory if we're in a weird location
-            if [ -d "./home" ]; then
-                cd home
-            fi
-        else
-            export OS_TYPE="linux"
-
-            # Linux-specific: torch activation if available
-            if [ -d "${HOME}/torch" ]; then
-                source ${HOME}/torch/install/bin/torch-activate
-            fi
-        fi
-        ;;
-
-    *)
-        export OS_TYPE="unknown"
-        ;;
-esac
+# Linux-specific: torch activation if available
+if [ "${OS_TYPE}" = "linux" ]; then
+    if [ -d "${HOME}/torch" ]; then
+        source ${HOME}/torch/install/bin/torch-activate
+    fi
+fi
 
 # Set up Homebrew environment (all OSes)
 # Try common Homebrew locations and eval shellenv if found
