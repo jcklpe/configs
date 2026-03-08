@@ -8,12 +8,14 @@ echo "Initializing git submodules..."
 git submodule init
 git submodule update --recursive
 
-# Install Homebrew
-echo "Setting up Homebrew..."
-source ${CONFIGS}/install-script/functions/linux-install-brew.sh
-
-# Install apps using brew
-source ${CONFIGS}/install-script/functions/brew-installs.sh
+# Install Homebrew and apps (skip on NixOS - packages managed by nix)
+if [ "${OS_TYPE}" != "nixos" ]; then
+    echo "Setting up Homebrew..."
+    source ${CONFIGS}/install-script/functions/linux-install-brew.sh
+    source ${CONFIGS}/install-script/functions/brew-installs.sh
+else
+    echo "NixOS detected - skipping Homebrew setup"
+fi
 
 # Symlink stuff
 source ${CONFIGS}/install-script/functions/symlinks.sh
