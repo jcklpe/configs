@@ -23,18 +23,30 @@ for pkg in "${DNF_CLI_TOOLS[@]}"; do
     dnf_install_if_needed "$pkg"
 done
 
-##- WezTerm (official COPR repo)
-if ! sudo dnf copr list --enabled 2>/dev/null | grep -q "wezfurlong/wezterm"; then
-    echo "Enabling wezterm COPR repo..."
-    sudo dnf copr enable -y wezfurlong/wezterm
+##- WezTerm (official RPM from GitHub releases)
+if ! rpm -q wezterm &>/dev/null; then
+    echo "Installing WezTerm..."
+    WEZTERM_URL=$(curl -s https://api.github.com/repos/wez/wezterm/releases/latest \
+        | grep "browser_download_url" \
+        | grep "\.rpm" \
+        | head -1 \
+        | sed 's/.*"\(https[^"]*\)".*/\1/')
+    curl -L "${WEZTERM_URL}" -o /tmp/wezterm.rpm
+    sudo dnf install -y /tmp/wezterm.rpm
+    rm /tmp/wezterm.rpm
+else
+    echo "✓ wezterm already installed, skipping"
 fi
-dnf_install_if_needed wezterm
 
 ##- Tabby (official RPM from GitHub releases)
 if ! rpm -q tabby &>/dev/null; then
     echo "Installing Tabby..."
-    TABBY_VERSION=$(curl -s https://api.github.com/repos/Eugeny/tabby/releases/latest | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-    curl -L "https://github.com/Eugeny/tabby/releases/latest/download/tabby-${TABBY_VERSION}-linux-x64.rpm" -o /tmp/tabby.rpm
+    TABBY_URL=$(curl -s https://api.github.com/repos/Eugeny/tabby/releases/latest \
+        | grep "browser_download_url" \
+        | grep "\.rpm" \
+        | head -1 \
+        | sed 's/.*"\(https[^"]*\)".*/\1/')
+    curl -L "${TABBY_URL}" -o /tmp/tabby.rpm
     sudo dnf install -y /tmp/tabby.rpm
     rm /tmp/tabby.rpm
 else
