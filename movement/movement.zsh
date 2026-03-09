@@ -38,16 +38,6 @@ function go {
     builtin cd "$@" && ls;
 }
 
-# make a directory and then go inside it
-function mkcdir ()
-{
-    mkdir -p -- "$1" &&
-    cd -P -- "$1"
-}
-
-function peek() {
-    ls -a
-}
 
 
 ##- eza improvement overrides

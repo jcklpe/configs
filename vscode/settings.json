@@ -3,7 +3,7 @@
   "editor.fontSize": 14,
   "editor.lineHeight": 26,
   "editor.fontFamily": "BlexMono NF, FiraCode Nerd Font,liga-input-sans, sans serif",
-  "terminal.integrated.fontFamily": "FiraCode Nerd Font, ProFontWindows Nerd Font Mono",
+  "terminal.integrated.fontFamily": "FiraCode Nerd Font Mono, ProFontWindows Nerd Font Mono",
   "editor.fontLigatures": true,
   "vscode_custom_css.imports": [
     "file:///C:/Users/aslan/home/Documents/configs/vscode/injectedTheme/styles.css"
