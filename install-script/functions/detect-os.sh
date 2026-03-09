@@ -24,3 +24,9 @@ case "$(uname -s)" in
         export OS_TYPE="unknown"
         ;;
 esac
+
+# ── Color output helpers ─────────────────────────────────────────────────────
+# echo_warning : yellow  — warnings, errors, items that need attention
+# echo_skip    : light blue — already installed / already done
+echo_warning() { echo -e "\033[33m$*\033[0m"; }
+echo_skip()    { echo -e "\033[94m$*\033[0m"; }

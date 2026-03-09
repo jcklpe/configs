@@ -12,7 +12,7 @@ fi
 # Helper function to install package only if not already installed
 brew_install_if_needed() {
     if brew list "$1" &>/dev/null; then
-        echo "✓ $1 already installed, skipping"
+        echo_skip "✓ $1 already installed, skipping"
     else
         echo "Installing $1..."
         brew install "$1"
@@ -22,7 +22,7 @@ brew_install_if_needed() {
 # Helper function to install cask only if not already installed
 brew_cask_install_if_needed() {
     if brew list --cask "$1" &>/dev/null; then
-        echo "✓ $1 already installed, skipping"
+        echo_skip "✓ $1 already installed, skipping"
     else
         echo "Installing $1..."
         brew install --cask "$1"
@@ -51,4 +51,7 @@ if [ "${OS_TYPE}" = "mac" ]; then
     brew_cask_install_if_needed wezterm
     brew_cask_install_if_needed tabby
     brew_cask_install_if_needed visual-studio-code
+    brew_cask_install_if_needed google-chrome
+    brew_cask_install_if_needed vlc
+    brew_cask_install_if_needed typora
 fi
