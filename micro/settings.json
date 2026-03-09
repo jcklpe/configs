@@ -1,5 +1,5 @@
 {
-    "colorscheme": "gameboy",
+    "colorscheme": "hopscotch",
     "cursorline": false,
     "eofnewline": false,
     "fastdirty": true,
@@ -9,7 +9,7 @@
     "filemanager-showdotfiles": true,
     "filemanager-showignored": true,
     "hidehelp": false,
-    "matchbraceleft": false,
+    "matchbraceleft": true,
     "pluginchannels": [
         "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
     ],

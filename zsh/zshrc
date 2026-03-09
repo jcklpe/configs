@@ -52,16 +52,29 @@ source ${PLUGINS}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ##- jump directories
-# initialize jump shell integration (provides the `j` command)
 if command -v jump &>/dev/null; then
-    eval "$(jump shell zsh)"
-    source ${PLUGINS}/jump-ranger/jump-ranger.zsh
+    eval "$(command jump shell zsh)"
+    # Capture original j, rewrap to run lk after landing
+    functions[_j_orig]=$functions[j]
+    function j() { _j_orig "$@" && lk; }
+    alias jmp='j'
 fi
 
 ##- warp door
-wd() {
-    source ${PLUGINS}/wd/wd.sh
-}
+if [ -f "${PLUGINS}/wd/wd.plugin.zsh" ]; then
+    # Redefine wd() to source wd.sh directly (same as plugin) + lk on navigation
+    # Non-navigation subcommands skip lk
+    function wd() {
+        case "$1" in
+            add|rm|remove|show|list|ls|path|clean|clean!|help|--help|-h|-v|--version|-d|-c|-q)
+                source "${PLUGINS}/wd/wd.sh"
+                ;;
+            *)
+                source "${PLUGINS}/wd/wd.sh" && lk
+                ;;
+        esac
+    }
+fi
 
 ##- you should use
 source ${PLUGINS}/zsh-you-should-use/you-should-use.plugin.zsh

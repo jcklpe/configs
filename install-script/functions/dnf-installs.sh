@@ -27,10 +27,13 @@ else
 fi
 
 ##- CLI tools available in default Fedora repos (install before brew runs)
-DNF_CLI_TOOLS=(gcc gcc-c++ make zsh mc ranger)
-for pkg in "${DNF_CLI_TOOLS[@]}"; do
-    dnf_install_if_needed "$pkg"
-done
+dnf_install_if_needed gcc
+dnf_install_if_needed gcc-c++
+dnf_install_if_needed make
+dnf_install_if_needed zsh
+dnf_install_if_needed mc
+dnf_install_if_needed ranger
+dnf_install_if_needed micro
 
 ##- WezTerm (official RPM from GitHub releases)
 if ! rpm -q wezterm &>/dev/null; then
