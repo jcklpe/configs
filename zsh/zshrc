@@ -53,9 +53,10 @@ source ${PLUGINS}/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ##- jump directories
 # initialize jump shell integration (provides the `j` command)
-eval "$(jump shell zsh)"
-# add jump integration to ranger
-source ${PLUGINS}/jump-ranger/jump-ranger.zsh
+if command -v jump &>/dev/null; then
+    eval "$(jump shell zsh)"
+    source ${PLUGINS}/jump-ranger/jump-ranger.zsh
+fi
 
 ##- warp door
 wd() {

@@ -35,6 +35,12 @@ create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
 ensure_dir "${HOME}/.config/wezterm"
 create_symlink_if_needed "${CONFIGS}/wezterm/wezterm.lua" "${HOME}/.config/wezterm/wezterm.lua"
 
+##- NixOS-specific symlinks
+if [ "${OS_TYPE}" = "nixos" ]; then
+    sudo ln -sf "${CONFIGS}/nixos/configuration.nix" /etc/nixos/configuration.nix
+    echo "✓ Symlinked configuration.nix → /etc/nixos/configuration.nix"
+fi
+
 ##- Mac-specific symlinks
 if [ "${OS_TYPE}" = "mac" ]; then
     ensure_dir "${HOME}/Library/Application Support/tabby"

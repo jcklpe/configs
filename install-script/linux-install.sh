@@ -33,6 +33,12 @@ else
     echo "✓ zsh already set as default shell"
 fi
 
+# Run nixos-rebuild after symlinks are in place (NixOS only)
+if [ "${OS_TYPE}" = "nixos" ]; then
+    echo "Running nixos-rebuild switch..."
+    sudo nixos-rebuild switch
+fi
+
 # Symlink stuff
 source ${CONFIGS}/install-script/functions/symlinks.sh
 
