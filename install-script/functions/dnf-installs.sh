@@ -26,14 +26,20 @@ done
 ##- WezTerm (official RPM from GitHub releases)
 if ! rpm -q wezterm &>/dev/null; then
     echo "Installing WezTerm..."
+    ARCH=$(uname -m)  # x86_64 or aarch64
     WEZTERM_URL=$(curl -s https://api.github.com/repos/wez/wezterm/releases/latest \
         | grep "browser_download_url" \
         | grep "\.rpm" \
+        | grep "${ARCH}" \
         | head -1 \
         | sed 's/.*"\(https[^"]*\)".*/\1/')
-    curl -L "${WEZTERM_URL}" -o /tmp/wezterm.rpm
-    sudo dnf install -y /tmp/wezterm.rpm
-    rm /tmp/wezterm.rpm
+    if [ -z "${WEZTERM_URL}" ]; then
+        echo "✗ Could not resolve WezTerm RPM download URL - skipping"
+    else
+        curl -L "${WEZTERM_URL}" -o /tmp/wezterm.rpm
+        sudo dnf install -y /tmp/wezterm.rpm
+        rm -f /tmp/wezterm.rpm
+    fi
 else
     echo "✓ wezterm already installed, skipping"
 fi
@@ -41,14 +47,20 @@ fi
 ##- Tabby (official RPM from GitHub releases)
 if ! rpm -q tabby &>/dev/null; then
     echo "Installing Tabby..."
+    ARCH=$(uname -m)  # x86_64 or aarch64
     TABBY_URL=$(curl -s https://api.github.com/repos/Eugeny/tabby/releases/latest \
         | grep "browser_download_url" \
         | grep "\.rpm" \
+        | grep "${ARCH}" \
         | head -1 \
         | sed 's/.*"\(https[^"]*\)".*/\1/')
-    curl -L "${TABBY_URL}" -o /tmp/tabby.rpm
-    sudo dnf install -y /tmp/tabby.rpm
-    rm /tmp/tabby.rpm
+    if [ -z "${TABBY_URL}" ]; then
+        echo "✗ Could not resolve Tabby RPM download URL - skipping"
+    else
+        curl -L "${TABBY_URL}" -o /tmp/tabby.rpm
+        sudo dnf install -y /tmp/tabby.rpm
+        rm -f /tmp/tabby.rpm
+    fi
 else
     echo "✓ tabby already installed, skipping"
 fi

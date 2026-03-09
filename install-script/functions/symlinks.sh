@@ -38,11 +38,11 @@ create_symlink_if_needed "${CONFIGS}/wezterm/wezterm.lua" "${HOME}/.config/wezte
 ##- Mac-specific symlinks
 if [ "${OS_TYPE}" = "mac" ]; then
     ensure_dir "${HOME}/Library/Application Support/tabby"
-    create_symlink_if_needed "${CONFIGS}/tabby/config.yaml" "${HOME}/Library/Application Support/tabby/config.yaml"
+    create_symlink_if_needed "${CONFIGS}/tabby/config.mac.yaml" "${HOME}/Library/Application Support/tabby/config.yaml"
 fi
 
 ##- Linux-specific symlinks (includes Fedora, NixOS and WSL)
 if [ "${OS_TYPE}" = "fedora" ] || [ "${OS_TYPE}" = "linux" ] || [ "${OS_TYPE}" = "nixos" ] || [ "${OS_TYPE}" = "wsl" ]; then
     ensure_dir "${HOME}/.config/tabby"
-    create_symlink_if_needed "${CONFIGS}/tabby/config.yaml" "${HOME}/.config/tabby/config.yaml"
+    create_symlink_if_needed "${CONFIGS}/tabby/config.linux.yaml" "${HOME}/.config/tabby/config.yaml"
 fi
