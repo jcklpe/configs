@@ -25,6 +25,14 @@ else
     echo "NixOS detected - skipping Homebrew setup"
 fi
 
+# Set zsh as default shell
+if [ "$SHELL" != "$(which zsh)" ]; then
+    echo "Setting zsh as default shell..."
+    chsh -s $(which zsh)
+else
+    echo "✓ zsh already set as default shell"
+fi
+
 # Symlink stuff
 source ${CONFIGS}/install-script/functions/symlinks.sh
 
