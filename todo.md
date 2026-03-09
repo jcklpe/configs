@@ -7,6 +7,10 @@
 
 ## Future/Low Priority
 
+### Shell Cleanup
+- [ ] Convert `movement/movement.sh` to a pure bash-compatible file: remove any zsh-specific syntax (`setopt`, `autoload`, `compdef`). Also revisit the `ls`→`eza` alias — aliasing `ls` breaks default shell scripts; the new `go` function is the right replacement and should fully take over.
+- [ ] Research actively-maintained alternatives to the `bit` CLI git helper (e.g. `gitui`, `lazygit`, `tig`) — removed `bit` completion from bashrc since it had a hardcoded Intel Mac path and unknown provenance.
+
 ### VS Code configuration improvements
 - [ ] Review vscode/ folder contents and update/remove outdated configs (snippets, settings, etc.)
 - [ ] Investigate alternatives to custom background extension (previously used, now unsupported)
