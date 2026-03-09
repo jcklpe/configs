@@ -6,8 +6,7 @@
 #   3. Run: ~/configs/install-script/nixos-install.sh
 #
 # PLACEHOLDERS TO UPDATE:
-#   - "yourhostname"  → your desired machine hostname
-#   - "yourusername"  → your actual username
+#   - hostname        → currently "lovelace", change if needed
 #   - timezone        → your timezone (timedatectl list-timezones)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -25,11 +24,11 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # ── Networking ──────────────────────────────────────────────────────────────
-  networking.hostName = "yourhostname";
+  networking.hostName = "lovelace";
   networking.networkmanager.enable = true;
 
   # ── Locale & Time ───────────────────────────────────────────────────────────
-  time.timeZone = "America/New_York";
+  time.timeZone = "America/Chicago";
   i18n.defaultLocale = "en_US.UTF-8";
 
   # ── Desktop (GNOME) ─────────────────────────────────────────────────────────
@@ -47,7 +46,7 @@
   programs.zsh.enable = true;
 
   # ── Users ───────────────────────────────────────────────────────────────────
-  users.users.yourusername = {
+  users.users.aslan = {
     isNormalUser = true;
     shell = pkgs.zsh;
     extraGroups = [ "wheel" "networkmanager" ];
@@ -82,8 +81,22 @@
     tabby      # Note: if tabby causes issues, install via flatpak instead
                # (flatpak install flathub dev.eugeny.Tabby)
 
-    ##- Editor
+    ##- Editor & writing
     vscode
+    typora
+
+    ##- Browser
+    google-chrome
+
+    ##- Media
+    vlc
+
+    ##- GNOME extensions
+    gnome-extension-manager       # Matt Jakeman's Extension Manager
+    gnomeExtensions.dash-to-panel
+    gnomeExtensions.vitals
+    # Note: extensions are INSTALLED but must be ENABLED via Extension Manager
+    # after first login (GNOME requires a live session to activate extensions)
 
     ##- Utilities
     nmap
