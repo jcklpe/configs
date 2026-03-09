@@ -5,6 +5,8 @@
 - [x] Add troubleshooting section for common issues (like the VS Code terminal integration)
 - [x] Document the WSL-specific configuration
 
+- install trash as rm superior
+
 ## Future/Low Priority
 
 ### Shell Cleanup

@@ -1,7 +1,6 @@
 appearance:
   theme: Follow the OS
   opacity: 1
-  vibrancy: false
   css: |
     /* Gradient border (no rounded corners — Fedora/GNOME handles window rounding) */
     app-root {
@@ -26,7 +25,9 @@ appearance:
 terminal:
   fontSize: 19
   font: FiraCode Nerd Font Mono
-  fontFamily: '''FiraCode Nerd Font Mono'', ''Courier'''
+  fontWeight: 400
+  fontWeightBold: 700
+  fallbackFont: Courier New
   cursorShape: bar
   cursorBlink: true
   scrollbackLines: 60000
@@ -55,8 +56,6 @@ terminal:
       - '#DD2476'
       - '#66D7D1'
       - '#F2EFEA'
-  cursor: beam
-  fallbackFont: Courier New
   bell: audible
   shell: /bin/zsh
 window:

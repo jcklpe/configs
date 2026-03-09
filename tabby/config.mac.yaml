@@ -28,7 +28,9 @@ appearance:
 terminal:
   fontSize: 19
   font: FiraCode Nerd Font Mono
-  fontFamily: '''FiraCode Nerd Font Mono'', ''Courier'''
+  fontWeight: 400
+  fontWeightBold: 500
+  fallbackFont: Courier New
   cursorShape: bar
   cursorBlink: true
   scrollbackLines: 60000
@@ -57,10 +59,9 @@ terminal:
       - '#DD2476'
       - '#66D7D1'
       - '#F2EFEA'
-  cursor: beam
-  fallbackFont: Courier New
   bell: audible
   shell: /bin/zsh
+  cursor: beam
 window:
   quake: false
 version: 8

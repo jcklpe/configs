@@ -82,6 +82,7 @@
                # (flatpak install flathub dev.eugeny.Tabby)
 
     ##- Editor & writing
+    micro
     vscode
     typora
 

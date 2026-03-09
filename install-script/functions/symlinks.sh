@@ -35,6 +35,11 @@ create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
 ensure_dir "${HOME}/.config/wezterm"
 create_symlink_if_needed "${CONFIGS}/wezterm/wezterm.lua" "${HOME}/.config/wezterm/wezterm.lua"
 
+# Micro editor
+ensure_dir "${HOME}/.config/micro"
+create_symlink_if_needed "${CONFIGS}/micro/settings.json" "${HOME}/.config/micro/settings.json"
+create_symlink_if_needed "${CONFIGS}/micro/colorschemes" "${HOME}/.config/micro/colorschemes"
+
 ##- NixOS-specific symlinks
 if [ "${OS_TYPE}" = "nixos" ]; then
     sudo ln -sf "${CONFIGS}/nixos/configuration.nix" /etc/nixos/configuration.nix

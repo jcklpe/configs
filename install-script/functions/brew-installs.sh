@@ -39,6 +39,7 @@ if [ "${OS_TYPE}" != "fedora" ]; then
     brew_install_if_needed gcc
     brew_install_if_needed mc
     brew_install_if_needed ranger
+    brew_install_if_needed micro
 fi
 
 # zsh: not needed on mac (pre-installed), not needed on Fedora (dnf handles it)

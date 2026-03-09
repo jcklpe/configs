@@ -1,0 +1,61 @@
+# Hopscotch color scheme
+# Based on the Hopscotch theme by Jan T. Sott
+# https://github.com/idleberg/Hopscotch
+
+color-link default              "#b9b5b8,#322931"
+color-link cursor-line          "#3a343b"
+color-link color-column         "#3a343b"
+color-link divider              "#797379"
+color-link indent-char          "#4a394e"
+
+# Line numbers
+color-link line-number          "#797379,#322931"
+color-link current-line-number  "#b9b5b8,#322931"
+
+# Status/tab bar
+color-link statusline           "#322931,#149b93"
+color-link tabbar               "#b9b5b8,#3a343b"
+
+# Comments
+color-link comment              "#797379"
+
+# Constants
+color-link constant             "#fd8b19"
+color-link constant.number      "#fd8b19"
+color-link constant.bool        "#fd8b19"
+color-link constant.bool.true   "#8fc13e"
+color-link constant.bool.false  "#dd464c"
+color-link constant.string      "#8fc13e"
+color-link constant.specialChar "#fdcc59"
+
+# Identifiers
+color-link identifier           "#1290bf"
+color-link identifier.var       "#1290bf"
+color-link identifier.class     "#fdcc59"
+color-link identifier.macro     "#c85e7c"
+
+# Preprocessor / special
+color-link preproc              "#c85e7c"
+color-link special              "#fdcc59"
+
+# Statements / keywords
+color-link statement            "#dd464c"
+color-link type                 "#149b93"
+color-link type.keyword         "#dd464c"
+
+# Symbols
+color-link symbol               "#b9b5b8"
+color-link symbol.brackets      "#b9b5b8"
+color-link symbol.operator      "#dd464c"
+color-link symbol.tag           "#149b93"
+
+# Errors / warnings
+color-link error                "bold #dd464c"
+color-link gutter-error         "#dd464c"
+color-link gutter-warning       "#fd8b19"
+color-link todo                 "bold #fdcc59"
+
+# Selection
+color-link selection            "#b9b5b8,#4a394e"
+color-link underlined           "#1290bf"
+color-link ignore               "default"
