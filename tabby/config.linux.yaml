@@ -1,0 +1,172 @@
+appearance:
+  theme: Follow the OS
+  opacity: 1
+  vibrancy: false
+  css: |
+    /* Gradient border (no rounded corners — Fedora/GNOME handles window rounding) */
+    app-root {
+      border: 2px solid transparent !important;
+      background: linear-gradient(#1E1F29, #1E1F29) padding-box,
+                  linear-gradient(180deg, #D4F442, #02F758) border-box !important;
+      box-sizing: border-box;
+    }
+
+    /* Tab bar styling (matching hyper-bloody) */
+    .tab-bar {
+      background-color: #1E1F29 !important;
+    }
+    .tab-bar .tab .label {
+      color: #555753;
+    }
+    .tab-bar .tab.active .label {
+      color: #AAAAAA;
+      border-bottom: 2px solid #ED3A53;
+    }
+  spaciness: 1.1
+terminal:
+  fontSize: 19
+  font: FiraCode Nerd Font
+  fontFamily: '''FiraCode Nerd Font'', ''Courier'''
+  cursorShape: bar
+  cursorBlink: true
+  scrollbackLines: 60000
+  copyOnSelect: true
+  searchOptions: {}
+  colorScheme:
+    name: hyper-bloody
+    foreground: '#AAAAAA'
+    background: '#1E1F29'
+    cursor: '#DD2476'
+    selection: rgba(221, 36, 118, 0.3)
+    colors:
+      - '#1E1F29'
+      - '#FF512F'
+      - '#B2FFA9'
+      - '#FFFD82'
+      - '#3185FC'
+      - '#DD2476'
+      - '#66D7D1'
+      - '#F2EFEA'
+      - '#555753'
+      - '#FF512F'
+      - '#B2FFA9'
+      - '#FFFD82'
+      - '#3185FC'
+      - '#DD2476'
+      - '#66D7D1'
+      - '#F2EFEA'
+  cursor: beam
+  fallbackFont: Courier New
+  bell: audible
+  shell: /bin/zsh
+window:
+  quake: false
+version: 8
+hotkeys:
+  toggle-window:
+    - Ctrl-Space
+  copy-current-path: []
+  ctrl-c:
+    - Ctrl-C
+  copy:
+    - Ctrl-Shift-C
+  paste:
+    - Ctrl-Shift-V
+  clear:
+    - Ctrl-Shift-K
+  select-all:
+    - Ctrl-Shift-A
+  zoom-in:
+    - Ctrl-=
+    - Ctrl-Shift-=
+  zoom-out:
+    - Ctrl--
+  reset-zoom:
+    - Ctrl-0
+  home:
+    - Home
+  end:
+    - End
+  previous-word:
+    - Alt-Left
+  next-word:
+    - Alt-Right
+  delete-previous-word:
+    - Alt-Backspace
+  delete-next-word:
+    - Alt-Delete
+  search:
+    - Ctrl-Shift-F
+  scroll-to-top:
+    - Shift-PageUp
+  scroll-page-up:
+    - Alt-PageUp
+  scroll-up:
+    - Ctrl-Shift-Up
+  scroll-down:
+    - Ctrl-Shift-Down
+  scroll-page-down:
+    - Alt-PageDown
+  scroll-to-bottom:
+    - Shift-PageDown
+  settings:
+    - Ctrl-,
+  serial:
+    - Alt-K
+  new-tab:
+    - Ctrl-Shift-T
+  new-window:
+    - Ctrl-Shift-N
+  toggle-fullscreen:
+    - F11
+  close-tab:
+    - Ctrl-Shift-W
+  rename-tab:
+    - Ctrl-Shift-R
+  next-tab:
+    - Ctrl-Tab
+  previous-tab:
+    - Ctrl-Shift-Tab
+  tab-1:
+    - Alt-1
+  tab-2:
+    - Alt-2
+  tab-3:
+    - Alt-3
+  tab-4:
+    - Alt-4
+  tab-5:
+    - Alt-5
+  tab-6:
+    - Alt-6
+  tab-7:
+    - Alt-7
+  tab-8:
+    - Alt-8
+  tab-9:
+    - Alt-9
+  split-right:
+    - Ctrl-Shift-D
+  split-bottom:
+    - Ctrl-D
+  pane-nav-right:
+    - Ctrl-Alt-Right
+  pane-nav-down:
+    - Ctrl-Alt-Down
+  pane-nav-up:
+    - Ctrl-Alt-Up
+  pane-nav-left:
+    - Ctrl-Alt-Left
+  pane-maximize:
+    - Ctrl-Alt-Enter
+  close-pane:
+    - Ctrl-Shift-W
+  profile-selector:
+    - Ctrl-Shift-E
+  command-selector:
+    - Ctrl-Shift-P
+language: en-US
+enableWelcomeTab: false
+profileDefaults:
+  ssh:
+    disableDynamicTitle: true
