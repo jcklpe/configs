@@ -17,6 +17,12 @@ dnf_install_if_needed() {
     fi
 }
 
+##- CLI tools available in default Fedora repos (install before brew runs)
+DNF_CLI_TOOLS=(gcc gcc-c++ make zsh mc ranger)
+for pkg in "${DNF_CLI_TOOLS[@]}"; do
+    dnf_install_if_needed "$pkg"
+done
+
 ##- WezTerm (official COPR repo)
 if ! sudo dnf copr list --enabled 2>/dev/null | grep -q "wezfurlong/wezterm"; then
     echo "Enabling wezterm COPR repo..."
