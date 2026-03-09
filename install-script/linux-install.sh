@@ -8,13 +8,19 @@ echo "Initializing git submodules..."
 git submodule init
 git submodule update --recursive
 
-# Install Homebrew and apps (skip on NixOS - packages managed by nix)
+# Install Homebrew and CLI tools (skip on NixOS - packages managed by nix)
 if [ "${OS_TYPE}" != "nixos" ]; then
     echo "Setting up Homebrew..."
     source ${CONFIGS}/install-script/functions/linux-install-brew.sh
     source ${CONFIGS}/install-script/functions/brew-installs.sh
 else
     echo "NixOS detected - skipping Homebrew setup"
+fi
+
+# Install GUI apps via dnf (Fedora only)
+if [ "${OS_TYPE}" = "fedora" ]; then
+    echo "Installing GUI apps via dnf..."
+    source ${CONFIGS}/install-script/functions/dnf-installs.sh
 fi
 
 # Symlink stuff
