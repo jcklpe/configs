@@ -29,22 +29,22 @@ brew_cask_install_if_needed() {
     fi
 }
 
-##- Cross-platform packages
+##- Cross-platform packages (CLI tools)
 brew_install_if_needed gcc
 brew_install_if_needed eza
 brew_install_if_needed jump
 brew_install_if_needed mc
 brew_install_if_needed ranger
 brew_install_if_needed fnm
-brew_cask_install_if_needed wezterm
-brew_cask_install_if_needed tabby
 
 # Install zsh on Linux/WSL only (macOS has it pre-installed)
 if [ "${OS_TYPE}" != "mac" ]; then
     brew_install_if_needed zsh
 fi
 
-##- Mac-only packages
+##- Mac-only packages (casks are macOS-only)
 if [ "${OS_TYPE}" = "mac" ]; then
+    brew_cask_install_if_needed wezterm
+    brew_cask_install_if_needed tabby
     brew_cask_install_if_needed visual-studio-code
 fi
