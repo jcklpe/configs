@@ -1,9 +1,10 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
--- Font (from Hyper: "FiraCode Nerd Font, Courier")
+-- Font: FiraCode Nerd Font Mono (v3 naming). Mono variant uses single-width Nerd Font icons
+-- which aligns correctly in terminal grids. Use Propo for proportional, base for everything else.
 config.font = wezterm.font_with_fallback({
-    "FiraCode Nerd Font",
+    "FiraCode Nerd Font Mono",
     "Courier",
 })
 config.font_size = 19.0

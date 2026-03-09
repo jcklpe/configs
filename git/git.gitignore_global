@@ -3,9 +3,6 @@
 # scm revert files
 **.orig
 
-# Mac finder artifacts
-.DS_Store
-
 # Netbeans project directory
 /nbproject/
 
@@ -20,9 +17,20 @@
 
 # Environment files that may contain sensitive data
 .env
+**/.env
 .powenv
-.gitconfig
 .git-credentials
+
+# OS artifacts
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Editor config (add per-project if you want to track these)
+.vscode/
 
 # Ignore application configuration
 /config/application.yml

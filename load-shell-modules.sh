@@ -7,7 +7,6 @@
 source ${CONFIGS}/movement/movement.zsh
 
 # Package manager shortcuts (shell-agnostic)
-source ${CONFIGS}/apt/apt.sh
 source ${CONFIGS}/npm/npm.sh
 
 # Tool-specific configs (shell-agnostic)

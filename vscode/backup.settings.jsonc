@@ -111,7 +111,7 @@
 
   },
 
-  "terminal.integrated.fontFamily": "FuraCode Nerd Font Mono",
+  "terminal.integrated.fontFamily": "FiraCode Nerd Font Mono",
 
   //- Token Color customizations
   "editor.tokenColorCustomizations": {

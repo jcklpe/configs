@@ -27,8 +27,8 @@ appearance:
   spaciness: 1.1
 terminal:
   fontSize: 19
-  font: FiraCode Nerd Font
-  fontFamily: '''FiraCode Nerd Font'', ''Courier'''
+  font: FiraCode Nerd Font Mono
+  fontFamily: '''FiraCode Nerd Font Mono'', ''Courier'''
   cursorShape: bar
   cursorBlink: true
   scrollbackLines: 60000
@@ -192,8 +192,60 @@ hotkeys:
     - ⌘-Shift-E
   command-selector:
     - ⌘-Shift-P
+  restart-telnet-session: []
+  restart-ssh-session: []
+  launch-winscp: []
+  settings-tab: {}
+  restart-serial-session: []
+  profile: {}
+  profile-selectors: {}
+  group-selectors: {}
+  toggle-last-tab: []
+  rearrange-panes:
+    - Ctrl-Shift
+  tab-10: []
+  duplicate-tab: []
+  restart-tab: []
+  reconnect-tab: []
+  disconnect-tab: []
+  tab-11: []
+  tab-12: []
+  tab-13: []
+  tab-14: []
+  tab-15: []
+  tab-16: []
+  tab-17: []
+  tab-18: []
+  tab-19: []
+  tab-20: []
+  split-left: []
+  split-top: []
+  pane-nav-1: []
+  pane-nav-2: []
+  pane-nav-3: []
+  pane-nav-4: []
+  pane-nav-5: []
+  pane-nav-6: []
+  pane-nav-7: []
+  pane-nav-8: []
+  pane-nav-9: []
+  pane-increase-vertical: []
+  pane-decrease-vertical: []
+  pane-increase-horizontal: []
+  pane-decrease-horizontal: []
 language: en-US
 enableWelcomeTab: false
 profileDefaults:
   ssh:
     disableDynamicTitle: true
+ssh: {}
+configSync:
+  parts: {}
+clickableLinks: {}
+accessibility: {}
+hacks: {}
+pluginBlacklist: []
+providerBlacklist: []
+profiles: []
+commandBlacklist: []
+groups: []
