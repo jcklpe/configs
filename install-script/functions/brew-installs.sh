@@ -29,16 +29,20 @@ brew_cask_install_if_needed() {
     fi
 }
 
-##- Cross-platform packages (CLI tools)
-brew_install_if_needed gcc
+##- CLI tools not in Fedora default repos (brew everywhere)
 brew_install_if_needed eza
 brew_install_if_needed jump
-brew_install_if_needed mc
-brew_install_if_needed ranger
 brew_install_if_needed fnm
 
-# Install zsh on Linux/WSL only (macOS has it pre-installed)
-if [ "${OS_TYPE}" != "mac" ]; then
+##- CLI tools available in Fedora default repos (use dnf on Fedora, brew elsewhere)
+if [ "${OS_TYPE}" != "fedora" ]; then
+    brew_install_if_needed gcc
+    brew_install_if_needed mc
+    brew_install_if_needed ranger
+fi
+
+# zsh: not needed on mac (pre-installed), not needed on Fedora (dnf handles it)
+if [ "${OS_TYPE}" != "mac" ] && [ "${OS_TYPE}" != "fedora" ]; then
     brew_install_if_needed zsh
 fi
 
