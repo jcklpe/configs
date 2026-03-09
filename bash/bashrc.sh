@@ -6,6 +6,7 @@
 ## ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 
 # Silence macOS bash deprecation warning
+# (Mac post-Catalina complains when bash is the login shell instead of zsh)
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Initialize CONFIGS and PLUGINS
@@ -14,7 +15,7 @@ source ~/configs/init.sh
 # Load PATH tools and environment managers
 source ${CONFIGS}/path.sh
 
-source ${CONFIGS}/movement/movement.zsh;
+source ${CONFIGS}/movement/movement.sh;
 
 
 ##- MISC Settings
@@ -54,4 +55,3 @@ source ${CONFIGS}/bash/prompt.bash;
 source ${CONFIGS}/load-shell-modules.sh
 
 alias reload="source ~/.bashrc";
-complete -C /usr/local/bin/bit bit
