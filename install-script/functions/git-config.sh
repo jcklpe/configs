@@ -3,7 +3,8 @@
 
 echo "Setting up git configuration..."
 
-# Set global gitignore file
+git config --global user.name "Aslan French"
+git config --global user.email "howdy@aslanfrench.work"
 git config --global core.excludesfile ~/.gitignore_global
 
 echo "✓ Git configuration complete"
