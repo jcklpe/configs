@@ -39,7 +39,10 @@ brew_cask_install_if_needed() {
 brew_install_if_needed eza
 brew_install_if_needed jump
 brew_install_if_needed fnm
-brew_install_if_needed trash
+# trash: on Fedora, trash-cli is installed via dnf instead
+if [ "${OS_TYPE}" != "fedora" ]; then
+    brew_install_if_needed trash
+fi
 
 ##- CLI tools available in Fedora default repos (use dnf on Fedora, brew elsewhere)
 if [ "${OS_TYPE}" != "fedora" ]; then
