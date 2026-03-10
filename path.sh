@@ -8,3 +8,9 @@ if command -v fnm >/dev/null 2>&1; then
 fi
 
 # Add other PATH tools here (pyenv, rbenv, etc.)
+
+# pipx
+[ -d "$HOME/.local/bin" ] && export PATH="$PATH:$HOME/.local/bin"
+
+# pixi
+[ -d "$HOME/.pixi/bin" ] && export PATH="$HOME/.pixi/bin:$PATH"

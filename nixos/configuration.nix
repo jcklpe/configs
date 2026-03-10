@@ -3,7 +3,7 @@
 # SETUP INSTRUCTIONS:
 #   1. Install NixOS normally (let the installer generate hardware config)
 #   2. Clone your dotfiles: git clone <repo> ~/configs
-#   3. Run: ~/configs/install-script/nixos-install.sh
+#   3. Run: ~/configs/install-script/linux-install.sh
 #
 # PLACEHOLDERS TO UPDATE:
 #   - hostname        → currently "lovelace", change if needed
@@ -103,8 +103,21 @@
     nmap
     htop
     tree
+    trash-cli
+
+    ##- Gaming
+    # Proton is bundled with Steam — no separate package needed
+    # Uncomment nvidia line below and set videoDrivers if using an Nvidia GPU
 
   ];
+
+  # ── Steam ───────────────────────────────────────────────────────────────────
+  programs.steam.enable = true;
+  hardware.opengl.driSupport32Bit = true;  # required for 32-bit Steam games
+
+  # ── Nvidia (uncomment if using Nvidia GPU) ───────────────────────────────────
+  # hardware.nvidia.modesetting.enable = true;
+  # services.xserver.videoDrivers = [ "nvidia" ];
 
   # ── Flatpak (optional fallback for apps not in nixpkgs) ─────────────────────
   services.flatpak.enable = true;

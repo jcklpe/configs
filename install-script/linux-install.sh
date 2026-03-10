@@ -43,8 +43,13 @@ source ${CONFIGS}/install-script/functions/symlinks.sh
 
 # Run nixos-rebuild now that configuration.nix symlink is in place (NixOS only)
 if [ "${OS_TYPE}" = "nixos" ]; then
-    echo "Running nixos-rebuild switch..."
-    sudo nixos-rebuild switch
+    if [ ! -f /etc/nixos/hardware-configuration.nix ]; then
+        echo_warning "⚠ /etc/nixos/hardware-configuration.nix not found — skipping nixos-rebuild"
+        echo_warning "  Run the NixOS installer first to generate hardware config, then re-run this script"
+    else
+        echo "Running nixos-rebuild switch..."
+        sudo nixos-rebuild switch
+    fi
 fi
 
 # Configure git

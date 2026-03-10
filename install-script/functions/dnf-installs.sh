@@ -34,6 +34,7 @@ dnf_install_if_needed zsh
 dnf_install_if_needed mc
 dnf_install_if_needed ranger
 dnf_install_if_needed micro
+dnf_install_if_needed trash-cli
 
 ##- WezTerm (official RPM from GitHub releases)
 if ! rpm -q wezterm &>/dev/null; then
@@ -120,6 +121,11 @@ if ! flatpak list 2>/dev/null | grep -q io.typora.Typora; then
 else
     echo_skip "✓ Typora (flatpak) already installed, skipping"
 fi
+
+##- Gaming (Steam + Proton via RPMFusion — already enabled above)
+##- Nvidia: uncomment akmod-nvidia if using an Nvidia GPU
+# dnf_install_if_needed akmod-nvidia
+dnf_install_if_needed steam
 
 ##- GNOME Extension Manager by Matt Jakeman (via flatpak)
 if ! flatpak list 2>/dev/null | grep -q com.mattjakeman.ExtensionManager; then
