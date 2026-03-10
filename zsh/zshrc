@@ -1,5 +1,5 @@
 # VS Code terminal integration - must load first
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+# [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
 ##- 𝒛𝖘𝖍 𝖘𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
@@ -79,14 +79,13 @@ fi
 ##- you should use
 source ${PLUGINS}/zsh-you-should-use/you-should-use.plugin.zsh
 
-##### this is the end of the file. anything beyond here has been auto appended by some trash scripts
-#######################
-
-# Created by `pipx` on 2025-05-30 18:40:22
-export PATH="$PATH:/Users/aslan/.local/bin"
-export PATH="/Users/aslan/.pixi/bin:$PATH"
-
-# stuff for enzo lang development
-alias run='poetry run';
-
 alias python='python3';
+
+# trash-cli: safer rm (sends to trash instead of permanently deleting)
+# brew installs as 'trash', linux trash-cli also provides 'trash'
+if command -v trash &>/dev/null; then
+    alias rm='trash'
+fi
+
+# Mark zshrc as loaded (prevents double-loading when sourced from zprofile)
+export ZSHRC_LOADED=1

@@ -6,13 +6,9 @@
 # fix trailing white space % error
 # setopt PROMPT_CR
 # setopt PROMPT_SP
- export PROMPT_EOL_MARK=""
+export PROMPT_EOL_MARK=""
 
-
-##- import .zshrc
-if [ -f "$HOME/.zshrc" ]; then
+##- import .zshrc (guard prevents double-loading in interactive login shells)
+if [ -z "$ZSHRC_LOADED" ] && [ -f "$HOME/.zshrc" ]; then
     source "$HOME/.zshrc"
 fi
-
-# Created by `pipx` on 2025-05-30 18:40:22
-export PATH="$PATH:/Users/aslan/.local/bin"

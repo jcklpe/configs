@@ -20,19 +20,6 @@ export PLUGINS="${CONFIGS}/plugins"
 # Detect OS and export OS_TYPE (mac | nixos | wsl | linux | unknown)
 source "${CONFIGS}/install-script/functions/detect-os.sh"
 
-# WSL-specific shell setup
-if [ "${OS_TYPE}" = "wsl" ]; then
-    export WINHOME=$(wslpath $(cmd.exe /C "echo %USERPROFILE%") 2>/dev/null)
-    export WINHOME=${WINHOME//$'\015'}
-
-    alias cmd='/mnt/c/Windows/System32/cmd.exe'
-    alias vscode="/mnt/c/'Program Files'/'Microsoft VS Code'/Code.exe"
-
-    if [ -d "./home" ]; then
-        cd home
-    fi
-fi
-
 # Linux-specific: torch activation if available
 if [ "${OS_TYPE}" = "linux" ]; then
     if [ -d "${HOME}/torch" ]; then
