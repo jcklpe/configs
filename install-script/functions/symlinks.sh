@@ -30,6 +30,7 @@ create_symlink_if_needed "${CONFIGS}/bash/bash.profile" "${HOME}/.profile"
 create_symlink_if_needed "${CONFIGS}/git/git.gitignore_global" "${HOME}/.gitignore_global"
 create_symlink_if_needed "${CONFIGS}/zsh/zshrc" "${HOME}/.zshrc"
 create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
+create_symlink_if_needed "${CONFIGS}/nano/config.nanorc" "${HOME}/.nanorc"
 
 # WezTerm uses XDG on all platforms
 ensure_dir "${HOME}/.config/wezterm"
@@ -39,6 +40,17 @@ create_symlink_if_needed "${CONFIGS}/wezterm/wezterm.lua" "${HOME}/.config/wezte
 ensure_dir "${HOME}/.config/micro"
 create_symlink_if_needed "${CONFIGS}/micro/settings.json" "${HOME}/.config/micro/settings.json"
 create_symlink_if_needed "${CONFIGS}/micro/colorschemes" "${HOME}/.config/micro/colorschemes"
+
+# Ranger
+ensure_dir "${HOME}/.config/ranger/plugins"
+create_symlink_if_needed "${CONFIGS}/ranger/rc.conf" "${HOME}/.config/ranger/rc.conf"
+# ranger_devicons plugin (required for default_linemode devicons in rc.conf)
+if [ ! -d "${HOME}/.config/ranger/plugins/ranger_devicons" ]; then
+    git clone https://github.com/alexanderjeurissen/ranger_devicons "${HOME}/.config/ranger/plugins/ranger_devicons"
+    echo "✓ Installed ranger_devicons plugin"
+else
+    echo "✓ ranger_devicons already installed, skipping"
+fi
 
 ##- NixOS-specific symlinks
 if [ "${OS_TYPE}" = "nixos" ]; then

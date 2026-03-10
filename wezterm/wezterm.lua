@@ -5,19 +5,19 @@ local config = wezterm.config_builder()
 -- which aligns correctly in terminal grids. Use Propo for proportional, base for everything else.
 config.font = wezterm.font_with_fallback({
     "FiraCode Nerd Font Mono",
-    "Courier",
+    "monospace",
 })
 config.font_size = 19.0
 
 -- Cursor (from Hyper: BEAM, blinking, pink)
 config.default_cursor_style = "BlinkingBar"
 config.cursor_blink_rate = 500
-config.force_reverse_video_cursor = false
 
 -- Scrollback (from Hyper: 60000)
 config.scrollback_lines = 60000
 
--- Copy on select (from Hyper: copyOnSelect: true)
+
+config.copy_on_select = true
 config.selection_word_boundary = " \t\n{}[]()\"'`,;:│"
 
 -- Window
