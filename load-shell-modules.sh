@@ -6,9 +6,5 @@
 # Movement aliases and functions (zsh-specific due to eza overrides)
 source ${CONFIGS}/movement/movement.sh
 
-# Package manager shortcuts (shell-agnostic)
-source ${CONFIGS}/npm/npm.sh
-
 # Tool-specific configs (shell-agnostic)
-source ${CONFIGS}/nextcloud/nextcloud.sh
 source ${CONFIGS}/git/git.sh

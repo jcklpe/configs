@@ -1,8 +1,8 @@
-]Thumbs.db
+Thumbs.db
 System Volume Information
-].Trashes
-].DocumentRevisions-V100
-].Trash-*
+.Trashes
+.DocumentRevisions-V100
+.Trash-*
 .fseventd
 .apdisk
 .htaccess
@@ -10,7 +10,6 @@ System Volume Information
 *.part
 *.filepart
 *.crdownload
-*.kate-swp
 *.gnucash.tmp-*
 .synkron.*
 .sync.ffs_db
@@ -19,7 +18,22 @@ System Volume Information
 .fuse_hidden*
 *.unison
 .nfs*
+
+# Mac
+.DS_Store
+__MACOSX
+.AppleDouble
+
+# Editor temp files
+*.swp
+*.swo
+*~
+
+# Logs/temp
+*.log
+*.tmp
+
 **/node_modules/
 **/cache/
-**/.git/~~~disabled
+**/.git/
 **/.thumbnails/
