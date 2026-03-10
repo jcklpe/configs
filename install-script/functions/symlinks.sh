@@ -9,7 +9,7 @@ create_symlink_if_needed() {
     local target="$2"
 
     if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
-        echo "✓ $target already linked correctly"
+        echo_skip "✓ $target already linked correctly"
     else
         ln -sf "$source" "$target"
         echo "✓ Created symlink: $target → $source"

@@ -12,3 +12,4 @@ export PROMPT_EOL_MARK=""
 if [ -z "$ZSHRC_LOADED" ] && [ -f "$HOME/.zshrc" ]; then
     source "$HOME/.zshrc"
 fi
+eval "$(/opt/homebrew/bin/brew shellenv)"
