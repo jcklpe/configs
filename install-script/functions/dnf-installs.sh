@@ -39,13 +39,22 @@ dnf_install_if_needed trash-cli
 ##- WezTerm (official RPM from GitHub releases)
 if ! rpm -q wezterm &>/dev/null; then
     echo "Installing WezTerm..."
-    ARCH=$(uname -m)  # x86_64 or aarch64
-    WEZTERM_URL=$(curl -s --fail https://api.github.com/repos/wez/wezterm/releases/latest \
+    FEDORA_VER=$(rpm -E %fedora)
+    WEZTERM_URL=$(curl -sL --fail https://api.github.com/repos/wez/wezterm/releases/latest \
         | grep "browser_download_url" \
-        | grep "\.rpm" \
-        | grep "${ARCH}" \
+        | grep "\.rpm\"" \
+        | grep "fedora${FEDORA_VER}\." \
         | head -1 \
         | sed 's/.*"\(https[^"]*\)".*/\1/')
+    # Fallback: grab the highest fedora-versioned RPM if exact match not found
+    if [ -z "${WEZTERM_URL}" ]; then
+        WEZTERM_URL=$(curl -sL --fail https://api.github.com/repos/wez/wezterm/releases/latest \
+            | grep "browser_download_url" \
+            | grep "\.rpm\"" \
+            | grep "fedora" \
+            | tail -1 \
+            | sed 's/.*"\(https[^"]*\)".*/\1/')
+    fi
     if [ -z "${WEZTERM_URL}" ]; then
         echo_warning "⚠ Could not resolve WezTerm RPM download URL - skipping"
     else
@@ -60,11 +69,16 @@ fi
 ##- Tabby (official RPM from GitHub releases)
 if ! rpm -q tabby &>/dev/null; then
     echo "Installing Tabby..."
-    ARCH=$(uname -m)  # x86_64 or aarch64
+    # Tabby release assets use x64/arm64, not x86_64/aarch64
+    case "$(uname -m)" in
+        x86_64)  TABBY_ARCH="x64" ;;
+        aarch64) TABBY_ARCH="arm64" ;;
+        *)       TABBY_ARCH="$(uname -m)" ;;
+    esac
     TABBY_URL=$(curl -s --fail https://api.github.com/repos/Eugeny/tabby/releases/latest \
         | grep "browser_download_url" \
         | grep "\.rpm" \
-        | grep "${ARCH}" \
+        | grep "${TABBY_ARCH}" \
         | head -1 \
         | sed 's/.*"\(https[^"]*\)".*/\1/')
     if [ -z "${TABBY_URL}" ]; then
