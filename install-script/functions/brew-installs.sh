@@ -20,12 +20,18 @@ brew_install_if_needed() {
 }
 
 # Helper function to install cask only if not already installed
+# Optional second arg: app path to check (e.g. "/Applications/Google Chrome.app")
+# This handles apps installed outside of brew (e.g. direct download)
 brew_cask_install_if_needed() {
-    if brew list --cask "$1" &>/dev/null; then
-        echo_skip "✓ $1 already installed, skipping"
+    local cask="$1"
+    local app_path="$2"
+    if brew list --cask "$cask" &>/dev/null; then
+        echo_skip "✓ $cask already installed (brew), skipping"
+    elif [ -n "$app_path" ] && [ -d "$app_path" ]; then
+        echo_skip "✓ $cask already installed (found at $app_path), skipping"
     else
-        echo "Installing $1..."
-        brew install --cask "$1"
+        echo "Installing $cask..."
+        brew install --cask "$cask"
     fi
 }
 
@@ -50,10 +56,10 @@ fi
 
 ##- Mac-only packages (casks are macOS-only)
 if [ "${OS_TYPE}" = "mac" ]; then
-    brew_cask_install_if_needed wezterm
-    brew_cask_install_if_needed tabby
-    brew_cask_install_if_needed visual-studio-code
-    brew_cask_install_if_needed google-chrome
-    brew_cask_install_if_needed vlc
-    brew_cask_install_if_needed typora
+    brew_cask_install_if_needed wezterm "/Applications/WezTerm.app"
+    brew_cask_install_if_needed tabby "/Applications/Tabby.app"
+    brew_cask_install_if_needed visual-studio-code "/Applications/Visual Studio Code.app"
+    brew_cask_install_if_needed google-chrome "/Applications/Google Chrome.app"
+    brew_cask_install_if_needed vlc "/Applications/VLC.app"
+    brew_cask_install_if_needed typora "/Applications/Typora.app"
 fi
