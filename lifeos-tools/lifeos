@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+##- Stable command wrapper for lifeos.sh
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "${SCRIPT_DIR}/lifeos.sh" "$@"
