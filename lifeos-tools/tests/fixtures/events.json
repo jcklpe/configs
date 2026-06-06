@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "id": "one-day-all-day",
+      "summary": "One Day All Day",
+      "htmlLink": "https://calendar.test/one-day",
+      "start": {
+        "date": "2026-06-23"
+      },
+      "end": {
+        "date": "2026-06-24"
+      }
+    },
+    {
+      "id": "multi-day-all-day",
+      "summary": "Visit French Fam in Houston",
+      "htmlLink": "https://calendar.test/houston",
+      "start": {
+        "date": "2026-06-24"
+      },
+      "end": {
+        "date": "2026-06-28"
+      }
+    },
+    {
+      "id": "normal-timed",
+      "summary": "Normal Timed Event",
+      "htmlLink": "https://calendar.test/normal",
+      "start": {
+        "dateTime": "2026-06-25T10:00:00-05:00"
+      },
+      "end": {
+        "dateTime": "2026-06-25T11:00:00-05:00"
+      }
+    },
+    {
+      "id": "cross-midnight",
+      "summary": "Cross Midnight Event",
+      "htmlLink": "https://calendar.test/cross-midnight",
+      "start": {
+        "dateTime": "2026-06-26T23:30:00-05:00"
+      },
+      "end": {
+        "dateTime": "2026-06-27T01:15:00-05:00"
+      }
+    }
+  ]
+}

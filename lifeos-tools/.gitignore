@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+*token*.json
+!*token*.example.json
+*credentials*.json
+!*credentials*.example.json
+cache/
+tmp/
+*.log
+__pycache__/
+sources/
+trello-qa.md
+calendar-qa.md
