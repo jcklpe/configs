@@ -46,6 +46,45 @@ symlinked to `~/.zshrc` / `~/.bashrc` by the installer.
 | New dotfile symlinked into `$HOME` | [install-script/functions/symlinks.sh](install-script/functions/symlinks.sh) |
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
+| Active work coordination | [TODO.md](TODO.md) |
+| Spike process / active spike docs | [docs/how-to-spike.md](docs/how-to-spike.md), then `docs/<topic>.md` + `docs/<topic>.todo.md` |
+| Durable decision record | [docs/decisions/](docs/decisions/) |
+| Rough or historical notes | [docs/scratch/](docs/scratch/), [docs/archive/](docs/archive/) |
+
+## Docs workflow
+
+Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when a body
+of work needs shared context, taste, constraints, or implementation history. Scratch docs
+are non-authoritative. Archived docs are historical context, not current rules, unless a
+durable doc still agrees with them.
+
+Authority ladder: `AGENTS.md`, `README.md`, and active decision records define durable
+repo rules; `docs/how-to-spike.md` defines the spike process; active spike docs guide the
+current theme of work; `TODO.md` coordinates what is active and what is next.
+
+## Secrets and local env
+
+This repo may contain public-safe tools that use private local secrets. Real secret-bearing
+files may live inside the local `configs/` working tree, but they must be ignored before
+they are created or used. Commit adjacent example files with fake values.
+
+Preferred pattern:
+
+```text
+some-tool/
+  tool.sh
+  .env.example              # tracked fake values
+  .env                      # ignored real values
+  google-token.example.json # tracked fake values
+  google-token.json         # ignored real values
+```
+
+Do not commit API keys, OAuth credentials, OAuth tokens, generated private snapshots, or
+private local config. Do not load secrets from global shell startup by default; tools
+should load their own env/config at runtime unless a shell module explicitly documents a
+different behavior.
+
+See [docs/decisions/0001-secrets-and-local-env.md](docs/decisions/0001-secrets-and-local-env.md).
 
 ## Install model
 

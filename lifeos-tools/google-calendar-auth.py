@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+"""Small Google Calendar OAuth helper for lifeos.sh.
+
+Keeps OAuth/token ceremony out of Bash without becoming a package.
+"""
+
+import base64
+import hashlib
+import http.server
+import json
+import os
+import secrets
+import socket
+import sys
+import time
+import urllib.parse
+import urllib.request
+import webbrowser
+from datetime import datetime, timedelta, timezone
+
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
+    "https://www.googleapis.com/auth/calendar.events.readonly",
+]
+
+
+def fail(message):
+    print(f"ERROR: {message}", file=sys.stderr)
+    return 1
+
+
+def load_credentials(path):
+    with open(path, "r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    if "installed" in data:
+        data = data["installed"]
+    elif "web" in data:
+        data = data["web"]
+    for key in ("client_id", "auth_uri", "token_uri"):
+        if not data.get(key):
+            raise ValueError(f"Missing {key} in Google credentials")
+    return data
+
+
+def load_token(path):
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def write_token(path, token):
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    tmp = f"{path}.tmp"
+    with open(tmp, "w", encoding="utf-8") as handle:
+        json.dump(token, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+    os.replace(tmp, path)
+    try:
+        os.chmod(path, 0o600)
+    except OSError:
+        pass
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
+def iso_at(seconds):
+    return (utc_now() + timedelta(seconds=int(seconds))).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def is_expired(token):
+    expires_at = token.get("expires_at")
+    if not expires_at:
+        return True
+    try:
+        expires = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+    except ValueError:
+        return True
+    return expires <= utc_now() + timedelta(minutes=5)
+
+
+def post_form(url, fields):
+    body = urllib.parse.urlencode(fields).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def client_fields(credentials):
+    fields = {"client_id": credentials["client_id"]}
+    if credentials.get("client_secret"):
+        fields["client_secret"] = credentials["client_secret"]
+    return fields
+
+
+def refresh(credentials_path, token_path):
+    credentials = load_credentials(credentials_path)
+    token = load_token(token_path)
+    refresh_token = token.get("refresh_token")
+    if not refresh_token:
+        raise ValueError("No refresh_token found. Run `lifeos calendar auth` first.")
+    fields = client_fields(credentials)
+    fields.update(
+        {
+            "refresh_token": refresh_token,
+            "grant_type": "refresh_token",
+        }
+    )
+    updated = post_form(credentials["token_uri"], fields)
+    token.update(updated)
+    token["refresh_token"] = refresh_token
+    if "expires_in" in updated:
+        token["expires_at"] = iso_at(updated["expires_in"])
+    token["refreshed_at"] = utc_now().replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    write_token(token_path, token)
+    return token
+
+
+def access_token(credentials_path, token_path):
+    token = load_token(token_path)
+    if not token.get("access_token") or is_expired(token):
+        token = refresh(credentials_path, token_path)
+    print(token["access_token"])
+    return 0
+
+
+def find_free_port():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind(("127.0.0.1", 0))
+    port = sock.getsockname()[1]
+    sock.close()
+    return port
+
+
+def code_challenge(verifier):
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+
+
+class OAuthHandler(http.server.BaseHTTPRequestHandler):
+    server_version = "LifeOSOAuth/1.0"
+
+    def log_message(self, fmt, *args):
+        return
+
+    def do_GET(self):
+        parsed = urllib.parse.urlparse(self.path)
+        params = urllib.parse.parse_qs(parsed.query)
+        self.server.oauth_result = {
+            "code": params.get("code", [""])[0],
+            "state": params.get("state", [""])[0],
+            "error": params.get("error", [""])[0],
+        }
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(
+            b"<html><body><h1>LifeOS Calendar auth complete</h1>"
+            b"<p>You can close this tab and return to your terminal.</p></body></html>"
+        )
+
+
+def auth(credentials_path, token_path, no_browser=False):
+    credentials = load_credentials(credentials_path)
+    port = find_free_port()
+    redirect_uri = f"http://127.0.0.1:{port}/"
+    state = secrets.token_urlsafe(24)
+    verifier = secrets.token_urlsafe(64)
+    params = {
+        "client_id": credentials["client_id"],
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": " ".join(SCOPES),
+        "access_type": "offline",
+        "prompt": "consent",
+        "include_granted_scopes": "true",
+        "state": state,
+        "code_challenge": code_challenge(verifier),
+        "code_challenge_method": "S256",
+    }
+    auth_url = f"{credentials['auth_uri']}?{urllib.parse.urlencode(params)}"
+
+    server = http.server.HTTPServer(("127.0.0.1", port), OAuthHandler)
+    server.timeout = 300
+    server.oauth_result = None
+
+    print("Opening Google authorization URL...")
+    if no_browser or not webbrowser.open(auth_url):
+        print("Open this URL in your browser:")
+        print(auth_url)
+
+    deadline = time.time() + 300
+    while time.time() < deadline and not server.oauth_result:
+        server.handle_request()
+    server.server_close()
+
+    result = server.oauth_result
+    if not result:
+        raise TimeoutError("Timed out waiting for Google OAuth redirect")
+    if result.get("error"):
+        raise RuntimeError(f"Google OAuth returned error: {result['error']}")
+    if result.get("state") != state:
+        raise RuntimeError("OAuth state did not match")
+    if not result.get("code"):
+        raise RuntimeError("OAuth redirect did not include an authorization code")
+
+    fields = client_fields(credentials)
+    fields.update(
+        {
+            "code": result["code"],
+            "code_verifier": verifier,
+            "grant_type": "authorization_code",
+            "redirect_uri": redirect_uri,
+        }
+    )
+    token = post_form(credentials["token_uri"], fields)
+    existing = load_token(token_path)
+    if "refresh_token" not in token and existing.get("refresh_token"):
+        token["refresh_token"] = existing["refresh_token"]
+    if "expires_in" in token:
+        token["expires_at"] = iso_at(token["expires_in"])
+    token["obtained_at"] = utc_now().replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    write_token(token_path, token)
+    print(f"Wrote Google Calendar token: {token_path}")
+    return 0
+
+
+def date_window(days_back, days_ahead):
+    now = utc_now()
+    start = now - timedelta(days=int(days_back))
+    end = now + timedelta(days=int(days_ahead))
+    print(start.replace(microsecond=0).isoformat().replace("+00:00", "Z"))
+    print(end.replace(microsecond=0).isoformat().replace("+00:00", "Z"))
+    print(now.date().isoformat())
+    return 0
+
+
+def main(argv):
+    if len(argv) < 2:
+        return fail("Usage: google-calendar-auth.py auth|access-token|date-window ...")
+    command = argv[1]
+    try:
+        if command == "auth":
+            if len(argv) < 4:
+                return fail("Usage: google-calendar-auth.py auth CREDENTIALS TOKEN [--no-browser]")
+            return auth(argv[2], argv[3], "--no-browser" in argv[4:])
+        if command == "access-token":
+            if len(argv) != 4:
+                return fail("Usage: google-calendar-auth.py access-token CREDENTIALS TOKEN")
+            return access_token(argv[2], argv[3])
+        if command == "date-window":
+            if len(argv) != 4:
+                return fail("Usage: google-calendar-auth.py date-window DAYS_BACK DAYS_AHEAD")
+            return date_window(argv[2], argv[3])
+    except Exception as exc:
+        return fail(str(exc))
+    return fail(f"Unknown command: {command}")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

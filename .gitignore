@@ -85,7 +85,6 @@ Windows/Shortcuts/Firefox
 Windows/Shortcuts/PotPlayer
 Windows/Shortcuts/Rainmeter
 Windows/Themes
-secrets/
 
 # Mac crap
 .DS_Store*
@@ -128,8 +127,6 @@ build/Release
 node_modules/
 jspm_packages/
 
-secrets/
-
 # TypeScript v1 declaration files
 typings/
 
@@ -156,3 +153,35 @@ typings/
 
 # Mac crap
 .DS_STORE
+
+# Local secrets and tool env files
+# Real values may live in this working tree, but must be ignored.
+# Commit adjacent example files with fake values.
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+!*.env.example
+!*.env.example.*
+*.token
+*.token.*
+!*.token.example
+!*.token.example.*
+*token*.json
+!*token*.example.json
+*credentials*.json
+!*credentials*.example.json
+*client_secret*.json
+!*client_secret*.example.json
+*.local.json
+
+# Optional secrets folders: ignore contents by default, but allow examples.
+secrets/*
+!secrets/.gitignore
+!secrets/*.example
+!secrets/*.example.*
+**/secrets/*
+!**/secrets/.gitignore
+!**/secrets/*.example
+!**/secrets/*.example.*

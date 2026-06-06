@@ -65,6 +65,7 @@
     unzip
     gnumake
     gcc
+    python3
 
     ##- Shell & navigation
     zsh
@@ -104,6 +105,7 @@
     htop
     tree
     trash-cli
+    jq
 
     ##- Gaming
     # Proton is bundled with Steam — no separate package needed

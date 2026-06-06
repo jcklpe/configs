@@ -35,6 +35,8 @@ dnf_install_if_needed mc
 dnf_install_if_needed ranger
 dnf_install_if_needed micro
 dnf_install_if_needed trash-cli
+dnf_install_if_needed jq
+dnf_install_if_needed python3
 
 ##- WezTerm (official RPM from GitHub releases)
 if ! rpm -q wezterm &>/dev/null; then
