@@ -1,0 +1,8 @@
+{
+  "range": "People!A1:C3",
+  "values": [
+    ["Name", "Role", "Link"],
+    ["Aslan", "Organizer", "https://example.com"],
+    ["Taylor", "Designer", "notes | context"]
+  ]
+}

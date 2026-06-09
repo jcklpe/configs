@@ -59,6 +59,14 @@ lifeos calendar auth
 lifeos calendar list-calendars
 lifeos calendar sync
 lifeos calendar sync --qa
+lifeos google accounts
+lifeos google auth personal
+lifeos gmail sync personal --qa
+lifeos gmail sync --all
+lifeos drive accounts
+lifeos drive search open-austin "landlord mapper"
+lifeos drive meta open-austin https://docs.google.com/document/d/abc123/edit
+lifeos drive read open-austin https://docs.google.com/spreadsheets/d/abc123/edit
 lifeos sync
 ```
 
@@ -74,7 +82,15 @@ ln -sf "$HOME/configs/lifeos-tools/AGENT.md" "$LIFEOS_VAULT_PATH/runbooks/lifeos
 
 Google Calendar auth/list/sync is implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them.
 
-Calendar sync currently uses `GOOGLE_CALENDAR_IDS`, with `primary` as the default. `lifeos calendar sync` writes to `$LIFEOS_VAULT_PATH/sources/calendar.md`; `lifeos calendar sync --qa` writes an ignored local snapshot to `lifeos-tools/calendar-qa.md`.
+Calendar sync uses comma-separated `GOOGLE_CALENDAR_IDS`, with `primary` as the default. `lifeos calendar sync` writes a combined date-grouped agenda to `$LIFEOS_VAULT_PATH/sources/calendar.md`; `lifeos calendar sync --qa` writes an ignored local snapshot to `lifeos-tools/calendar-qa.md`.
+
+Event lines include `calendar: <calendar name>`, inline `location: ...` when present, direct meeting links when available, and cleaned bounded descriptions. Multi-day all-day events and timed events crossing midnight are expanded under every affected date so agents do not mistake continuation days as free.
+
+Google Gmail/Drive alias config lives in ignored `google-accounts.json`, copied from tracked `google-accounts.example.json`. Each alias has its own ignored token file, such as `google-personal-token.json`.
+
+Gmail sync is read-only and writes bounded Markdown snapshots to `$LIFEOS_VAULT_PATH/sources/gmail/`, or to ignored `lifeos-tools/gmail-qa/` when using `--qa`.
+
+Drive commands are read-only and on-demand. They search/list/inspect files and can read Google Docs as text or Google Sheets as a bounded table preview. They do not clone Drive into LifeOS.
 
 Trello sync currently includes open-list cards with names, URLs, due dates, labels, checklist progress, descriptions, and comments.
 

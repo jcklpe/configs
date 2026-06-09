@@ -29,6 +29,15 @@ Usage:
   ./lifeos.sh calendar auth
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar sync [--qa | --output FILE]
+  ./lifeos.sh google accounts
+  ./lifeos.sh google auth ALIAS [--no-browser]
+  ./lifeos.sh gmail sync ALIAS [--qa | --output FILE]
+  ./lifeos.sh gmail sync --all [--qa]
+  ./lifeos.sh drive accounts
+  ./lifeos.sh drive search ALIAS QUERY [--json]
+  ./lifeos.sh drive list ALIAS FOLDER_ID [--json]
+  ./lifeos.sh drive meta ALIAS FILE_URL_OR_ID [--json]
+  ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
   ./lifeos.sh sync
 
 Real config lives in .env, copied from .env.example.
@@ -182,7 +191,7 @@ _doctor_file() {
 }
 
 _doctor() {
-    local issues=0 vault sources file
+    local issues=0 vault sources file google_accounts google_aliases google_alias google_token
 
     if [ -f "$ENV_FILE" ]; then
         _say "OK: ${ENV_FILE}"
@@ -256,6 +265,28 @@ _doctor() {
         _say "MISSING: GOOGLE_CALENDAR_TOKEN_PATH"
     fi
 
+    google_accounts="$(_google_accounts_path)"
+    if [ -f "$google_accounts" ]; then
+        if jq -e '.accounts | type == "array"' "$google_accounts" >/dev/null 2>&1; then
+            _say "OK: Google account alias config exists"
+            google_aliases="$(jq -r '(.accounts // [])[] | select((.gmail.enabled // false) == true or (.drive.enabled // false) == true) | .alias' "$google_accounts")"
+            for google_alias in $google_aliases; do
+                google_token="$(_google_account_path "$google_alias" '.token_path')" || google_token=""
+                if [ -n "$google_token" ] && [ -f "$google_token" ]; then
+                    _say "OK: Google token exists for alias '$google_alias'"
+                else
+                    _say "MISSING: Google token for alias '$google_alias'"
+                    _say "NEXT: run './lifeos.sh google auth $google_alias'"
+                fi
+            done
+        else
+            _say "MISSING: Google account alias config is not valid JSON shape"
+        fi
+    else
+        _say "OPTIONAL: Google account alias config is not set up for Gmail/Drive"
+        _say "NEXT: cp ${SCRIPT_DIR}/google-accounts.example.json $google_accounts"
+    fi
+
     if [ "$issues" -eq 0 ]; then
         _say "OK: doctor found no blocking issues for the implemented commands"
         return 0
@@ -287,6 +318,7 @@ $vault/now.md
 $vault/weekly-review.md
 $vault/sources/trello.md
 $vault/sources/calendar.md
+$vault/sources/gmail/
 
 Then add one relevant project file from:
 
@@ -762,6 +794,533 @@ _urlencode() {
     jq -rn --arg value "$1" '$value | @uri'
 }
 
+_google_accounts_path() {
+    if _var_is_set GOOGLE_ACCOUNTS_PATH; then
+        _path_value GOOGLE_ACCOUNTS_PATH
+    else
+        printf '%s/google-accounts.json\n' "$SCRIPT_DIR"
+    fi
+}
+
+_tool_path() {
+    local value="$1"
+    case "$value" in
+        '') return 1 ;;
+        /*) printf '%s\n' "$value" ;;
+        ~/*) printf '%s/%s\n' "$HOME" "${value#~/}" ;;
+        \$CONFIGS/*) printf '%s/%s\n' "$CONFIGS" "${value#\$CONFIGS/}" ;;
+        \$HOME/*) printf '%s/%s\n' "$HOME" "${value#\$HOME/}" ;;
+        *) printf '%s/%s\n' "$SCRIPT_DIR" "$value" ;;
+    esac
+}
+
+_google_accounts_ready() {
+    local config
+    config="$(_google_accounts_path)"
+    _check_command curl >/dev/null || { _err "curl is required"; return 1; }
+    _check_command jq >/dev/null || { _err "jq is required"; return 1; }
+    _check_command python3 >/dev/null || { _err "python3 is required"; return 1; }
+    if [ ! -f "$config" ]; then
+        _err "Google account config does not exist: $config"
+        _say "NEXT: cp ${SCRIPT_DIR}/google-accounts.example.json $config"
+        return 1
+    fi
+    return 0
+}
+
+_google_account_exists() {
+    local alias="$1"
+    _google_accounts_ready || return 1
+    jq -e --arg alias "$alias" 'any(.accounts[]?; .alias == $alias)' "$(_google_accounts_path)" >/dev/null
+}
+
+_google_account_value() {
+    local alias="$1"
+    local filter="$2"
+    jq -er --arg alias "$alias" "(.accounts[]? | select(.alias == \$alias) | ${filter}) // empty" "$(_google_accounts_path)"
+}
+
+_google_account_path() {
+    local alias="$1"
+    local filter="$2"
+    local value
+    value="$(_google_account_value "$alias" "$filter")" || return 1
+    _tool_path "$value"
+}
+
+_google_account_email() {
+    local alias="$1"
+    _google_account_value "$alias" '.email // ""' 2>/dev/null || printf ''
+}
+
+_google_accounts_list() {
+    _google_accounts_ready || return 1
+    jq -r '
+      (.accounts // [])[] |
+      "- " + (.alias // "missing-alias") +
+      " | email: " + (.email // "") +
+      " | gmail: " + (((.gmail.enabled // false) == true) | tostring) +
+      " | drive: " + (((.drive.enabled // false) == true) | tostring)
+    ' "$(_google_accounts_path)"
+}
+
+_google_enabled_aliases() {
+    local service="$1"
+    _google_accounts_ready || return 1
+    jq -r --arg service "$service" '
+      (.accounts // [])[] |
+      select((.[$service].enabled // false) == true) |
+      .alias
+    ' "$(_google_accounts_path)"
+}
+
+_google_account_scopes() {
+    local alias="$1"
+    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
+    jq -r --arg alias "$alias" '
+      (.accounts[]? | select(.alias == $alias)) as $account |
+      [
+        (if (($account.gmail.enabled // false) == true) then
+          "https://www.googleapis.com/auth/gmail.readonly"
+        else empty end),
+        (if (($account.drive.enabled // false) == true) then
+          "https://www.googleapis.com/auth/drive.metadata.readonly",
+          "https://www.googleapis.com/auth/drive.readonly",
+          "https://www.googleapis.com/auth/spreadsheets.readonly"
+        else empty end)
+      ] | .[]
+    ' "$(_google_accounts_path)"
+}
+
+_google_oauth_helper() {
+    python3 "${SCRIPT_DIR}/google-oauth.py" "$@"
+}
+
+_google_auth() {
+    local alias="${1:-}" credentials_path token_path no_browser=""
+    local scopes=() scope
+
+    [ -n "$alias" ] || { _err "google auth requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --no-browser) no_browser="--no-browser"; shift ;;
+            *) _err "Unknown google auth option: $1"; return 1 ;;
+        esac
+    done
+
+    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
+    credentials_path="$(_google_account_path "$alias" '.credentials_path // "google-credentials.json"')" || return 1
+    token_path="$(_google_account_path "$alias" '.token_path')" || { _err "Google account '$alias' needs token_path"; return 1; }
+    if [ ! -f "$credentials_path" ]; then
+        _err "Google credentials file does not exist: $credentials_path"
+        return 1
+    fi
+
+    while IFS= read -r scope || [ -n "$scope" ]; do
+        [ -n "$scope" ] || continue
+        scopes+=( "$scope" )
+    done <<EOF
+$(_google_account_scopes "$alias")
+EOF
+
+    if [ "${#scopes[@]}" -eq 0 ]; then
+        _err "Google account '$alias' has no enabled Gmail or Drive scopes"
+        return 1
+    fi
+
+    if [ -n "$no_browser" ]; then
+        _google_oauth_helper auth "$credentials_path" "$token_path" "${scopes[@]}" "$no_browser"
+    else
+        _google_oauth_helper auth "$credentials_path" "$token_path" "${scopes[@]}"
+    fi
+}
+
+_google_access_token() {
+    local alias="$1" credentials_path token_path
+    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
+    credentials_path="$(_google_account_path "$alias" '.credentials_path // "google-credentials.json"')" || return 1
+    token_path="$(_google_account_path "$alias" '.token_path')" || { _err "Google account '$alias' needs token_path"; return 1; }
+    if [ ! -f "$token_path" ]; then
+        _err "Google token file does not exist for alias '$alias': $token_path"
+        _say "NEXT: run './lifeos.sh google auth $alias'" >&2
+        return 1
+    fi
+    _google_oauth_helper access-token "$credentials_path" "$token_path"
+}
+
+_google_get_url() {
+    local alias="$1"
+    local url="$2"
+    local token
+    shift 2
+    token="$(_google_access_token "$alias")" || return 1
+    curl -fsS --get "$url" \
+        -H "Authorization: Bearer ${token}" \
+        "$@"
+}
+
+_gmail_query() {
+    local alias="$1"
+    _google_account_value "$alias" '.gmail.query // "in:inbox newer_than:30d"' 2>/dev/null || printf 'in:inbox newer_than:30d'
+}
+
+_gmail_max_results() {
+    local alias="$1"
+    _google_account_value "$alias" '.gmail.max_results // 150' 2>/dev/null || printf '150'
+}
+
+_gmail_body_limit() {
+    local alias="$1"
+    _google_account_value "$alias" '.gmail.body_character_limit // 8000' 2>/dev/null || printf '8000'
+}
+
+_gmail_sources_dir() {
+    printf '%s/gmail\n' "$(_sources_dir)"
+}
+
+_gmail_output_for_alias() {
+    local alias="$1"
+    local qa="$2"
+    if [ "$qa" = "1" ]; then
+        printf '%s/gmail-qa/%s.md\n' "$SCRIPT_DIR" "$alias"
+    else
+        printf '%s/%s.md\n' "$(_gmail_sources_dir)" "$alias"
+    fi
+}
+
+_gmail_render_helper() {
+    python3 "${SCRIPT_DIR}/google-gmail-render.py" "$@"
+}
+
+_gmail_sync_alias() {
+    local alias="$1"
+    local out="$2"
+    local query max_results body_limit email_address refreshed
+    local list_file msg_dir messages_file message_id message_file count
+
+    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
+    query="$(_gmail_query "$alias")"
+    max_results="$(_gmail_max_results "$alias")"
+    body_limit="$(_gmail_body_limit "$alias")"
+    email_address="$(_google_account_email "$alias")"
+    refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+
+    _ensure_parent_dir "$out" || return 1
+    list_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-gmail-list.XXXXXX")" || return 1
+    msg_dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-gmail-messages.XXXXXX")" || return 1
+    messages_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-gmail-render.XXXXXX")" || return 1
+
+    _say "Syncing Gmail: ${alias}" >&2
+    _google_get_url "$alias" "https://gmail.googleapis.com/gmail/v1/users/me/messages" \
+        --data-urlencode "q=${query}" \
+        --data-urlencode "maxResults=${max_results}" > "$list_file" || return 1
+
+    count=0
+    for message_id in $(jq -r '.messages[]?.id' "$list_file"); do
+        message_file="${msg_dir}/${count}.json"
+        _google_get_url "$alias" "https://gmail.googleapis.com/gmail/v1/users/me/messages/${message_id}" \
+            --data-urlencode "format=full" > "$message_file" || return 1
+        count=$((count + 1))
+    done
+
+    if [ "$count" -eq 0 ]; then
+        jq -n '{messages: []}' > "$messages_file"
+    else
+        jq -s '{messages: .}' "${msg_dir}"/*.json > "$messages_file"
+    fi
+
+    _gmail_render_helper "$alias" "$email_address" "$query" "$max_results" "$body_limit" "$refreshed" "$messages_file" > "$out" || return 1
+    _say "Updated $out"
+}
+
+_gmail_write_index() {
+    local dir="$1"
+    local refreshed="$2"
+    shift 2
+    {
+        printf '# Gmail\n\n'
+        printf 'Last refreshed: %s\n\n' "$refreshed"
+        printf '## Account Snapshots\n\n'
+        for alias in "$@"; do
+            printf -- '- [%s](%s.md)\n' "$alias" "$alias"
+        done
+    } > "${dir}/index.md"
+}
+
+_gmail_sync() {
+    local all=0 qa=0 custom_out="" alias aliases="" out dir refreshed
+
+    case "${1:-}" in
+        --all) all=1; shift ;;
+        '') _err "gmail sync requires ALIAS or --all"; return 1 ;;
+        *) alias="$1"; shift ;;
+    esac
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --qa) qa=1; shift ;;
+            --output)
+                [ -n "${2:-}" ] || { _err "--output requires FILE"; return 1; }
+                custom_out="$2"
+                shift 2
+                ;;
+            *) _err "Unknown gmail sync option: $1"; return 1 ;;
+        esac
+    done
+
+    if [ "$all" -eq 1 ]; then
+        [ -z "$custom_out" ] || { _err "gmail sync --all does not support --output"; return 1; }
+        aliases="$(_google_enabled_aliases gmail)" || return 1
+        [ -n "$aliases" ] || { _err "No Gmail-enabled Google aliases configured"; return 1; }
+        if [ "$qa" -eq 1 ]; then
+            dir="${SCRIPT_DIR}/gmail-qa"
+        else
+            _vault_ready || return 1
+            _ensure_sources_dir || return 1
+            dir="$(_gmail_sources_dir)"
+        fi
+        [ -d "$dir" ] || mkdir -p "$dir"
+        for alias in $aliases; do
+            _gmail_sync_alias "$alias" "${dir}/${alias}.md" || return 1
+        done
+        refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+        _gmail_write_index "$dir" "$refreshed" $aliases
+        _say "Updated ${dir}/index.md"
+        return 0
+    fi
+
+    if [ -n "$custom_out" ]; then
+        out="$custom_out"
+    elif [ "$qa" -eq 1 ]; then
+        out="$(_gmail_output_for_alias "$alias" 1)"
+    else
+        _vault_ready || return 1
+        _ensure_sources_dir || return 1
+        out="$(_gmail_output_for_alias "$alias" 0)"
+    fi
+    _gmail_sync_alias "$alias" "$out"
+}
+
+_drive_accounts() {
+    _google_accounts_ready || return 1
+    jq -r '
+      (.accounts // [])[] |
+      select((.drive.enabled // false) == true) |
+      "- " + (.alias // "missing-alias") + " | email: " + (.email // "")
+    ' "$(_google_accounts_path)"
+}
+
+_drive_page_size() {
+    local alias="$1"
+    _google_account_value "$alias" '.drive.search_page_size // 20' 2>/dev/null || printf '20'
+}
+
+_drive_read_limit() {
+    local alias="$1"
+    _google_account_value "$alias" '.drive.read_character_limit // 20000' 2>/dev/null || printf '20000'
+}
+
+_drive_sheet_row_limit() {
+    local alias="$1"
+    _google_account_value "$alias" '.drive.sheet_row_limit // 200' 2>/dev/null || printf '200'
+}
+
+_drive_query_escape() {
+    printf '%s' "$1" | sed "s/\\\\/\\\\\\\\/g; s/'/\\\\'/g"
+}
+
+_drive_file_id() {
+    local ref="$1"
+    case "$ref" in
+        *'/d/'*)
+            ref="${ref#*/d/}"
+            ref="${ref%%/*}"
+            ;;
+        *'id='*)
+            ref="${ref#*id=}"
+            ref="${ref%%&*}"
+            ;;
+    esac
+    printf '%s\n' "$ref"
+}
+
+_drive_files_human() {
+    jq -r '
+      (.files // [])[] |
+      "- " + (.name // "Untitled") +
+      " | id: " + (.id // "") +
+      " | type: " + (.mimeType // "") +
+      " | modified: " + (.modifiedTime // "") +
+      " | owner: " + (((.owners // []) | map(.emailAddress // .displayName // "") | map(select(. != "")) | join(", "))) +
+      " | " + (.webViewLink // "")
+    '
+}
+
+_drive_meta_human() {
+    jq -r '
+      "Name: " + (.name // "Untitled") + "\n" +
+      "ID: " + (.id // "") + "\n" +
+      "MIME type: " + (.mimeType // "") + "\n" +
+      "Modified: " + (.modifiedTime // "") + "\n" +
+      "Owners: " + (((.owners // []) | map(.emailAddress // .displayName // "") | map(select(. != "")) | join(", "))) + "\n" +
+      "Parents: " + (((.parents // []) | join(", "))) + "\n" +
+      "Drive ID: " + (.driveId // "") + "\n" +
+      "URL: " + (.webViewLink // "")
+    '
+}
+
+_drive_fetch_meta() {
+    local alias="$1"
+    local file_id="$2"
+    _google_get_url "$alias" "https://www.googleapis.com/drive/v3/files/${file_id}" \
+        --data-urlencode "supportsAllDrives=true" \
+        --data-urlencode "fields=id,name,mimeType,modifiedTime,webViewLink,owners(displayName,emailAddress),parents,driveId,size"
+}
+
+_drive_search() {
+    local alias="${1:-}" query="${2:-}" json=0 page_size escaped q
+    local result_file
+    [ -n "$alias" ] || { _err "drive search requires ALIAS"; return 1; }
+    [ -n "$query" ] || { _err "drive search requires QUERY"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --json) json=1; shift ;;
+            *) _err "Unknown drive search option: $1"; return 1 ;;
+        esac
+    done
+    page_size="$(_drive_page_size "$alias")"
+    escaped="$(_drive_query_escape "$query")"
+    q="trashed = false and (name contains '${escaped}' or fullText contains '${escaped}')"
+    result_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-search.XXXXXX")" || return 1
+    _google_get_url "$alias" "https://www.googleapis.com/drive/v3/files" \
+        --data-urlencode "q=${q}" \
+        --data-urlencode "pageSize=${page_size}" \
+        --data-urlencode "supportsAllDrives=true" \
+        --data-urlencode "includeItemsFromAllDrives=true" \
+        --data-urlencode "fields=files(id,name,mimeType,modifiedTime,webViewLink,owners(displayName,emailAddress),parents,driveId),nextPageToken" > "$result_file" || return 1
+
+    if [ "$json" -eq 1 ]; then
+        cat "$result_file"
+    else
+        _drive_files_human < "$result_file"
+    fi
+}
+
+_drive_list() {
+    local alias="${1:-}" folder_id="${2:-}" json=0 q
+    local result_file
+    [ -n "$alias" ] || { _err "drive list requires ALIAS"; return 1; }
+    [ -n "$folder_id" ] || { _err "drive list requires FOLDER_ID"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --json) json=1; shift ;;
+            *) _err "Unknown drive list option: $1"; return 1 ;;
+        esac
+    done
+    q="'$(_drive_query_escape "$folder_id")' in parents and trashed = false"
+    result_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-list.XXXXXX")" || return 1
+    _google_get_url "$alias" "https://www.googleapis.com/drive/v3/files" \
+        --data-urlencode "q=${q}" \
+        --data-urlencode "pageSize=$(_drive_page_size "$alias")" \
+        --data-urlencode "supportsAllDrives=true" \
+        --data-urlencode "includeItemsFromAllDrives=true" \
+        --data-urlencode "fields=files(id,name,mimeType,modifiedTime,webViewLink,owners(displayName,emailAddress),parents,driveId),nextPageToken" > "$result_file" || return 1
+
+    if [ "$json" -eq 1 ]; then
+        cat "$result_file"
+    else
+        _drive_files_human < "$result_file"
+    fi
+}
+
+_drive_meta() {
+    local alias="${1:-}" ref="${2:-}" json=0 file_id
+    [ -n "$alias" ] || { _err "drive meta requires ALIAS"; return 1; }
+    [ -n "$ref" ] || { _err "drive meta requires FILE_URL_OR_ID"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --json) json=1; shift ;;
+            *) _err "Unknown drive meta option: $1"; return 1 ;;
+        esac
+    done
+    file_id="$(_drive_file_id "$ref")"
+    if [ "$json" -eq 1 ]; then
+        _drive_fetch_meta "$alias" "$file_id"
+    else
+        _drive_fetch_meta "$alias" "$file_id" | _drive_meta_human
+    fi
+}
+
+_single_quote_sheet_name() {
+    printf "'%s'" "$(printf '%s' "$1" | sed "s/'/''/g")"
+}
+
+_text_cap_file() {
+    python3 -c 'import sys
+limit = int(sys.argv[1])
+data = sys.stdin.read()
+if len(data) <= limit:
+    print(data, end="")
+else:
+    print(data[:limit].rstrip(), end="")
+    print("\n\n[content truncated]")' "$1"
+}
+
+_drive_read() {
+    local alias="${1:-}" ref="${2:-}" range="" file_id meta_file mime name limit content_file
+    local sheet_meta_file values_file sheet_title escaped_title encoded_range
+    [ -n "$alias" ] || { _err "drive read requires ALIAS"; return 1; }
+    [ -n "$ref" ] || { _err "drive read requires FILE_URL_OR_ID"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --range) [ -n "${2:-}" ] || { _err "--range requires RANGE"; return 1; }; range="$2"; shift 2 ;;
+            *) _err "Unknown drive read option: $1"; return 1 ;;
+        esac
+    done
+
+    file_id="$(_drive_file_id "$ref")"
+    meta_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-meta.XXXXXX")" || return 1
+    _drive_fetch_meta "$alias" "$file_id" > "$meta_file" || return 1
+    mime="$(jq -r '.mimeType // ""' "$meta_file")"
+    name="$(jq -r '.name // "Untitled"' "$meta_file")"
+
+    case "$mime" in
+        application/vnd.google-apps.document)
+            content_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-doc.XXXXXX")" || return 1
+            _google_get_url "$alias" "https://www.googleapis.com/drive/v3/files/${file_id}/export" \
+                --data-urlencode "mimeType=text/plain" > "$content_file" || return 1
+            limit="$(_drive_read_limit "$alias")"
+            printf '# Google Doc - %s\n\n' "$name"
+            printf 'Account alias: `%s`\n\n' "$alias"
+            printf 'File ID: `%s`\n\n' "$file_id"
+            _text_cap_file "$limit" < "$content_file"
+            ;;
+        application/vnd.google-apps.spreadsheet)
+            sheet_meta_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-sheet-meta.XXXXXX")" || return 1
+            values_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-sheet-values.XXXXXX")" || return 1
+            _google_get_url "$alias" "https://sheets.googleapis.com/v4/spreadsheets/${file_id}" \
+                --data-urlencode "fields=properties(title),sheets(properties(sheetId,title,gridProperties(rowCount,columnCount)))" > "$sheet_meta_file" || return 1
+            if [ -z "$range" ]; then
+                sheet_title="$(jq -r '.sheets[0].properties.title // "Sheet1"' "$sheet_meta_file")"
+                escaped_title="$(_single_quote_sheet_name "$sheet_title")"
+                range="${escaped_title}!A1:Z$(_drive_sheet_row_limit "$alias")"
+            fi
+            encoded_range="$(_urlencode "$range")" || return 1
+            _google_get_url "$alias" "https://sheets.googleapis.com/v4/spreadsheets/${file_id}/values/${encoded_range}" > "$values_file" || return 1
+            python3 "${SCRIPT_DIR}/google-sheets-render.py" "$alias" "$file_id" "$sheet_meta_file" "$values_file"
+            ;;
+        *)
+            _warn "Drive read supports Google Docs and Google Sheets for now. Showing metadata only."
+            _drive_meta_human < "$meta_file"
+            ;;
+    esac
+}
+
 _calendar_ids() {
     if _var_is_set GOOGLE_CALENDAR_IDS; then
         printf '%s' "$GOOGLE_CALENDAR_IDS"
@@ -789,10 +1348,7 @@ _calendar_window() {
 }
 
 _calendar_render_events() {
-    local calendar_file="$1"
-    local events_file="$2"
-
-    _calendar_render_helper "$calendar_file" "$events_file"
+    _calendar_render_helper "$@"
 }
 
 _calendar_write_metadata() {
@@ -824,6 +1380,7 @@ _calendar_write_metadata() {
 _calendar_sync() {
     local out tmp_out calendar_ids calendar_id encoded_id calendar_file events_file calendar_list_file
     local refreshed window time_min time_max today calendar_name custom_out=""
+    local render_args=()
 
     while [ "$#" -gt 0 ]; do
         case "$1" in
@@ -890,22 +1447,19 @@ _calendar_sync() {
             --data-urlencode "timeMin=${time_min}" \
             --data-urlencode "timeMax=${time_max}" \
             --data-urlencode "maxResults=2500" \
-            --data-urlencode "fields=items(id,status,summary,description,location,htmlLink,start,end)" > "$events_file" || return 1
+            --data-urlencode "fields=items(id,status,summary,description,location,htmlLink,hangoutLink,conferenceData(entryPoints(entryPointType,label,uri)),start,end)" > "$events_file" || return 1
 
-        {
-            _calendar_render_events "$calendar_file" "$events_file"
-            printf '\n'
-        } >> "$tmp_out"
+        render_args+=( "$calendar_file" "$events_file" )
     done
+
+    if [ "${#render_args[@]}" -eq 0 ]; then
+        _warn "No Google Calendar IDs were configured."
+    else
+        _calendar_render_events "${render_args[@]}" >> "$tmp_out" || return 1
+    fi
 
     mv "$tmp_out" "$out"
     _say "Updated $out"
-}
-
-_calendar_pending() {
-    _warn "Google Calendar commands are pending the OAuth implementation."
-    _warn "Trello and local vault commands are available now."
-    return 2
 }
 
 _sync() {
@@ -960,6 +1514,29 @@ case "${1:-help}" in
             list-calendars) shift 2; _calendar_list_calendars "$@" ;;
             sync) shift 2; _calendar_sync "$@" ;;
             *) _err "Unknown Calendar command: ${2:-}"; _usage; exit 1 ;;
+        esac
+        ;;
+    google)
+        case "${2:-}" in
+            accounts) shift 2; _google_accounts_list "$@" ;;
+            auth) shift 2; _google_auth "$@" ;;
+            *) _err "Unknown Google command: ${2:-}"; _usage; exit 1 ;;
+        esac
+        ;;
+    gmail)
+        case "${2:-}" in
+            sync) shift 2; _gmail_sync "$@" ;;
+            *) _err "Unknown Gmail command: ${2:-}"; _usage; exit 1 ;;
+        esac
+        ;;
+    drive)
+        case "${2:-}" in
+            accounts) shift 2; _drive_accounts "$@" ;;
+            search) shift 2; _drive_search "$@" ;;
+            list) shift 2; _drive_list "$@" ;;
+            meta) shift 2; _drive_meta "$@" ;;
+            read) shift 2; _drive_read "$@" ;;
+            *) _err "Unknown Drive command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
     sync)

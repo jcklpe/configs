@@ -4,12 +4,16 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 
-- LifeOS tools: `docs/lifeos-tools.md`, `docs/lifeos-tools.todo.md`
+- LifeOS Bitwarden cleanup: `docs/lifeos-bitwarden.md`, `docs/lifeos-bitwarden.todo.md`
+
+## Scratch / Future
+
+- LifeOS tools v2 ideas: `docs/scratch/lifeos-tools-v2.md`, `docs/scratch/lifeos-tools-v2.todo.md`
 
 ## Next
 
-- Decide whether `GOOGLE_CALENDAR_IDS` should include additional calendars beyond `primary`.
 - Decide when a `docs/runbooks/` folder is useful enough to create.
+- Decide whether any `docs/scratch/lifeos-tools-v2.md` theme should become an active spike.
 
 ## Waiting For Human QA
 
@@ -24,6 +28,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Notes
 
+- Finished LifeOS v1 spike history lives in `docs/archive/lifeos-tools.md`, `docs/archive/lifeos-tools.todo.md`, `docs/archive/lifeos-google-sources.md`, and `docs/archive/lifeos-google-sources.todo.md`.
 - Use `docs/how-to-spike.md` for spike workflow.
 - Use `docs/scratch/` for rough, non-authoritative notes.
 - Use `docs/archive/` for finished spike history.
