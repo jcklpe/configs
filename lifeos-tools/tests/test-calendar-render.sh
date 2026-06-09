@@ -84,4 +84,21 @@ assert_contains "    > [description truncated]"
 assert_contains "- 23:30-continues - Cross Midnight Event (continues, 2026-06-26 23:30 to 2026-06-27 01:15) | calendar: Test Calendar | meeting: https://meet.google.com/abc-defg-hij | https://calendar.test/cross-midnight"
 assert_contains "- continues-01:15 - Cross Midnight Event (continues, 2026-06-26 23:30 to 2026-06-27 01:15) | calendar: Test Calendar | meeting: https://meet.google.com/abc-defg-hij | https://calendar.test/cross-midnight"
 
+##- LIFEOS_CALENDAR_NO_DESCRIPTION omits descriptions for the named calendars,
+##- but events that also live on a high-signal calendar keep their description.
+OUT="${TMPDIR:-/tmp}/lifeos-calendar-render-suppressed.md"
+LIFEOS_CALENDAR_NO_DESCRIPTION="Other Calendar" python3 "${TOOL_DIR}/google-calendar-render.py" \
+    "${SCRIPT_DIR}/fixtures/calendar.json" \
+    "${SCRIPT_DIR}/fixtures/events.json" \
+    "${SCRIPT_DIR}/fixtures/calendar-secondary.json" \
+    "${SCRIPT_DIR}/fixtures/events-secondary.json" > "$OUT"
+
+# Other-Calendar-only events lose their descriptions...
+assert_contains "- 12:00-13:00 - HTML Description Event | calendar: Other Calendar | https://calendar.test/html"
+assert_not_contains "    > RSVP at Partiful (https://partiful.com/e/example)"
+assert_not_contains "    > [description truncated]"
+# ...but the event shared with Test Calendar keeps its description.
+assert_contains "- 10:00-11:00 - Normal Timed Event | calendar: Test Calendar, Other Calendar | location: Library Room | https://calendar.test/normal"
+assert_contains "    > Bring notebook."
+
 printf 'calendar render fixtures passed\n'
