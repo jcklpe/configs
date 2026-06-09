@@ -1,0 +1,52 @@
+{
+  "messages": [
+    {
+      "id": "msg_plain",
+      "threadId": "thread_plain",
+      "labelIds": ["INBOX", "UNREAD"],
+      "internalDate": "1780272000000",
+      "payload": {
+        "mimeType": "text/plain",
+        "headers": [
+          {"name": "Date", "value": "Mon, 01 Jun 2026 12:00:00 -0500"},
+          {"name": "From", "value": "Alex Example <alex@example.com>"},
+          {"name": "To", "value": "Aslan <aslan@example.com>"},
+          {"name": "Subject", "value": "Plain message"}
+        ],
+        "body": {
+          "data": "SGVsbG8gZnJvbSBwbGFpbiB0ZXh0LgpTZWNvbmQgbGluZS4"
+        }
+      }
+    },
+    {
+      "id": "msg_html",
+      "threadId": "thread_html",
+      "labelIds": ["INBOX"],
+      "internalDate": "1780275600000",
+      "payload": {
+        "mimeType": "multipart/alternative",
+        "headers": [
+          {"name": "Date", "value": "Mon, 01 Jun 2026 13:00:00 -0500"},
+          {"name": "From", "value": "Taylor Example <taylor@example.com>"},
+          {"name": "To", "value": "Aslan <aslan@example.com>"},
+          {"name": "Subject", "value": "HTML message"}
+        ],
+        "parts": [
+          {
+            "mimeType": "text/html",
+            "body": {
+              "data": "PHA-SGVsbG8gPGEgaHJlZj0iaHR0cHM6Ly9leGFtcGxlLmNvbSI-bGluazwvYT48L3A-"
+            }
+          },
+          {
+            "filename": "agenda.pdf",
+            "mimeType": "application/pdf",
+            "body": {
+              "attachmentId": "att_1"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

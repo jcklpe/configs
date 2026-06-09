@@ -154,6 +154,9 @@ typings/
 # Mac crap
 .DS_STORE
 
+# Local agent/editor config (keep untracked)
+.claude/
+
 # Local secrets and tool env files
 # Real values may live in this working tree, but must be ignored.
 # Commit adjacent example files with fake values.

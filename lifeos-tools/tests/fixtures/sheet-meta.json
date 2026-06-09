@@ -1,0 +1,17 @@
+{
+  "properties": {
+    "title": "Test Sheet"
+  },
+  "sheets": [
+    {
+      "properties": {
+        "sheetId": 0,
+        "title": "People",
+        "gridProperties": {
+          "rowCount": 100,
+          "columnCount": 10
+        }
+      }
+    }
+  ]
+}

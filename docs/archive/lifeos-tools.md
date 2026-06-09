@@ -1,8 +1,8 @@
 # LifeOS Tools
 
-Status: active spike. Trello and primary Google Calendar sync are implemented and live-QA'd.
+Status: archived. Trello and multi-calendar Google Calendar sync are implemented, live-QA'd, documented, and available to LifeOS through the stable `lifeos` command.
 
-Companion to-do: `docs/lifeos-tools.todo.md`.
+Companion to-do: `docs/archive/lifeos-tools.todo.md`.
 
 ## Purpose
 
@@ -116,7 +116,7 @@ $LIFEOS_VAULT_PATH/now.md
 $LIFEOS_VAULT_PATH/weekly-review.md
 ```
 
-Drive is future work. Do not add Drive placeholders unless the LifeOS workflow asks for them.
+Gmail and Drive source expansion is tracked separately in archived `docs/archive/lifeos-google-sources.md`.
 
 ## Trello Behavior
 
@@ -129,7 +129,9 @@ Trello sync support is read-only. Trello writes are handled by explicit write co
 - URL
 - closed/archived state
 
-`trello sync` should require `TRELLO_BOARD_IDS` and write a human-readable Markdown snapshot grouped by board and list. By default it writes to `$LIFEOS_VAULT_PATH/sources/trello.md`; `--qa` writes a gitignored local snapshot to `lifeos-tools/trello-qa.md`; `--output FILE` writes to a caller-chosen path for inspection or wrapper tooling.
+`trello sync` should require comma-separated `TRELLO_BOARD_IDS` and write a human-readable Markdown snapshot grouped by board and list. By default it writes to `$LIFEOS_VAULT_PATH/sources/trello.md`; `--qa` writes a gitignored local snapshot to `lifeos-tools/trello-qa.md`; `--output FILE` writes to a caller-chosen path for inspection or wrapper tooling.
+
+The current local setup syncs the Life board and a shared logistics board. Agents should read the board heading in the generated snapshot before assuming which board a card belongs to.
 
 Include, where available:
 
@@ -161,15 +163,9 @@ Write commands require `TRELLO_WRITE_TOKEN`. The normal sync token can remain re
 
 The generated `sources/trello.md` file is context, not a write-back database. Agents should read it to understand current Trello state, then call explicit `lifeos trello ...` commands for changes.
 
-Agent-facing write behavior should eventually include:
+With multiple configured boards, write commands should pass `--board BOARD_ID` when targeting any non-default board. Use `lifeos trello list-boards` and `lifeos trello list-lists BOARD_ID` before name-based list operations on a specific board.
 
-- dry-run/preview mode for each write command
-- before/after state in command output
-- Trello card URL in command output
-- card/list IDs internally, even when user-facing args accept names or URLs
-- re-fetch card state before edits to reduce stale snapshot risk
-- automatic or easy follow-up sync after successful writes
-- no hard delete commands; archive-only if we add removal behavior later
+Future Trello write-safety ideas are preserved in `docs/scratch/lifeos-tools-v2.md` so this v1 spike can close cleanly.
 
 Description edits need extra care because they can clobber human-written context. Prefer `comment` for additive notes. For description changes, use file-based replacement now; later consider section-aware replacement or a diff preview before applying.
 
@@ -181,13 +177,13 @@ The stable agent-facing entrypoint is `lifeos`, provided by `lifeos-tools/lifeos
 
 Agent-facing usage notes live in `lifeos-tools/AGENT.md`. On this machine, the LifeOS vault has a local symlink at `runbooks/lifeos-tools.md` pointing back to that tracked file.
 
-A true MCP/plugin-style surface may eventually be useful for another Codex session. Treat that as a wrapper around the stable CLI behavior, not as a replacement for it. The first useful callable shape would be small operations that require IDs internally and can return before/after state.
+Any future MCP/plugin-style surface should be tracked as v2 work and wrap the stable CLI behavior rather than replacing it.
 
 ## Google Calendar Behavior
 
-Google Calendar support should be read-only.
+Google Calendar support is currently read-only.
 
-Calendar auth uses a small `python3` helper for OAuth/token lifecycle. The rest of the Calendar API reads stay in the Bash CLI with `curl` and `jq`.
+Calendar uses small `python3` helpers for OAuth/token lifecycle and event date expansion. Calendar API reads stay in the Bash CLI with `curl` and `jq`.
 
 Implemented setup:
 
@@ -212,29 +208,69 @@ lifeos calendar sync
 
 `calendar list-calendars` prints calendar names and IDs.
 
-`calendar sync` uses configured calendar IDs, or primary calendar if none are configured, and writes a human-readable Markdown snapshot. By default it writes to `$LIFEOS_VAULT_PATH/sources/calendar.md`; `--qa` writes a gitignored local snapshot to `lifeos-tools/calendar-qa.md`; `--output FILE` writes to a caller-chosen path for inspection or wrapper tooling.
+`calendar sync` uses configured calendar IDs, or primary calendar if none are configured, and writes a human-readable Markdown snapshot. The current local setup syncs the primary calendar plus selected work, community, shared, imported, and group calendars. By default it writes to `$LIFEOS_VAULT_PATH/sources/calendar.md`; `--qa` writes a gitignored local snapshot to `lifeos-tools/calendar-qa.md`; `--output FILE` writes to a caller-chosen path for inspection or wrapper tooling.
+
+The default snapshot shape is one combined date-grouped agenda:
+
+```text
+# Google Calendar
+
+Last refreshed: ...
+Today: ...
+Window: ...
+Calendar IDs: ...
+
+## Combined Agenda
+
+### 2026-06-06
+
+- 15:30-18:00 - Event name | calendar: Calendar Name | location: Place | meeting: https://... | https://...
+```
+
+Do not emit separate per-calendar event sections in the default LifeOS snapshot. Source labels belong on event lines; reasoning about hard/soft/possible conflicts belongs in the LifeOS runbook/agent layer, not in the source snapshot.
+
+When the same Google event reliably appears from multiple calendars, merge it into one event line and combine the calendar labels. If identity is not reliable, preserve separate lines rather than hiding source ambiguity.
 
 Include:
 
 - last refreshed timestamp
-- calendars synced
+- calendar IDs synced
 - today
 - upcoming 7 days
 - upcoming 30 days
 - past `LIFEOS_DAYS_BACK` days
+- calendar identity on each event line
+- inline location when present
+- direct meeting/conference links when available
+- cleaned, bounded description blocks when present
+- reliable duplicate-event merging with combined calendar labels
 - all-day events
 - timed events
+- multi-day all-day events expanded under every blocked date
+- timed events crossing midnight expanded under every affected date
 - event links when available
 
-Do not write back to Google Calendar.
+Do not write back to Google Calendar in the current implementation.
 
 Implementation notes:
 
 - Use Bash plus `curl`/`jq` for Calendar API calls once a valid access token exists.
-- Use `lifeos-tools/google-calendar-auth.py` for OAuth/token lifecycle only.
+- Use `lifeos-tools/google-calendar-auth.py` for OAuth/token lifecycle.
+- Use `lifeos-tools/google-calendar-render.py` for combined Markdown rendering, description cleanup, and event date expansion where Python is clearer and safer than `jq`.
 - Refresh expired access tokens automatically when `google-token.json` has a refresh token.
 - If auth fails, print the next local setup step without printing token contents.
 - Treat `GOOGLE_CALENDAR_IDS=primary` as the default first useful config.
+
+## Google Calendar Write Assessment
+
+Calendar writes should not mirror the Trello write model without tighter boundaries. Calendar data can involve guests, shared calendars, imported calendars, calendars where this account is read-only, recurring events, external invitations, and notification side effects. A generic "edit or delete any visible event" tool would create too much blast radius for a low-frequency workflow.
+
+Current stance:
+
+- Keep `calendar sync` read-only.
+- Do not add broad Calendar edit/delete commands.
+- Treat one-off cleanup, such as removing an obsolete application deadline, as better handled manually in Google Calendar unless this becomes common.
+- If Calendar writes become useful, track that as v2 work. Start with event creation on a dedicated, private, writable LifeOS-owned calendar rather than arbitrary edits across all synced calendars.
 
 ## Doctor Behavior
 
@@ -273,9 +309,12 @@ Implemented:
 - `calendar list-calendars`
 - `calendar sync`, including `--qa` and `--output FILE`
 - `sync` with Trello and Calendar support
+- documented Calendar write constraints and future write boundary
 
 Live QA confirmed:
 
+- Trello sync can render multiple configured boards in one generated snapshot
+- Trello sync includes the Life board and the shared logistics board in `$LIFEOS_VAULT_PATH/sources/trello.md`
 - Trello card creation in `On Deck`
 - Trello comment write
 - Trello description replacement from a file
@@ -284,15 +323,28 @@ Live QA confirmed:
 - `trello sync --qa` reflecting final written state
 - Google Calendar OAuth token generation
 - Google Calendar list-calendars
-- Google Calendar primary calendar sync to `calendar-qa.md`
-- Google Calendar primary calendar sync to `$LIFEOS_VAULT_PATH/sources/calendar.md`
+- Google Calendar configured calendar set sync to `calendar-qa.md`
+- Google Calendar configured calendar set sync to `$LIFEOS_VAULT_PATH/sources/calendar.md`
+- Google Calendar combined date-grouped agenda output
+- Google Calendar event-line calendar labels
+- Google Calendar inline event locations
+- Google Calendar cleaned bounded description blocks
+- Google Calendar multi-day all-day event expansion, including continuation dates
+- Google Calendar timed cross-midnight event expansion
 - Combined `lifeos sync` refreshing Trello and Calendar snapshots
 
-Pending:
+Future enhancement threads have been moved to `docs/scratch/lifeos-tools-v2.md`.
 
-- dry-run/preview for Trello write commands
-- before/after output for Trello write commands
-- choose whether to sync additional Google calendars beyond `primary`
+## Archive Readiness
+
+This spike has met its promotion criteria:
+
+- Trello sync updates the private vault snapshot on demand.
+- Trello write commands have been live-QA'd on a disposable card.
+- Trello sync supports multiple configured boards.
+- Google Calendar sync has a settled read-only auth approach and updates the private vault snapshot on demand.
+- `lifeos` is available as the stable agent-facing command.
+- Durable setup and agent usage notes are in `lifeos-tools/README.md` and `lifeos-tools/AGENT.md`.
 
 ## Non-Goals
 
@@ -300,22 +352,24 @@ Pending:
 - No webhooks.
 - No daemon.
 - No implicit Trello writes by editing the generated Markdown snapshot.
-- No writes to Google Calendar.
+- No broad writes to Google Calendar.
+- No Calendar edits/deletes across arbitrary synced calendars.
 - No private vault content in this repo.
-- No generated Trello or Calendar snapshots in this repo.
+- No committed generated Trello or Calendar snapshots in this repo.
 - No package-style hierarchy unless a future implementation need earns it.
 
-## Open Questions
+## Future Threads
 
-- Should write commands auto-sync after success, or require explicit `trello sync`?
-- Which additional Google calendars, if any, should `GOOGLE_CALENDAR_IDS` include?
+Future v2 ideas are preserved in `docs/scratch/lifeos-tools-v2.md` rather than left as unresolved work in this archive-ready spike.
 
 ## Promotion Criteria
 
-This spike is ready to archive when:
+This spike was ready to archive when:
 
 - Trello sync can update the private vault snapshot on demand
 - Trello write commands have been live-QA'd on a disposable card
 - Google Calendar sync has a settled auth approach and can update the private vault snapshot on demand
 - `lifeos` is available as the stable agent-facing command
 - durable setup notes are folded into `README.md`, `AGENTS.md`, or a decision record as needed
+
+All criteria are satisfied as of the current local implementation.

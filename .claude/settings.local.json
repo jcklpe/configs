@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ln -s AGENTS.md CLAUDE.md)",
-      "Bash(git add *)"
-    ]
-  }
-}

@@ -1,0 +1,51 @@
+{
+  "items": [
+    {
+      "id": "secondary-same-date",
+      "summary": "Secondary\nTimed Event",
+      "location": "Austin, TX",
+      "htmlLink": "https://calendar.test/secondary",
+      "start": {
+        "dateTime": "2026-06-25T09:00:00-05:00"
+      },
+      "end": {
+        "dateTime": "2026-06-25T09:30:00-05:00"
+      }
+    },
+    {
+      "id": "normal-timed",
+      "summary": "Normal Timed Event",
+      "htmlLink": "https://calendar.test/normal-secondary",
+      "start": {
+        "dateTime": "2026-06-25T10:00:00-05:00"
+      },
+      "end": {
+        "dateTime": "2026-06-25T11:00:00-05:00"
+      }
+    },
+    {
+      "id": "html-description",
+      "summary": "HTML Description Event",
+      "description": "<p>RSVP at <a href=\"https://partiful.com/e/example\">Partiful</a></p><p>Join Zoom: <a href=\"https://zoom.us/j/123456789\">https://zoom.us/j/123456789</a></p>",
+      "htmlLink": "https://calendar.test/html",
+      "start": {
+        "dateTime": "2026-06-25T12:00:00-05:00"
+      },
+      "end": {
+        "dateTime": "2026-06-25T13:00:00-05:00"
+      }
+    },
+    {
+      "id": "long-description",
+      "summary": "Long Description Event",
+      "description": "This description is intentionally long so the renderer can prove it keeps the snapshot readable. It includes useful context at the top, then repeats lower-value marketing copy that should not dominate the generated agenda. The first useful link is https://example.com/context and it should remain visible. Repeated details follow. Agenda context. Logistics context. Speaker context. Community context. Parking context. Food context. Reminder context. Agenda context. Logistics context. Speaker context. Community context. Parking context. Food context. Reminder context. Agenda context. Logistics context. Speaker context. Community context. Parking context. Food context. Reminder context. Agenda context. Logistics context. Speaker context. Community context. Parking context. Food context. Reminder context. Agenda context. Logistics context. Speaker context. Community context. Parking context. Food context. Reminder context. Agenda context. Logistics context. Speaker context. Community context. Parking context. Food context. Reminder context.",
+      "htmlLink": "https://calendar.test/long",
+      "start": {
+        "dateTime": "2026-06-25T13:30:00-05:00"
+      },
+      "end": {
+        "dateTime": "2026-06-25T14:30:00-05:00"
+      }
+    }
+  ]
+}

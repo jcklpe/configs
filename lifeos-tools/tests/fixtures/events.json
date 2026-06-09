@@ -25,6 +25,8 @@
     {
       "id": "normal-timed",
       "summary": "Normal Timed Event",
+      "description": "Bring notebook.\nPlain second line.",
+      "location": "Library Room",
       "htmlLink": "https://calendar.test/normal",
       "start": {
         "dateTime": "2026-06-25T10:00:00-05:00"
@@ -36,6 +38,16 @@
     {
       "id": "cross-midnight",
       "summary": "Cross Midnight Event",
+      "hangoutLink": "https://meet.google.com/abc-defg-hij",
+      "conferenceData": {
+        "entryPoints": [
+          {
+            "entryPointType": "video",
+            "label": "Google Meet",
+            "uri": "https://meet.google.com/abc-defg-hij"
+          }
+        ]
+      },
       "htmlLink": "https://calendar.test/cross-midnight",
       "start": {
         "dateTime": "2026-06-26T23:30:00-05:00"
