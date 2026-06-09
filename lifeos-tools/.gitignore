@@ -5,6 +5,8 @@
 !*token*.example.json
 *credentials*.json
 !*credentials*.example.json
+google-accounts.json
+google-accounts.local.json
 cache/
 tmp/
 *.log
@@ -12,3 +14,7 @@ __pycache__/
 sources/
 trello-qa.md
 calendar-qa.md
+gmail-qa.md
+gmail-qa/
+drive-qa.md
+drive-qa/
