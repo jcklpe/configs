@@ -3,6 +3,7 @@
 
 import html
 import json
+import os
 import re
 import sys
 from collections import defaultdict
@@ -11,6 +12,9 @@ from html.parser import HTMLParser
 
 
 DESCRIPTION_LIMIT = 800
+# Calendar summaries (case-insensitive) whose event descriptions are noise and
+# should be omitted. Populated from LIFEOS_CALENDAR_NO_DESCRIPTION in main().
+NO_DESCRIPTION_CALENDARS = set()
 BLOCK_TAGS = {
     "address",
     "article",
@@ -158,12 +162,27 @@ def meeting_links(event):
     return links
 
 
-def calendar_label(event):
+def calendar_names(event):
     names = event.get("_calendar_summaries") or []
     if not names:
         name = event.get("_calendar_summary") or ""
         names = [name] if name else []
-    return ", ".join(names)
+    return names
+
+
+def calendar_label(event):
+    return ", ".join(calendar_names(event))
+
+
+def descriptions_suppressed(event):
+    if not NO_DESCRIPTION_CALENDARS:
+        return False
+    names = [name.strip().lower() for name in calendar_names(event) if name.strip()]
+    if not names:
+        return False
+    # Only drop the description when every calendar this event belongs to is a
+    # noisy one. If it also lives on a high-signal calendar, keep the description.
+    return all(name in NO_DESCRIPTION_CALENDARS for name in names)
 
 
 def append_common_parts(parts, event):
@@ -182,6 +201,8 @@ def append_common_parts(parts, event):
 
 
 def event_description(event):
+    if descriptions_suppressed(event):
+        return ""
     description = truncate_description(normalize_description_text(event.get("description") or ""))
     if not description:
         return ""
@@ -368,6 +389,13 @@ def render_combined(calendar_events):
 
 
 def main(argv):
+    global NO_DESCRIPTION_CALENDARS
+    NO_DESCRIPTION_CALENDARS = {
+        name.strip().lower()
+        for name in os.environ.get("LIFEOS_CALENDAR_NO_DESCRIPTION", "").split(",")
+        if name.strip()
+    }
+
     if len(argv) < 3 or len(argv[1:]) % 2 != 0:
         print("Usage: google-calendar-render.py CALENDAR_JSON EVENTS_JSON [CALENDAR_JSON EVENTS_JSON ...]", file=sys.stderr)
         return 1
