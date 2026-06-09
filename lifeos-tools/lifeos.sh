@@ -962,7 +962,7 @@ _google_get_url() {
 
 _gmail_query() {
     local alias="$1"
-    _google_account_value "$alias" '.gmail.query // "in:inbox newer_than:30d"' 2>/dev/null || printf 'in:inbox newer_than:30d'
+    _google_account_value "$alias" '.gmail.query // "in:inbox newer_than:30d -label:Newsletters"' 2>/dev/null || printf 'in:inbox newer_than:30d -label:Newsletters'
 }
 
 _gmail_max_results() {
