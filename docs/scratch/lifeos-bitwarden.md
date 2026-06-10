@@ -1,8 +1,9 @@
 # LifeOS Bitwarden Cleanup
 
-Status: active spike (conceptual doc).
+Status: parked — scratch / future (conceptual doc). Not active work. Promote back to an
+active spike only when a concrete cleanup implementation is ready.
 
-Companion to-do: `docs/lifeos-bitwarden.todo.md`.
+Companion to-do: `docs/scratch/lifeos-bitwarden.todo.md`.
 
 ## Purpose
 

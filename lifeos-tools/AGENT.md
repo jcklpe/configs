@@ -132,6 +132,8 @@ Calendar sync is read-only. It uses comma-separated `GOOGLE_CALENDAR_IDS` from `
 
 The snapshot uses `## Combined Agenda` as one date-grouped agenda across all synced calendars. Every event line includes `calendar: <calendar name>` so agents can tell which calendar produced the event. Event locations appear inline as `location: ...`. Descriptions are cleaned and bounded so long imported event text does not dominate the snapshot.
 
+Calendars listed in `LIFEOS_CALENDAR_NO_DESCRIPTION` (in `.env`) have their event descriptions omitted as noise; all other calendars keep theirs. Matching is against the calendar summary, case-insensitive. An event that also appears on a non-listed (high-signal) calendar keeps its description.
+
 Multi-day all-day events appear under every blocked date. Continuation lines include the covered date range and the exclusive Google Calendar end date so availability checks are safe. Timed events crossing midnight also appear under every affected date.
 
 ## Availability Questions
@@ -160,6 +162,8 @@ lifeos drive read ALIAS FILE_URL_OR_ID
 ```
 
 Gmail snapshots are generated context, not a mailbox control surface. Do not send, reply, archive, delete, label, or mark messages read/unread with `lifeos`.
+
+Gmail sync is inbox-only and bounded: the default per-account query is `in:inbox newer_than:30d -label:Newsletters`. Archived mail, mail older than 30 days, and anything labeled `Newsletters` are excluded by design. Per-account queries live in ignored `google-accounts.json`.
 
 Drive commands are on-demand reads. Do not clone Drive into LifeOS, recursively index whole Drives, or generate broad Drive summaries. Use `drive search`, then `drive meta` or `drive read` on a specific file. `drive read` supports Google Docs text and bounded Google Sheets previews first.
 
