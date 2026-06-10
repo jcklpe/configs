@@ -86,9 +86,11 @@ Calendar sync uses comma-separated `GOOGLE_CALENDAR_IDS`, with `primary` as the 
 
 Event lines include `calendar: <calendar name>`, inline `location: ...` when present, direct meeting links when available, and cleaned bounded descriptions. Multi-day all-day events and timed events crossing midnight are expanded under every affected date so agents do not mistake continuation days as free.
 
+Descriptions for noisy calendars can be omitted via `LIFEOS_CALENDAR_NO_DESCRIPTION` in `.env` (comma-separated calendar names, matched against the calendar summary, case-insensitive). All other calendars keep their descriptions. An event shared with a high-signal calendar keeps its description. Verify exact names with `lifeos calendar list-calendars`.
+
 Google Gmail/Drive alias config lives in ignored `google-accounts.json`, copied from tracked `google-accounts.example.json`. Each alias has its own ignored token file, such as `google-personal-token.json`.
 
-Gmail sync is read-only and writes bounded Markdown snapshots to `$LIFEOS_VAULT_PATH/sources/gmail/`, or to ignored `lifeos-tools/gmail-qa/` when using `--qa`.
+Gmail sync is read-only and writes bounded Markdown snapshots to `$LIFEOS_VAULT_PATH/sources/gmail/`, or to ignored `lifeos-tools/gmail-qa/` when using `--qa`. The default per-account query (`in:inbox newer_than:30d -label:Newsletters`) syncs only current inbox mail from the last 30 days and excludes anything labeled `Newsletters`; archived mail is not synced.
 
 Drive commands are read-only and on-demand. They search/list/inspect files and can read Google Docs as text or Google Sheets as a bounded table preview. They do not clone Drive into LifeOS.
 
