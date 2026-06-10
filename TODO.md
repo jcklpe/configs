@@ -4,11 +4,12 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 
-- LifeOS Bitwarden cleanup: `docs/lifeos-bitwarden.md`, `docs/lifeos-bitwarden.todo.md`
+- None.
 
 ## Scratch / Future
 
 - LifeOS tools v2 ideas: `docs/scratch/lifeos-tools-v2.md`, `docs/scratch/lifeos-tools-v2.todo.md`
+- LifeOS Bitwarden cleanup (parked): `docs/scratch/lifeos-bitwarden.md`, `docs/scratch/lifeos-bitwarden.todo.md`
 
 ## Next
 
