@@ -1,8 +1,8 @@
 # LifeOS Bitwarden Cleanup To-Do
 
-Status: active spike (to-do doc).
+Status: parked — scratch / future (to-do doc). Not active work.
 
-Conceptual doc: `docs/lifeos-bitwarden.md`.
+Conceptual doc: `docs/scratch/lifeos-bitwarden.md`.
 
 ## Background
 
@@ -14,7 +14,7 @@ moved from "the password" to "the writes," so the design centers on a reversible
 
 ## Project Organization
 
-- Conceptual model and settled decisions: `docs/lifeos-bitwarden.md`.
+- Conceptual model and settled decisions: `docs/scratch/lifeos-bitwarden.md`.
 - This file: concrete work items, current state, QA, edge cases.
 - Optional code, if built: `lifeos-tools/` (analysis helper + backup helper only).
 - Install bits: `install-script/functions/` (bw CLI).
