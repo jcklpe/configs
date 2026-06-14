@@ -1,6 +1,6 @@
 # LifeOS Tools
 
-Small local helpers for pulling live Trello and Google Calendar data into the private LifeOS vault as Markdown.
+Small local helpers for pulling external source data into the private LifeOS vault as Markdown.
 
 The vault and real secrets are local-only. This folder commits public-safe scripts and fake example files.
 
@@ -67,18 +67,65 @@ lifeos drive accounts
 lifeos drive search open-austin "landlord mapper"
 lifeos drive meta open-austin https://docs.google.com/document/d/abc123/edit
 lifeos drive read open-austin https://docs.google.com/spreadsheets/d/abc123/edit
+lifeos open-austin-org path
+lifeos open-austin-org sync
+lifeos open-austin-org sync --qa
+lifeos open-austin-org create-issue --title "Task title" --body "Context" --label infrastructure --assign-me
+lifeos open-austin-org create-issue --title "Task title" --body-file /tmp/issue.md --label board --assign-me --execute
 lifeos sync
 ```
 
-Agent-facing usage notes live in `lifeos-tools/AGENT.md`. On this machine, the LifeOS vault has a local symlink at `runbooks/lifeos-tools.md` pointing back to that tracked file.
+Agent-facing usage notes live in `lifeos-tools/AGENT.md`. On this machine, the LifeOS vault has a local symlink at `docs/runbooks/lifeos-tools.md` pointing back to that tracked file.
 
 To recreate that symlink on a configured machine:
 
 ```sh
 . ~/configs/lifeos-tools/.env
-mkdir -p "$LIFEOS_VAULT_PATH/runbooks"
-ln -sf "$HOME/configs/lifeos-tools/AGENT.md" "$LIFEOS_VAULT_PATH/runbooks/lifeos-tools.md"
+mkdir -p "$LIFEOS_VAULT_PATH/docs/runbooks"
+ln -sf "$HOME/configs/lifeos-tools/AGENT.md" "$LIFEOS_VAULT_PATH/docs/runbooks/lifeos-tools.md"
 ```
+
+
+## Open Austin Org Snapshots
+
+`lifeos open-austin-org sync` refreshes the local Open Austin org tooling repo and copies only its generated `snapshot/` Markdown into the LifeOS vault at `$LIFEOS_VAULT_PATH/sources/open-austin-org/`.
+
+Default repo path:
+
+```text
+$HOME/work/org
+```
+
+Override with `OPEN_AUSTIN_ORG_REPO_PATH` in `.env` if needed.
+
+This command does not copy the full repo, `.env`, `.git`, `.github`, tools, workflows, or source scripts into LifeOS. The org repo owns GitHub API/sync behavior; LifeOS receives generated context only.
+
+`lifeos open-austin-org sync --qa` writes to ignored `lifeos-tools/open-austin-org-qa/` instead of the vault.
+
+
+### GitHub Issue Creation
+
+`lifeos open-austin-org create-issue` creates public Open Austin GitHub issues through `gh`, but is dry-run by default. Use it when work needs to be visible in the org repo rather than only tracked privately in Trello/LifeOS.
+
+Examples:
+
+```sh
+lifeos open-austin-org create-issue --title "Task title" --body "Context" --label infrastructure --assign-me
+lifeos open-austin-org create-issue --title "Task title" --body-file /tmp/issue.md --label board --assignee jcklpe --execute
+```
+
+Options:
+
+- `--title TEXT` is required.
+- `--body TEXT` or `--body-file FILE` supplies the issue body.
+- `--label LABEL` can be repeated.
+- `--assign-me` resolves the current GitHub user during execution.
+- `--assignee LOGIN` can be repeated.
+- `--repo OWNER/REPO` overrides the default `open-austin/org`.
+- `--execute` is required to create the issue. Without it, the command prints a dry-run plan.
+- `--no-sync` skips the post-create LifeOS source refresh.
+
+After a successful create, the command refreshes `sources/open-austin-org/` unless `--no-sync` is passed.
 
 Google Calendar auth/list/sync is implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them.
 
