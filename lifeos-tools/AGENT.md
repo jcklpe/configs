@@ -14,6 +14,7 @@ lifeos trello list-lists
 lifeos trello sync
 lifeos calendar sync
 lifeos google accounts
+lifeos open-austin-org sync
 ```
 
 `lifeos trello sync` writes the current Trello snapshot to:
@@ -69,6 +70,44 @@ That writes ignored files under:
 ```text
 ~/configs/lifeos-tools/gmail-qa/
 ```
+
+
+## Open Austin Org GitHub Snapshot
+
+```sh
+lifeos open-austin-org path
+lifeos open-austin-org sync
+lifeos open-austin-org sync --qa
+lifeos open-austin-org create-issue --title "Task title" --body "Context" --label infrastructure --assign-me
+```
+
+`lifeos open-austin-org sync` runs the existing local org repo sync at `$OPEN_AUSTIN_ORG_REPO_PATH` or `~/work/org`, then copies only generated `snapshot/` Markdown into:
+
+```text
+$LIFEOS_VAULT_PATH/sources/open-austin-org/
+```
+
+Use this when LifeOS needs broad Open Austin GitHub issue/project context. The source of truth remains GitHub and the local org tooling repo. LifeOS receives generated context only.
+
+The expected snapshot includes `issues.md`, `issues/*.md`, `labels.md`, `board-org-kanban.md`, `board-open-roles.md`, and `weekly-summary.md` when present.
+
+Do not copy or inspect the org repo `.env`, `.git`, `.github`, tools, workflows, or token/config files. Do not make GitHub writes from LifeOS without explicit user approval and the org repo write-safety rules.
+
+
+### Creating GitHub Issues
+
+Use this only when Open Austin work needs to be public / org-visible in GitHub. Private strategy, personal bandwidth planning, or sensitive context belongs in LifeOS or Trello instead.
+
+```sh
+lifeos open-austin-org create-issue --title "Task title" --body "Context" --label infrastructure --assign-me
+lifeos open-austin-org create-issue --title "Task title" --body-file /tmp/issue.md --label board --assign-me --execute
+```
+
+The command is dry-run by default and prints the plan. It creates an issue only with `--execute`. After creating an issue it refreshes `sources/open-austin-org/` unless `--no-sync` is passed.
+
+Allowed fields: title, body/body-file, labels, assignees, repo override. Do not add comments, close/reopen issues, move project items, or bulk-edit GitHub state unless Aslan explicitly approves that specific action. Comments and issue writes notify real people or change public org state.
+
+Before using `--execute`, the user should have approved the exact issue title/body/labels/assignees.
 
 ## Trello Reads
 
@@ -173,6 +212,6 @@ Drive commands are on-demand reads. Do not clone Drive into LifeOS, recursively 
 - Do not print or inspect Google token files or `google-accounts.json`.
 - Do not hard-delete Trello cards.
 - Description replacement overwrites the full Trello description. Prefer comments for additive notes.
-- Current write commands do not yet have dry-run or before/after output.
+- Trello write commands do not yet have dry-run or before/after output. Open Austin org issue creation is dry-run by default and requires `--execute`.
 - Do not add Google Calendar write commands.
 - Do not add Gmail or Drive write commands.
