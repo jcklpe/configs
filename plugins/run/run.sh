@@ -4,7 +4,7 @@
 ##- the right prefix. So instead of:
 ##-     corepack pnpm run start:frontend      ->  run start:frontend
 ##-     poetry run python manage.py migrate   ->  run python manage.py migrate
-##- With no args it lists what's runnable in the current project.
+##- With no args or `--list` it lists what's runnable in the current project.
 ##-
 ##- Cross-shell: must work in BOTH bash (3.2 on mac) and zsh. So: no bash 4+
 ##- features (associative arrays, ${var,,}), and never rely on word-splitting an
@@ -112,6 +112,32 @@ _run_in_list() {
     return 1
 }
 
+# Print what `run` can discover in the current project.
+_run_print_list() {
+    local root="$1" pm="$2" js_scripts="$3" just_recipes="$4" make_targets="$5" py_tool="$6"
+    printf 'project: %s\n' "$root"
+    [ -n "$pm" ]      && printf '  js package manager: %s\n' "$pm"
+    [ -n "$py_tool" ] && printf '  python env: %s run\n' "$py_tool"
+    if [ -n "$js_scripts" ]; then
+        printf '\nnpm scripts:\n';  printf '%s\n' "$js_scripts"   | sed 's/^/  run /'
+    fi
+    if [ -n "$just_recipes" ]; then
+        printf '\njust recipes:\n'; printf '%s\n' "$just_recipes" | sed 's/^/  run /'
+    fi
+    if [ -n "$make_targets" ]; then
+        printf '\nmake targets:\n'; printf '%s\n' "$make_targets" | sed 's/^/  run /'
+    fi
+    [ -z "${js_scripts}${just_recipes}${make_targets}" ] && \
+        printf '\n(no named scripts found - "run <cmd>" runs <cmd> inside the project env)\n'
+}
+
+# Print what `runjs` can discover in the current project.
+_runjs_print_list() {
+    local root="$1" pm="$2" js_scripts="$3"
+    printf 'project: %s\n  js package manager: %s\n' "$root" "$pm"
+    [ -n "$js_scripts" ] && { printf '\nnpm scripts:\n'; printf '%s\n' "$js_scripts" | sed 's/^/  runjs /'; }
+}
+
 run() {
     local root
     root=$(_run_find_root) || {
@@ -126,22 +152,17 @@ run() {
     just_recipes=$(_run_just_recipes "$root")
     py_tool=$(_run_py_tool "$root")
 
-    # No args: show what's runnable here.
+    # No args or --list: show what's runnable here.
     if [ "$#" -eq 0 ]; then
-        printf 'project: %s\n' "$root"
-        [ -n "$pm" ]      && printf '  js package manager: %s\n' "$pm"
-        [ -n "$py_tool" ] && printf '  python env: %s run\n' "$py_tool"
-        if [ -n "$js_scripts" ]; then
-            printf '\nnpm scripts:\n';  printf '%s\n' "$js_scripts"   | sed 's/^/  run /'
+        _run_print_list "$root" "$pm" "$js_scripts" "$just_recipes" "$make_targets" "$py_tool"
+        return 0
+    fi
+    if [ "$1" = "--list" ]; then
+        if [ "$#" -ne 1 ]; then
+            printf 'run: --list does not take additional arguments\n' >&2
+            return 2
         fi
-        if [ -n "$just_recipes" ]; then
-            printf '\njust recipes:\n'; printf '%s\n' "$just_recipes" | sed 's/^/  run /'
-        fi
-        if [ -n "$make_targets" ]; then
-            printf '\nmake targets:\n'; printf '%s\n' "$make_targets" | sed 's/^/  run /'
-        fi
-        [ -z "${js_scripts}${just_recipes}${make_targets}" ] && \
-            printf '\n(no named scripts found - "run <cmd>" runs <cmd> inside the project env)\n'
+        _run_print_list "$root" "$pm" "$js_scripts" "$just_recipes" "$make_targets" "$py_tool"
         return 0
     fi
 
@@ -187,8 +208,15 @@ runjs() {
     js_scripts=$(_run_js_scripts "$root")
 
     if [ "$#" -eq 0 ]; then
-        printf 'project: %s\n  js package manager: %s\n' "$root" "$pm"
-        [ -n "$js_scripts" ] && { printf '\nnpm scripts:\n'; printf '%s\n' "$js_scripts" | sed 's/^/  runjs /'; }
+        _runjs_print_list "$root" "$pm" "$js_scripts"
+        return 0
+    fi
+    if [ "$1" = "--list" ]; then
+        if [ "$#" -ne 1 ]; then
+            printf 'runjs: --list does not take additional arguments\n' >&2
+            return 2
+        fi
+        _runjs_print_list "$root" "$pm" "$js_scripts"
         return 0
     fi
 
