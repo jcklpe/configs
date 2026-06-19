@@ -112,8 +112,8 @@ target OS.
 `run` ([plugins/run/run.sh](plugins/run/run.sh)) finds the nearest project root and dispatches:
 named `package.json` scripts via the right package manager (`corepack pnpm`/`yarn`, `npm`,
 `bun`), `just` recipes, and `make` targets; anything else runs inside the detected Python
-env (`poetry`/`uv`/`pixi`/`pipenv run`) or via `<pm> exec`. `run` with no args lists what's
-runnable. `runjs` forces the JS package manager (for monorepos where JS and a Python env
+env (`poetry`/`uv`/`pixi`/`pipenv run`) or via `<pm> exec`. `run` with no args or `--list`
+lists what's runnable. `runjs` forces the JS package manager (for monorepos where JS and a Python env
 share a root). First-arg tab completion (npm scripts / just recipes / make targets) lives in
 `completion.zsh` and `completion.bash`. Keep new ecosystems detection-driven (lockfile /
 manifest), not hardcoded.
