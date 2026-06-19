@@ -1,6 +1,6 @@
 ##- zsh completion for `run` / `runjs`
-##- Completes the first argument with the project's npm scripts, just recipes,
-##- and make targets; falls back to file completion for later arguments.
+##- Completes the first argument with `--list` plus the project's npm scripts,
+##- just recipes, and make targets; falls back to file completion later.
 ##- Relies on the helper functions defined in run.sh (sourced before this file).
 
 # compdef needs the completion system initialized; do it if nobody else has.
@@ -20,9 +20,9 @@ _run_completion() {
 
     # `runjs` only knows about JS scripts; `run` knows all three kinds.
     if [ "${words[1]}" = "runjs" ]; then
-        cands=$(_run_js_scripts "$root" | grep -v '^[[:space:]]*$')
+        cands=$( { printf '%s\n' '--list'; _run_js_scripts "$root"; } | grep -v '^[[:space:]]*$' )
     else
-        cands=$( { _run_js_scripts "$root"; _run_just_recipes "$root"; _run_make_targets "$root"; } | grep -v '^[[:space:]]*$' )
+        cands=$( { printf '%s\n' '--list'; _run_js_scripts "$root"; _run_just_recipes "$root"; _run_make_targets "$root"; } | grep -v '^[[:space:]]*$' )
     fi
 
     local -a list
