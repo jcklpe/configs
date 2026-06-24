@@ -1,0 +1,7 @@
+{
+  "_comment": "Copy to people-aliases.json (gitignored) with real emails. Short names used with `--attendee` are resolved here BEFORE the Google People API. Keys are matched case-insensitively. Use this for the handful of people you invite often, where a bare first name would otherwise be ambiguous or unresolvable.",
+  "aliases": {
+    "lindsey": "lindsey@example.com",
+    "mom": "mom@example.com"
+  }
+}

@@ -20,7 +20,15 @@ from datetime import datetime, timedelta, timezone
 
 SCOPES = [
     "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-    "https://www.googleapis.com/auth/calendar.events.readonly",
+    # Read + write for events. Supersedes calendar.events.readonly so the
+    # agent can create and update events (including attendees) on the
+    # calendars allowlisted via LIFEOS_CALENDAR_WRITABLE_IDS.
+    "https://www.googleapis.com/auth/calendar.events",
+    # Resolve attendee names (e.g. "lindsey") to email addresses via the
+    # People API. contacts.readonly covers saved contacts;
+    # contacts.other.readonly covers people you've emailed but not saved.
+    "https://www.googleapis.com/auth/contacts.readonly",
+    "https://www.googleapis.com/auth/contacts.other.readonly",
 ]
 
 

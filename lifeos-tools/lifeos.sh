@@ -29,6 +29,11 @@ Usage:
   ./lifeos.sh calendar auth
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar sync [--qa | --output FILE]
+  ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--notify] [--execute]
+  ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--notify] [--execute]
+  ./lifeos.sh people resolve NAME [--json]
+  ./lifeos.sh people list-aliases
+  ./lifeos.sh people add-alias NAME EMAIL
   ./lifeos.sh google accounts
   ./lifeos.sh google auth ALIAS [--no-browser]
   ./lifeos.sh gmail sync ALIAS [--qa | --output FILE]
@@ -798,6 +803,26 @@ _calendar_get() {
         "$@"
 }
 
+_calendar_write() {
+    local method="$1" endpoint="$2" body="$3"
+    local token
+    shift 3
+    token="$(_calendar_access_token)" || return 1
+    curl -fsS -X "$method" "https://www.googleapis.com/calendar/v3${endpoint}" \
+        -H "Authorization: Bearer ${token}" \
+        -H "Content-Type: application/json; charset=utf-8" \
+        --data-binary "$body" \
+        "$@"
+}
+
+_people_helper() {
+    python3 "${SCRIPT_DIR}/google-people.py" "$@"
+}
+
+_calendar_write_helper() {
+    python3 "${SCRIPT_DIR}/google-calendar-write.py" "$@"
+}
+
 _urlencode() {
     jq -rn --arg value "$1" '$value | @uri'
 }
@@ -1337,6 +1362,184 @@ _calendar_ids() {
     fi
 }
 
+_calendar_writable_ids() {
+    if _var_is_set LIFEOS_CALENDAR_WRITABLE_IDS; then
+        printf '%s' "$LIFEOS_CALENDAR_WRITABLE_IDS"
+    else
+        printf 'primary'
+    fi
+}
+
+_calendar_is_writable() {
+    local target="$1" id
+    for id in $(printf '%s' "$(_calendar_writable_ids)" | tr ',' ' '); do
+        id="$(_trim "$id")"
+        [ -n "$id" ] || continue
+        [ "$id" = "$target" ] && return 0
+    done
+    return 1
+}
+
+_people_aliases_path() {
+    if _var_is_set LIFEOS_PEOPLE_ALIASES_PATH; then
+        _path_value LIFEOS_PEOPLE_ALIASES_PATH
+    else
+        printf '%s/people-aliases.json\n' "$SCRIPT_DIR"
+    fi
+}
+
+# Look up a short name in the local alias map (case-insensitive). Prints the
+# mapped email on a hit; non-zero with no output on a miss or missing file.
+_people_alias_lookup() {
+    local raw="$1" path lower email
+    path="$(_people_aliases_path)"
+    [ -f "$path" ] || return 1
+    lower="$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')"
+    email="$(jq -r --arg k "$lower" '
+        (.aliases // {}) | to_entries[]
+        | select((.key | ascii_downcase) == $k) | .value
+    ' "$path" 2>/dev/null | head -n 1)"
+    [ -n "$email" ] || return 1
+    printf '%s' "$email"
+}
+
+# Resolve an attendee token to an email. Resolution order:
+#   1. A value containing "@" is treated as a literal email.
+#   2. The local alias map (people-aliases.json) is checked next, so frequent
+#      invitees resolve deterministically regardless of Google Contacts.
+#   3. Otherwise it is looked up in Google contacts via the People API: 0 or >1
+#      matches is an error (caller must disambiguate), exactly 1 prints the email.
+_people_resolve_attendee() {
+    local raw="$1" token results count alias_email
+    case "$raw" in
+        *@*) printf '%s' "$raw"; return 0 ;;
+    esac
+    if alias_email="$(_people_alias_lookup "$raw")"; then
+        printf '%s' "$alias_email"
+        return 0
+    fi
+    token="$(_calendar_access_token)" || return 1
+    results="$(_people_helper resolve "$token" "$raw")" || return 1
+    count="$(printf '%s' "$results" | jq 'length')" || return 1
+    if [ "$count" -eq 0 ]; then
+        _err "No contact matched '$raw'. Pass a full email address instead."
+        return 1
+    fi
+    if [ "$count" -gt 1 ]; then
+        _err "Ambiguous contact '$raw'. Candidates:"
+        printf '%s' "$results" | jq -r '.[] | "  - " + .name + " <" + .email + ">"' >&2
+        _err "Re-run --attendee with the chosen email, or 'lifeos people add-alias $raw EMAIL' to remember it."
+        return 1
+    fi
+    printf '%s' "$results" | jq -r '.[0].email'
+}
+
+_people_aliases_ready() {
+    _check_command jq >/dev/null || { _err "jq is required"; return 1; }
+    return 0
+}
+
+# Preview how a name resolves, for interactive disambiguation. Prints the alias
+# or literal email when one applies, otherwise the People API candidate list.
+# With --json, always emits a JSON array so an agent can parse and choose.
+_people_resolve() {
+    local name="" json=0 token results count alias_email
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --json) json=1; shift ;;
+            -*) _err "Unknown people resolve option: $1"; return 1 ;;
+            *) if [ -z "$name" ]; then name="$1"; shift; else _err "Unexpected argument: $1"; return 1; fi ;;
+        esac
+    done
+    [ -n "$name" ] || { _err "people resolve requires NAME"; return 1; }
+    _people_aliases_ready || return 1
+
+    case "$name" in
+        *@*)
+            if [ "$json" -eq 1 ]; then
+                jq -cn --arg e "$name" '[{name:"(literal)",email:$e,source:"literal"}]'
+            else
+                _say "$name (literal email)"
+            fi
+            return 0
+            ;;
+    esac
+
+    if alias_email="$(_people_alias_lookup "$name")"; then
+        if [ "$json" -eq 1 ]; then
+            jq -cn --arg n "$name" --arg e "$alias_email" '[{name:$n,email:$e,source:"alias"}]'
+        else
+            _say "$name -> $alias_email (alias)"
+        fi
+        return 0
+    fi
+
+    _calendar_token_ready || return 1
+    token="$(_calendar_access_token)" || return 1
+    results="$(_people_helper resolve "$token" "$name")" || return 1
+    if [ "$json" -eq 1 ]; then
+        printf '%s\n' "$results"
+        return 0
+    fi
+    count="$(printf '%s' "$results" | jq 'length')" || return 1
+    if [ "$count" -eq 0 ]; then
+        _say "No contact matched '$name'."
+        return 0
+    fi
+    printf '%s' "$results" | jq -r '.[] | "  - " + .name + " <" + .email + ">"'
+}
+
+_people_list_aliases() {
+    local path
+    _people_aliases_ready || return 1
+    path="$(_people_aliases_path)"
+    if [ ! -f "$path" ]; then
+        _say "No alias file yet: $path"
+        _say "NEXT: cp ${SCRIPT_DIR}/people-aliases.example.json $path"
+        return 0
+    fi
+    jq -r '(.aliases // {}) | to_entries[] | "  " + .key + " -> " + .value' "$path"
+}
+
+_people_add_alias() {
+    local name="${1:-}" email="${2:-}" path tmp
+    [ -n "$name" ] || { _err "add-alias requires NAME"; return 1; }
+    [ -n "$email" ] || { _err "add-alias requires EMAIL"; return 1; }
+    case "$email" in *@*) ;; *) _err "EMAIL must look like an address: $email"; return 1 ;; esac
+    _people_aliases_ready || return 1
+    path="$(_people_aliases_path)"
+    if [ ! -f "$path" ]; then
+        printf '{\n  "aliases": {}\n}\n' > "$path" || { _err "Could not create alias file: $path"; return 1; }
+        chmod 600 "$path" 2>/dev/null || true
+    fi
+    tmp="$(mktemp "${TMPDIR:-/tmp}/lifeos-aliases.XXXXXX")" || return 1
+    if jq --arg k "$name" --arg v "$email" '.aliases = ((.aliases // {}) + {($k): $v})' "$path" > "$tmp"; then
+        mv "$tmp" "$path"
+        _say "Saved alias: $name -> $email ($path)"
+    else
+        rm -f "$tmp"
+        _err "Failed to update alias file: $path"
+        return 1
+    fi
+}
+
+# Default time zone for timed events: explicit override wins, else the target
+# calendar's own time zone, else the system zone.
+_calendar_default_tz() {
+    local calendar_id="$1" encoded tz
+    encoded="$(_urlencode "$calendar_id")" || return 1
+    tz="$(_calendar_get "/calendars/${encoded}" --data-urlencode "fields=timeZone" 2>/dev/null | jq -r '.timeZone // empty')"
+    if [ -n "$tz" ]; then
+        printf '%s' "$tz"
+        return 0
+    fi
+    if [ -f /etc/timezone ]; then
+        _trim "$(cat /etc/timezone)"
+        return 0
+    fi
+    printf 'UTC'
+}
+
 _calendar_list_calendars() {
     _calendar_token_ready || return 1
     _calendar_get "/users/me/calendarList" \
@@ -1468,6 +1671,260 @@ _calendar_sync() {
 
     mv "$tmp_out" "$out"
     _say "Updated $out"
+}
+
+# Shared attendee resolution: turns the raw --attendee tokens (names or emails)
+# into resolved emails, populating two parallel arrays by name convention:
+#   _RESOLVED_EMAILS  – emails to send to the API
+#   _RESOLVED_DISPLAY – "raw -> email" lines for the dry-run plan
+_calendar_resolve_attendees() {
+    local raw email
+    _RESOLVED_EMAILS=()
+    _RESOLVED_DISPLAY=()
+    for raw in "$@"; do
+        email="$(_people_resolve_attendee "$raw")" || return 1
+        _RESOLVED_EMAILS+=("$email")
+        if [ "$raw" = "$email" ]; then
+            _RESOLVED_DISPLAY+=("$email")
+        else
+            _RESOLVED_DISPLAY+=("$raw -> $email")
+        fi
+    done
+    return 0
+}
+
+_calendar_create_event() {
+    local calendar_id="primary" title="" start="" end="" tz="" location="" desc="" desc_file=""
+    local notify=0 execute=0 encoded body send_updates created
+    local attendees_raw=() build_args=() recurrence_rules=()
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --title) [ -n "${2:-}" ] || { _err "--title requires TEXT"; return 1; }; title="$2"; shift 2 ;;
+            --calendar) [ -n "${2:-}" ] || { _err "--calendar requires CALENDAR_ID"; return 1; }; calendar_id="$2"; shift 2 ;;
+            --start) [ -n "${2:-}" ] || { _err "--start requires DATE or DATETIME"; return 1; }; start="$2"; shift 2 ;;
+            --end) [ -n "${2:-}" ] || { _err "--end requires DATE or DATETIME"; return 1; }; end="$2"; shift 2 ;;
+            --tz) [ -n "${2:-}" ] || { _err "--tz requires ZONE"; return 1; }; tz="$2"; shift 2 ;;
+            --location) [ -n "${2+x}" ] || { _err "--location requires TEXT"; return 1; }; location="$2"; shift 2 ;;
+            --desc) [ -n "${2+x}" ] || { _err "--desc requires TEXT"; return 1; }; desc="$2"; shift 2 ;;
+            --desc-file) [ -n "${2:-}" ] || { _err "--desc-file requires FILE"; return 1; }; desc_file="$2"; shift 2 ;;
+            --attendee) [ -n "${2:-}" ] || { _err "--attendee requires NAME or EMAIL"; return 1; }; attendees_raw+=("$2"); shift 2 ;;
+            --recurrence) [ -n "${2:-}" ] || { _err "--recurrence requires an RRULE line"; return 1; }; recurrence_rules+=("$2"); shift 2 ;;
+            --notify) notify=1; shift ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown calendar create-event option: $1"; return 1 ;;
+        esac
+    done
+
+    _calendar_token_ready || return 1
+    [ -n "$title" ] || { _err "create-event requires --title"; return 1; }
+    [ -n "$start" ] || { _err "create-event requires --start"; return 1; }
+    if ! _calendar_is_writable "$calendar_id"; then
+        _err "Calendar '$calendar_id' is not writable. Allowed: $(_calendar_writable_ids)"
+        _say "NEXT: add it to LIFEOS_CALENDAR_WRITABLE_IDS in .env if you intend to write there."
+        return 1
+    fi
+    if [ -n "$desc_file" ]; then
+        [ -f "$desc_file" ] || { _err "Description file does not exist: $desc_file"; return 1; }
+        desc="$(cat "$desc_file")"
+    fi
+
+    # Timed events (start contains a time component) need a time zone.
+    case "$start" in
+        *T*) [ -n "$tz" ] || tz="$(_calendar_default_tz "$calendar_id")" || return 1 ;;
+    esac
+
+    if [ "${#attendees_raw[@]}" -gt 0 ]; then
+        _calendar_resolve_attendees "${attendees_raw[@]}" || return 1
+    else
+        _RESOLVED_EMAILS=()
+        _RESOLVED_DISPLAY=()
+    fi
+
+    build_args=(build-event --title "$title" --start "$start")
+    [ -n "$end" ] && build_args+=(--end "$end")
+    [ -n "$tz" ] && build_args+=(--tz "$tz")
+    [ -n "$location" ] && build_args+=(--location "$location")
+    [ -n "$desc" ] && build_args+=(--description "$desc")
+    local email rule
+    for email in "${_RESOLVED_EMAILS[@]}"; do
+        build_args+=(--attendee "$email")
+    done
+    for rule in "${recurrence_rules[@]}"; do
+        build_args+=(--recurrence "$rule")
+    done
+
+    body="$(_calendar_write_helper "${build_args[@]}")" || return 1
+
+    if [ "$notify" -eq 1 ]; then send_updates="all"; else send_updates="none"; fi
+
+    _say "Calendar event create plan:"
+    _say "Calendar: $calendar_id"
+    _say "Title: $title"
+    _say "Start: $start"
+    _say "End: ${end:-<default>}"
+    [ -n "$tz" ] && _say "Time zone: $tz"
+    _say "Location: ${location:-<none>}"
+    if [ "${#recurrence_rules[@]}" -gt 0 ]; then
+        _say "Recurrence: ${recurrence_rules[*]}"
+    fi
+    if [ "${#_RESOLVED_DISPLAY[@]}" -gt 0 ]; then
+        _say "Attendees: ${_RESOLVED_DISPLAY[*]}"
+    else
+        _say "Attendees: <none>"
+    fi
+    _say "Notify attendees: $([ "$notify" -eq 1 ] && echo "YES (email invites)" || echo "no")"
+
+    if [ "$execute" -ne 1 ]; then
+        _say "DRY RUN: no event was created. Re-run with --execute to create it."
+        return 0
+    fi
+
+    encoded="$(_urlencode "$calendar_id")" || return 1
+    created="$(_calendar_write POST "/calendars/${encoded}/events?sendUpdates=${send_updates}" "$body")" || return 1
+    _say "Created event: $(printf '%s' "$created" | jq -r '.htmlLink // .id // "(unknown)"')"
+}
+
+_calendar_update_event() {
+    local calendar_id="primary" event_id="" title="" start="" end="" tz="" location="" desc="" desc_file=""
+    local notify=0 execute=0 replace_attendees=0 set_title=0 set_location=0 set_desc=0 scope_series=0
+    local encoded event_encoded target_id target_encoded body send_updates current scope_label updated
+    local attendees_raw=() build_args=() final_emails=() recurrence_rules=()
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --event) [ -n "${2:-}" ] || { _err "--event requires EVENT_ID"; return 1; }; event_id="$2"; shift 2 ;;
+            --calendar) [ -n "${2:-}" ] || { _err "--calendar requires CALENDAR_ID"; return 1; }; calendar_id="$2"; shift 2 ;;
+            --title) [ -n "${2:-}" ] || { _err "--title requires TEXT"; return 1; }; title="$2"; set_title=1; shift 2 ;;
+            --start) [ -n "${2:-}" ] || { _err "--start requires DATE or DATETIME"; return 1; }; start="$2"; shift 2 ;;
+            --end) [ -n "${2:-}" ] || { _err "--end requires DATE or DATETIME"; return 1; }; end="$2"; shift 2 ;;
+            --tz) [ -n "${2:-}" ] || { _err "--tz requires ZONE"; return 1; }; tz="$2"; shift 2 ;;
+            --location) [ -n "${2+x}" ] || { _err "--location requires TEXT"; return 1; }; location="$2"; set_location=1; shift 2 ;;
+            --desc) [ -n "${2+x}" ] || { _err "--desc requires TEXT"; return 1; }; desc="$2"; set_desc=1; shift 2 ;;
+            --desc-file) [ -n "${2:-}" ] || { _err "--desc-file requires FILE"; return 1; }; desc_file="$2"; set_desc=1; shift 2 ;;
+            --attendee) [ -n "${2:-}" ] || { _err "--attendee requires NAME or EMAIL"; return 1; }; attendees_raw+=("$2"); shift 2 ;;
+            --recurrence) [ -n "${2:-}" ] || { _err "--recurrence requires an RRULE line"; return 1; }; recurrence_rules+=("$2"); shift 2 ;;
+            --replace-attendees) replace_attendees=1; shift ;;
+            --series) scope_series=1; shift ;;
+            --instance) scope_series=0; shift ;;
+            --notify) notify=1; shift ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown calendar update-event option: $1"; return 1 ;;
+        esac
+    done
+
+    _calendar_token_ready || return 1
+    [ -n "$event_id" ] || { _err "update-event requires --event"; return 1; }
+    if ! _calendar_is_writable "$calendar_id"; then
+        _err "Calendar '$calendar_id' is not writable. Allowed: $(_calendar_writable_ids)"
+        return 1
+    fi
+    if [ "${#recurrence_rules[@]}" -gt 0 ] && [ "$scope_series" -ne 1 ]; then
+        _err "--recurrence changes the recurrence rule, which only applies to the series. Re-run with --series."
+        return 1
+    fi
+    if [ -n "$desc_file" ]; then
+        [ -f "$desc_file" ] || { _err "Description file does not exist: $desc_file"; return 1; }
+        desc="$(cat "$desc_file")"
+    fi
+
+    encoded="$(_urlencode "$calendar_id")" || return 1
+    event_encoded="$(_urlencode "$event_id")" || return 1
+    current="$(_calendar_get "/calendars/${encoded}/events/${event_encoded}")" || {
+        _err "Could not fetch event '$event_id' on calendar '$calendar_id'."
+        return 1
+    }
+
+    # Default target is the event ID as passed (a single instance for recurring
+    # events). --series retargets the parent series master so the edit applies to
+    # every occurrence; re-fetch it so the plan and attendee merge use its state.
+    if [ "$scope_series" -eq 1 ]; then
+        target_id="$(printf '%s' "$current" | jq -r '.recurringEventId // .id')"
+        target_encoded="$(_urlencode "$target_id")" || return 1
+        if [ "$target_id" != "$event_id" ]; then
+            current="$(_calendar_get "/calendars/${encoded}/events/${target_encoded}")" || {
+                _err "Could not fetch series master '$target_id'."
+                return 1
+            }
+        fi
+        scope_label="entire series ($target_id)"
+    else
+        target_id="$event_id"
+        target_encoded="$event_encoded"
+        if printf '%s' "$current" | jq -e '.recurringEventId' >/dev/null 2>&1; then
+            scope_label="single occurrence (pass --series to edit all)"
+        else
+            scope_label="single event"
+        fi
+    fi
+
+    case "$start" in
+        *T*) [ -n "$tz" ] || tz="$(_calendar_default_tz "$calendar_id")" || return 1 ;;
+    esac
+
+    # Attendee handling: PATCH replaces the whole attendees array, so to ADD we
+    # merge the existing list with the new one unless --replace-attendees is set.
+    if [ "${#attendees_raw[@]}" -gt 0 ] || [ "$replace_attendees" -eq 1 ]; then
+        if [ "${#attendees_raw[@]}" -gt 0 ]; then
+            _calendar_resolve_attendees "${attendees_raw[@]}" || return 1
+        else
+            _RESOLVED_EMAILS=()
+            _RESOLVED_DISPLAY=()
+        fi
+        if [ "$replace_attendees" -eq 1 ]; then
+            final_emails=("${_RESOLVED_EMAILS[@]}")
+        else
+            local existing
+            while IFS= read -r existing || [ -n "$existing" ]; do
+                [ -n "$existing" ] || continue
+                final_emails+=("$existing")
+            done <<EOF
+$(printf '%s' "$current" | jq -r '(.attendees // [])[] | .email // empty')
+EOF
+            final_emails+=("${_RESOLVED_EMAILS[@]}")
+        fi
+    fi
+
+    build_args=(build-event)
+    [ "$set_title" -eq 1 ] && build_args+=(--title "$title")
+    [ -n "$start" ] && build_args+=(--start "$start")
+    [ -n "$end" ] && build_args+=(--end "$end")
+    [ -n "$tz" ] && build_args+=(--tz "$tz")
+    [ "$set_location" -eq 1 ] && build_args+=(--location "$location")
+    [ "$set_desc" -eq 1 ] && build_args+=(--description "$desc")
+    local email rule
+    for email in "${final_emails[@]}"; do
+        build_args+=(--attendee "$email")
+    done
+    for rule in "${recurrence_rules[@]}"; do
+        build_args+=(--recurrence "$rule")
+    done
+
+    body="$(_calendar_write_helper "${build_args[@]}")" || return 1
+
+    if [ "$notify" -eq 1 ]; then send_updates="all"; else send_updates="none"; fi
+
+    _say "Calendar event update plan:"
+    _say "Calendar: $calendar_id"
+    _say "Event: $event_id"
+    _say "Scope: $scope_label"
+    _say "Current title: $(printf '%s' "$current" | jq -r '.summary // "(none)"')"
+    _say "Changes:"
+    printf '%s' "$body" | jq .
+    if [ "${#final_emails[@]}" -gt 0 ]; then
+        _say "Final attendees: ${final_emails[*]}"
+    fi
+    _say "Notify attendees: $([ "$notify" -eq 1 ] && echo "YES (email invites)" || echo "no")"
+
+    if [ "$execute" -ne 1 ]; then
+        _say "DRY RUN: no event was updated. Re-run with --execute to apply."
+        return 0
+    fi
+
+    updated="$(_calendar_write PATCH "/calendars/${encoded}/events/${target_encoded}?sendUpdates=${send_updates}" "$body")" || return 1
+    _say "Updated event: $(printf '%s' "$updated" | jq -r '.htmlLink // .id // "(unknown)"')"
 }
 
 
@@ -1759,6 +2216,8 @@ case "${1:-help}" in
             auth) shift 2; _calendar_auth "$@" ;;
             list-calendars) shift 2; _calendar_list_calendars "$@" ;;
             sync) shift 2; _calendar_sync "$@" ;;
+            create-event) shift 2; _calendar_create_event "$@" ;;
+            update-event) shift 2; _calendar_update_event "$@" ;;
             *) _err "Unknown Calendar command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
@@ -1767,6 +2226,14 @@ case "${1:-help}" in
             accounts) shift 2; _google_accounts_list "$@" ;;
             auth) shift 2; _google_auth "$@" ;;
             *) _err "Unknown Google command: ${2:-}"; _usage; exit 1 ;;
+        esac
+        ;;
+    people)
+        case "${2:-}" in
+            resolve) shift 2; _people_resolve "$@" ;;
+            list-aliases) shift 2; _people_list_aliases "$@" ;;
+            add-alias) shift 2; _people_add_alias "$@" ;;
+            *) _err "Unknown People command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
     gmail)
