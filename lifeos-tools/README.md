@@ -59,6 +59,11 @@ lifeos calendar auth
 lifeos calendar list-calendars
 lifeos calendar sync
 lifeos calendar sync --qa
+lifeos calendar create-event --title "Dinner" --start 2026-06-25T18:00 --attendee lindsey --execute
+lifeos calendar update-event --event EVENT_ID --location "New venue" --execute
+lifeos calendar update-event --event EVENT_ID --series --location "New venue" --execute
+lifeos people resolve lindsey --json
+lifeos people add-alias lindsey lindsey@example.com
 lifeos google accounts
 lifeos google auth personal
 lifeos gmail sync personal --qa
@@ -127,7 +132,9 @@ Options:
 
 After a successful create, the command refreshes `sources/open-austin-org/` unless `--no-sync` is passed.
 
-Google Calendar auth/list/sync is implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them.
+Google Calendar auth/list/sync plus event create/update is implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them. The calendar token carries the `calendar.events` (read+write) and Contacts read scopes; re-run `lifeos calendar auth` after pulling this change to re-consent, and enable the People API for the same Google project so attendee-name lookups work.
+
+`lifeos calendar create-event` and `update-event` are **dry-run by default** and only write with `--execute`. Writes are restricted to the calendars in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`); there is no delete. Attendees are not emailed unless `--notify` is passed (`sendUpdates=none` by default). `--attendee VALUE` resolves in order: a literal `email@host`, then the local `people-aliases.json` map (case-insensitive short names for frequent invitees), then Google Contacts via the People API; ambiguous or unmatched People API names fail with candidates rather than guessing. Copy `people-aliases.example.json` to the ignored `people-aliases.json` to set up aliases like `lindsey`. `update-event` merges new attendees into the existing list unless `--replace-attendees` is given, and edits only the single occurrence of a recurring event unless `--series` is passed (which retargets the series master). Create recurring events with repeatable `--recurrence "RRULE:..."`. When an attendee name is ambiguous or unmatched, the write stops with candidates; `lifeos people resolve NAME --json` lists them and `lifeos people add-alias NAME EMAIL` records a pick in the gitignored `people-aliases.json`. See `AGENT.md` for the full safety model.
 
 Calendar sync uses comma-separated `GOOGLE_CALENDAR_IDS`, with `primary` as the default. `lifeos calendar sync` writes a combined date-grouped agenda to `$LIFEOS_VAULT_PATH/sources/calendar.md`; `lifeos calendar sync --qa` writes an ignored local snapshot to `lifeos-tools/calendar-qa.md`.
 

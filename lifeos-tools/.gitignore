@@ -7,6 +7,8 @@
 !*credentials*.example.json
 google-accounts.json
 google-accounts.local.json
+people-aliases.json
+!people-aliases.example.json
 cache/
 tmp/
 *.log

@@ -167,13 +167,47 @@ lifeos calendar list-calendars
 lifeos calendar sync
 ```
 
-Calendar sync is read-only. It uses comma-separated `GOOGLE_CALENDAR_IDS` from `~/configs/lifeos-tools/.env`, with `primary` as the default. Run `list-calendars` to inspect available calendar IDs before expanding the configured set.
+`calendar sync` is read-only. It uses comma-separated `GOOGLE_CALENDAR_IDS` from `~/configs/lifeos-tools/.env`, with `primary` as the default. Run `list-calendars` to inspect available calendar IDs before expanding the configured set.
 
 The snapshot uses `## Combined Agenda` as one date-grouped agenda across all synced calendars. Every event line includes `calendar: <calendar name>` so agents can tell which calendar produced the event. Event locations appear inline as `location: ...`. Descriptions are cleaned and bounded so long imported event text does not dominate the snapshot.
 
 Calendars listed in `LIFEOS_CALENDAR_NO_DESCRIPTION` (in `.env`) have their event descriptions omitted as noise; all other calendars keep theirs. Matching is against the calendar summary, case-insensitive. An event that also appears on a non-listed (high-signal) calendar keeps its description.
 
 Multi-day all-day events appear under every blocked date. Continuation lines include the covered date range and the exclusive Google Calendar end date so availability checks are safe. Timed events crossing midnight also appear under every affected date.
+
+## Google Calendar Writes
+
+```sh
+lifeos calendar create-event --title "Dinner with Lindsey" --start 2026-06-25T18:00 --attendee lindsey
+lifeos calendar create-event --title "Trip" --start 2026-07-01 --execute
+lifeos calendar update-event --event EVENT_ID --location "New place" --attendee mom --execute
+```
+
+Writes are **dry-run by default**: the command prints the full plan and changes nothing. It only writes with `--execute`. Before using `--execute`, the user should have approved the exact title, time, calendar, attendees, and whether to notify.
+
+Safety model, all enforced by the tool:
+
+- **Allowlisted calendars only.** Writes are rejected unless the target `--calendar` is in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`). Reads still see every calendar; writes cannot touch shared/work/partner calendars. There is no `delete-event`.
+- **Attendee invites do not email anyone by default.** `sendUpdates=none` unless `--notify` is passed. Only pass `--notify` when the user explicitly wants real people emailed. This is the real blast radius — adding an attendee with `--notify` sends a live calendar invite.
+- **Name resolution order.** `--attendee VALUE` resolves as: (1) a value containing `@` is a literal email; (2) otherwise the local alias map `people-aliases.json` (case-insensitive) is checked — this is where frequent invitees like `lindsey` live, because common first names are ambiguous or unresolvable in Google Contacts; (3) otherwise Google Contacts (People API). Ambiguous People API matches (more than one contact) and no-match names both fail with the candidate list; they never guess who gets invited. Always confirm the resolved name → email shown in the dry-run plan before `--execute`.
+- **update-event merges attendees by default** (adds to the existing list). Pass `--replace-attendees` to replace the whole list instead.
+- **Recurring edits default to the single occurrence.** `update-event --event INSTANCE_ID` edits only that one occurrence. Pass `--series` to edit every occurrence (the tool resolves the instance to its series master). The plan's `Scope:` line states which one. Create recurring events with `create-event ... --recurrence "RRULE:FREQ=WEEKLY;BYDAY=MO"` (repeatable). `--recurrence` on update requires `--series`.
+
+Times: `--start`/`--end` as `YYYY-MM-DD` makes an all-day event; `YYYY-MM-DDTHH:MM` makes a timed event. Timed events default their zone to the target calendar's time zone unless `--tz` is given. Missing `--end` defaults to +1 day (all-day, exclusive) or +1 hour (timed).
+
+After a write, run `lifeos calendar sync` to refresh the LifeOS snapshot.
+
+### Disambiguating an attendee
+
+When `--attendee NAME` is ambiguous (several contacts) or has no match, the write command stops and lists candidates rather than guessing. Do not silently drop the attendee or pick one yourself. Instead:
+
+```sh
+lifeos people resolve NAME --json   # candidates as [{name,email}], for you to present
+lifeos people add-alias NAME EMAIL  # remember the chosen person for next time
+lifeos people list-aliases          # show the current alias map
+```
+
+Flow: run `people resolve NAME --json`, show the candidates to the user, let them pick, then re-run the create/update with the chosen email (or the alias once saved). Offer to `add-alias` so the same bare name resolves directly afterward. Aliases live in the gitignored `people-aliases.json`; a value with `@` always skips lookup.
 
 ## Availability Questions
 
@@ -212,6 +246,6 @@ Drive commands are on-demand reads. Do not clone Drive into LifeOS, recursively 
 - Do not print or inspect Google token files or `google-accounts.json`.
 - Do not hard-delete Trello cards.
 - Description replacement overwrites the full Trello description. Prefer comments for additive notes.
-- Trello write commands do not yet have dry-run or before/after output. Open Austin org issue creation is dry-run by default and requires `--execute`.
-- Do not add Google Calendar write commands.
+- Trello write commands do not yet have dry-run or before/after output. Open Austin org issue creation and Google Calendar event writes are dry-run by default and require `--execute`.
+- Google Calendar event writes (`create-event` / `update-event`) are allowed but constrained: allowlisted calendars only, no delete, and no attendee email-out unless `--notify` is passed. See "Google Calendar Writes" above.
 - Do not add Gmail or Drive write commands.
