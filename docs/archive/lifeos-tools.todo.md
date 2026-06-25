@@ -1,6 +1,6 @@
 # LifeOS Tools To-Do
 
-Status: archived. Future enhancement threads have been moved to `docs/scratch/lifeos-tools-v2.md`.
+Status: archived. Future enhancement threads have been moved to `docs/lifeos-tools-v2.md`.
 
 Conceptual doc: `docs/archive/lifeos-tools.md`.
 
@@ -64,7 +64,7 @@ lifeos-tools/google-credentials.json
 
 ## Future / Not Blocking
 
-Future enhancement threads are preserved in `docs/scratch/lifeos-tools-v2.md` and `docs/scratch/lifeos-tools-v2.todo.md`.
+Future enhancement threads are preserved in `docs/lifeos-tools-v2.md` and `docs/lifeos-tools-v2.todo.md`.
 
 ## Calendar Implementation Prep
 

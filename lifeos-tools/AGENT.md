@@ -153,6 +153,30 @@ Add a comment:
 lifeos trello comment --card CARD_ID_OR_URL --text "Comment text"
 ```
 
+Supersede a card (task chains): when a card hits a gate — a wait on an external party, a future
+date, a handoff, or a substantial prerequisite — do not keep mutating it. Create a successor and
+link them. `supersede` writes the bidirectional link atomically (a `🔗 Continues in:` comment on
+the predecessor and a `🔗 Continues from:` comment on the successor), so the link can't be left
+half-applied:
+
+```sh
+# link two existing cards
+lifeos trello supersede --from PRED_CARD_ID_OR_URL --to SUCC_CARD_ID_OR_URL [--board BOARD_ID]
+# create the successor and link it in one step
+lifeos trello supersede --create --from PRED_CARD_ID_OR_URL --list "On Deck" --name "Next leg" [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
+```
+
+Re-running is idempotent (only the missing link is added). If it prints `PARTIAL:`, the back-link
+landed but the forward-link did not — re-run the same command to complete it. `supersede` does
+**not** move the predecessor; use `move-card` separately if you want it in a Done list. Deciding
+*when* to split a card at a gate is your judgment, not the tool's.
+
+Print a chain from any member card (follow links forward and back):
+
+```sh
+lifeos trello chain --card ANY_CARD_ID_OR_URL [--json]
+```
+
 After any write:
 
 ```sh
@@ -245,7 +269,7 @@ Drive commands are on-demand reads. Do not clone Drive into LifeOS, recursively 
 - Do not print or inspect `~/configs/lifeos-tools/.env`.
 - Do not print or inspect Google token files or `google-accounts.json`.
 - Do not hard-delete Trello cards.
-- Description replacement overwrites the full Trello description. Prefer comments for additive notes.
-- Trello write commands do not yet have dry-run or before/after output. Open Austin org issue creation and Google Calendar event writes are dry-run by default and require `--execute`.
+- Description replacement overwrites the full Trello description. Prefer comments for additive notes. Task-chain links (`supersede`) are stored as comments for this reason.
+- Trello write commands do not yet have dry-run or before/after output, including `supersede`. Open Austin org issue creation and Google Calendar event writes are dry-run by default and require `--execute`.
 - Google Calendar event writes (`create-event` / `update-event`) are allowed but constrained: allowlisted calendars only, no delete, and no attendee email-out unless `--notify` is passed. See "Google Calendar Writes" above.
 - Do not add Gmail or Drive write commands.
