@@ -4,21 +4,21 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 
-- None.
+- LifeOS Tools v2 — open spike, parking lot for remaining v2 ideas. `docs/lifeos-tools-v2.md`, `docs/lifeos-tools-v2.todo.md`. (Task Chains / `supersede` theme is shipped — see Recently Shipped. Other v2 ideas stay parked.)
 
 ## Scratch / Future
 
-- LifeOS tools v2 ideas: `docs/scratch/lifeos-tools-v2.md`, `docs/scratch/lifeos-tools-v2.todo.md`
 - LifeOS Bitwarden cleanup (parked): `docs/scratch/lifeos-bitwarden.md`, `docs/scratch/lifeos-bitwarden.todo.md`
 
 ## Recently Shipped
 
+- LifeOS Trello Task Chains: `trello supersede` (`--from`/`--to` and `--create`) writes the bidirectional predecessor↔successor link atomically as `🔗 Continues in:` / `🔗 Continues from:` comments (successor-first, idempotent, loud `PARTIAL:` on second-write failure); `trello chain` walks and prints a chain from any card. Live smoke test via the LifeOS agent on 2026-06-25. Notes in `docs/lifeos-tools-v2.md`.
 - LifeOS Google Calendar writes: `calendar create-event` / `update-event` (dry-run by default, writable-calendar allowlist, no delete), attendee invites with layered name resolution (alias map → People API) and a `people` command group, single-occurrence-vs-`--series` edits. Recorded in `docs/decisions/0002-lifeos-calendar-writes.md`. First live `--execute` write was a real vault-agent task (no separate smoke test run).
 
 ## Next
 
 - Decide when a `docs/runbooks/` folder is useful enough to create.
-- Decide whether any remaining `docs/scratch/lifeos-tools-v2.md` theme (Trello write-safety pass, Drive read expansion, read-only `calendar find`, setup helper, agent wrapper) should become an active spike. Calendar writes are now done.
+- Decide which remaining `docs/lifeos-tools-v2.md` theme (Trello write-safety pass, Drive read expansion, read-only `calendar find`, setup helper, agent wrapper) becomes the next active theme. Calendar writes and Task Chains / `supersede` are both shipped.
 
 ## Waiting For Human QA
 

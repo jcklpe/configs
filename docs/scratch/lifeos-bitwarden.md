@@ -117,7 +117,7 @@ redundant.
 ## Relationship To Other Work
 
 - Extends the LifeOS tooling theme; v1 history is in `docs/archive/lifeos-tools.md` and the
-  v2 parking lot `docs/scratch/lifeos-tools-v2.md` (which already says: CLI is the durable
+  v2 parking lot `docs/lifeos-tools-v2.md` (which already says: CLI is the durable
   boundary, MCP may wrap behavior later, writes need previews and no hard delete — this spike
   honors all three).
 - Bound by `docs/decisions/0001-secrets-and-local-env.md` for secret handling.

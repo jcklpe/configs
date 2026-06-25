@@ -26,6 +26,9 @@ Usage:
   ./lifeos.sh trello rename-card --card CARD_ID_OR_URL --name NAME
   ./lifeos.sh trello set-desc --card CARD_ID_OR_URL --file FILE
   ./lifeos.sh trello comment --card CARD_ID_OR_URL (--text TEXT | --file FILE)
+  ./lifeos.sh trello supersede --from CARD_ID_OR_URL --to CARD_ID_OR_URL [--board BOARD_ID]
+  ./lifeos.sh trello supersede --create --from CARD_ID_OR_URL --list LIST --name NAME [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
+  ./lifeos.sh trello chain --card CARD_ID_OR_URL [--json]
   ./lifeos.sh calendar auth
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar sync [--qa | --output FILE]
@@ -598,6 +601,195 @@ _trello_comment() {
     _trello_write POST "/cards/${card}/actions/comments" \
         --data-urlencode "text=${text}" |
         jq -r '"Added comment at " + (.date // "unknown date")'
+}
+
+##- Task chains: supersede (link predecessor <-> successor) and chain traversal.
+##- Links live in labeled comments ("Continues in:" / "Continues from:"); see
+##- docs/lifeos-tools-v2.md "Active Theme: Trello Task Chains".
+
+# Most-recent comment text on a card whose text contains the given label, or empty.
+_trello_link_comment() {
+    local card="$1" label="$2"
+    _trello_get "/cards/${card}/actions" \
+        --data-urlencode "filter=commentCard" \
+        --data-urlencode "limit=1000" 2>/dev/null |
+        jq -r --arg label "$label" '
+            [ .[] | select((.data.text // "") | contains($label)) ]
+            | sort_by(.date) | reverse | (.[0].data.text // "")'
+}
+
+# Card id referenced by the most-recent labeled link comment on a card, or empty.
+_trello_link_target() {
+    local card="$1" label="$2" text rest
+    text="$(_trello_link_comment "$card" "$label")" || return 1
+    [ -n "$text" ] || return 0
+    rest="${text#*"$label"}"
+    rest="$(_trim "$rest")"
+    [ -n "$rest" ] || return 0
+    _card_ref "$rest"
+}
+
+# Append a link comment unless an equivalent one already targets the counterpart.
+# Args: card_id label target_id target_url
+_trello_write_link() {
+    local card="$1" label="$2" target_id="$3" target_url="$4" existing
+    existing="$(_trello_link_comment "$card" "$label")"
+    if [ -n "$existing" ] && printf '%s' "$existing" | grep -qF "$target_id"; then
+        _say "  link already present on ${card}: ${label} ${target_url} (skipped)"
+        return 0
+    fi
+    _trello_write POST "/cards/${card}/actions/comments" \
+        --data-urlencode "text=🔗 ${label} ${target_url}" >/dev/null
+}
+
+_trello_supersede() {
+    local from="" to="" do_create="" board="" list_ref="" name="" desc="" desc_file=""
+    local from_json from_url to_json to_url created list_id
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --from) from="$(_card_ref "$2")"; shift 2 ;;
+            --to) to="$(_card_ref "$2")"; shift 2 ;;
+            --create) do_create=1; shift ;;
+            --board) board="$2"; shift 2 ;;
+            --list) list_ref="$2"; shift 2 ;;
+            --name) name="$2"; shift 2 ;;
+            --desc) desc="$2"; shift 2 ;;
+            --desc-file) desc_file="$2"; shift 2 ;;
+            *) _err "Unknown supersede option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$from" ] || { _err "supersede requires --from"; return 1; }
+
+    if [ -n "$do_create" ]; then
+        [ -z "$to" ] || { _err "--create builds the successor; do not also pass --to"; return 1; }
+        [ -n "$list_ref" ] || { _err "supersede --create requires --list"; return 1; }
+        [ -n "$name" ] || { _err "supersede --create requires --name"; return 1; }
+        if [ -n "$desc" ] && [ -n "$desc_file" ]; then
+            _err "Use either --desc or --desc-file, not both"; return 1
+        fi
+        if [ -n "$desc_file" ]; then
+            desc="$(_read_file "$desc_file")" || return 1
+        fi
+    else
+        [ -n "$to" ] || { _err "supersede requires --to (or use --create to make the successor)"; return 1; }
+        if [ -n "$list_ref" ] || [ -n "$name" ] || [ -n "$desc" ] || [ -n "$desc_file" ]; then
+            _err "--list/--name/--desc/--desc-file only apply with --create"; return 1
+        fi
+    fi
+
+    # Pre-flight the predecessor before any write, so a typo'd ref fails clean.
+    from_json="$(_trello_get "/cards/${from}" --data-urlencode "fields=name,url")" \
+        || { _err "Could not read --from card '${from}' (check the id/url and read token)"; return 1; }
+    from_url="$(printf '%s' "$from_json" | jq -r '.url // empty')"
+    [ -n "$from_url" ] || { _err "--from card '${from}' not found"; return 1; }
+
+    if [ -n "$do_create" ]; then
+        list_id="$(_trello_resolve_list_id "$board" "$list_ref")" || return 1
+        created="$(_trello_write POST "/cards" \
+            --data-urlencode "idList=${list_id}" \
+            --data-urlencode "name=${name}" \
+            --data-urlencode "desc=${desc}")" \
+            || { _err "Failed to create successor card; nothing linked"; return 1; }
+        to="$(printf '%s' "$created" | jq -r '.id // empty')"
+        to_url="$(printf '%s' "$created" | jq -r '.url // empty')"
+        [ -n "$to" ] || { _err "Successor created but response had no id; aborting link"; return 1; }
+        _say "Created successor: $(printf '%s' "$created" | jq -r '.name // "Untitled card"') | ${to_url}"
+    else
+        to_json="$(_trello_get "/cards/${to}" --data-urlencode "fields=name,url")" \
+            || { _err "Could not read --to card '${to}' (check the id/url and read token)"; return 1; }
+        to_url="$(printf '%s' "$to_json" | jq -r '.url // empty')"
+        [ -n "$to_url" ] || { _err "--to card '${to}' not found"; return 1; }
+    fi
+
+    if [ "$from" = "$to" ]; then
+        _err "--from and --to refer to the same card; nothing to link"; return 1
+    fi
+
+    # Successor back-link first, predecessor forward-link second (see design notes).
+    _say "Linking chain ${from_url} -> ${to_url}"
+    if ! _trello_write_link "$to" "Continues from:" "$from" "$from_url"; then
+        _err "Failed to write the back-link on the successor; predecessor left untouched. Re-run when the write token works."
+        return 1
+    fi
+    if ! _trello_write_link "$from" "Continues in:" "$to" "$to_url"; then
+        _err "PARTIAL: the successor (${to_url}) now points back to the predecessor, but writing the forward link on the predecessor (${from_url}) FAILED."
+        _err "Re-run the same command (idempotent: it only adds the missing forward link), or add manually on ${from_url}:  Continues in: ${to_url}"
+        return 1
+    fi
+    _say "Superseded: ${from_url}  ->  ${to_url}"
+}
+
+_trello_chain() {
+    local card="" want_json="" head prev cur guard visited seen order count
+    local id meta name url current obj all idx
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --card) card="$(_card_ref "$2")"; shift 2 ;;
+            --json) want_json=1; shift ;;
+            *) _err "Unknown chain option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_ready || return 1
+    [ -n "$card" ] || { _err "chain requires --card"; return 1; }
+
+    # Walk backward to the head of the chain (cycle/runaway guarded).
+    head="$card"; visited=" "; guard=0
+    while :; do
+        case "$visited" in *" ${head} "*) break ;; esac
+        visited="${visited}${head} "
+        prev="$(_trello_link_target "$head" "Continues from:")" || break
+        [ -n "$prev" ] || break
+        case "$visited" in *" ${prev} "*) break ;; esac
+        head="$prev"
+        guard=$((guard + 1)); [ "$guard" -gt 100 ] && break
+    done
+
+    # Walk forward from the head, collecting the ordered chain.
+    cur="$head"; seen=" "; order=""; guard=0
+    while :; do
+        case "$seen" in *" ${cur} "*) break ;; esac
+        seen="${seen}${cur} "
+        order="${order}${cur} "
+        cur="$(_trello_link_target "$cur" "Continues in:")" || break
+        [ -n "$cur" ] || break
+        guard=$((guard + 1)); [ "$guard" -gt 100 ] && break
+    done
+
+    if [ -n "$want_json" ]; then
+        all=""
+        for id in $order; do
+            meta="$(_trello_get "/cards/${id}" --data-urlencode "fields=name,url")" || meta='{}'
+            obj="$(printf '%s' "$meta" | jq -c \
+                --arg id "$id" \
+                --argjson current "$( [ "$id" = "$card" ] && echo true || echo false )" \
+                '{id: $id, name: (.name // null), url: (.url // null), current: $current}')"
+            all="${all}${obj}
+"
+        done
+        printf '%s' "$all" | jq -s '{chain: .}'
+        return 0
+    fi
+
+    count="$(set -- $order; echo "$#")"
+    _say "Task chain (head -> tail):"
+    idx=1
+    for id in $order; do
+        meta="$(_trello_get "/cards/${id}" --data-urlencode "fields=name,url")" || meta=""
+        name="$(printf '%s' "$meta" | jq -r '.name // "Unknown card"')"
+        url="$(printf '%s' "$meta" | jq -r '.url // empty')"
+        [ -n "$url" ] || url="(card ${id} unreadable)"
+        if [ "$id" = "$card" ]; then current="  <-- you are here"; else current=""; fi
+        printf '%d. %s%s\n     %s\n' "$idx" "$name" "$current" "$url"
+        idx=$((idx + 1))
+    done
+    if [ "$count" -eq 1 ]; then
+        _say "(no chain links found on this card)"
+    fi
 }
 
 _trello_render_cards() {
@@ -2208,6 +2400,8 @@ case "${1:-help}" in
             rename-card) shift 2; _trello_rename_card "$@" ;;
             set-desc) shift 2; _trello_set_desc "$@" ;;
             comment) shift 2; _trello_comment "$@" ;;
+            supersede) shift 2; _trello_supersede "$@" ;;
+            chain) shift 2; _trello_chain "$@" ;;
             *) _err "Unknown Trello command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;

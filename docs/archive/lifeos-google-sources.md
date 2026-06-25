@@ -219,10 +219,10 @@ Do not add write scopes in this spike.
 
 ## Future Threads
 
-Future ergonomics and expansion questions are preserved in `docs/scratch/lifeos-tools-v2.md` rather than left as unresolved work in this closeout doc.
+Future ergonomics and expansion questions are preserved in `docs/lifeos-tools-v2.md` rather than left as unresolved work in this closeout doc.
 
 ## Closeout
 
 This spike is closed. The user confirmed the tools work when used from the LifeOS agent workflow.
 
-Future product/ergonomics choices are tracked in `docs/scratch/lifeos-tools-v2.md`.
+Future product/ergonomics choices are tracked in `docs/lifeos-tools-v2.md`.
