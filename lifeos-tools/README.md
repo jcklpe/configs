@@ -55,6 +55,9 @@ lifeos trello move-card --card https://trello.com/c/abc123 --list Done
 lifeos trello rename-card --card https://trello.com/c/abc123 --name "New title"
 lifeos trello set-desc --card https://trello.com/c/abc123 --file /tmp/card-desc.md
 lifeos trello comment --card https://trello.com/c/abc123 --text "Called today."
+lifeos trello supersede --from https://trello.com/c/abc123 --to https://trello.com/c/def456
+lifeos trello supersede --create --from https://trello.com/c/abc123 --list "On Deck" --name "Follow up after vendor reply"
+lifeos trello chain --card https://trello.com/c/abc123
 lifeos calendar auth
 lifeos calendar list-calendars
 lifeos calendar sync
@@ -151,6 +154,28 @@ Drive commands are read-only and on-demand. They search/list/inspect files and c
 Trello sync currently includes open-list cards with names, URLs, due dates, labels, checklist progress, descriptions, and comments.
 
 Trello write commands require `TRELLO_WRITE_TOKEN` in `.env`. Sync remains read-only and uses `TRELLO_TOKEN`.
+
+### Task chains: `supersede` and `chain`
+
+Multi-step work is modeled as a chain of linked cards, not one mutating card. When work hits a
+gate (a wait on someone, a future date, a handoff, a prerequisite), supersede the current card
+with a successor instead of editing it forever. `supersede` writes the bidirectional link as a
+pair of labeled comments — `🔗 Continues in:` on the predecessor and `🔗 Continues from:` on the
+successor — in one operation, so the link can't be left half-applied:
+
+```sh
+# link two existing cards
+lifeos trello supersede --from PRED_CARD --to SUCC_CARD
+# create the successor and link it in one step
+lifeos trello supersede --create --from PRED_CARD --list "On Deck" --name "Next leg" [--desc TEXT | --desc-file FILE]
+# print the whole chain from any member card (forward + back); --json for tooling
+lifeos trello chain --card ANY_CARD
+```
+
+The successor's back-link is written first and the predecessor's forward-link second; if the
+second write fails it reports a loud `PARTIAL:` error. Re-running is idempotent — it only adds
+whichever link is missing. `supersede` does not move the predecessor to a Done list; do that
+separately with `move-card` if you want it. The judgment of *when* to split a card stays manual.
 
 Recommended write QA flow:
 

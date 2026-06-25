@@ -165,7 +165,7 @@ The generated `sources/trello.md` file is context, not a write-back database. Ag
 
 With multiple configured boards, write commands should pass `--board BOARD_ID` when targeting any non-default board. Use `lifeos trello list-boards` and `lifeos trello list-lists BOARD_ID` before name-based list operations on a specific board.
 
-Future Trello write-safety ideas are preserved in `docs/scratch/lifeos-tools-v2.md` so this v1 spike can close cleanly.
+Future Trello write-safety ideas are preserved in `docs/lifeos-tools-v2.md` so this v1 spike can close cleanly.
 
 Description edits need extra care because they can clobber human-written context. Prefer `comment` for additive notes. For description changes, use file-based replacement now; later consider section-aware replacement or a diff preview before applying.
 
@@ -333,7 +333,7 @@ Live QA confirmed:
 - Google Calendar timed cross-midnight event expansion
 - Combined `lifeos sync` refreshing Trello and Calendar snapshots
 
-Future enhancement threads have been moved to `docs/scratch/lifeos-tools-v2.md`.
+Future enhancement threads have been moved to `docs/lifeos-tools-v2.md`.
 
 ## Archive Readiness
 
@@ -360,7 +360,7 @@ This spike has met its promotion criteria:
 
 ## Future Threads
 
-Future v2 ideas are preserved in `docs/scratch/lifeos-tools-v2.md` rather than left as unresolved work in this archive-ready spike.
+Future v2 ideas are preserved in `docs/lifeos-tools-v2.md` rather than left as unresolved work in this archive-ready spike.
 
 ## Promotion Criteria
 

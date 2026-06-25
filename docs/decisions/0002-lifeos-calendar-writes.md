@@ -32,5 +32,5 @@ Scopes on the calendar token expand from read-only to `calendar.events` (read+wr
 - [AGENT.md](../../lifeos-tools/AGENT.md) — operational guidance and the disambiguation flow.
 - [lifeos-tools/README.md](../../lifeos-tools/README.md)
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md) — the alias-file ignore pattern.
-- [lifeos-tools-v2 scratch notes](../scratch/lifeos-tools-v2.md) — superseded Calendar V2 ideas.
+- [lifeos-tools-v2 scratch notes](../lifeos-tools-v2.md) — superseded Calendar V2 ideas.
 - Implementation: `lifeos-tools/lifeos.sh`, `google-calendar-write.py`, `google-people.py`, `google-calendar-auth.py`.

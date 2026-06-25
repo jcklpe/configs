@@ -1,6 +1,6 @@
 # LifeOS Google Sources To-Do
 
-Status: archived. Gmail and Drive v1 are implemented; future ergonomics have been moved to `docs/scratch/lifeos-tools-v2.md`.
+Status: archived. Gmail and Drive v1 are implemented; future ergonomics have been moved to `docs/lifeos-tools-v2.md`.
 
 Conceptual doc: `docs/archive/lifeos-google-sources.md`.
 
