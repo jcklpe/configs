@@ -13,6 +13,8 @@ The v1 baseline is:
 - `lifeos` is the stable local CLI entrypoint.
 - Trello sync and explicit Trello writes work.
 - Google Calendar sync is read-only and combined across selected calendars.
+- Google Calendar **writes** now exist: `create-event` / `update-event` with attendee invites (dry-run by default, writable-calendar allowlist, no delete). See `docs/decisions/0002-lifeos-calendar-writes.md`.
+- A `people` command group resolves attendee names (local alias map → Google People API).
 - Gmail snapshots work across configured Google account aliases.
 - Drive search/list/meta/read is on-demand and read-only.
 - Secrets, OAuth credentials, tokens, QA outputs, and generated private snapshots stay ignored or outside git.
@@ -36,19 +38,24 @@ The current generated Trello snapshot is not a write-back database. Keep that bo
 
 ## Calendar V2 Ideas
 
-Calendar should stay read-only by default. Calendar writes have more blast radius than Trello writes because events can involve guests, shared calendars, imported calendars, recurring events, and notification side effects.
+**Mostly shipped.** Calendar writes now exist with a tool-enforced safety model; see `docs/decisions/0002-lifeos-calendar-writes.md`. The conservative assumptions this section originally held — "stay read-only by default," "create-only on a dedicated reminders calendar," "never create guest events or modify attendee lists" — were deliberately retired. The decision record is authoritative if this scratch note drifts.
 
-Potential improvements:
+Done:
 
-- Add a read-only `calendar find` command that returns calendar ID, event ID, title, start/end, and link.
-- Add access-role visibility so writable/read-only calendars are obvious.
-- Decide whether to create a dedicated writable `LifeOS Reminders` calendar.
-- If Calendar writes are added, start with create-only reminder events on that dedicated calendar.
-- Require preview before any Calendar write.
-- Never create guest events or modify attendee lists from this tool.
-- Avoid broad Calendar edit/delete commands across arbitrary synced calendars.
-- Decide whether generated Calendar snapshots should include event IDs or keep IDs behind lookup commands.
+- Writes via `create-event` / `update-event`, dry-run by default (preview before write).
+- Writable-calendar allowlist (`LIFEOS_CALENDAR_WRITABLE_IDS`) instead of a single dedicated reminders calendar.
+- Guest events and attendee-list edits, with no email-out unless `--notify`.
+- Single-occurrence vs `--series` recurring edits; `--recurrence` for creating series.
+- Attendee name resolution (alias map → People API) with interactive disambiguation via `people resolve` / `add-alias`.
+- Access role is already visible in `list-calendars` output.
+
+Still open:
+
+- Add a read-only `calendar find` command that returns calendar ID, event ID, title, start/end, and link, so the agent does not have to grep `sources/calendar.md` for an event ID before `update-event`. This is now the most useful next calendar item.
+- Decide whether generated Calendar snapshots should include event IDs inline or keep IDs behind a `calendar find` lookup.
+- Decide whether to auto-run `calendar sync` after a successful write (currently manual).
 - Add filtering controls only if the configured calendar set becomes noisy.
+- Consider richer time parsing / natural-language start times if the explicit `YYYY-MM-DDTHH:MM` form proves clumsy in practice.
 
 ## Gmail V2 Ideas
 
@@ -86,7 +93,8 @@ The CLI is the durable boundary. MCP/plugin-style functions may be useful later,
 Potential callable wrapper shape:
 
 - Trello: list boards, list lists, get card, create card, move card, rename card, comment, archive card.
-- Calendar: sync, list calendars, find events.
+- Calendar: sync, list calendars, find events, create event, update event.
+- People: resolve name, add alias, list aliases.
 - Gmail: sync account, sync all.
 - Drive: search, list folder, metadata, read file.
 
@@ -113,7 +121,9 @@ This scratch topic should become an active spike only when one concrete v2 theme
 Good candidate active spikes:
 
 - Trello write safety pass.
-- Dedicated LifeOS Calendar reminder creation.
+- Read-only `calendar find` (event ID lookup to pair with the shipped calendar writes).
 - Drive read expansion.
 - LifeOS setup helper.
 - Agent callable wrapper.
+
+(Calendar writes shipped — see `docs/decisions/0002-lifeos-calendar-writes.md`. The "dedicated LifeOS reminders calendar" candidate is superseded by the writable-calendar allowlist.)
