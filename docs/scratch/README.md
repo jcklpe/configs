@@ -6,4 +6,7 @@ Scratch docs are not authoritative. Promote anything durable into `README.md`, `
 
 ## Current Scratch Notes
 
-- `lifeos-tools-v2.md` / `lifeos-tools-v2.todo.md` - parking lot for possible LifeOS tooling follow-up work.
+- `lifeos-bitwarden.md` / `lifeos-bitwarden.todo.md` - parked Bitwarden cleanup notes.
+- `run-command.md` / `run-command.todo.md` - notes on the `run` dispatcher.
+
+(LifeOS tools v2 was promoted to an active spike: `docs/lifeos-tools-v2.md` / `docs/lifeos-tools-v2.todo.md`.)
