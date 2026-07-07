@@ -32,6 +32,27 @@ create_symlink_if_needed "${CONFIGS}/zsh/zshrc" "${HOME}/.zshrc"
 create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
 create_symlink_if_needed "${CONFIGS}/nano/config.nanorc" "${HOME}/.nanorc"
 
+##- Codex global skill symlinks
+# Add one explicit call for each skill folder that should be globally available.
+# Keep skill links individual so repo-local helper files under skills/ do not become broken skill packages.
+ensure_dir "${HOME}/.codex/skills"
+create_symlink_if_needed "${CONFIGS}/skills/setup-project-docs" "${HOME}/.codex/skills/setup-project-docs"
+create_symlink_if_needed "${CONFIGS}/skills/setup-local-skills" "${HOME}/.codex/skills/setup-local-skills"
+create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.codex/skills/run-project-spike"
+create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.codex/skills/triage-project-misc"
+create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.codex/skills/track-changes"
+create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.codex/skills/track-deferred-decisions"
+
+##- Claude global skill symlinks
+# Mirror the same global seed skills for Claude Code while keeping configs/ as the source of truth.
+ensure_dir "${HOME}/.claude/skills"
+create_symlink_if_needed "${CONFIGS}/skills/setup-project-docs" "${HOME}/.claude/skills/setup-project-docs"
+create_symlink_if_needed "${CONFIGS}/skills/setup-local-skills" "${HOME}/.claude/skills/setup-local-skills"
+create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.claude/skills/run-project-spike"
+create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.claude/skills/triage-project-misc"
+create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.claude/skills/track-changes"
+create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.claude/skills/track-deferred-decisions"
+
 # WezTerm uses XDG on all platforms
 ensure_dir "${HOME}/.config/wezterm"
 create_symlink_if_needed "${CONFIGS}/wezterm/wezterm.lua" "${HOME}/.config/wezterm/wezterm.lua"
