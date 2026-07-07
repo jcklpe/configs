@@ -75,6 +75,7 @@ lifeos drive accounts
 lifeos drive search open-austin "landlord mapper"
 lifeos drive meta open-austin https://docs.google.com/document/d/abc123/edit
 lifeos drive read open-austin https://docs.google.com/spreadsheets/d/abc123/edit
+lifeos drive import-doc open-austin /tmp/brief.html --title "Workshop brief" --folder FOLDER_ID --execute
 lifeos open-austin-org path
 lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
@@ -149,7 +150,19 @@ Google Gmail/Drive alias config lives in ignored `google-accounts.json`, copied 
 
 Gmail sync is read-only and writes bounded Markdown snapshots to `$LIFEOS_VAULT_PATH/sources/gmail/`, or to ignored `lifeos-tools/gmail-qa/` when using `--qa`. The default per-account query (`in:inbox newer_than:30d -label:Newsletters`) syncs only current inbox mail from the last 30 days and excludes anything labeled `Newsletters`; archived mail is not synced.
 
-Drive commands are read-only and on-demand. They search/list/inspect files and can read Google Docs as text or Google Sheets as a bounded table preview. They do not clone Drive into LifeOS.
+Drive read commands are on-demand. They search/list/inspect files and can read Google Docs as text or Google Sheets as a bounded table preview. They do not clone Drive into LifeOS.
+
+`lifeos drive import-doc` is the only Drive write path. It imports a local `.html`, `.md`, `.txt`, `.rtf`, `.doc`, or `.docx` source file as a native Google Doc. It is **dry-run by default** and only writes with `--execute`. The target account must have `"drive": { "write_enabled": true }` in ignored `google-accounts.json`; after enabling that flag, re-run `lifeos google auth ALIAS` so the token receives the `drive.file` scope.
+
+Examples:
+
+```sh
+# preview only
+lifeos drive import-doc open-austin /tmp/design-cop-brief.html --title "Design CoP ResearchOps Hackpack Workshop"
+
+# create in a specific Drive folder
+lifeos drive import-doc open-austin /tmp/design-cop-brief.html --title "Design CoP ResearchOps Hackpack Workshop" --folder FOLDER_ID --execute
+```
 
 Trello sync currently includes open-list cards with names, URLs, due dates, labels, checklist progress, descriptions, and comments.
 
