@@ -1,0 +1,66 @@
+# OS artifacts
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Local agent/editor state
+.claude/
+.codex/
+.cursor/
+.vscode/
+
+# Logs and runtime files
+logs/
+*.log
+*.pid
+*.pid.lock
+
+# Dependency and build output
+node_modules/
+.next/
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Python caches and envs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+!.env.example.*
+*.env
+*.env.*
+!*.env.example
+!*.env.example.*
+*.local
+*.local.*
+
+# Tokens, credentials, and private config
+*.token
+*.token.*
+!*.token.example
+!*.token.example.*
+*token*.json
+!*token*.example.json
+*credentials*.json
+!*credentials*.example.json
+*client_secret*.json
+!*client_secret*.example.json
+*.local.json
+
+# Optional secrets folders: ignore contents by default, but allow examples.
+secrets/*
+!secrets/.gitignore
+!secrets/*.example
+!secrets/*.example.*
+**/secrets/*
+!**/secrets/.gitignore
+!**/secrets/*.example
+!**/secrets/*.example.*
