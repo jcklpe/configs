@@ -28,6 +28,7 @@ All install scripts are **idempotent** - safe to run multiple times.
 - **Shell:** [zsh](https://www.zsh.org/) (primary), bash (fallback)
 - **Terminal:** [Tabby](https://tabby.sh/), [WezTerm](https://wezfurlong.org/wezterm/)
 - **Editor:** [VS Code](https://code.visualstudio.com/), [Micro](https://micro-editor.github.io/)
+- **Agent skills:** reusable `SKILL.md` workflows live in `skills/` and are symlinked into Codex by `symlinks.sh`
 
 ## Troubleshooting
 

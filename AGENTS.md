@@ -36,6 +36,15 @@ symlinked to `~/.zshrc` / `~/.bashrc` by the installer.
 - **Idempotency is required** for install scripts — they're re-run on every machine and
   must be safe to run repeatedly. Check-before-write (see `create_symlink_if_needed`).
 
+## Markdown And Prose Style
+Do not hard-wrap prose in Markdown, comments, docs, or examples. Let editors handle soft wrapping. Preserve paragraphs as single lines unless line breaks carry meaning, such as lists, tables, code blocks, quoted text, frontmatter, or an existing semantic-line-break style.
+
+Avoid reflow-only diffs. When editing prose, change the smallest relevant span instead of rewrapping neighboring paragraphs.
+
+When touching existing Markdown or prose, apply this preferred style to the paragraph, section, or example being edited so files converge over time. Do not mass-reformat untouched sections just to normalize style unless the user asks for a cleanup pass.
+
+Prefer compact Markdown heading spacing in hand-authored docs: do not add blank lines only to separate adjacent headings from each other. Follow existing file style, and let explicit project tooling win when a formatter or linter requires a different layout.
+
 ## Where things go
 
 | Change | Location |
@@ -44,6 +53,8 @@ symlinked to `~/.zshrc` / `~/.bashrc` by the installer.
 | `PATH` edit / env-manager init | [path.sh](path.sh) |
 | Package to install | [install-script/functions/brew-installs.sh](install-script/functions/brew-installs.sh) (mac/linuxbrew) or [dnf-installs.sh](install-script/functions/dnf-installs.sh) (Fedora) |
 | New dotfile symlinked into `$HOME` | [install-script/functions/symlinks.sh](install-script/functions/symlinks.sh) |
+| Reusable agent-neutral skill | `skills/<skill-name>/SKILL.md` |
+| Tool-specific skill | beside the tool, e.g. `lifeos-tools/skills/<skill-name>/SKILL.md` |
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
 | Active work coordination | [TODO.md](TODO.md) |
@@ -61,6 +72,19 @@ durable doc still agrees with them.
 Authority ladder: `AGENTS.md`, `README.md`, and active decision records define durable
 repo rules; `docs/how-to-spike.md` defines the spike process; active spike docs guide the
 current theme of work; `TODO.md` coordinates what is active and what is next.
+
+## Skills workflow
+
+Use [skills/](skills/) as the version-controlled seed library for reusable, agent-neutral
+`SKILL.md` workflows. These are complete enough to use globally and copy into other repos.
+When a project should carry its own operating process after clone, copy the whole skill folder
+into that repo's `skills/` directory and let it evolve there. Repo-local skills are project
+authority; global skills are fallback seed material.
+
+The installer exposes selected global Codex skills with explicit symlink calls in
+[symlinks.sh](install-script/functions/symlinks.sh). Keep that list as simple direct
+`create_symlink_if_needed` calls, matching the rest of the dotfile symlink style. Do not add an
+allowlist parser unless the manual list becomes genuinely painful.
 
 ## Secrets and local env
 

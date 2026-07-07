@@ -256,13 +256,16 @@ lifeos drive search ALIAS "query text"
 lifeos drive list ALIAS FOLDER_ID
 lifeos drive meta ALIAS FILE_URL_OR_ID
 lifeos drive read ALIAS FILE_URL_OR_ID
+lifeos drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
 ```
 
 Gmail snapshots are generated context, not a mailbox control surface. Do not send, reply, archive, delete, label, or mark messages read/unread with `lifeos`.
 
 Gmail sync is inbox-only and bounded: the default per-account query is `in:inbox newer_than:30d -label:Newsletters`. Archived mail, mail older than 30 days, and anything labeled `Newsletters` are excluded by design. Per-account queries live in ignored `google-accounts.json`.
 
-Drive commands are on-demand reads. Do not clone Drive into LifeOS, recursively index whole Drives, or generate broad Drive summaries. Use `drive search`, then `drive meta` or `drive read` on a specific file. `drive read` supports Google Docs text and bounded Google Sheets previews first.
+Drive read commands are on-demand. Do not clone Drive into LifeOS, recursively index whole Drives, or generate broad Drive summaries. Use `drive search`, then `drive meta` or `drive read` on a specific file. `drive read` supports Google Docs text and bounded Google Sheets previews first.
+
+`drive import-doc` is the only approved Drive write command. It imports a local source file as a native Google Doc, is dry-run by default, and only writes with `--execute`. Use it only when Aslan explicitly asks to create/import a Drive document. Prefer specifying `--folder FOLDER_ID` so the document lands in the intended personal or Open Austin Drive location. Do not use Drive tooling to edit, delete, move, share, or bulk-create Drive files unless a bounded command exists and Aslan explicitly asks for that specific action.
 
 ## Safety Notes
 
@@ -272,4 +275,5 @@ Drive commands are on-demand reads. Do not clone Drive into LifeOS, recursively 
 - Description replacement overwrites the full Trello description. Prefer comments for additive notes. Task-chain links (`supersede`) are stored as comments for this reason.
 - Trello write commands do not yet have dry-run or before/after output, including `supersede`. Open Austin org issue creation and Google Calendar event writes are dry-run by default and require `--execute`.
 - Google Calendar event writes (`create-event` / `update-event`) are allowed but constrained: allowlisted calendars only, no delete, and no attendee email-out unless `--notify` is passed. See "Google Calendar Writes" above.
-- Do not add Gmail or Drive write commands.
+- Do not add Gmail write commands. Gmail remains read-only.
+- Do not add broad Drive write commands. Drive writes are limited to explicit, dry-run-by-default import workflows.

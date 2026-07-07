@@ -13,6 +13,7 @@
       },
       "drive": {
         "enabled": true,
+        "write_enabled": false,
         "default_folder_id": "replace_me_optional_folder_id",
         "search_page_size": 20,
         "read_character_limit": 20000,
@@ -32,6 +33,7 @@
       },
       "drive": {
         "enabled": true,
+        "write_enabled": false,
         "default_folder_id": "replace_me_optional_folder_id",
         "search_page_size": 20,
         "read_character_limit": 20000,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ##- LifeOS helper CLI
-##- Pulls read-only source data into the private LifeOS vault.
+##- Pulls source data into the private LifeOS vault and supports bounded, explicit writes.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIGS="${CONFIGS:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
@@ -46,6 +46,7 @@ Usage:
   ./lifeos.sh drive list ALIAS FOLDER_ID [--json]
   ./lifeos.sh drive meta ALIAS FILE_URL_OR_ID [--json]
   ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
+  ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
   ./lifeos.sh open-austin-org path
   ./lifeos.sh open-austin-org sync [--qa | --output DIR]
   ./lifeos.sh open-austin-org create-issue --title TITLE [--body TEXT | --body-file FILE] [--label LABEL] [--assign-me | --assignee LOGIN] [--repo OWNER/REPO] [--execute] [--no-sync]
@@ -1111,7 +1112,10 @@ _google_account_scopes() {
         (if (($account.drive.enabled // false) == true) then
           "https://www.googleapis.com/auth/drive.metadata.readonly",
           "https://www.googleapis.com/auth/drive.readonly",
-          "https://www.googleapis.com/auth/spreadsheets.readonly"
+          "https://www.googleapis.com/auth/spreadsheets.readonly",
+          (if (($account.drive.write_enabled // false) == true) then
+            "https://www.googleapis.com/auth/drive.file"
+          else empty end)
         else empty end)
       ] | .[]
     ' "$(_google_accounts_path)"
@@ -1351,6 +1355,11 @@ _drive_sheet_row_limit() {
     _google_account_value "$alias" '.drive.sheet_row_limit // 200' 2>/dev/null || printf '200'
 }
 
+_drive_write_enabled() {
+    local alias="$1"
+    _google_account_value "$alias" '(.drive.write_enabled // false) == true' 2>/dev/null | grep -qx true
+}
+
 _drive_query_escape() {
     printf '%s' "$1" | sed "s/\\\\/\\\\\\\\/g; s/'/\\\\'/g"
 }
@@ -1544,6 +1553,81 @@ _drive_read() {
             _drive_meta_human < "$meta_file"
             ;;
     esac
+}
+
+_drive_import_source_mime() {
+    local source="$1"
+    case "$source" in
+        *.html|*.htm) printf 'text/html' ;;
+        *.txt|*.md|*.markdown) printf 'text/plain' ;;
+        *.rtf) printf 'application/rtf' ;;
+        *.docx) printf 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ;;
+        *.doc) printf 'application/msword' ;;
+        *) printf 'text/plain' ;;
+    esac
+}
+
+_drive_import_doc() {
+    local alias="${1:-}" source_file="${2:-}" title="" folder="" execute=0
+    local token metadata_file mime result_file
+    [ -n "$alias" ] || { _err "drive import-doc requires ALIAS"; return 1; }
+    [ -n "$source_file" ] || { _err "drive import-doc requires SOURCE_FILE"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --title) [ -n "${2:-}" ] || { _err "--title requires TITLE"; return 1; }; title="$2"; shift 2 ;;
+            --folder) [ -n "${2:-}" ] || { _err "--folder requires FOLDER_ID"; return 1; }; folder="$2"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            *) _err "Unknown drive import-doc option: $1"; return 1 ;;
+        esac
+    done
+
+    [ -f "$source_file" ] || { _err "Source file does not exist: $source_file"; return 1; }
+    [ -n "$title" ] || { _err "drive import-doc requires --title TITLE"; return 1; }
+    _drive_write_enabled "$alias" || {
+        _err "Drive import is not enabled for '$alias'. Set drive.write_enabled=true in google-accounts.json and re-run 'lifeos google auth $alias'."
+        return 1
+    }
+
+    _say "Google Drive import-doc plan:"
+    _say "Account: $alias"
+    _say "Source: $source_file"
+    _say "Title: $title"
+    if [ -n "$folder" ]; then
+        _say "Folder: $folder"
+    else
+        _say "Folder: <default Drive location>"
+    fi
+
+    if [ "$execute" -ne 1 ]; then
+        _say "DRY RUN: add --execute to create the Google Doc."
+        return 0
+    fi
+
+    metadata_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-import-meta.XXXXXX.json")" || return 1
+    result_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-import-result.XXXXXX.json")" || return 1
+    if [ -n "$folder" ]; then
+        jq -n --arg name "$title" --arg parent "$folder" \
+            '{name: $name, mimeType: "application/vnd.google-apps.document", parents: [$parent]}' > "$metadata_file" || return 1
+    else
+        jq -n --arg name "$title" \
+            '{name: $name, mimeType: "application/vnd.google-apps.document"}' > "$metadata_file" || return 1
+    fi
+
+    mime="$(_drive_import_source_mime "$source_file")"
+    token="$(_google_access_token "$alias")" || return 1
+    curl -fsS -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name,mimeType,webViewLink,parents,driveId" \
+        -H "Authorization: Bearer ${token}" \
+        -F "metadata=@${metadata_file};type=application/json;charset=UTF-8" \
+        -F "file=@${source_file};type=${mime}" > "$result_file" || return 1
+
+    jq -r '
+      "Created Google Doc: " + (.webViewLink // "") + "\n" +
+      "Name: " + (.name // "") + "\n" +
+      "ID: " + (.id // "") + "\n" +
+      "Parents: " + (((.parents // []) | join(", "))) + "\n" +
+      "Drive ID: " + (.driveId // "")
+    ' "$result_file"
 }
 
 _calendar_ids() {
@@ -2443,6 +2527,7 @@ case "${1:-help}" in
             list) shift 2; _drive_list "$@" ;;
             meta) shift 2; _drive_meta "$@" ;;
             read) shift 2; _drive_read "$@" ;;
+            import-doc) shift 2; _drive_import_doc "$@" ;;
             *) _err "Unknown Drive command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
