@@ -1,11 +1,9 @@
 # LifeOS Tools
-
 Small local helpers for pulling external source data into the private LifeOS vault as Markdown.
 
 The vault and real secrets are local-only. This folder commits public-safe scripts and fake example files.
 
 ## Setup
-
 Copy the example env file and fill in local values:
 
 ```sh
@@ -35,11 +33,9 @@ lifeos doctor
 ```
 
 ## Secrets
-
 Real files such as `.env`, `google-token.json`, and OAuth credential JSON are ignored by git. Keep fake `.example` files tracked beside them.
 
 ## Commands
-
 ```sh
 lifeos help
 lifeos doctor
@@ -96,7 +92,6 @@ ln -sf "$HOME/configs/lifeos-tools/AGENT.md" "$LIFEOS_VAULT_PATH/docs/runbooks/l
 
 
 ## Open Austin Org Snapshots
-
 `lifeos open-austin-org sync` refreshes the local Open Austin org tooling repo and copies only its generated `snapshot/` Markdown into the LifeOS vault at `$LIFEOS_VAULT_PATH/sources/open-austin-org/`.
 
 Default repo path:
@@ -113,7 +108,6 @@ This command does not copy the full repo, `.env`, `.git`, `.github`, tools, work
 
 
 ### GitHub Issue Creation
-
 `lifeos open-austin-org create-issue` creates public Open Austin GitHub issues through `gh`, but is dry-run by default. Use it when work needs to be visible in the org repo rather than only tracked privately in Trello/LifeOS.
 
 Examples:
@@ -169,7 +163,6 @@ Trello sync currently includes open-list cards with names, URLs, due dates, labe
 Trello write commands require `TRELLO_WRITE_TOKEN` in `.env`. Sync remains read-only and uses `TRELLO_TOKEN`.
 
 ### Task chains: `supersede` and `chain`
-
 Multi-step work is modeled as a chain of linked cards, not one mutating card. When work hits a
 gate (a wait on someone, a future date, a handoff, a prerequisite), supersede the current card
 with a successor instead of editing it forever. `supersede` writes the bidirectional link as a

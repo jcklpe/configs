@@ -1,11 +1,9 @@
 # Run Command To-Do
-
 Status: scratch to-do. Not active work.
 
 Conceptual doc: `docs/scratch/run-command.md`.
 
 ## Background
-
 This topic was parked after adding `run --list`.
 
 The motivating examples were:
@@ -16,7 +14,6 @@ The motivating examples were:
 The user goal is broader than those examples: make `run` feel like the contextual project command without rushing into a brittle redesign.
 
 ## Project Organization
-
 Relevant files:
 
 - `plugins/run/run.sh`
@@ -33,21 +30,18 @@ Validation surface:
 - mixed-root project if possible
 
 ## General Principles
-
 - Prefer a coherent dispatch model over command-specific patches.
 - Preserve current shorthand behavior unless there is a strong reason to break it.
 - Keep the implementation understandable enough that future agents can safely extend it.
 - Optimize for low surprise, not maximum cleverness.
 
 ## Current State Overview
-
 - `run --list` and `runjs --list` were added on June 18, 2026.
 - Bare `run` still lists as before.
 - No broader semantic redesign has been implemented yet.
 - The current fallback logic still prefers Python `run` wrappers, then JS `<pm> exec`.
 
 ## To Do
-
 - Decide the intended precedence between:
   local scripts/recipes/targets, native tool subcommands, env-executed binaries.
 - Define what "primary project tool" means when both JS and Python tooling exist at the same root.
@@ -59,11 +53,9 @@ Validation surface:
 - Decide whether completion should eventually include native subcommands, and if so, how aggressively.
 
 ## Ready For Human QA
-
 - None. This topic is parked.
 
 ## Done
-
 - Added explicit `run --list` support.
 - Added explicit `runjs --list` support.
 - Updated shell completion so `--list` appears as a first-arg suggestion.

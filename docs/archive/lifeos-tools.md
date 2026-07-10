@@ -1,17 +1,14 @@
 # LifeOS Tools
-
 Status: archived. Trello and multi-calendar Google Calendar sync are implemented, live-QA'd, documented, and available to LifeOS through the stable `lifeos` command.
 
 Companion to-do: `docs/archive/lifeos-tools.todo.md`.
 
 ## Purpose
-
 Build a small terminal helper in `configs/` that pulls live data from Trello and Google Calendar, converts that data into Markdown, and writes the result into the private local LifeOS vault so agents can read it as part of LifeOS context.
 
 The question is not whether this tool should exist. It should. The question is how to implement it simply, in the style of this dotfiles repo, without turning it into a packaged application or leaking private data into git.
 
 ## Project Boundary
-
 This repo owns the public-safe helper tooling.
 
 The LifeOS vault owns private LifeOS content.
@@ -21,7 +18,6 @@ The local checkout may contain ignored secrets and tokens beside the tool, follo
 The tool should not commit or generate private source snapshots inside this repo.
 
 ## Preferred Shape
-
 Start simple:
 
 ```text
@@ -39,7 +35,6 @@ Real secret-bearing files are ignored. Example files with fake values are tracke
 Do not start with a Python package layout, `bin/`, or nested `lifeos_tools/` directory. If Google OAuth or API parsing becomes too painful in Bash, add the smallest helper needed at that point.
 
 ## Tool Style
-
 Prefer a Bash-first command script because this is dotfiles tooling, not an application package.
 
 Use existing command-line tools where reasonable:
@@ -51,7 +46,6 @@ Use existing command-line tools where reasonable:
 If a dependency becomes required, document it and add it to the appropriate install path later.
 
 ## Command Surface
-
 Target commands:
 
 ```sh
@@ -76,7 +70,6 @@ lifeos sync
 The direct `cd ~/configs/lifeos-tools && ./lifeos.sh ...` form remains a fallback.
 
 ## Configuration
-
 Primary configuration should come from `lifeos-tools/.env`, with `lifeos-tools/.env.example` committed as the migration template.
 
 Expected variables:
@@ -99,7 +92,6 @@ Shell environment values may override `.env` values if that is easy to implement
 Trello writes use `TRELLO_WRITE_TOKEN`; read-only sync uses `TRELLO_TOKEN`.
 
 ## Vault Outputs
-
 The first useful sync outputs are:
 
 ```text
@@ -119,7 +111,6 @@ $LIFEOS_VAULT_PATH/weekly-review.md
 Gmail and Drive source expansion is tracked separately in archived `docs/archive/lifeos-google-sources.md`.
 
 ## Trello Behavior
-
 Trello sync support is read-only. Trello writes are handled by explicit write commands.
 
 `trello list-boards` should fetch visible boards and print:
@@ -147,7 +138,6 @@ Include, where available:
 Do not write back to Trello.
 
 ## Trello Write Behavior
-
 Trello write commands are explicit commands, not edits to the generated Markdown sync file.
 
 Supported write operations:
@@ -172,7 +162,6 @@ Description edits need extra care because they can clobber human-written context
 Bulk edits are out of scope for now. If added later, they should first produce a proposed change plan instead of immediately writing.
 
 ## Agent Exposure
-
 The stable agent-facing entrypoint is `lifeos`, provided by `lifeos-tools/lifeos` and exposed by adding `lifeos-tools/` to `PATH` from `path.sh`. Avoid loading secrets in shell startup; the command continues loading `lifeos-tools/.env` at runtime.
 
 Agent-facing usage notes live in `lifeos-tools/AGENT.md`. On this machine, the LifeOS vault has a local symlink at `runbooks/lifeos-tools.md` pointing back to that tracked file.
@@ -180,7 +169,6 @@ Agent-facing usage notes live in `lifeos-tools/AGENT.md`. On this machine, the L
 Any future MCP/plugin-style surface should be tracked as v2 work and wrap the stable CLI behavior rather than replacing it.
 
 ## Google Calendar Behavior
-
 Google Calendar support is currently read-only.
 
 Calendar uses small `python3` helpers for OAuth/token lifecycle and event date expansion. Calendar API reads stay in the Bash CLI with `curl` and `jq`.
@@ -262,7 +250,6 @@ Implementation notes:
 - Treat `GOOGLE_CALENDAR_IDS=primary` as the default first useful config.
 
 ## Google Calendar Write Assessment
-
 Calendar writes should not mirror the Trello write model without tighter boundaries. Calendar data can involve guests, shared calendars, imported calendars, calendars where this account is read-only, recurring events, external invitations, and notification side effects. A generic "edit or delete any visible event" tool would create too much blast radius for a low-frequency workflow.
 
 Current stance:
@@ -273,7 +260,6 @@ Current stance:
 - If Calendar writes become useful, track that as v2 work. Start with event creation on a dedicated, private, writable LifeOS-owned calendar rather than arbitrary edits across all synced calendars.
 
 ## Doctor Behavior
-
 `doctor` should be practical and direct:
 
 - confirm `.env` exists or point to `.env.example`
@@ -288,7 +274,6 @@ Current stance:
 Do not turn `doctor` into a policy lecture. It should answer: "Can I run this tool, and what do I need to fix?"
 
 ## Current Implementation Notes
-
 The first slice uses `lifeos-tools/lifeos.sh` with Bash, `curl`, `jq`, and a small `python3` helper for Google OAuth/token lifecycle.
 
 Implemented:
@@ -336,7 +321,6 @@ Live QA confirmed:
 Future enhancement threads have been moved to `docs/lifeos-tools-v2.md`.
 
 ## Archive Readiness
-
 This spike has met its promotion criteria:
 
 - Trello sync updates the private vault snapshot on demand.
@@ -347,7 +331,6 @@ This spike has met its promotion criteria:
 - Durable setup and agent usage notes are in `lifeos-tools/README.md` and `lifeos-tools/AGENT.md`.
 
 ## Non-Goals
-
 - No cron.
 - No webhooks.
 - No daemon.
@@ -359,11 +342,9 @@ This spike has met its promotion criteria:
 - No package-style hierarchy unless a future implementation need earns it.
 
 ## Future Threads
-
 Future v2 ideas are preserved in `docs/lifeos-tools-v2.md` rather than left as unresolved work in this archive-ready spike.
 
 ## Promotion Criteria
-
 This spike was ready to archive when:
 
 - Trello sync can update the private vault snapshot on demand
