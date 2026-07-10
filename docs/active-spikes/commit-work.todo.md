@@ -26,7 +26,7 @@ The design was worked out in conversation on 2026-07-09. The conceptual doc reco
 ## Current State Overview
 Nothing built. The rogue-agent skill edits that were dirty in the tree at the start of this conversation have been reverted (that cleanup belongs to the `skill-authority` spike, where it is recorded).
 
-`docs/active-spikes/` now exists but the repo has not yet been migrated to it — `docs/lifeos-tools-v2.md` and its to-do are still flat under `docs/`. That migration is a `skill-authority` item.
+The repo now uses `docs/active-spikes/` throughout; the migration landed as `skill-authority` work on 2026-07-10.
 
 ## To Do
 - [ ] Use `commit-work` on the `skill-authority` spike as it proceeds. If the workflow is annoying there, it will be annoying everywhere.
