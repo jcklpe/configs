@@ -25,7 +25,9 @@ The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrate
 
 ## To Do
 ### Hoist personal rules to a global AGENTS.md
-- [ ] Check what GitHub Copilot actually reads for instructions. It picks up skills from `~/.claude/skills` (confirmed), but its instruction-file path is unknown and may be neither of the above. Nothing in `symlinks.sh` targets it.
+- [ ] **Check what GitHub Copilot actually reads for instructions.** Partly answered, and the answer is ambiguous. Asked directly, Copilot verified both symlinks on disk and reported receiving "CLAUDE.md (global) plus AGENTS.md (repo-local)". But it was asked from inside `configs/`, which has its own root `CLAUDE.md` symlinked to `AGENTS.md` — so the file it named may be that one, in which case it read `AGENTS.md` twice and never touched `~/.claude/CLAUDE.md`. Both readings fit its answer.
+
+  **Decisive test:** from a repo with neither `CLAUDE.md` nor `AGENTS.md`, ask Copilot whether its instructions contain the heading `Global Agent Instructions`. That string exists only in `agents/AGENTS.global.md`. If it can quote it, the hoist reached all three agents. If not, it reached two.
 
 
 ## Ready for Human QA
