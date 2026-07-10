@@ -4,19 +4,15 @@ description: "Triage a project's loose scratch inbox at docs/scratch/misc.md int
 ---
 
 # Triage Project Misc
-
 ## Local Precedence
-
 If the current repo already has `skills/triage-project-misc/SKILL.md`, read and follow the repo-local skill first. Treat this global skill as fallback seed material.
 
 ## Purpose
-
 `docs/scratch/misc.md` is a live inbox for loose thoughts. Use it for observations that are real enough to keep but too raw to classify yet: small bugs noticed during another spike, taste reactions, possible features, visual discomforts, "this should maybe be better someday" notes, and half-formed clusters that have not earned a named spike doc.
 
 `misc.md` is not a roadmap, not an archive, and not a dumping ground that should grow forever. It is an intake surface.
 
 ## Relationship To Spikes
-
 The spike process explains how focused work gets promoted into conceptual and to-do docs, tracked through implementation and QA, and eventually archived.
 
 This skill describes the earlier step: how loose notes become candidate spike material.
@@ -29,15 +25,13 @@ The flow is:
 4. Once a bucket becomes active implementation work, use `run-project-spike` to promote it into the two-doc active spike pattern.
 
 ## File Roles
-
 - `docs/scratch/misc.md` is the live inbox for unrouted loose notes.
 - `docs/scratch/misc-1.md`, `misc-2.md`, and so on are numbered miscellaneous buckets for real work that does not yet form a clean thematic spike.
 - Thematic scratch docs such as `syntax-highlighting.md`, `brand-voice.md`, or `embed-media-support.md` are preferred when notes cluster around a coherent theme.
-- Active spike docs in `docs/` exist only after a scratch topic becomes the current implementation focus.
+- Active spike docs in `docs/active-spikes/` exist only after a scratch topic becomes the current implementation focus.
 - Archived spike docs in `docs/archive/` are historical context after a spike closes.
 
 ## What Belongs In Misc
-
 Good `misc.md` entries are specific enough to preserve the observation:
 
 - a visual detail that feels off
@@ -57,7 +51,6 @@ Bad entries are so compressed they lose the point:
 If a note starts vague, keep the user's concrete phrasing around it. The rambling often contains the actual design constraint.
 
 ## Review Process
-
 When asked to review `misc.md`:
 
 1. Read `docs/scratch/misc.md` in full.
@@ -72,15 +65,12 @@ When asked to review `misc.md`:
 Do not keep an infinite routing history in `misc.md`. The latest routing session summary is a handoff, not an archive. The next review should replace it.
 
 ## Routing Outcomes
-
 ### Already Addressed
-
 If an item has already been completed or captured in a durable doc, delete it from `misc.md`.
 
 If the routing might be confusing later, mention it briefly in the latest routing session summary.
 
 ### Existing Thematic Scratch Doc
-
 If an item clearly belongs to an existing scratch topic, move it there.
 
 Preserve:
@@ -94,7 +84,6 @@ Preserve:
 Clean the prose enough to make the destination doc readable, but do not flatten the item into a generic ticket.
 
 ### New Thematic Scratch Doc
-
 If several items cluster around a clear theme, create a new scratch doc with a descriptive name.
 
 Shape the new thematic scratch doc like a lightweight conceptual spike doc, but keep it in `docs/scratch/` and do not create the active `.todo.md` companion yet. It should usually include:
@@ -111,13 +100,11 @@ Shape the new thematic scratch doc like a lightweight conceptual spike doc, but 
 Do not create a full active spike to-do yet unless the user is actually starting that work. The thematic scratch doc is candidate conceptual context; `run-project-spike` handles active promotion.
 
 ### Numbered Miscellaneous Bucket
-
 If an item is real but does not belong to an existing doc and does not cluster into a thematic spike, sweep it into a numbered `misc-#.md` bucket.
 
 Use this when the work is small, mixed, or opportunistic. A numbered misc bucket can become its own active spike later, like any other scratch doc.
 
 ## Reviewing Existing Misc Buckets
-
 Every `misc.md` review should also examine existing numbered misc docs in `docs/scratch/`.
 
 Ask:
@@ -130,7 +117,6 @@ Ask:
 Numbered misc docs are temporary holding areas, not permanent junk drawers. If a better theme emerges, move the item out.
 
 ## Preservation Rule
-
 Do not over-compress `misc.md` items while parting them out.
 
 The user's loose phrasing may contain design signal: emotional reaction, uncertainty, analogy, hierarchy of importance, or a concrete example that a short task title would erase. Keep that texture in the destination doc.
@@ -138,7 +124,6 @@ The user's loose phrasing may contain design signal: emotional reaction, uncerta
 The goal is not to preserve every typo or duplicate sentence. The goal is to preserve meaning, taste, references, and the reason the note existed.
 
 ## Misc Template
-
 Use this shape:
 
 ```md
