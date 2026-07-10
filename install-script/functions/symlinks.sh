@@ -42,6 +42,12 @@ create_symlink_if_needed "${CONFIGS}/nano/config.nanorc" "${HOME}/.nanorc"
 # configs/, which has its own CLAUDE.md -> AGENTS.md symlink, so "CLAUDE.md" in its
 # answer is ambiguous. To settle it, ask Copilot from a repo with neither file
 # whether its instructions contain the heading "Global Agent Instructions".
+#
+# HAZARD, accepted: Claude Code's /memory command and `#` shortcut append user memories
+# to ~/.claude/CLAUDE.md, which this symlink points into a tracked file in a PUBLIC repo.
+# Agent-written memories are unaffected (they live in ~/.claude/projects/<slug>/memory/).
+# The user does not use those features. To close it, replace the CLAUDE.md symlink with a
+# real file containing one line: @${CONFIGS}/agents/AGENTS.global.md
 ensure_dir "${HOME}/.codex"
 ensure_dir "${HOME}/.claude"
 create_symlink_if_needed "${CONFIGS}/agents/AGENTS.global.md" "${HOME}/.codex/AGENTS.md"

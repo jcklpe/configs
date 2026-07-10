@@ -108,6 +108,8 @@ This repo may contain public-safe tools that use private local secrets. Real sec
 files may live inside the local `configs/` working tree, but they must be ignored before
 they are created or used. Commit adjacent example files with fake values.
 
+**Known hazard, accepted deliberately.** `~/.claude/CLAUDE.md` is a symlink to [agents/AGENTS.global.md](agents/AGENTS.global.md), which is tracked in this **public** repo. Claude Code's `/memory` command and its `#` shortcut append user memories to `~/.claude/CLAUDE.md`, so anything saved that way is written straight into a world-readable file. Agent-written memories are *not* affected — those go to `~/.claude/projects/<slug>/memory/`, outside the repo. The exposure is only from the `#` and `/memory` features, which the user does not use. Do not save anything private that way. The bite would come from `gitall`, which does `git add -A` and pushes in one motion, so a stray memory would be published without `git status` ever being read. To close this properly, make `~/.claude/CLAUDE.md` a real file whose only line is `@` followed by the absolute path to `agents/AGENTS.global.md`, and stop symlinking it.
+
 Preferred pattern:
 
 ```text
