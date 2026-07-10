@@ -20,6 +20,7 @@ Violating the letter of these rules is violating their spirit. Every rule below 
 - **Never push.** Pushing is a human action, always, with no exception for "obviously ready."
 - **Never rewrite.** No `--amend`, no rebase, no `--force`. Another agent may have built on it.
 - **Never `git add -f`.** Not once. Not for a "clearly safe" file. See "New files" below.
+- **Never `git rm` or `git mv`.** Both stage. Use plain `rm` / `mv` and commit the paths.
 - **One commit does one thing.** If an honest one-line summary needs the word "and," it is two commits.
 - **Never `--no-verify`.**
 
@@ -114,6 +115,31 @@ This is not optional caution, for two verified reasons:
 
 If a file you believe belongs in the commit is gitignored, the answer is never `-f`. Say so out loud and stop. Ignored files are ignored on purpose; committing one may publish a credential.
 
+## Deletions And Renames
+`git rm` and `git mv` both **stage**. They are `git add` wearing a different name, and they are forbidden for the same reason.
+
+To delete a file, remove it and commit the path. Git reads the working tree, finds the path absent, and records the deletion:
+
+```sh
+rm doomed/file.md
+git commit -F - -- doomed/file.md <<'EOF'
+...
+EOF
+```
+
+To rename a file, move it and commit **both** paths. The new path is untracked, so it needs the one permitted `git add`, guarded by `check-ignore` as always:
+
+```sh
+mv old/path.md new/path.md
+git check-ignore -q new/path.md && { echo "REFUSING: new/path.md is gitignored"; exit 1; }
+git add new/path.md
+git commit -F - -- old/path.md new/path.md <<'EOF'
+...
+EOF
+```
+
+Git still detects it as a rename, and the index is left clean. Verified 2026-07-10.
+
 ## When A Commit Fails
 The failure modes look alike and demand opposite responses. Read the error; never retry blindly.
 
@@ -181,6 +207,8 @@ Every one of these has been thought by an agent about to do the wrong thing.
 | "I'll build the pathspec from `git status` output — that is the same as naming paths." | It is `-a` with extra steps. Choosing the scope is the entire skill; a pathspec listing everything dirty has chosen nothing. |
 | "The body looks empty, I should explain something." | If you have to search for a reason, there isn't one. Ship the subject. |
 | "I'll `git stash` the unrelated stuff first." | Stash is shared state too, and nobody asked you to move their work. |
+| "`git rm` is just how you delete a file in git." | It stages the deletion. Plain `rm`, then commit the path. |
+| "`git mv` is just how you rename a file in git." | It stages both halves. Plain `mv`, `git add` the new path, commit both. |
 | "This file has two unrelated changes, so I'll `git add -p` just this once." | Then you have staged, and a concurrent bare commit can take it. Commit the file whole and say so, or ask. |
 | "The user is not watching; asking about the stray file will slow things down." | The prompt is rare by construction. Its rarity is why it is worth honoring. |
 
@@ -189,6 +217,7 @@ Stop if you catch yourself:
 
 - typing `git add` without having run `git check-ignore` on that exact path
 - typing `-f`, `--force`, `-a`, `--amend`, `--no-verify`, or `push`
+- typing `git rm` or `git mv` — both stage; use plain `rm` / `mv`
 - writing a subject line containing "and", "also", "plus", or a comma joining two verbs
 - about to commit a path you cannot name a reason for
 - writing a commit body for a change whose subject already said everything
