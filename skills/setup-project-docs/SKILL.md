@@ -4,19 +4,15 @@ description: "Set up or retrofit a repository's durable project documentation fo
 ---
 
 # Setup Project Docs
-
 ## Local Precedence
-
 If the current repo already has `skills/setup-project-docs/SKILL.md`, read and follow the repo-local skill first. Treat this global skill as fallback seed material.
 
 ## Purpose
-
 Set up a low-ceremony docs ecology that lets humans and agents keep context over time without turning every thought into a ticket. The structure should preserve the difference between durable rules, active work, scratch thinking, and historical context.
 
 This skill initializes the structure. Use `run-project-spike` to conduct active spike work, `triage-project-misc` to route loose notes, `track-deferred-decisions` to pin decisions that should be revisited later, and `setup-local-skills` to copy seed skills into a project repo.
 
 ## Default Structure
-
 Create only what the repo needs, but prefer this baseline for new repos:
 
 ```text
@@ -48,7 +44,6 @@ Use the `setup-local-skills` skill to copy full skill folders from the seed libr
 Do not copy a whole personal skill library into a repo by default. Add repo-local skills only when they are part of how the repo should be operated after clone.
 
 ## File Roles
-
 Use root `README.md` for the human-facing project overview: what the project is, how to start, and the most important commands or links.
 
 Use `.gitignore` to keep local agent state, OS junk, secrets, env files, tokens, caches, and generated private artifacts out of version control. This skill includes `assets/default.gitignore` as a starter; merge it with existing project-specific ignore rules instead of overwriting a real `.gitignore`.
@@ -74,7 +69,6 @@ Use `docs/decisions/` for durable tradeoffs that should outlive a spike. Prefer 
 Use `docs/deferred-decisions.md` only when the repo needs a short register for intentionally postponed decisions. Create it with the `track-deferred-decisions` skill instead of adding it to every project by default.
 
 ## AGENTS.md Baseline
-
 When creating or updating `AGENTS.md`, include these ideas when they fit the repo:
 
 - What the repo is and what kinds of changes belong there.
@@ -87,7 +81,6 @@ When creating or updating `AGENTS.md`, include these ideas when they fit the rep
 - Whether `CLAUDE.md` is a symlink to `AGENTS.md`.
 
 ## Markdown And Prose Style
-
 When creating or updating `AGENTS.md` or other hand-authored docs, include this preference when it fits the repo:
 
 ```md
@@ -102,7 +95,6 @@ Prefer compact Markdown heading spacing in hand-authored docs: do not add blank 
 ```
 
 ## Gitignore Baseline
-
 Create or update `.gitignore` early, before creating local agent settings or secret-bearing files.
 
 Use `assets/default.gitignore` as a starter for common public-repo hygiene:
@@ -116,7 +108,6 @@ Use `assets/default.gitignore` as a starter for common public-repo hygiene:
 Merge with ecosystem-specific rules for Node, Python, Rust, static site generators, or any other toolchain already present.
 
 ## Scratch And Misc
-
 If the repo needs a loose intake surface, create:
 
 ```text
@@ -141,7 +132,6 @@ Reviewed YYYY-MM-DD.
 The detailed routing process belongs in the `triage-project-misc` skill.
 
 ## Setup Workflow
-
 1. Inspect the existing repo docs before adding files.
 2. Preserve existing conventions when they already solve the same problem.
 3. Create missing folders and initial files with the least content needed to make the structure understandable.

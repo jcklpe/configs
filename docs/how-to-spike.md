@@ -1,5 +1,4 @@
 # How To Run A Spike
-
 This dotfiles repo uses focused work spikes when a body of work needs more shared context than a normal ticket or one-off task can carry.
 
 A spike is not just a checklist. It is a temporary collaboration space for the user and agents to build taste, vocabulary, decisions, and implementation history around a specific theme of work.
@@ -7,7 +6,6 @@ A spike is not just a checklist. It is a temporary collaboration space for the u
 Spikes are useful here because `configs/` is both personal and portable. Changes often need to answer more than "does it work?": they need to fit the shell load order, stay safe for a public repo, avoid secrets, remain idempotent across machines, and avoid slowing down startup.
 
 ## Authority Ladder
-
 Use docs according to their authority:
 
 - `AGENTS.md`, `README.md`, and active decision records are durable project rules.
@@ -19,7 +17,6 @@ Use docs according to their authority:
 - `docs/archive/` is historical context, not current rules unless a durable doc still agrees with it.
 
 ## The Two Documents
-
 Most active spikes use two docs:
 
 - A **conceptual doc**, such as `docs/lifeos-tools.md`.
@@ -32,7 +29,6 @@ The to-do doc tracks concrete implementation work. It should be operational: fil
 For now, this guide lives at `docs/how-to-spike.md`. If this repo grows more process docs, move it to something like `docs/process/spikes.md` and leave a short pointer here.
 
 ## Conceptual Docs
-
 Use the conceptual doc for:
 
 - goals and non-goals
@@ -45,7 +41,6 @@ Use the conceptual doc for:
 Avoid turning the conceptual doc into a running changelog. When implementation details become durable project rules, fold them into longer-lived docs such as `README.md`, `AGENTS.md`, a decision record, a runbook, or another active reference doc.
 
 ## To-Do Docs
-
 Use the to-do doc for:
 
 - concrete atomic work items
@@ -79,7 +74,6 @@ For this repo, consider adding sections for:
 - whether the work belongs in this public repo or somewhere private
 
 ## Moving Work
-
 Work starts in `To Do`.
 
 When an agent finishes implementation but the user needs to visually or manually verify it, move the item to `Ready for Human QA`.
@@ -91,7 +85,6 @@ When implementation does not need human QA, move it directly to `Done` after ver
 `Done` is allowed to preserve useful history. It does not need to be a perfectly compressed final summary. These docs are archived at the end of the spike, and that archive can help future agents understand why the code ended up this way, even if the notes along the way are messy or not totally current. Prefer a useful decision and implementation trail over a neat but context-poor summary. Do not sand off the rough corners of historical artifacts.
 
 ## Human QA
-
 Use `Ready for Human QA` for things the agent cannot fully verify from the terminal:
 
 - interaction feel
@@ -104,13 +97,11 @@ Use `Ready for Human QA` for things the agent cannot fully verify from the termi
 Be specific. A good QA item names the surface, route, interaction, or visual state the user should inspect.
 
 ## Scratch Docs
-
 Use `docs/scratch/` for rough notes, copied references, draft outlines, and exploratory material that is not yet a spike or durable rule.
 
 Scratch docs are not authoritative. Promote useful material into a spike, decision record, runbook, `README.md`, or `AGENTS.md` before relying on it.
 
 ## Decision Records
-
 Use `docs/decisions/` for decisions that should outlive a spike. Keep them short:
 
 - context
@@ -121,7 +112,6 @@ Use `docs/decisions/` for decisions that should outlive a spike. Keep them short
 Prefer numbered names such as `0001-docs-workflow.md` once there is more than one decision.
 
 ## Archiving A Spike
-
 When a spike is finished:
 
 1. Review the conceptual and to-do docs.
@@ -133,7 +123,6 @@ When a spike is finished:
 Archived spike docs are historical context. They may be out of date. Do not treat archived docs as current project rules unless a durable doc still says the same thing.
 
 ## Durable Lessons
-
 Before archiving, ask:
 
 - Did we add or rename commands? Update `README.md`.
