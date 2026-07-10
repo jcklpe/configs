@@ -42,6 +42,7 @@ create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.codex/s
 create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.codex/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.codex/skills/track-changes"
 create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.codex/skills/track-deferred-decisions"
+create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.codex/skills/commit-work"
 
 ##- Claude global skill symlinks
 # Mirror the same global seed skills for Claude Code while keeping configs/ as the source of truth.
@@ -52,6 +53,7 @@ create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.claude/
 create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.claude/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.claude/skills/track-changes"
 create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.claude/skills/track-deferred-decisions"
+create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.claude/skills/commit-work"
 
 # WezTerm uses XDG on all platforms
 ensure_dir "${HOME}/.config/wezterm"
