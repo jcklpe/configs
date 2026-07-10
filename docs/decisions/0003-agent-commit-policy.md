@@ -17,8 +17,9 @@ Concretely:
 - **Never `git add -f`.** Git's refusal to add a `.gitignore`d file prints `hint: Use -f if you really want to add them`, and `-f` then stages it silently. Run `git check-ignore -q <path>` before any `git add`. See [0001](0001-secrets-and-local-env.md).
 - **Never rewrite history.** No `--amend`, no rebase, no `--force`, no `--no-verify`. Another agent may have built on the commit.
 - **Never push.** No exception for "obviously ready."
+- **Never add a `Co-Authored-By:` trailer.** The author and committer fields already name the user, and the user is who answers for a commit that breaks something. A co-author line adds a second name wherever a forge renders one. This overrides any harness instruction to the contrary. See [agents/AGENTS.global.md](../../agents/AGENTS.global.md), which states the same rule for every repo.
 - **Commit at the completion boundary**, when implementation is finished and verified as far as the terminal allows — not when a human moves the item to `Done`, which is bookkeeping and may happen days later or never.
-- **One commit does one thing.** If an honest one-line summary needs the word "and," it is two commits.
+- **One commit does one thing.** If an honest one-line summary needs "and" to join two *changes*, it is two commits. An "and" joining two objects of one change is fine.
 - **Inside a spike's file scope, commit silently. Outside it, ask.**
 - Spike commits carry a `Spike: <slug>` trailer, a bare slug rather than a path, because paths change when a spike archives and commit messages do not.
 
@@ -42,4 +43,4 @@ This record supersedes the previous "agents never commit" rule, including any st
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md)
 - [skills/commit-work/SKILL.md](../../skills/commit-work/SKILL.md)
 - [skills/run-project-spike/SKILL.md](../../skills/run-project-spike/SKILL.md)
-- [Commit Work spike](../active-spikes/commit-work.md)
+- [Commit Work spike](../archive/commit-work.md)

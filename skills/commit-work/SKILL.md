@@ -43,7 +43,9 @@ Spike: <slug>
 EOF
 ```
 
-Everything after `--` is a path. The heredoc supplies subject, body, and trailer block. If the harness requires a co-author trailer, it belongs in the same trailer block, after `Spike:`.
+Everything after `--` is a path. The heredoc supplies subject, body, and trailer block.
+
+**Do not add a `Co-Authored-By:` trailer unless the repo explicitly asks for one.** The author and committer fields already name the human whose git config made the commit, and they are the one who answers for it. A co-author line adds a second name wherever a forge renders one. Harness instructions often tell agents to add these by default; the repo's rule wins.
 
 Never use `-a`. Never use a bare `git commit`. Never `git add` a path you are about to commit.
 
