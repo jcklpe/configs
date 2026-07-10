@@ -2,7 +2,7 @@
 Status: **active spike.** Opened 2026-07-09 after an agent silently rewrote five global skills into repo-local ones.
 
 Companion to-do: `docs/active-spikes/skill-authority.todo.md`.
-Sibling spike: `docs/active-spikes/commit-work.md` (same conversation, separate subject).
+Sibling spike: `docs/archive/commit-work.md` (same conversation, separate subject).
 
 ## Purpose
 Make this repo's process artifacts and its skill library agree about **which copy of a skill is authoritative, and where**. Three things currently disagree: the global skills describe themselves inconsistently, `docs/how-to-spike.md` duplicates a process that `skills/run-project-spike/SKILL.md` now owns, and the repo's own docs layout does not match the layout its skills describe.
@@ -81,7 +81,7 @@ These skills are read by Claude, Codex, and Copilot. Do not add frontmatter keys
 `AGENTS.md` forbids hard-wrapping prose and forbids reflow-only diffs. It applies to skill files.
 
 ## Relationship To Other Spikes
-Born from the same conversation as `docs/active-spikes/commit-work.md`. The subjects do not overlap; they are siblings, not phases, so no continuation markers.
+Born from the same conversation as `docs/archive/commit-work.md`. The subjects do not overlap; they are siblings, not phases, so no continuation markers.
 
 Sequencing: build `commit-work` first, then use it to commit this spike's work. This spike is small enough to be a good dogfooding test of that workflow.
 
