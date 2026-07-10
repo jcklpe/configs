@@ -7,20 +7,15 @@ Suggested shape:
 
 ```md
 # 0001 Short Decision Title
-
 ## Context
-
 Why this decision came up.
 
 ## Decision
-
 What we chose.
 
 ## Consequences
-
 What this makes easier, harder, or out of scope.
 
 ## Links
-
 Related spikes, TODO items, or files.
 ```
