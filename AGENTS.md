@@ -34,6 +34,8 @@ symlinked to `~/.zshrc` / `~/.bashrc` by the installer.
   must be safe to run repeatedly. Check-before-write (see `create_symlink_if_needed`).
 
 ## Markdown And Prose Style
+These rules are personal rather than repo-specific, so they also live in [agents/AGENTS.global.md](agents/AGENTS.global.md), which the installer symlinks to `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md` and which therefore applies in every repo on this machine. The text below is a verbatim duplicate, kept so this file reads completely on its own. **Edit both, or neither** — the repo copy silently wins when they disagree.
+
 Do not hard-wrap prose in Markdown, comments, docs, or examples. Let editors handle soft wrapping. Preserve paragraphs as single lines unless line breaks carry meaning, such as lists, tables, code blocks, quoted text, frontmatter, or an existing semantic-line-break style.
 
 Avoid reflow-only diffs. When editing prose, change the smallest relevant span instead of rewrapping neighboring paragraphs.
@@ -54,6 +56,7 @@ Let explicit project tooling win when a formatter or linter requires a different
 | Package to install | [install-script/functions/brew-installs.sh](install-script/functions/brew-installs.sh) (mac/linuxbrew) or [dnf-installs.sh](install-script/functions/dnf-installs.sh) (Fedora) |
 | New dotfile symlinked into `$HOME` | [install-script/functions/symlinks.sh](install-script/functions/symlinks.sh) |
 | Reusable agent-neutral skill | `skills/<skill-name>/SKILL.md` |
+| Cross-repo agent preference | [agents/AGENTS.global.md](agents/AGENTS.global.md) — never repo-specific facts |
 | Tool-specific skill | beside the tool, e.g. `lifeos-tools/skills/<skill-name>/SKILL.md` |
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
