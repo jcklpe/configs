@@ -1,7 +1,7 @@
 # Skill Authority To-Do
-Status: **active.** Cleanup done; the substantive work is untouched.
+Status: **archived 2026-07-10.** All items done; the Copilot instruction-path question was closed unresolved and carried into `TODO.md`.
 
-Conceptual doc: `docs/active-spikes/skill-authority.md`.
+Conceptual doc: `docs/archive/skill-authority.md`.
 
 ## Background
 An agent rewrote five global skills into repo-local ones without being asked, breaking the position-independence property that lets one file serve as both the global skill and a vendored copy. Fixing that surfaced two adjacent inconsistencies: `docs/how-to-spike.md` duplicates `skills/run-project-spike/SKILL.md`, and this repo's flat `docs/` layout does not match the `docs/active-spikes/` layout its own skills describe.
@@ -27,11 +27,7 @@ The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrate
 - None. One item is waiting on human QA below; everything else is done.
 
 ## Ready for Human QA
-- [ ] **Check what GitHub Copilot actually reads for instructions.** Partly answered, and the answer is ambiguous. Asked directly, Copilot verified both symlinks on disk and reported receiving "CLAUDE.md (global) plus AGENTS.md (repo-local)". But it was asked from inside `configs/`, which has its own root `CLAUDE.md` symlinked to `AGENTS.md` — so the file it named may be that one, in which case it read `AGENTS.md` twice and never touched `~/.claude/CLAUDE.md`. Both readings fit its answer, and it is a model reporting on its own configuration, which is the confabulation mode `commit-work` was written to distrust.
-
-  **The test, which an agent cannot run from this terminal:** open a repo that has neither `CLAUDE.md` nor `AGENTS.md` of its own, and ask Copilot whether its instructions contain the heading `Global Agent Instructions`. That exact string appears only in `agents/AGENTS.global.md` and nowhere in this repo's `AGENTS.md` — checked. If Copilot can quote it, the hoist reached all three agents. If it cannot, it reached two, and `symlinks.sh` needs a Copilot-specific instruction path.
-
-  This is the only thing keeping the spike open.
+- None. The one item here was closed unresolved at the user's direction; see Done.
 
 ## Done
 ### Fix the skills
@@ -60,6 +56,12 @@ The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrate
 - [x] **Symlink it from `install-script/functions/symlinks.sh` to `~/.codex/AGENTS.md` (Codex's documented global scope) and `~/.claude/CLAUDE.md` (Claude Code's user-level memory). Neither currently exists on this machine.** Done, with `ensure_dir` for both parents, and the symlinks created directly so they are live without a full installer run.
 - [x] **Decide what happens to this repo's `## Markdown And Prose Style` section once the rules are global. Keep a pointer, drop the section, or accept the duplication?** **Keep the full text in both**, per the user. `AGENTS.md` reads completely on its own, which matters for anyone browsing the repo on a forge. Both copies now carry a "edit both, or neither" note naming the other, because the repo copy silently wins when they disagree and drift would be invisible.
 - [x] **Nothing repo-scoped may go in the global file.** Held. The global file states preferences only, and opens by saying why: it is read from inside every project, so "this repo" resolves against whichever repo is being worked in. The commit policy stays in `0003`. Hoisting it would have authorized agent commits in every repo on the machine — the same deictic failure that opened this spike, one level up.
+
+- [x] **Check what GitHub Copilot actually reads for instructions.** **Closed unresolved**, at the user's direction, rather than held open. Asked directly, Copilot verified both symlinks on disk and reported receiving "CLAUDE.md (global) plus AGENTS.md (repo-local)". But it was asked from inside `configs/`, which has its own root `CLAUDE.md` symlinked to `AGENTS.md`, so the file it named may be that one — in which case it read `AGENTS.md` twice and never touched `~/.claude/CLAUDE.md`. Both readings fit its answer, and it is a model reporting on its own configuration, which is the confabulation mode `commit-work` was written to distrust.
+
+  **The test, if it ever matters:** from a repo with neither `CLAUDE.md` nor `AGENTS.md`, ask Copilot whether its instructions contain the heading `Global Agent Instructions`. That exact string appears only in `agents/AGENTS.global.md`, never in this repo's `AGENTS.md` — checked. If it can quote it, the hoist reached all three agents. If not, it reached two, and `symlinks.sh` needs a Copilot-specific instruction path. Carried forward in `TODO.md` under Later, and noted at the symlink in `symlinks.sh`.
+
+  Consequence of being wrong: Copilot silently misses the personal prose rules in repos other than this one. That is how this spike started, so it would announce itself.
 
 ### Unplanned
 - [x] **The `~/.claude/CLAUDE.md` symlink points a writable file into a public repo.** Claude Code's `/memory` command and `#` shortcut append user memories to `~/.claude/CLAUDE.md`, which now resolves to `agents/AGENTS.global.md` — tracked, and pushed to a repo that returns HTTP 200 unauthenticated. Agent-written memories are *not* affected: verified that those live in `~/.claude/projects/<slug>/memory/`, outside the repo, and nothing has leaked. The leak path is `gitall`, which would `git add -A` a stray memory and push it in one motion, so it would never appear in a `git status` the user read.

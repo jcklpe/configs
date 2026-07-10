@@ -2,7 +2,7 @@
 Status: **archived 2026-07-10.** Opened 2026-07-09 from a design conversation about making git history a first-class artifact of spike work. Shipped: `skills/commit-work/SKILL.md`, the `run-project-spike` wiring, and `docs/decisions/0003-agent-commit-policy.md`, which is where the durable rule now lives. This doc is historical context, not current rules.
 
 Companion to-do: `docs/archive/commit-work.todo.md`.
-Sibling spike: `docs/active-spikes/skill-authority.md` (same conversation, separate subject).
+Sibling spike: `docs/archive/skill-authority.md` (same conversation, separate subject).
 
 ## Purpose
 Today this repo's git history is produced by `gitall` — a sweep-everything-into-one-commit-and-push helper. It works for a solo dev who never reads their own history. It fails at three things the user now wants: collaborating with other humans, supporting future git archaeology, and generating source material for written case studies about how work actually went.
@@ -190,10 +190,10 @@ The rows worth knowing about, because they were not obvious in advance: git's ow
 
 **Put violation symptoms in the `description:` field.** The description is what an agent reads when deciding whether to load the skill, so it should contain the words an agent is thinking at the moment it is about to do the wrong thing: `git add`, `gitall`, `push`, `amend`, `commit -a`.
 
-Explicitly *not* adopted from that document: its Iron Law that no skill may be written without a failing test first, and its RED/GREEN/REFACTOR cycle for skill authoring. These skills are prose, reviewed by a human who is building the taste they encode; a test harness would substitute for the involvement that is the point. What survives the rejection is the kernel underneath — *know what an agent does without the rule before writing the rule*. This repo already has that evidence, gathered in the wild: see the incident recorded in `docs/active-spikes/skill-authority.md`.
+Explicitly *not* adopted from that document: its Iron Law that no skill may be written without a failing test first, and its RED/GREEN/REFACTOR cycle for skill authoring. These skills are prose, reviewed by a human who is building the taste they encode; a test harness would substitute for the involvement that is the point. What survives the rejection is the kernel underneath — *know what an agent does without the rule before writing the rule*. This repo already has that evidence, gathered in the wild: see the incident recorded in `docs/archive/skill-authority.md`.
 
 ## Relationship To Other Spikes
-Born from the same design conversation as `docs/active-spikes/skill-authority.md`, but the subjects do not overlap: one is about git, the other about which copy of a skill is authoritative. They are siblings, not phases, so no continuation markers.
+Born from the same design conversation as `docs/archive/skill-authority.md`, but the subjects do not overlap: one is about git, the other about which copy of a skill is authoritative. They are siblings, not phases, so no continuation markers.
 
 `commit-work` should be built **first**, then used to commit the `skill-authority` work. That is a real dogfooding test — `skill-authority` is small enough that if the commit workflow is annoying, it will be felt immediately and cheaply.
 
