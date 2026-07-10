@@ -1,6 +1,6 @@
 ---
 name: setup-local-skills
-description: "Copy reusable seed skill folders from a personal configs skill library into the current repository's local skills folder. Use when the user wants a project repo to carry its own skills after clone, asks to vendor or copy global skills locally, or wants repo-local skill authority without symlinking."
+description: "Copy reusable seed skill folders from a personal configs skill library into a repository's local skills folder, or update a local copy that already exists from the current global one. Use when the user wants a project repo to carry its own skills after clone, asks to vendor or copy global skills locally, wants to pull upstream skill changes down into a repo, or wants repo-local skill authority without symlinking."
 ---
 
 # Setup Local Skills
@@ -40,11 +40,36 @@ Keep a skill global-only when it is merely a personal preference, experimental, 
 4. Create `skills/` in the repo if missing.
 5. Copy each requested skill folder wholesale, preserving `SKILL.md` and any `references/`, `scripts/`, or `assets/` folders.
 6. Do not copy generated caches, `.DS_Store`, secrets, local env files, or unrelated scratch material.
-7. Do not overwrite an existing repo-local skill without showing that it exists and getting explicit approval.
-8. Remove or rewrite the copied skill's `## Local Precedence` section so it no longer describes itself as global fallback seed material.
-9. Update or suggest updating `AGENTS.md` with local skill precedence.
+7. If the skill already exists in the repo, this is an update, not a copy. Use the update workflow below.
+8. Update or suggest updating `AGENTS.md` with local skill precedence.
+
+Copy the skill **verbatim**. Do not adapt its text on the way in. See "Why Verbatim Copies Are Correct" below.
 
 Use normal filesystem copy tools available in the environment. Prefer simple, inspectable commands over a custom framework.
+
+## Why Verbatim Copies Are Correct
+A skill's text must be true no matter which copy of it is being read.
+
+The `## Local Precedence` section is written as a *condition* — "if the current repo already has this skill, follow that one first" — which defers correctly when read from the global copy, and is trivially satisfied when read from the local one. The same bytes are right in both places, so a verbatim copy needs no adaptation and an update can overwrite losslessly.
+
+Never rewrite a copied skill to assert that it *is* the repo-local one. That statement is deictic: "this repository" resolves against whichever repo the agent is reading from, not against the file's location on disk. A global skill claiming to be authoritative for "this repository" hijacks every project it is invoked in, and tells the agent to ignore that project's actual local copy.
+
+**Seed text states conditions. It never states facts about its own location.**
+
+Genuine repo-specific facts — that spike docs live in `notes/` rather than `docs/`, say — belong in the repo's `AGENTS.md`, which already outranks skills, not inside the skill file.
+
+## Update Workflow
+When the repo's copy already exists, changes flow **one way**: from the global skill down into the local copy. Nothing is pushed back upstream. A local copy is allowed to have diverged on purpose.
+
+1. Read the global `SKILL.md` and the repo's copy, both in full.
+2. Work out what changed upstream. Separately, work out how the local copy has diverged.
+3. Report both to the user before writing anything. This report is the whole value of the skill.
+4. Apply the upstream changes to the local copy, leaving intentional local divergence alone.
+5. Where an upstream change collides with a local divergence, do not guess. Show both and ask.
+
+Overwriting the local copy entirely is a legitimate outcome — the user may simply want the global version back. This skill holds no policy about that. Its one rule is that **overwriting is never the silent outcome.**
+
+Do not add frontmatter metadata, content hashes, version numbers, or merge-base markers, and do not reach for git. There is no automated three-way merge here and there does not need to be: a human is in the loop, the operation is rare, and the repo's own version control is the undo.
 
 ## Local Precedence Text
 Add this to `AGENTS.md` when the repo has local skills:
@@ -56,13 +81,14 @@ are fallback seed material, not project rules.
 ```
 
 ## After Copying
-After copying, inspect the copied skill for generic language that should become project-specific. Good local adaptations include:
+A verbatim copy is already correct, so nothing *must* change. Over time a repo may still want its copy to say project-specific things:
 
-- deleting global-only `## Local Precedence` sections
 - exact repo paths
 - project-specific authority order
 - project-specific validation commands
 - public/private information boundaries
 - naming conventions for docs, scratch files, or spikes
+
+Let those divergences appear when the project needs them, not as a copy-time ritual. Never touch the `## Local Precedence` section.
 
 Report the copied skill folders and any existing skills left untouched.
