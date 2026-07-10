@@ -27,8 +27,6 @@ The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrate
 ### Hoist personal rules to a global AGENTS.md
 - [ ] Check what GitHub Copilot actually reads for instructions. It picks up skills from `~/.claude/skills` (confirmed), but its instruction-file path is unknown and may be neither of the above. Nothing in `symlinks.sh` targets it.
 
-### Migrate to docs/active-spikes/
-- [ ] Consider `docs/README.md` explaining the layout.
 
 ## Ready for Human QA
 - None yet.
@@ -53,6 +51,7 @@ The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrate
 - [x] **Grep for every reference to those two paths and update. They are named in `TODO.md` and in `docs/archive/` (archive references may stay stale — archived docs are historical, not authoritative).** Done. Updated `TODO.md`, `AGENTS.md`, both scratch docs, and a doc comment in `lifeos-tools/lifeos.sh` that the original item did not anticipate. The eight archive references were deliberately left pointing at the old paths.
 - [x] **Update the `AGENTS.md` "Where things go" table so the spike row points at `docs/active-spikes/<topic>.md`.** Done.
 - [x] **Update the `TODO.md` notes section.** Done.
+- [x] **Consider `docs/README.md` explaining the layout.** Done — a table of the four folders and their authority levels, plus a pointer to the process skills. Deliberately did **not** add `docs/active-spikes/README.md`, even though every sibling folder has one: it would list the spikes currently in flight, and `TODO.md` is already that index. A second index drifts.
 
 ### Hoist personal rules to a global AGENTS.md
 - [x] **Decide the source file. Something like `agents/AGENTS.global.md` in this repo, holding only cross-repo *personal* preferences: the Markdown and prose style rules, and nothing else.** Done, at exactly that path. The name matters: Codex loads every file *literally named* `AGENTS.md` from repo root down to the working directory, so `agents/AGENTS.md` would be pulled in a second time by anyone working inside that folder, on top of the repo's own. `AGENTS.global.md` is invisible to that walk.
