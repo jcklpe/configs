@@ -29,14 +29,17 @@ Nothing built. The rogue-agent skill edits that were dirty in the tree at the st
 The repo now uses `docs/active-spikes/` throughout; the migration landed as `skill-authority` work on 2026-07-10.
 
 ## To Do
-- [ ] Use `commit-work` on the `skill-authority` spike as it proceeds. If the workflow is annoying there, it will be annoying everywhere.
-- [ ] Watch the frequency of forced "and" commits over the next few spikes. Two out of eleven on the first run is acceptable and both were index/rules files; if it climbs, commits are too rare.
+- None. The spike is complete.
 
 ## Ready for Human QA
 - None. The three items here passed on 2026-07-09; see Done.
 
 ## Done
-- [x] **First real use of `commit-work`** (2026-07-10, commits `bb2aca9`..`44fb81d`). Split a 34-path tree spanning four themes into eleven commits. The plan going in called for six; applying the "and" test honestly during execution split the largest one further, because it had bundled the skill, its symlink registration, the decision record, the `run-project-spike` wiring, and the spike docs under a single subject. Only two commits kept a forced "and", both index/rules files (`AGENTS.md`, `TODO.md`), both with bodies explaining the entanglement. `TODO.md` carries two `Spike:` trailers.
+- [x] **Use `commit-work` on the `skill-authority` spike as it proceeds. If the workflow is annoying there, it will be annoying everywhere.** Done — fifteen commits across that spike, and it was not annoying. It was, twice, actively useful: it caught that my own six-commit plan was really eleven, and it refused to let `git rm` pass unexamined.
+
+- [x] **Watch the frequency of forced "and" commits over the next few spikes. Two out of eleven on the first run is acceptable and both were index/rules files; if it climbs, commits are too rare.** Measured over thirty commits. Six subjects contain the word "and"; only **four** are genuinely two changes trapped in one file (`AGENTS.md`, `TODO.md`, `setup-local-skills`, `skill-authority.md`). The other two — `forbid git rm and git mv`, `add gitcommit and gitpush as the two halves of gitall` — are single changes with compound objects.
+
+  So the frequency is fine (4/30, all file-level entanglements), but the *test itself was stated wrong*: the skill said "if the summary needs the word and, it is two commits," when the real test is whether the "and" joins two **changes** or two objects of one change. A grep for the word over-fires. Corrected in the iron rule, the scoping section, and the red flag, with both worked examples. This is the durable lesson from measuring rather than assuming. (2026-07-10, commits `bb2aca9`..`44fb81d`). Split a 34-path tree spanning four themes into eleven commits. The plan going in called for six; applying the "and" test honestly during execution split the largest one further, because it had bundled the skill, its symlink registration, the decision record, the `run-project-spike` wiring, and the spike docs under a single subject. Only two commits kept a forced "and", both index/rules files (`AGENTS.md`, `TODO.md`), both with bodies explaining the entanglement. `TODO.md` carries two `Spike:` trailers.
 
   Verified afterward: `git log --grep='Spike: commit-work$' --reverse` returns the spike's eight commits in order, `skill-authority` returns three, and `TODO.md`'s dual trailers both parse. The trailer index works.
 
