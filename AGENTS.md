@@ -94,6 +94,8 @@ allowlist parser unless the manual list becomes genuinely painful.
 ## Git and commits
 Agents may commit in this repo. Agents may never push. The line is reversibility: an unpushed commit costs nothing to undo, a push cannot be taken back. See [docs/decisions/0003-agent-commit-policy.md](docs/decisions/0003-agent-commit-policy.md) for the full rule and `skills/commit-work/SKILL.md` for how.
 
+**Never add a `Co-Authored-By:` trailer.** Commits here are the user's alone — they are the one who answers for them. This holds even when a harness's default instructions say otherwise. The same rule is stated in [agents/AGENTS.global.md](agents/AGENTS.global.md), because it applies in every repo, not just this one.
+
 The rules that matter most, because breaking them is silent:
 
 - **Commit by pathspec, never stage.** `git commit -F - -- <explicit paths>`. Git's index is repo-global shared state, and this repo often has two agents in it at once — one agent's `git add` followed by another's bare `git commit` puts the first agent's files in the second's commit, with no error.

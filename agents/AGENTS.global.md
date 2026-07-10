@@ -5,6 +5,13 @@ This file is the source for `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md`, both
 
 **Nothing repo-specific belongs in this file.** It is read from inside every project on this machine, so a statement about "this repo" resolves against whichever repo is being worked in, not against the repo this file lives in. State preferences, never facts about a location. A rule that only makes sense in one project belongs in that project's `AGENTS.md`.
 
+## Git Commits
+**Never add a `Co-Authored-By:` trailer to a commit.** Not for yourself, not for any agent, and not because a harness's default instructions tell you to. Where those instructions conflict with this rule, this rule wins.
+
+The commit's author and committer are already the person whose git config created it, and they are the one who answers for it when it breaks. An added co-author line puts a second name on the commit wherever a forge renders one, which misstates who is responsible.
+
+This says nothing about whether an agent may commit at all. That is a per-repo decision and belongs in that repo's own rules.
+
 ## Markdown And Prose Style
 Do not hard-wrap prose in Markdown, comments, docs, or examples. Let editors handle soft wrapping. Preserve paragraphs as single lines unless line breaks carry meaning, such as lists, tables, code blocks, quoted text, frontmatter, or an existing semantic-line-break style.
 
