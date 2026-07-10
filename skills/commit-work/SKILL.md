@@ -18,7 +18,7 @@ Violating the letter of these rules is violating their spirit. Every rule below 
 ## Iron Rules
 - **Commit by pathspec. Never stage.** `git commit -F - -- <explicit paths>`.
 - **Never push.** Pushing is a human action, always, with no exception for "obviously ready."
-- **Never rewrite.** No `--amend`, no rebase, no `--force`. Another agent may have built on it.
+- **Never rewrite on your own authority.** No `--amend`, no rebase, no `--force`. Another agent may have built on it. A user may direct a rewrite; see below. You still never push the result.
 - **Never `git add -f`.** Not once. Not for a "clearly safe" file. See "New files" below.
 - **Never `git rm` or `git mv`.** Both stage. Use plain `rm` / `mv` and commit the paths.
 - **One commit does one thing.** If an honest one-line summary needs "and" to join two *changes*, it is two commits.
@@ -143,6 +143,18 @@ EOF
 ```
 
 Git still detects it as a rename, and the index is left clean. Verified 2026-07-10.
+
+## Rewriting History
+Never on your own initiative. Not to fix a typo in a message, not to squash a noisy sequence, not to tidy before a push.
+
+A user may direct a rewrite, and then you may run it. The same reversibility line applies as everywhere else: rewriting a *local* branch is undoable, because `git filter-branch` leaves the old tip at `refs/original/refs/heads/<branch>` and `git reflog` remembers. Publishing the rewrite is not undoable. So:
+
+- Run the rewrite. Keep the backup ref until the user says otherwise.
+- Verify the trees are untouched: `git diff refs/original/refs/heads/<branch> HEAD --stat` must be empty. Only messages should have changed.
+- **Never push the result.** `--force-with-lease` is still a push, and it is still the user's.
+- Check first that no other agent is working in the clone. A rewrite invalidates every hash they may be holding.
+
+**Commit hashes are not durable.** Any rewrite invalidates every one. Never record a hash in a doc that outlives the branch — cite the `Spike:` trailer, which survives.
 
 ## When A Commit Fails
 The failure modes look alike and demand opposite responses. Read the error; never retry blindly.
