@@ -1,5 +1,4 @@
 # Decisions
-
 This folder holds durable decision records for repo direction and tradeoffs.
 
 Use it when a choice should outlive a spike, such as where a tool belongs, how it should be installed, or what safety boundary future work must preserve.

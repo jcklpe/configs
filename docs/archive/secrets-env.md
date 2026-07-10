@@ -1,9 +1,7 @@
 # Secrets And Local Env Scratch Spike
-
 Status: archived. Durable lessons were folded into `AGENTS.md`, `.gitignore`, and `docs/decisions/0001-secrets-and-local-env.md`.
 
 ## Outcome
-
 We chose a personal dotfiles tool hygiene pattern:
 
 - Real secret-bearing files may live inside the local `configs/` working tree.
@@ -27,11 +25,9 @@ configs/
 ```
 
 ## Original Question
-
 How should this public dotfiles repo support tools that need secrets or private local configuration without committing secrets, credentials, tokens, generated personal data, or machine-specific private state?
 
 ## Notes
-
 LifeOS tooling triggered this spike, but the resulting rule is repo-wide. The LifeOS spike should define its exact `.env`, token, and config file names later.
 
 If a secret is committed, assume it is compromised, rotate it in the upstream service, remove it from the repo, and strengthen the relevant ignore rules.

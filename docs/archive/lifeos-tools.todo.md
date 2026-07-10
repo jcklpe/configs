@@ -1,17 +1,14 @@
 # LifeOS Tools To-Do
-
 Status: archived. Future enhancement threads have been moved to `docs/lifeos-tools-v2.md`.
 
 Conceptual doc: `docs/archive/lifeos-tools.md`.
 
 ## Background
-
 We need a small LifeOS helper script in `configs/` that pulls live Trello and Google Calendar data into Markdown files inside the private LifeOS vault.
 
 The repo-wide secrets/env pattern is already settled in `docs/decisions/0001-secrets-and-local-env.md`: real local secret files may live in the working tree if ignored; tracked examples with fake values sit beside them.
 
 ## Project Organization
-
 Planned initial folder:
 
 ```text
@@ -38,7 +35,6 @@ lifeos-tools/google-credentials.json
 ```
 
 ## General Principles
-
 - Prefer Bash until a specific part clearly earns another language.
 - Keep files flat and obvious.
 - Load secrets at command runtime, not from global shell startup.
@@ -48,7 +44,6 @@ lifeos-tools/google-credentials.json
 - Keep commands manual and on-demand.
 
 ## Current State Overview
-
 - `lifeos-tools/` exists.
 - `lifeos-tools/lifeos.sh` implements the first local/Trello slice.
 - Trello read/write commands have passed live QA against the Life board.
@@ -63,11 +58,9 @@ lifeos-tools/google-credentials.json
 - This spike has been promoted out of `docs/scratch/`.
 
 ## Future / Not Blocking
-
 Future enhancement threads are preserved in `docs/lifeos-tools-v2.md` and `docs/lifeos-tools-v2.todo.md`.
 
 ## Calendar Implementation Prep
-
 - Use the read-only scopes:
   - `https://www.googleapis.com/auth/calendar.calendarlist.readonly`
   - `https://www.googleapis.com/auth/calendar.events.readonly`
@@ -80,13 +73,11 @@ Future enhancement threads are preserved in `docs/lifeos-tools-v2.md` and `docs/
 - Do not add Google Calendar write commands unless the write scope is deliberately narrowed and the OAuth scope is updated.
 
 ## Ready For Human QA
-
 - No remaining Trello write QA for the current command set.
 - No remaining Trello sync QA for the current configured multi-board set.
 - No remaining Google Calendar QA for the current configured calendar set.
 
 ## Done
-
 - Added docs workflow and scratch/archive/decision folders.
 - Settled repo-wide secrets/env hygiene in `docs/decisions/0001-secrets-and-local-env.md`.
 - Archived the secrets/env scratch spike.

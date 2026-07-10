@@ -4,13 +4,10 @@ description: "Copy reusable seed skill folders from a personal configs skill lib
 ---
 
 # Setup Local Skills
-
 ## Local Precedence
-
 If the current repo already has `skills/setup-local-skills/SKILL.md`, read and follow the repo-local skill first. Treat this global skill as fallback seed material.
 
 ## Purpose
-
 Copy complete skill folders from a seed library into the current repo so the repo is self-contained for future agents and collaborators. The copied skill becomes part of the repo's operating contract and may evolve independently.
 
 Default seed source:
@@ -26,7 +23,6 @@ repo/skills/
 ```
 
 ## What To Copy
-
 Copy a skill locally when:
 
 - the repo depends on that workflow for normal collaboration
@@ -38,7 +34,6 @@ Copy a skill locally when:
 Keep a skill global-only when it is merely a personal preference, experimental, too broad for the repo, or dependent on private local tooling unavailable to future cloners.
 
 ## Copy Workflow
-
 1. Identify the repo root and inspect existing `AGENTS.md`, `skills/`, and docs.
 2. List available seed skills from `~/configs/skills/` by looking for first-level folders with `SKILL.md`.
 3. Confirm which skills the user wants copied unless the request named them clearly.
@@ -52,7 +47,6 @@ Keep a skill global-only when it is merely a personal preference, experimental, 
 Use normal filesystem copy tools available in the environment. Prefer simple, inspectable commands over a custom framework.
 
 ## Local Precedence Text
-
 Add this to `AGENTS.md` when the repo has local skills:
 
 ```md
@@ -62,7 +56,6 @@ are fallback seed material, not project rules.
 ```
 
 ## After Copying
-
 After copying, inspect the copied skill for generic language that should become project-specific. Good local adaptations include:
 
 - deleting global-only `## Local Precedence` sections

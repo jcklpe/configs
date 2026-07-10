@@ -1,12 +1,10 @@
 # LifeOS Bitwarden Cleanup
-
 Status: parked — scratch / future (conceptual doc). Not active work. Promote back to an
 active spike only when a concrete cleanup implementation is ready.
 
 Companion to-do: `docs/scratch/lifeos-bitwarden.todo.md`.
 
 ## Purpose
-
 Let an agent actually **clean up** the user's Bitwarden vault — real reads and writes
 (dedup, fix missing fields, retire stale logins) — not just produce a passive report.
 The vault is the user's most sensitive store, so the whole spike is organized around one
@@ -18,7 +16,6 @@ used primarily from the desktop platform apps (Claude/Codex desktop), which is h
 actually works day to day.
 
 ## The One Hard Constraint
-
 The Bitwarden master password lives **only in the user's head**. It is not stored in the
 cloud, on paper, in a file, in an env var, or in any agent's context — ever.
 
@@ -32,7 +29,6 @@ resulting session in its own process; the agent operates only *through* session-
 tools.
 
 ## Settled-ish Model
-
 - **Primary surface:** the official Bitwarden MCP server (`@bitwarden/mcp-server`), spawned
   on demand by the desktop app as a stdio subprocess via `npx`. No Docker, no standing
   server, no daemon, no port.
@@ -63,7 +59,6 @@ tools.
   secret-read plumbing — the MCP server owns that. See the analysis-vs-dump tension below.
 
 ## Why A Local Analysis Helper Might Be Worth It
-
 There are two ways to do the audit:
 
 1. **Dump the whole vault into the agent's context** and let the model reason over it. Simple,
@@ -80,7 +75,6 @@ spike should lean that way unless the MCP server's own audit tooling makes the h
 redundant.
 
 ## Goals
-
 - An agent can propose and, after approval, execute vault cleanup writes.
 - The master password never touches disk, env, or any agent context.
 - The cleanup is reversible (backup + trash-not-permanent).
@@ -88,7 +82,6 @@ redundant.
   config fragment, plus an optional analysis helper.
 
 ## Non-Goals
-
 - No master password stored anywhere, in any form, ever.
 - No static `BW_SESSION` in MCP config; no env-var-password approach.
 - **No unattended automation** (cron, headless). Unlock requires a live human at an OS
@@ -103,7 +96,6 @@ redundant.
   display; the user's machines have one).
 
 ## Vocabulary
-
 - **Unlock dialog** — the native OS password prompt the MCP server raises; the only place the
   master password is ever entered.
 - **Session** — the decrypted-vault token the server holds in-process after unlock. Expires /
@@ -115,7 +107,6 @@ redundant.
 - **Reference** — a LifeOS note pointer to a Bitwarden item (name or ID), never a value.
 
 ## Relationship To Other Work
-
 - Extends the LifeOS tooling theme; v1 history is in `docs/archive/lifeos-tools.md` and the
   v2 parking lot `docs/lifeos-tools-v2.md` (which already says: CLI is the durable
   boundary, MCP may wrap behavior later, writes need previews and no hard delete — this spike
@@ -126,7 +117,6 @@ redundant.
   model looks the way it does. Keep that trail; don't re-litigate it.
 
 ## Constraints That Should Shape Implementation
-
 - Cross-machine portability: the install bits belong in the installer; the config fragment
   must stay secret-free to remain trackable.
 - Public-repo safety: no vault exports, tokens, or `claude_desktop_config.json` with secrets

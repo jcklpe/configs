@@ -1,12 +1,10 @@
 # LifeOS Tools V2 To-Do
-
 Status: **active.** The Trello Task Chains / `supersede` theme is **shipped and human-QA'd**
 (section below). All other items remain candidate/parking-lot work, not active.
 
 Conceptual doc: `docs/lifeos-tools-v2.md`.
 
 ## Shipped: Trello Task Chains (`supersede` + `chain`)
-
 Live smoke test passed (LifeOS agent, real Trello board, 2026-06-25). In scope for this
 iteration, all complete:
 
@@ -45,7 +43,6 @@ Out of scope this iteration (parking lot; pull in only on request): move predece
 list, `--dry-run`/preview, auto-`sync` after write, vault-side writes.
 
 ## Candidate Work Items
-
 - Decide which v2 theme, if any, should become the next active spike.
 - For Trello write safety, define the exact output shape for `--dry-run` and before/after state.
 - For Trello write safety, add stale-card re-fetch before mutation.
@@ -65,7 +62,6 @@ Calendar writes shipped (`create-event` / `update-event`, attendees, allowlist, 
 - For agent exposure, decide whether a callable wrapper is actually needed or whether CLI access is enough.
 
 ## Not Now
-
 - Do not add Gmail mutations.
 - Do not add Drive-wide cloning or recursive indexing.
 - Do not add `calendar delete-event`, and do not relax the writable-calendar allowlist or the `--notify`-gated email-out. (Calendar create/update are now allowed within those bounds; see `docs/decisions/0002-lifeos-calendar-writes.md`.)

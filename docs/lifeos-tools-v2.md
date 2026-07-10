@@ -1,5 +1,4 @@
 # LifeOS Tools V2
-
 Status: **active spike.** Promoted from scratch on 2026-06-25 to carry one concrete theme:
 **Trello Task Chains and the `supersede` command** (see the section below). That theme is now
 **shipped and human-QA'd** (live smoke test via the LifeOS agent, 2026-06-25); the spike stays
@@ -9,7 +8,6 @@ pulls one in.
 Companion to-do: `docs/lifeos-tools-v2.todo.md`.
 
 ## Purpose
-
 Preserve useful next-step ideas without keeping the v1 spike docs open forever. Most of this
 doc is not committed product direction — treat it as a planning surface. The active theme is
 the Task Chains work below; everything else accretes here until it earns implementation.
@@ -26,9 +24,7 @@ The v1 baseline is:
 - Secrets, OAuth credentials, tokens, QA outputs, and generated private snapshots stay ignored or outside git.
 
 ## Active Theme: Trello Task Chains and `supersede`
-
 ### The convention this serves
-
 In the LifeOS vault, multi-step work is modeled as a **chain of linked Trello cards** rather
 than one card that mutates over its whole life. When work hits a **gate** — a wait on an
 external party, a future date, a handoff, or a substantial prerequisite — the current card is
@@ -48,7 +44,6 @@ files, no credentials in the vault (those stay in `lifeos-tools/.env`, per
 `docs/decisions/0001-secrets-and-local-env.md`).
 
 ### Where the links live: comments, not the description
-
 Decision: **the link record is a labeled comment**, not a description stanza.
 
 - `comment` is append-only (`POST /cards/{id}/actions/comments`) — no read-modify-write, so two
@@ -76,7 +71,6 @@ trailing card id (URL or bare id, via the existing `_card_ref`). The full URL is
 human can click it.
 
 ### Atomic-ish writes and partial-failure behavior
-
 Two REST writes can't be a true transaction, so the command is ordered and idempotent instead:
 
 1. **Pre-flight both cards** with a cheap `GET` (fetch name + url). A typo'd `--from`/`--to`
@@ -93,7 +87,6 @@ Two REST writes can't be a true transaction, so the command is ordered and idemp
    failure simply completes the missing side rather than duplicating links.
 
 ### Traversal: `trello chain`
-
 `chain --card <id|url>` reconstructs and prints the whole chain from any member card:
 
 - Walk **backward** following `Continues from:` to the head, then walk **forward** following
@@ -104,7 +97,6 @@ Two REST writes can't be a true transaction, so the command is ordered and idemp
   more than once follows its latest link.
 
 ### Command surface
-
 ```
 lifeos trello supersede --from CARD --to CARD [--board BOARD_ID]
 lifeos trello supersede --create --from CARD --list LIST --name NAME \
@@ -123,7 +115,6 @@ auto-`sync` after write, and any vault-side writing. Those live in the parking-l
 below.
 
 ## Trello V2 Ideas
-
 Trello writes work, but the safer agent-facing version would be more explicit about previews and results.
 
 Potential improvements:
@@ -140,7 +131,6 @@ Potential improvements:
 The current generated Trello snapshot is not a write-back database. Keep that boundary.
 
 ## Calendar V2 Ideas
-
 **Mostly shipped.** Calendar writes now exist with a tool-enforced safety model; see `docs/decisions/0002-lifeos-calendar-writes.md`. The conservative assumptions this section originally held — "stay read-only by default," "create-only on a dedicated reminders calendar," "never create guest events or modify attendee lists" — were deliberately retired. The decision record is authoritative if this scratch note drifts.
 
 Done:
@@ -161,7 +151,6 @@ Still open:
 - Consider richer time parsing / natural-language start times if the explicit `YYYY-MM-DDTHH:MM` form proves clumsy in practice.
 
 ## Gmail V2 Ideas
-
 Gmail snapshots are intentionally bounded and read-only. Email is sensitive and noisy, so the default should stay conservative.
 
 Potential improvements:
@@ -175,7 +164,6 @@ Potential improvements:
 Do not add Gmail mutations without a separate spike and a much higher safety bar.
 
 ## Drive V2 Ideas
-
 Drive should remain on-demand, not a vault clone or background index.
 
 Potential improvements:
@@ -190,7 +178,6 @@ Potential improvements:
 Do not recursively index whole Drives or generate giant Drive summaries.
 
 ## Agent Exposure V2 Ideas
-
 The CLI is the durable boundary. MCP/plugin-style functions may be useful later, but should wrap the CLI behavior rather than becoming a separate source of truth.
 
 Potential callable wrapper shape:
@@ -210,7 +197,6 @@ If this happens, keep the same safety properties:
 - bounded outputs
 
 ## Setup / Install V2 Ideas
-
 Potential improvements:
 
 - Add a helper that creates or updates the LifeOS vault runbook symlink after `.env` is configured.
@@ -218,7 +204,6 @@ Potential improvements:
 - Add migration notes for setting up a new machine from example files.
 
 ## Promotion Criteria
-
 This scratch topic should become an active spike only when one concrete v2 theme is ready to implement. Do not promote everything here at once.
 
 Good candidate active spikes:

@@ -1,11 +1,9 @@
 # LifeOS Bitwarden Cleanup To-Do
-
 Status: parked — scratch / future (to-do doc). Not active work.
 
 Conceptual doc: `docs/scratch/lifeos-bitwarden.md`.
 
 ## Background
-
 Goal: an agent that actually cleans up the Bitwarden vault (real reads + writes), driven from
 the desktop platform apps via the official Bitwarden MCP server. One hard constraint: the
 master password lives only in the user's head and never touches disk, env, or agent context.
@@ -13,7 +11,6 @@ The MCP server's unlock tool (native OS password dialog) satisfies that constrai
 moved from "the password" to "the writes," so the design centers on a reversible cleanup pass.
 
 ## Project Organization
-
 - Conceptual model and settled decisions: `docs/scratch/lifeos-bitwarden.md`.
 - This file: concrete work items, current state, QA, edge cases.
 - Optional code, if built: `lifeos-tools/` (analysis helper + backup helper only).
@@ -21,7 +18,6 @@ moved from "the password" to "the writes," so the design centers on a reversible
 - MCP config fragment: documented here / optionally symlinked; secret-free.
 
 ## General Principles
-
 - Master password: head only, never anywhere else.
 - No static `BW_SESSION` in config. Unlock happens live via the OS dialog.
 - Every cleanup pass: backup → analyze → propose plan → approve → execute (trash, not
@@ -30,7 +26,6 @@ moved from "the password" to "the writes," so the design centers on a reversible
 - Bounded outputs; no token/secret exposure; reversible writes.
 
 ## Current State Overview
-
 - Nothing built yet. This is a feasibility spike with a settled-ish model.
 - `bw` CLI is NOT installed on this machine (no `bw`, `rbw`, or `op`).
 - Confirmed from vendor docs: official `@bitwarden/mcp-server` is a stdio npm package run via
@@ -39,7 +34,6 @@ moved from "the password" to "the writes," so the design centers on a reversible
   pre-seed). No Docker / no standing server.
 
 ## To Do
-
 ### Verify before committing
 - Confirm the MCP server **holds the session in-process across subsequent tool calls** after a
   dialog unlock (blog lists lock/unlock/sync/status as session tools, strongly implying yes —
@@ -82,7 +76,6 @@ moved from "the password" to "the writes," so the design centers on a reversible
   the human, never via an agent.
 
 ## Public Safety And Secrets
-
 - Never track: vault exports, `BW_SESSION`, `bw login` state, or any
   `claude_desktop_config.json` containing secrets.
 - The MCP config fragment is only trackable *because* it carries no session token. Keep it
@@ -91,20 +84,17 @@ moved from "the password" to "the writes," so the design centers on a reversible
 - Treat a vault export as compromised if it ever lands in git; rotate accordingly.
 
 ## Shell Startup Impact
-
 - None expected. The MCP server is spawned by the desktop app, not from shell startup. Do not
   load any Bitwarden secrets from global shell startup.
 - If a `lifeos bw ...` subcommand is added later, it follows the existing lazy `_load_env`
   pattern in `lifeos-tools/lifeos.sh`; no startup cost.
 
 ## Install And Symlink Impact
-
 - Adds the `bw` CLI to the install path.
 - May add one tracked secret-free config fragment and (optionally) a symlink for it.
 - No change to shell load order.
 
 ## OS Matrix
-
 - macOS: primary target; desktop apps + GUI for the unlock dialog are present.
 - Fedora / generic Linux: bw CLI available; unlock dialog needs a display (fine on a desktop
   session). Verify package source.
@@ -113,7 +103,6 @@ moved from "the password" to "the writes," so the design centers on a reversible
   `bw unlock --raw` fallback only if ever needed. Not a target for this spike.
 
 ## Validation Commands
-
 - `command -v bw && bw --version` — CLI present.
 - `bw login` then `bw status` — account state without exposing secrets.
 - From the desktop app: trigger the MCP unlock tool, confirm the OS dialog appears and the LLM
@@ -121,24 +110,20 @@ moved from "the password" to "the writes," so the design centers on a reversible
 - Dry-run a cleanup plan on a throwaway/test vault item set before touching real items.
 
 ## Rollback / Recovery
-
 - Pre-pass `bw export` is the primary rollback.
 - Trash-not-permanent means deletes are restorable within Bitwarden's 30-day window.
 - If a session misbehaves: `bw lock` / close the desktop app to drop the in-process session.
 
 ## Public vs Private
-
 - This spike's docs, the secret-free MCP fragment, the installer change, and any analysis
   helper + fake fixtures are public-safe and belong in this repo.
 - Real vault exports, tokens, login state, and the populated desktop-app config are private and
   stay out of git.
 
 ## Ready For Human QA
-
 - None yet.
 
 ## Done
-
 - Established the model: MCP-server-driven cleanup, OS-dialog unlock keeps the master password
   in-head, writes are the real risk surface, reversible cleanup pass (backup + trash +
   plan-before-execute).
