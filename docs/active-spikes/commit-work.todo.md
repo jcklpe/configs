@@ -29,13 +29,21 @@ Nothing built. The rogue-agent skill edits that were dirty in the tree at the st
 `docs/active-spikes/` now exists but the repo has not yet been migrated to it — `docs/lifeos-tools-v2.md` and its to-do are still flat under `docs/`. That migration is a `skill-authority` item.
 
 ## To Do
-- [ ] Use `commit-work` to commit this spike's own work. That is the first real test, and it is deliberately the last step.
-- [ ] Then use it on the `skill-authority` spike. If the workflow is annoying there, it will be annoying everywhere.
+- [ ] Use `commit-work` on the `skill-authority` spike as it proceeds. If the workflow is annoying there, it will be annoying everywhere.
+- [ ] Watch the frequency of forced "and" commits over the next few spikes. Two out of eleven on the first run is acceptable and both were index/rules files; if it climbs, commits are too rare.
 
 ## Ready for Human QA
 - None. The three items here passed on 2026-07-09; see Done.
 
 ## Done
+- [x] **First real use of `commit-work`** (2026-07-10, commits `bb2aca9`..`44fb81d`). Split a 34-path tree spanning four themes into eleven commits. The plan going in called for six; applying the "and" test honestly during execution split the largest one further, because it had bundled the skill, its symlink registration, the decision record, the `run-project-spike` wiring, and the spike docs under a single subject. Only two commits kept a forced "and", both index/rules files (`AGENTS.md`, `TODO.md`), both with bodies explaining the entanglement. `TODO.md` carries two `Spike:` trailers.
+
+  Verified afterward: `git log --grep='Spike: commit-work$' --reverse` returns the spike's eight commits in order, `skill-authority` returns three, and `TODO.md`'s dual trailers both parse. The trailer index works.
+
+- [x] **The concurrency hazard fired for real, and the design held.** Mid-commit-sequence, the user edited `git/git.sh` to add a `gitpush` function, unprompted and unannounced. Nothing coordinated; nobody checked. Under `gitall` or `git commit -a`, those six in-progress lines would have landed inside "todo: index new spikes and deferred-decisions register" under the wrong message and the wrong trailers. Under the pathspec rule, zero of the eleven commits touched the file and the work stayed in the tree. This was not a test we designed. It happened by itself, roughly twenty minutes after the rule was written down, and it is the single strongest evidence in this spike.
+
+  `commit-work` then surfaced `git/git.sh` as stray work outside the spike's scope and asked rather than sweeping, which is the behavior the "silent inside scope, ask outside scope" rule exists to produce.
+
 - [x] **Human QA passed** (2026-07-09). The user read `skills/commit-work/SKILL.md`, made small edits directly, and judged the rules sound. They declined to rule on whether the rationalization table names real excuses, on the grounds that an LLM is the better witness there. The skill surfaces correctly in a live session. Message format confirmed after two rounds of revision.
 
 - [x] **Discovered that commit granularity is file-level.** Found while planning this spike's own first commit, which is exactly what the dogfooding was for. `AGENTS.md` had accumulated two unrelated changes — the `0003` policy pointer and the Markdown style rule — and a pathspec commit takes whole files, so they cannot be separated without `git add -p`, which stages, which the iron rules forbid. This is a floor beneath the "and" test, not a contradiction of it: **a file holding two unrelated changes means the agent waited too long to commit.** Written into the skill as `### Granularity is file-level, and that is the point`, with an ordered fallback (commit together and say so; if large and unrelated, ask the human) and a new rationalization row refusing `git add -p`.
