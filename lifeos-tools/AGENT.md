@@ -1,13 +1,10 @@
 # LifeOS Tools Agent Guide
-
 Use the local `lifeos` command to refresh LifeOS source context and make deliberate Trello updates.
 
 ## Core Rule
-
 `sources/trello.md` is a generated context snapshot, not a write-back database. Read it to understand Trello state, but do not edit it to change Trello. Use explicit `lifeos trello ...` commands for writes, then refresh the snapshot.
 
 ## Quick Checks
-
 ```sh
 lifeos doctor
 lifeos trello list-lists
@@ -73,7 +70,6 @@ That writes ignored files under:
 
 
 ## Open Austin Org GitHub Snapshot
-
 ```sh
 lifeos open-austin-org path
 lifeos open-austin-org sync
@@ -95,7 +91,6 @@ Do not copy or inspect the org repo `.env`, `.git`, `.github`, tools, workflows,
 
 
 ### Creating GitHub Issues
-
 Use this only when Open Austin work needs to be public / org-visible in GitHub. Private strategy, personal bandwidth planning, or sensitive context belongs in LifeOS or Trello instead.
 
 ```sh
@@ -110,7 +105,6 @@ Allowed fields: title, body/body-file, labels, assignees, repo override. Do not 
 Before using `--execute`, the user should have approved the exact issue title/body/labels/assignees.
 
 ## Trello Reads
-
 ```sh
 lifeos trello list-boards
 lifeos trello list-lists
@@ -122,7 +116,6 @@ The generated snapshot groups cards by board heading. If multiple boards are con
 Run `list-lists` before using list names if the board taxonomy may have changed. Prefer card URLs or card IDs for card operations.
 
 ## Trello Writes
-
 Create a card:
 
 ```sh
@@ -184,7 +177,6 @@ lifeos trello sync
 ```
 
 ## Google Calendar
-
 ```sh
 lifeos calendar auth
 lifeos calendar list-calendars
@@ -200,7 +192,6 @@ Calendars listed in `LIFEOS_CALENDAR_NO_DESCRIPTION` (in `.env`) have their even
 Multi-day all-day events appear under every blocked date. Continuation lines include the covered date range and the exclusive Google Calendar end date so availability checks are safe. Timed events crossing midnight also appear under every affected date.
 
 ## Google Calendar Writes
-
 ```sh
 lifeos calendar create-event --title "Dinner with Lindsey" --start 2026-06-25T18:00 --attendee lindsey
 lifeos calendar create-event --title "Trip" --start 2026-07-01 --execute
@@ -222,7 +213,6 @@ Times: `--start`/`--end` as `YYYY-MM-DD` makes an all-day event; `YYYY-MM-DDTHH:
 After a write, run `lifeos calendar sync` to refresh the LifeOS snapshot.
 
 ### Disambiguating an attendee
-
 When `--attendee NAME` is ambiguous (several contacts) or has no match, the write command stops and lists candidates rather than guessing. Do not silently drop the attendee or pick one yourself. Instead:
 
 ```sh
@@ -234,7 +224,6 @@ lifeos people list-aliases          # show the current alias map
 Flow: run `people resolve NAME --json`, show the candidates to the user, let them pick, then re-run the create/update with the chosen email (or the alias once saved). Offer to `add-alias` so the same bare name resolves directly afterward. Aliases live in the gitignored `people-aliases.json`; a value with `@` always skips lookup.
 
 ## Availability Questions
-
 When answering availability questions, read `sources/calendar.md` in this order:
 
 1. Check `## Combined Agenda` for the date or range.
@@ -245,7 +234,6 @@ When answering availability questions, read `sources/calendar.md` in this order:
 6. If an event is ambiguous, say so rather than assuming it blocks the date.
 
 ## Gmail And Drive
-
 ```sh
 lifeos google accounts
 lifeos google auth ALIAS
@@ -268,7 +256,6 @@ Drive read commands are on-demand. Do not clone Drive into LifeOS, recursively i
 `drive import-doc` is the only approved Drive write command. It imports a local source file as a native Google Doc, is dry-run by default, and only writes with `--execute`. Use it only when Aslan explicitly asks to create/import a Drive document. Prefer specifying `--folder FOLDER_ID` so the document lands in the intended personal or Open Austin Drive location. Do not use Drive tooling to edit, delete, move, share, or bulk-create Drive files unless a bounded command exists and Aslan explicitly asks for that specific action.
 
 ## Safety Notes
-
 - Do not print or inspect `~/configs/lifeos-tools/.env`.
 - Do not print or inspect Google token files or `google-accounts.json`.
 - Do not hard-delete Trello cards.

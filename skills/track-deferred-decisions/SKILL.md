@@ -4,19 +4,15 @@ description: "Track intentionally deferred project decisions in a short docs/def
 ---
 
 # Track Deferred Decisions
-
 ## Local Precedence
-
 If the current repo already has `skills/track-deferred-decisions/SKILL.md`, read and follow the repo-local skill first. Treat this global skill as fallback seed material.
 
 ## Purpose
-
 Use this skill to keep postponed decisions visible without interrupting the current work. A deferred decision is a question the project is intentionally not answering yet, but should not lose to chat history, scratch notes, or an overgrown backlog.
 
 The default register is `docs/deferred-decisions.md`. Create it only when the user asks to pin, defer, revisit, or maintain deferred decisions.
 
 ## What Belongs Here
-
 Pin a decision when the right answer depends on future context, such as:
 
 - Visual QA that has not happened yet.
@@ -29,7 +25,6 @@ Do not use deferred decisions for ordinary tasks, bug lists, wishlist items, or 
 If the answer is already decided and should guide future work, write or update a durable decision record under `docs/decisions/` instead of pinning it.
 
 ## File Shape
-
 Use this minimal structure:
 
 ```md
@@ -56,7 +51,6 @@ Revisit when: ...
 Use `to-do.md` only if that is the existing project convention. Prefer `TODO.md` in repos that use the setup-project-docs convention.
 
 ## Pinning Workflow
-
 1. Read the current user request, the active spike docs, `TODO.md`, and `docs/deferred-decisions.md` when they exist.
 2. Confirm the item is a decision being intentionally deferred, not a task that should be tracked elsewhere.
 3. Add a short entry under `## Current Pins`. Preserve the user's framing where it matters, but keep the entry plain and compact.
@@ -66,7 +60,6 @@ Use `to-do.md` only if that is the existing project convention. Prefer `TODO.md`
 7. Avoid duplicating the same work across `docs/deferred-decisions.md`, `TODO.md`, and spike todo docs. One place should own active tasks.
 
 ## Revisiting Workflow
-
 When the user asks to revisit pins, inspect each relevant entry and route it into one of these outcomes:
 
 - **Keep pinned:** update the current context or revisit condition if the decision is still premature.
@@ -77,7 +70,6 @@ When the user asks to revisit pins, inspect each relevant entry and route it int
 When promoting a pin, preserve enough origin context in the receiving spike or decision record to explain why the question was deferred. Do not keep a duplicate historical copy in `docs/deferred-decisions.md`.
 
 ## Hygiene Rules
-
 Keep the register short. It should feel like a clean list of live unresolved calls, not a history log.
 
 Do not add resolved, archived, or completed sections by default. If the project needs history, preserve it in archived spike docs, durable decision records, commit history, or the receiving active work doc.
@@ -85,7 +77,6 @@ Do not add resolved, archived, or completed sections by default. If the project 
 Do not include private, sensitive, or public-unsafe context in public repositories. Use placeholders or generic phrasing when the deferred decision depends on private information.
 
 ## Example Entry
-
 ```md
 ### Animated Title Wrap Hardening
 Pinned: 2026-06-23

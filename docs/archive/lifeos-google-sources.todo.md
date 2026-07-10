@@ -1,11 +1,9 @@
 # LifeOS Google Sources To-Do
-
 Status: archived. Gmail and Drive v1 are implemented; future ergonomics have been moved to `docs/lifeos-tools-v2.md`.
 
 Conceptual doc: `docs/archive/lifeos-google-sources.md`.
 
 ## Background
-
 LifeOS needs stable local access to Gmail and Google Drive context across multiple Google accounts. Hosted connectors are useful, but they are platform-dependent and account-limited. `lifeos-tools` should provide a cross-agent local CLI surface.
 
 Gmail and Drive should not use the same shape:
@@ -14,7 +12,6 @@ Gmail and Drive should not use the same shape:
 - Drive: on-demand search/inspect/read commands.
 
 ## Project Organization
-
 Planned config/example files:
 
 ```text
@@ -49,7 +46,6 @@ $LIFEOS_VAULT_PATH/sources/gmail/
 Generated QA/debug snapshots in `lifeos-tools/` should be ignored before they are created.
 
 ## General Principles
-
 - Keep all Google account tooling read-only for this spike.
 - Prefer explicit account aliases over raw email addresses in commands.
 - Keep OAuth token files per account alias.
@@ -60,7 +56,6 @@ Generated QA/debug snapshots in `lifeos-tools/` should be ignored before they ar
 - Add example files with fake values before requiring real local setup.
 
 ## Current State Overview
-
 - Trello and Calendar live under the existing `lifeos-tools` spike.
 - Calendar already has Google OAuth helpers and a read-only sync flow.
 - Google account alias commands are implemented.
@@ -70,15 +65,12 @@ Generated QA/debug snapshots in `lifeos-tools/` should be ignored before they ar
 - `lifeos-tools/google-accounts.example.json` now documents the planned alias config shape with fake values.
 
 ## To Do
-
 - None for this archived v1 spike.
 
 ## Ready For Human QA
-
 - None. User confirmed the LifeOS agent can use the CLI tools successfully.
 
 ## Done
-
 - Discussed Gmail versus Drive shape: Gmail snapshots, Drive on-demand connector.
 - Settled Gmail default query direction: `in:inbox newer_than:30d`.
 - Settled Gmail default max result direction: 150 messages per account.
