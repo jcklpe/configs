@@ -64,7 +64,24 @@ Use `docs/scratch/` for rough, non-authoritative thinking: copied references, ea
 
 Use `docs/archive/` for closed or superseded spike history. Archived docs are historical context, not current rules, unless durable docs still agree with them.
 
-Use `docs/decisions/` for durable tradeoffs that should outlive a spike. Prefer short numbered records like `0001-docs-workflow.md` when decision records are useful.
+Use `docs/decisions/` for durable tradeoffs that should outlive a spike. Prefer short numbered records like `0001-docs-workflow.md` when decision records are useful. A record's shape:
+
+```md
+# 0001 Short Decision Title
+## Context
+Why this decision came up.
+
+## Decision
+What we chose.
+
+## Consequences
+What this makes easier, harder, or out of scope.
+
+## Links
+Related spikes, TODO items, or files.
+```
+
+Do not create a `README.md` inside `docs/` or any of its subfolders. In a folder where every file is documentation, `README` names nothing, and such a file inevitably restates the authority rules that already live in `AGENTS.md` while carrying a hand-maintained file listing that `ls` provides for free. `TODO.md` is the index.
 
 Use `docs/deferred-decisions.md` only when the repo needs a short register for intentionally postponed decisions. Create it with the `track-deferred-decisions` skill instead of adding it to every project by default.
 

@@ -64,7 +64,8 @@ Let explicit project tooling win when a formatter or linter requires a different
 | Spike process / active spike docs | `skills/run-project-spike/SKILL.md`, then [docs/active-spikes/](docs/active-spikes/)`<topic>.md` + `<topic>.todo.md` |
 | Committing work as an agent | `skills/commit-work/SKILL.md`, policy in [docs/decisions/0003-agent-commit-policy.md](docs/decisions/0003-agent-commit-policy.md) |
 | Durable decision record | [docs/decisions/](docs/decisions/) |
-| Rough or historical notes | [docs/scratch/](docs/scratch/), [docs/archive/](docs/archive/) |
+| Rough or historical notes | [docs/scratch/](docs/scratch/) (not authoritative), [docs/archive/](docs/archive/) (historical, not current rules) |
+| Intentionally postponed decision | [docs/deferred-decisions.md](docs/deferred-decisions.md) |
 
 ## Docs workflow
 Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when a body

@@ -27,8 +27,9 @@ docs/
     misc-1.md
   archive/
   decisions/
-  README.md
 ```
+
+Do not add a `README.md` to `docs/` or any subfolder of it. `TODO.md` is the index, and a per-folder README will only restate the authority rules that already live in `AGENTS.md`.
 
 The setup skill owns creating this structure. This skill uses the structure once it exists: active conceptual and to-do docs go in `docs/active-spikes/`, rough pre-spike material goes in `docs/scratch/`, and finished or superseded spike history goes in `docs/archive/`. Durable long-term docs stay in `docs/` or another repo-specific location instead of being mixed with active spike work.
 
