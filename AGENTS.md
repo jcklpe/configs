@@ -58,7 +58,7 @@ Let explicit project tooling win when a formatter or linter requires a different
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
 | Active work coordination | [TODO.md](TODO.md) |
-| Spike process / active spike docs | `skills/run-project-spike/SKILL.md`, then `docs/<topic>.md` + `docs/<topic>.todo.md` |
+| Spike process / active spike docs | `skills/run-project-spike/SKILL.md`, then [docs/active-spikes/](docs/active-spikes/)`<topic>.md` + `<topic>.todo.md` |
 | Committing work as an agent | `skills/commit-work/SKILL.md`, policy in [docs/decisions/0003-agent-commit-policy.md](docs/decisions/0003-agent-commit-policy.md) |
 | Durable decision record | [docs/decisions/](docs/decisions/) |
 | Rough or historical notes | [docs/scratch/](docs/scratch/), [docs/archive/](docs/archive/) |
