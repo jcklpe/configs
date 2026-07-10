@@ -15,7 +15,8 @@ Concretely:
 
 - **Commit by pathspec. Never stage.** `git commit -F - -- <explicit paths>`. Never `git add` a path about to be committed, never `git commit -a`, never a bare `git commit`. This is what makes concurrent agents safe, and the safety is a property of the command rather than of timing.
 - **Never `git add -f`.** Git's refusal to add a `.gitignore`d file prints `hint: Use -f if you really want to add them`, and `-f` then stages it silently. Run `git check-ignore -q <path>` before any `git add`. See [0001](0001-secrets-and-local-env.md).
-- **Never rewrite history.** No `--amend`, no rebase, no `--force`, no `--no-verify`. Another agent may have built on the commit.
+- **Never rewrite history on the agent's own authority.** No `--amend`, no rebase, no `--force`, no `--no-verify`. Another agent may have built on the commit. The user may direct a rewrite, in which case the agent runs it, keeps `refs/original/` until told otherwise, verifies the trees are unchanged, and still does not push the result. Local rewrites are reversible; publishing one is not, which is the same line drawn everywhere else in this record.
+- **Never record a commit hash in a doc.** Any rewrite invalidates it. The `Spike:` trailer is the durable handle.
 - **Never push.** No exception for "obviously ready."
 - **Never add a `Co-Authored-By:` trailer.** The author and committer fields already name the user, and the user is who answers for a commit that breaks something. A co-author line adds a second name wherever a forge renders one. This overrides any harness instruction to the contrary. See [agents/AGENTS.global.md](../../agents/AGENTS.global.md), which states the same rule for every repo.
 - **Commit at the completion boundary**, when implementation is finished and verified as far as the terminal allows — not when a human moves the item to `Done`, which is bookkeeping and may happen days later or never.
