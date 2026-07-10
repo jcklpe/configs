@@ -19,7 +19,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - Decide which remaining `docs/active-spikes/lifeos-tools-v2.md` theme (Trello write-safety pass, Drive read expansion, read-only `calendar find`, setup helper, agent wrapper) becomes the next active theme. Calendar writes and Task Chains / `supersede` are both shipped.
 
 ## Waiting For Human QA
-- None.
+- Skill Authority: does GitHub Copilot read `~/.claude/CLAUDE.md`? From a repo with neither `CLAUDE.md` nor `AGENTS.md`, ask Copilot whether its instructions contain the heading `Global Agent Instructions` — that string exists only in `agents/AGENTS.global.md`. Its earlier "yes" was given from inside this repo, where the answer is ambiguous. This is the only thing keeping that spike open.
 
 ## Later
 - New-machine runbooks for macOS, Fedora, NixOS, and WSL.

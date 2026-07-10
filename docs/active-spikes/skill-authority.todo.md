@@ -24,14 +24,14 @@ An agent rewrote five global skills into repo-local ones without being asked, br
 The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrated to `docs/active-spikes/`. What remains is the global `AGENTS.md` folder, which has one undecided design question, and an optional `docs/README.md`.
 
 ## To Do
-### Hoist personal rules to a global AGENTS.md
-- [ ] **Check what GitHub Copilot actually reads for instructions.** Partly answered, and the answer is ambiguous. Asked directly, Copilot verified both symlinks on disk and reported receiving "CLAUDE.md (global) plus AGENTS.md (repo-local)". But it was asked from inside `configs/`, which has its own root `CLAUDE.md` symlinked to `AGENTS.md` — so the file it named may be that one, in which case it read `AGENTS.md` twice and never touched `~/.claude/CLAUDE.md`. Both readings fit its answer.
-
-  **Decisive test:** from a repo with neither `CLAUDE.md` nor `AGENTS.md`, ask Copilot whether its instructions contain the heading `Global Agent Instructions`. That string exists only in `agents/AGENTS.global.md`. If it can quote it, the hoist reached all three agents. If not, it reached two.
-
+- None. One item is waiting on human QA below; everything else is done.
 
 ## Ready for Human QA
-- None yet.
+- [ ] **Check what GitHub Copilot actually reads for instructions.** Partly answered, and the answer is ambiguous. Asked directly, Copilot verified both symlinks on disk and reported receiving "CLAUDE.md (global) plus AGENTS.md (repo-local)". But it was asked from inside `configs/`, which has its own root `CLAUDE.md` symlinked to `AGENTS.md` — so the file it named may be that one, in which case it read `AGENTS.md` twice and never touched `~/.claude/CLAUDE.md`. Both readings fit its answer, and it is a model reporting on its own configuration, which is the confabulation mode `commit-work` was written to distrust.
+
+  **The test, which an agent cannot run from this terminal:** open a repo that has neither `CLAUDE.md` nor `AGENTS.md` of its own, and ask Copilot whether its instructions contain the heading `Global Agent Instructions`. That exact string appears only in `agents/AGENTS.global.md` and nowhere in this repo's `AGENTS.md` — checked. If Copilot can quote it, the hoist reached all three agents. If it cannot, it reached two, and `symlinks.sh` needs a Copilot-specific instruction path.
+
+  This is the only thing keeping the spike open.
 
 ## Done
 ### Fix the skills
