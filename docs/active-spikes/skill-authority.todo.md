@@ -25,11 +25,7 @@ The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrate
 
 ## To Do
 ### Hoist personal rules to a global AGENTS.md
-- [ ] Decide the source file. Something like `agents/AGENTS.global.md` in this repo, holding only cross-repo *personal* preferences: the Markdown and prose style rules, and nothing else.
-- [ ] Symlink it from `install-script/functions/symlinks.sh` to `~/.codex/AGENTS.md` (Codex's documented global scope) and `~/.claude/CLAUDE.md` (Claude Code's user-level memory). Neither currently exists on this machine.
-- [ ] Decide what happens to this repo's `## Markdown And Prose Style` section once the rules are global. Keep a pointer, drop the section, or accept the duplication? Codex concatenates root-down and nearest wins, so duplication is harmless but drifts.
-- [ ] **Nothing repo-scoped may go in the global file.** The commit policy is `configs`-specific and belongs in `0003`, not in a file that applies to every repo on the machine. This is the position-independence rule again: a global file must not assert facts about "this repo."
-- [ ] Check what GitHub Copilot actually reads for instructions. It picks up skills from `~/.claude/skills` (confirmed), but its instruction-file path is unknown and may be neither of the above.
+- [ ] Check what GitHub Copilot actually reads for instructions. It picks up skills from `~/.claude/skills` (confirmed), but its instruction-file path is unknown and may be neither of the above. Nothing in `symlinks.sh` targets it.
 
 ### Migrate to docs/active-spikes/
 - [ ] Consider `docs/README.md` explaining the layout.
@@ -57,6 +53,12 @@ The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrate
 - [x] **Grep for every reference to those two paths and update. They are named in `TODO.md` and in `docs/archive/` (archive references may stay stale — archived docs are historical, not authoritative).** Done. Updated `TODO.md`, `AGENTS.md`, both scratch docs, and a doc comment in `lifeos-tools/lifeos.sh` that the original item did not anticipate. The eight archive references were deliberately left pointing at the old paths.
 - [x] **Update the `AGENTS.md` "Where things go" table so the spike row points at `docs/active-spikes/<topic>.md`.** Done.
 - [x] **Update the `TODO.md` notes section.** Done.
+
+### Hoist personal rules to a global AGENTS.md
+- [x] **Decide the source file. Something like `agents/AGENTS.global.md` in this repo, holding only cross-repo *personal* preferences: the Markdown and prose style rules, and nothing else.** Done, at exactly that path. The name matters: Codex loads every file *literally named* `AGENTS.md` from repo root down to the working directory, so `agents/AGENTS.md` would be pulled in a second time by anyone working inside that folder, on top of the repo's own. `AGENTS.global.md` is invisible to that walk.
+- [x] **Symlink it from `install-script/functions/symlinks.sh` to `~/.codex/AGENTS.md` (Codex's documented global scope) and `~/.claude/CLAUDE.md` (Claude Code's user-level memory). Neither currently exists on this machine.** Done, with `ensure_dir` for both parents, and the symlinks created directly so they are live without a full installer run.
+- [x] **Decide what happens to this repo's `## Markdown And Prose Style` section once the rules are global. Keep a pointer, drop the section, or accept the duplication?** **Keep the full text in both**, per the user. `AGENTS.md` reads completely on its own, which matters for anyone browsing the repo on a forge. Both copies now carry a "edit both, or neither" note naming the other, because the repo copy silently wins when they disagree and drift would be invisible.
+- [x] **Nothing repo-scoped may go in the global file.** Held. The global file states preferences only, and opens by saying why: it is read from inside every project, so "this repo" resolves against whichever repo is being worked in. The commit policy stays in `0003`. Hoisting it would have authorized agent commits in every repo on the machine — the same deictic failure that opened this spike, one level up.
 
 ### Unplanned
 - [x] **`git rm` and `git mv` stage, and `commit-work` did not know it.** Discovered by using `git rm` to delete `docs/how-to-spike.md` — a direct violation of the never-stage rule, committed before it was noticed. The skill had no guidance for deletions or renames at all, so an agent following it to the letter would reach for `git rm` the first time it needed to remove a file. Verified the correct primitives: plain `rm` followed by `git commit -- <path>` records a deletion with the index untouched; a rename is plain `mv`, one guarded `git add` for the now-untracked new path, then a pathspec commit naming both. Git still detects the rename. Added to `commit-work` as an iron rule, a `## Deletions And Renames` section, two rationalization rows, and a red flag.
