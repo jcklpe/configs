@@ -21,25 +21,9 @@ An agent rewrote five global skills into repo-local ones without being asked, br
 - Skill bodies are read by Claude, Codex, and Copilot. Canonical path is `~/configs/skills/`, never `~/.claude/skills/`.
 
 ## Current State Overview
-The rogue diff is reverted and the tree is clean apart from this spike's new docs. `docs/active-spikes/` exists and holds the two new spike pairs, but `docs/lifeos-tools-v2.md` and its to-do are still flat under `docs/` — the migration item below.
-
-`setup-local-skills` still contains step 8 and still has no update path.
+The skills are fixed, `docs/how-to-spike.md` is retired, and the repo is migrated to `docs/active-spikes/`. What remains is the global `AGENTS.md` folder, which has one undecided design question, and an optional `docs/README.md`.
 
 ## To Do
-### Fix the skills
-- [ ] Delete step 8 of `skills/setup-local-skills/SKILL.md` ("*Remove or rewrite the copied skill's `## Local Precedence` section...*"). Keep step 9 (the `AGENTS.md` local-precedence note).
-- [ ] Remove the "deleting global-only `## Local Precedence` sections" bullet from that skill's `## After Copying` list.
-- [ ] Add an `## Update Workflow` section to `setup-local-skills`: read global, read local, diff, summarize what changed upstream and how the local copy diverged, propose, apply on approval. No git, no metadata.
-- [ ] Update the `description:` frontmatter of `setup-local-skills` so "update an existing local skill" is a trigger, not just "copy."
-- [ ] Audit all six skills for position-independence violations and Claude-specific paths. The rogue diff hit five; check `track-changes` too, which it did not touch.
-
-### Retire how-to-spike.md
-- [ ] Read `docs/how-to-spike.md` once more and confirm nothing in it is missing from `skills/run-project-spike/SKILL.md`. Fold anything that is.
-- [ ] Delete `docs/how-to-spike.md`.
-- [ ] Update `AGENTS.md:61` (the "Where things go" table row) and `AGENTS.md:73` (the authority ladder paragraph).
-- [ ] Update `TODO.md:37` ("Use `docs/how-to-spike.md` for spike workflow").
-- [ ] Decide whether `skills/run-project-spike/SKILL.md:10` should keep its "*or a `how-to-spike.md` document*" clause for other repos. See open questions in the conceptual doc.
-
 ### Hoist personal rules to a global AGENTS.md
 - [ ] Decide the source file. Something like `agents/AGENTS.global.md` in this repo, holding only cross-repo *personal* preferences: the Markdown and prose style rules, and nothing else.
 - [ ] Symlink it from `install-script/functions/symlinks.sh` to `~/.codex/AGENTS.md` (Codex's documented global scope) and `~/.claude/CLAUDE.md` (Claude Code's user-level memory). Neither currently exists on this machine.
@@ -48,16 +32,36 @@ The rogue diff is reverted and the tree is clean apart from this spike's new doc
 - [ ] Check what GitHub Copilot actually reads for instructions. It picks up skills from `~/.claude/skills` (confirmed), but its instruction-file path is unknown and may be neither of the above.
 
 ### Migrate to docs/active-spikes/
-- [ ] Move `docs/lifeos-tools-v2.md` and `docs/lifeos-tools-v2.todo.md` into `docs/active-spikes/`.
-- [ ] Grep for every reference to those two paths and update. They are named in `TODO.md` and in `docs/archive/` (archive references may stay stale — archived docs are historical, not authoritative).
-- [ ] Update the `AGENTS.md` "Where things go" table so the spike row points at `docs/active-spikes/<topic>.md`.
-- [ ] Update the `TODO.md` notes section.
 - [ ] Consider `docs/README.md` explaining the layout.
 
 ## Ready for Human QA
 - None yet.
 
 ## Done
+### Fix the skills
+- [x] **Delete step 8 of `skills/setup-local-skills/SKILL.md` ("*Remove or rewrite the copied skill's `## Local Precedence` section...*"). Keep step 9 (the `AGENTS.md` local-precedence note).** Done. Replaced with a `## Why Verbatim Copies Are Correct` section explaining the position-independence property, so the deletion reads as a principle rather than an omission.
+- [x] **Remove the "deleting global-only `## Local Precedence` sections" bullet from that skill's `## After Copying` list.** Done. Rewrote the section so local divergence appears when a project needs it, not as a copy-time ritual.
+- [x] **Add an `## Update Workflow` section to `setup-local-skills`: read global, read local, diff, summarize what changed upstream and how the local copy diverged, propose, apply on approval. No git, no metadata.** Done, exactly as specified.
+- [x] **Update the `description:` frontmatter of `setup-local-skills` so "update an existing local skill" is a trigger, not just "copy."** Done.
+- [x] **Audit all six skills for position-independence violations and Claude-specific paths. The rogue diff hit five; check `track-changes` too, which it did not touch.** Done, seven skills now that `commit-work` exists. All clean: every `## Local Precedence` section is a condition rather than an assertion, and no skill body names a Claude- or Codex-specific path. One grep hit (`.claude/` in `setup-project-docs`) is a `.gitignore` entry, not a skill-source path.
+
+### Retire how-to-spike.md
+- [x] **Read `docs/how-to-spike.md` once more and confirm nothing in it is missing from `skills/run-project-spike/SKILL.md`. Fold anything that is.** Done. The skill strictly dominates it except for one paragraph: the repo-specific rationale for spiking at all (configs/ is personal and portable, so a change must answer more than "does it work?" — shell load order, public-repo safety, secrets, idempotency, startup cost). Folded into the `AGENTS.md` docs workflow section, since it is a fact about this repo rather than about the process.
+- [x] **Delete `docs/how-to-spike.md`.** Done — and done wrongly the first time. See the `git rm` entry below.
+- [x] **Update `AGENTS.md:61` (the "Where things go" table row) and `AGENTS.md:73` (the authority ladder paragraph).** Done. The table row was then edited again by the migration; two commits, two real states.
+- [x] **Update `TODO.md:37` ("Use `docs/how-to-spike.md` for spike workflow").** Done.
+- [x] **Decide whether `skills/run-project-spike/SKILL.md:10` should keep its "*or a `how-to-spike.md` document*" clause for other repos.** **Keep it.** Other repos may still carry a `how-to-spike.md`, and the clause is a condition, not an assertion — it stays true everywhere, which is exactly the property this spike is about. Retiring this repo's copy is not a reason to blind the skill to everyone else's.
+
+### Migrate to docs/active-spikes/
+- [x] **Move `docs/lifeos-tools-v2.md` and `docs/lifeos-tools-v2.todo.md` into `docs/active-spikes/`.** Done with plain `mv` plus a pathspec commit, not `git mv`. Git detected the rename anyway.
+- [x] **Grep for every reference to those two paths and update. They are named in `TODO.md` and in `docs/archive/` (archive references may stay stale — archived docs are historical, not authoritative).** Done. Updated `TODO.md`, `AGENTS.md`, both scratch docs, and a doc comment in `lifeos-tools/lifeos.sh` that the original item did not anticipate. The eight archive references were deliberately left pointing at the old paths.
+- [x] **Update the `AGENTS.md` "Where things go" table so the spike row points at `docs/active-spikes/<topic>.md`.** Done.
+- [x] **Update the `TODO.md` notes section.** Done.
+
+### Unplanned
+- [x] **`git rm` and `git mv` stage, and `commit-work` did not know it.** Discovered by using `git rm` to delete `docs/how-to-spike.md` — a direct violation of the never-stage rule, committed before it was noticed. The skill had no guidance for deletions or renames at all, so an agent following it to the letter would reach for `git rm` the first time it needed to remove a file. Verified the correct primitives: plain `rm` followed by `git commit -- <path>` records a deletion with the index untouched; a rename is plain `mv`, one guarded `git add` for the now-untracked new path, then a pathspec commit naming both. Git still detects the rename. Added to `commit-work` as an iron rule, a `## Deletions And Renames` section, two rationalization rows, and a red flag.
+
+- [x] **The `.todo.md` updates lagged their work commits.** `run-project-spike` says the item's `.todo.md` edit belongs in the same commit as the work it describes. The skills fix, the how-to-spike retirement, and the migration were each committed without moving their items, and this entry is part of the catch-up. Nothing was lost, but the commits do not individually show what they were for. The rule was written this morning; following it takes more than writing it.
 - [x] **Reverted the rogue skill edits** (2026-07-09). Saved the diff to a scratchpad patch first, since uncommitted changes exist nowhere else and `git restore` is unrecoverable. Then `git restore skills/`.
 - [x] **Re-applied the one good hunk** from that diff by hand: `skills/triage-project-misc/SKILL.md` line 36, `Active spike docs in docs/` → `docs/active-spikes/`. That line was correct and consistent with `run-project-spike`; it was simply mixed in with four bad changes.
 
