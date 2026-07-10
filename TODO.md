@@ -2,7 +2,12 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
+- LifeOS Code Cleanup — reorganize `configs/lifeos-tools/` and modularize `lifeos.sh` into a dispatcher + feature libs, on maintainability grounds only. No behavior change. Establishes the `lifeos-tools/skills/` seam. `docs/active-spikes/lifeos-code-cleanup.md`, `docs/active-spikes/lifeos-code-cleanup.todo.md`. First of three sibling LifeOS spikes; prerequisite for Vault Runbook Conversion.
 - LifeOS Tools v2 — open spike, parking lot for remaining v2 ideas. `docs/active-spikes/lifeos-tools-v2.md`, `docs/active-spikes/lifeos-tools-v2.todo.md`. (Task Chains / `supersede` theme is shipped — see Recently Shipped. Other v2 ideas stay parked.)
+
+## Later Spikes (this conversation, not yet opened)
+- LifeOS Handoff — a user-initiated global `lifeos-handoff` skill for feeding progress/accomplishments to the LifeOS vault, plus a one-line LifeOS pointer in `agents/AGENTS.global.md`. Independent of the others; can run anytime.
+- Vault Runbook Conversion — sort the vault's runbooks by tool-vs-vault, convert to skills (tool ones to `lifeos-tools/skills/` symlinked global, vault ones physically in the vault), retire the vault's `how-to-spike.md`, vendor a commit-work-stripped `run-project-spike` into the vault. Straddles configs (git) and the vault (Drive-only); depends on LifeOS Code Cleanup.
 
 ## Scratch / Future
 - LifeOS Bitwarden cleanup (parked): `docs/scratch/lifeos-bitwarden.md`, `docs/scratch/lifeos-bitwarden.todo.md`
