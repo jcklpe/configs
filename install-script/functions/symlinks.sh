@@ -33,11 +33,15 @@ create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
 create_symlink_if_needed "${CONFIGS}/nano/config.nanorc" "${HOME}/.nanorc"
 
 ##- Global agent instruction files
-# One source file, two consumers. Deliberately not named AGENTS.md in-repo: Codex
-# loads every file literally called AGENTS.md from the repo root down to the cwd,
-# so agents/AGENTS.md would get pulled in a second time by anyone working in that
-# folder. Copilot reads skills from ~/.claude/skills but its instruction-file path
-# is unconfirmed, so it gets nothing here yet.
+# One source file, two links. Deliberately not named AGENTS.md in-repo: Codex loads
+# every file literally called AGENTS.md from the repo root down to the cwd, so
+# agents/AGENTS.md would get pulled in a second time by anyone working in that folder.
+#
+# Copilot reads skills from ~/.claude/skills and reports reading CLAUDE.md too, so
+# these two links may cover all three agents. Unconfirmed: it was asked from inside
+# configs/, which has its own CLAUDE.md -> AGENTS.md symlink, so "CLAUDE.md" in its
+# answer is ambiguous. To settle it, ask Copilot from a repo with neither file
+# whether its instructions contain the heading "Global Agent Instructions".
 ensure_dir "${HOME}/.codex"
 ensure_dir "${HOME}/.claude"
 create_symlink_if_needed "${CONFIGS}/agents/AGENTS.global.md" "${HOME}/.codex/AGENTS.md"
