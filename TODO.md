@@ -8,6 +8,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Scratch / Future
 - LifeOS Bitwarden cleanup (parked): `docs/scratch/lifeos-bitwarden.md`, `docs/scratch/lifeos-bitwarden.todo.md`
+- `run` dispatcher notes: `docs/scratch/run-command.md`, `docs/scratch/run-command.todo.md`
 
 ## Recently Shipped
 - LifeOS Trello Task Chains: `trello supersede` (`--from`/`--to` and `--create`) writes the bidirectional predecessor↔successor link atomically as `🔗 Continues in:` / `🔗 Continues from:` comments (successor-first, idempotent, loud `PARTIAL:` on second-write failure); `trello chain` walks and prints a chain from any card. Live smoke test via the LifeOS agent on 2026-06-25. Notes in `docs/active-spikes/lifeos-tools-v2.md`.
@@ -27,7 +28,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - Decision record for where personal CLI tools should live in this repo.
 
 ## Notes
-- Finished LifeOS v1 spike history lives in `docs/archive/lifeos-tools.md`, `docs/archive/lifeos-tools.todo.md`, `docs/archive/lifeos-google-sources.md`, and `docs/archive/lifeos-google-sources.todo.md`.
+- Finished LifeOS v1 spike history lives in `docs/archive/lifeos-tools.md`, `docs/archive/lifeos-tools.todo.md`, `docs/archive/lifeos-google-sources.md`, and `docs/archive/lifeos-google-sources.todo.md`. The secrets/env spike is in `docs/archive/secrets-env.md`, folded into decision `0001`.
 - Use `skills/run-project-spike/SKILL.md` for spike workflow.
 - Use `docs/active-spikes/` for the conceptual + to-do pair of each active spike.
 - Use `docs/deferred-decisions.md` for questions we are intentionally not answering yet.
