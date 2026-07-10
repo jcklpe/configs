@@ -85,8 +85,11 @@ Born from the same conversation as `docs/active-spikes/commit-work.md`. The subj
 
 Sequencing: build `commit-work` first, then use it to commit this spike's work. This spike is small enough to be a good dogfooding test of that workflow.
 
+## Settled
+`skills/run-project-spike/SKILL.md` **keeps** its "*or a `how-to-spike.md` document*" clause, even though this repo no longer has one. The clause is a condition rather than an assertion, so it stays true in every repo, and other projects may still carry that file. Retiring one repo's copy is not a reason to blind the skill to everyone else's — which is the same position-independence argument this whole spike is built on, pointed at a clause instead of a header.
+
+`setup-local-skills` reports **how** the local copy diverged, not merely that it did. The report is the whole value of the update path; a bare "these differ" would send the user to read both files anyway.
+
 ## Open Questions
-- `skills/run-project-spike/SKILL.md`'s own `## Local Precedence` section mentions "*or a `how-to-spike.md` document*". Once this repo retires its copy, should that clause stay for the benefit of *other* repos that still have one, or come out? It is position-independent either way, so this is a taste call.
-- Should `setup-local-skills` report *how* the local copy diverged (a summarized diff) or just *that* it diverged? Leaning summarized — the report is the whole value.
 - Does `docs/` want a `README.md` explaining the layout, as `run-project-spike`'s directory sketch implies?
 - **Should the `description:` fields be rewritten to lead with triggers instead of feature inventories?** A skill's description is always in the agent's context; its body loads only when invoked. So the description is the expensive field, and it exists to answer "should I load this right now?" Several of ours open with a workflow summary and only reach the trigger at the end — `run-project-spike` spends 46 words listing its features before it says "Use when starting, continuing, promoting...". The Superpowers `writing-skills` guide argues, plausibly, that an agent skimming a description may act on the summary instead of loading the skill. This is a mechanical, low-risk edit to six frontmatter lines, but it is a change to how every skill announces itself and should be made deliberately rather than swept in with the authority fixes.
