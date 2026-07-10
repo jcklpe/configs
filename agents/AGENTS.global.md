@@ -27,5 +27,12 @@ Let explicit project tooling win when a formatter or linter requires a different
 
 Commit message bodies follow the same rule: do not hard-wrap them. Formatting is the client's job, not the content's.
 
+### Code Comments
+Do not hard-wrap comments in code, the same as prose. Put each comment paragraph on a single line (`// …`, `# …`) and let the editor soft-wrap it.
+
+Unlike Markdown, do not separate comment paragraphs with a blank line or an empty comment marker. Each line already carries its own marker, so consecutive comment lines already read as separate paragraphs; a blank line inside a comment block only adds noise. One paragraph is one line; the next paragraph is the next line.
+
+The one exception is a comment block long enough to carry distinct titled sections, where a blank line may separate one section from the next. Reach for it rarely — a comment block that needs internal section breaks usually signals over-commenting.
+
 ## Keeping This In Sync
 The `## Markdown And Prose Style` section above is duplicated verbatim in `configs/AGENTS.md`, so that a reader of that repo in isolation still sees the rules. **Edit both, or neither.** If they ever disagree, the repo copy wins at load time, which is exactly the silent drift this note exists to prevent.

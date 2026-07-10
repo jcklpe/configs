@@ -48,6 +48,13 @@ Keep the blank line between paragraphs. In Markdown a single newline is a soft b
 
 Let explicit project tooling win when a formatter or linter requires a different layout. `markdownlint`'s MD022 wants blank lines around headings and can be switched off per repo (`{"MD022": false}`, or an inline `<!-- markdownlint-disable MD022 -->`). Prettier has no per-rule switch — it exposes options, not rules, and normalizes block spacing unconditionally; the only escapes are `.prettierignore` globs and `<!-- prettier-ignore-start -->` / `<!-- prettier-ignore-end -->` ranges. A repo that runs Prettier over Markdown will lose this style, and that is fine.
 
+### Code Comments
+Do not hard-wrap comments in code, the same as prose. Put each comment paragraph on a single line (`// …`, `# …`) and let the editor soft-wrap it.
+
+Unlike Markdown, do not separate comment paragraphs with a blank line or an empty comment marker. Each line already carries its own marker, so consecutive comment lines already read as separate paragraphs; a blank line inside a comment block only adds noise. One paragraph is one line; the next paragraph is the next line.
+
+The one exception is a comment block long enough to carry distinct titled sections, where a blank line may separate one section from the next. Reach for it rarely — a comment block that needs internal section breaks usually signals over-commenting.
+
 ## Where things go
 | Change | Location |
 | --- | --- |
