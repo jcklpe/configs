@@ -1,7 +1,7 @@
 # Commit Work
-Status: **active spike.** Opened 2026-07-09 from a design conversation about making git history a first-class artifact of spike work.
+Status: **archived 2026-07-10.** Opened 2026-07-09 from a design conversation about making git history a first-class artifact of spike work. Shipped: `skills/commit-work/SKILL.md`, the `run-project-spike` wiring, and `docs/decisions/0003-agent-commit-policy.md`, which is where the durable rule now lives. This doc is historical context, not current rules.
 
-Companion to-do: `docs/active-spikes/commit-work.todo.md`.
+Companion to-do: `docs/archive/commit-work.todo.md`.
 Sibling spike: `docs/active-spikes/skill-authority.md` (same conversation, separate subject).
 
 ## Purpose
