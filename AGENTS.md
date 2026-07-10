@@ -58,7 +58,7 @@ Let explicit project tooling win when a formatter or linter requires a different
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
 | Active work coordination | [TODO.md](TODO.md) |
-| Spike process / active spike docs | [docs/how-to-spike.md](docs/how-to-spike.md), then `docs/<topic>.md` + `docs/<topic>.todo.md` |
+| Spike process / active spike docs | `skills/run-project-spike/SKILL.md`, then `docs/<topic>.md` + `docs/<topic>.todo.md` |
 | Committing work as an agent | `skills/commit-work/SKILL.md`, policy in [docs/decisions/0003-agent-commit-policy.md](docs/decisions/0003-agent-commit-policy.md) |
 | Durable decision record | [docs/decisions/](docs/decisions/) |
 | Rough or historical notes | [docs/scratch/](docs/scratch/), [docs/archive/](docs/archive/) |
@@ -69,8 +69,10 @@ of work needs shared context, taste, constraints, or implementation history. Scr
 are non-authoritative. Archived docs are historical context, not current rules, unless a
 durable doc still agrees with them.
 
+Spikes earn their keep here because `configs/` is both personal and portable. A change often has to answer more than "does it work?" — it has to fit the shell load order, stay safe for a public repo, avoid secrets, remain idempotent across machines, and not slow down startup. That is more context than a ticket carries.
+
 Authority ladder: `AGENTS.md`, `README.md`, and active decision records define durable
-repo rules; `docs/how-to-spike.md` defines the spike process; active spike docs guide the
+repo rules; `skills/run-project-spike/SKILL.md` defines the spike process; active spike docs guide the
 current theme of work; `TODO.md` coordinates what is active and what is next.
 
 ## Skills workflow
