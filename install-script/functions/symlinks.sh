@@ -32,6 +32,17 @@ create_symlink_if_needed "${CONFIGS}/zsh/zshrc" "${HOME}/.zshrc"
 create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
 create_symlink_if_needed "${CONFIGS}/nano/config.nanorc" "${HOME}/.nanorc"
 
+##- Global agent instruction files
+# One source file, two consumers. Deliberately not named AGENTS.md in-repo: Codex
+# loads every file literally called AGENTS.md from the repo root down to the cwd,
+# so agents/AGENTS.md would get pulled in a second time by anyone working in that
+# folder. Copilot reads skills from ~/.claude/skills but its instruction-file path
+# is unconfirmed, so it gets nothing here yet.
+ensure_dir "${HOME}/.codex"
+ensure_dir "${HOME}/.claude"
+create_symlink_if_needed "${CONFIGS}/agents/AGENTS.global.md" "${HOME}/.codex/AGENTS.md"
+create_symlink_if_needed "${CONFIGS}/agents/AGENTS.global.md" "${HOME}/.claude/CLAUDE.md"
+
 ##- Codex global skill symlinks
 # Add one explicit call for each skill folder that should be globally available.
 # Keep skill links individual so repo-local helper files under skills/ do not become broken skill packages.
