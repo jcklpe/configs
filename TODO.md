@@ -29,6 +29,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 ## Notes
 - Finished LifeOS v1 spike history lives in `docs/archive/lifeos-tools.md`, `docs/archive/lifeos-tools.todo.md`, `docs/archive/lifeos-google-sources.md`, and `docs/archive/lifeos-google-sources.todo.md`.
 - Use `skills/run-project-spike/SKILL.md` for spike workflow.
+- Use `docs/active-spikes/` for the conceptual + to-do pair of each active spike.
 - Use `docs/deferred-decisions.md` for questions we are intentionally not answering yet.
 - Use `docs/scratch/` for rough, non-authoritative notes.
 - Use `docs/archive/` for finished spike history.
