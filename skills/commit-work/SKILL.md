@@ -21,7 +21,7 @@ Violating the letter of these rules is violating their spirit. Every rule below 
 - **Never rewrite.** No `--amend`, no rebase, no `--force`. Another agent may have built on it.
 - **Never `git add -f`.** Not once. Not for a "clearly safe" file. See "New files" below.
 - **Never `git rm` or `git mv`.** Both stage. Use plain `rm` / `mv` and commit the paths.
-- **One commit does one thing.** If an honest one-line summary needs the word "and," it is two commits.
+- **One commit does one thing.** If an honest one-line summary needs "and" to join two *changes*, it is two commits.
 - **Never `--no-verify`.**
 
 ## Why Pathspec, Not Staging
@@ -48,7 +48,9 @@ Everything after `--` is a path. The heredoc supplies subject, body, and trailer
 Never use `-a`. Never use a bare `git commit`. Never `git add` a path you are about to commit.
 
 ## Scoping
-Ask what single change this commit makes, and try to state it in one line. If the line needs "and," split it.
+Ask what single change this commit makes, and try to state it in one line. If the line needs "and" to join two *changes*, split it.
+
+The word is not the test; two changes is the test. `forbid git rm and git mv` is one change with a compound object, and it is fine. `add commit policy pointer and clarify heading rule` is two changes wearing one subject, and it is only acceptable when they are trapped in the same file.
 
 A spike knows its own file scope, roughly: the files its work touches and its own `.todo.md`.
 
@@ -218,7 +220,7 @@ Stop if you catch yourself:
 - typing `git add` without having run `git check-ignore` on that exact path
 - typing `-f`, `--force`, `-a`, `--amend`, `--no-verify`, or `push`
 - typing `git rm` or `git mv` — both stage; use plain `rm` / `mv`
-- writing a subject line containing "and", "also", "plus", or a comma joining two verbs
+- writing a subject whose "and", "also", "plus", or comma joins two *changes* rather than two objects of one change
 - about to commit a path you cannot name a reason for
 - writing a commit body for a change whose subject already said everything
 - retrying a failed commit without having read its error
