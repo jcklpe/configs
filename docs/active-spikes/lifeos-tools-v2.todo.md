@@ -2,7 +2,7 @@
 Status: **active.** The Trello Task Chains / `supersede` theme is **shipped and human-QA'd**
 (section below). All other items remain candidate/parking-lot work, not active.
 
-Conceptual doc: `docs/lifeos-tools-v2.md`.
+Conceptual doc: `docs/active-spikes/lifeos-tools-v2.md`.
 
 ## Shipped: Trello Task Chains (`supersede` + `chain`)
 Live smoke test passed (LifeOS agent, real Trello board, 2026-06-25). In scope for this
