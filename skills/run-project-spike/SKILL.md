@@ -119,6 +119,15 @@ When implementation does not need human QA, move it directly to `Done` after ver
 
 `Done` is allowed to preserve useful history. It should not be a perfectly compressed final summary. These docs are archived at the end of the spike, and that archive can help future agents understand why the code ended up this way, even if the notes along the way are messy or not totally current. Prefer a useful decision and implementation trail over a neat but context-poor summary. Do not sand off the rough corners of historical artifacts.
 
+### Moving An Item Preserves It
+Moving an item is a *move*, not a rewrite. Carry the item's original wording into `Done` and append what happened. Do not restate it in your own words, and do not compress it because you now know how it turned out.
+
+**One `To Do` item becomes exactly one `Done` entry.** Never merge several items into a single synthesized entry, however naturally they were finished together. The plan and the outcome are two different artifacts: the history explains why the code looks like this, and the surviving item list is what lets a reader check the plan against the result. An agent that finished three items in one motion has three `Done` entries, each with its own note.
+
+Unplanned work gets *added* entries — surprises, reversals, things discovered — never folded into a planned item's entry.
+
+A `To Do` item that is dropped rather than done is moved to `Done` and marked as dropped, with the reason. Deleting it erases the fact that it was ever considered.
+
 ## Committing Spike Work
 Repos differ on whether agents may commit. Follow the repo's own policy, stated in its `AGENTS.md` or its decision records. **If the repo says nothing, do not commit and do not offer to.**
 
