@@ -606,7 +606,7 @@ _trello_comment() {
 
 ##- Task chains: supersede (link predecessor <-> successor) and chain traversal.
 ##- Links live in labeled comments ("Continues in:" / "Continues from:"); see
-##- docs/lifeos-tools-v2.md "Active Theme: Trello Task Chains".
+##- docs/active-spikes/lifeos-tools-v2.md "Active Theme: Trello Task Chains".
 
 # Most-recent comment text on a card whose text contains the given label, or empty.
 _trello_link_comment() {

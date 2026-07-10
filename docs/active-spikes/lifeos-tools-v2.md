@@ -5,7 +5,7 @@ Status: **active spike.** Promoted from scratch on 2026-06-25 to carry one concr
 open as the home for the remaining parking-lot v2 ideas. Those stay out of scope until the user
 pulls one in.
 
-Companion to-do: `docs/lifeos-tools-v2.todo.md`.
+Companion to-do: `docs/active-spikes/lifeos-tools-v2.todo.md`.
 
 ## Purpose
 Preserve useful next-step ideas without keeping the v1 spike docs open forever. Most of this

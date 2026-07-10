@@ -4,18 +4,18 @@ This file is the coordination map for active work in this repo. Keep detailed th
 ## Active Spikes
 - Commit Work — a `commit-work` skill that turns spike work into small, pathspec-scoped commits carrying a `Spike:` trailer, wired into `run-project-spike`. `docs/active-spikes/commit-work.md`, `docs/active-spikes/commit-work.todo.md`. Build this one first; then use it to commit Skill Authority.
 - Skill Authority — restore position-independence to the global skills, give `setup-local-skills` an update path, retire `docs/how-to-spike.md`, migrate `docs/` to `docs/active-spikes/`. `docs/active-spikes/skill-authority.md`, `docs/active-spikes/skill-authority.todo.md`.
-- LifeOS Tools v2 — open spike, parking lot for remaining v2 ideas. `docs/lifeos-tools-v2.md`, `docs/lifeos-tools-v2.todo.md`. (Task Chains / `supersede` theme is shipped — see Recently Shipped. Other v2 ideas stay parked. These two docs move into `docs/active-spikes/` as part of Skill Authority.)
+- LifeOS Tools v2 — open spike, parking lot for remaining v2 ideas. `docs/active-spikes/lifeos-tools-v2.md`, `docs/active-spikes/lifeos-tools-v2.todo.md`. (Task Chains / `supersede` theme is shipped — see Recently Shipped. Other v2 ideas stay parked.)
 
 ## Scratch / Future
 - LifeOS Bitwarden cleanup (parked): `docs/scratch/lifeos-bitwarden.md`, `docs/scratch/lifeos-bitwarden.todo.md`
 
 ## Recently Shipped
-- LifeOS Trello Task Chains: `trello supersede` (`--from`/`--to` and `--create`) writes the bidirectional predecessor↔successor link atomically as `🔗 Continues in:` / `🔗 Continues from:` comments (successor-first, idempotent, loud `PARTIAL:` on second-write failure); `trello chain` walks and prints a chain from any card. Live smoke test via the LifeOS agent on 2026-06-25. Notes in `docs/lifeos-tools-v2.md`.
+- LifeOS Trello Task Chains: `trello supersede` (`--from`/`--to` and `--create`) writes the bidirectional predecessor↔successor link atomically as `🔗 Continues in:` / `🔗 Continues from:` comments (successor-first, idempotent, loud `PARTIAL:` on second-write failure); `trello chain` walks and prints a chain from any card. Live smoke test via the LifeOS agent on 2026-06-25. Notes in `docs/active-spikes/lifeos-tools-v2.md`.
 - LifeOS Google Calendar writes: `calendar create-event` / `update-event` (dry-run by default, writable-calendar allowlist, no delete), attendee invites with layered name resolution (alias map → People API) and a `people` command group, single-occurrence-vs-`--series` edits. Recorded in `docs/decisions/0002-lifeos-calendar-writes.md`. First live `--execute` write was a real vault-agent task (no separate smoke test run).
 
 ## Next
 - Decide when a `docs/runbooks/` folder is useful enough to create.
-- Decide which remaining `docs/lifeos-tools-v2.md` theme (Trello write-safety pass, Drive read expansion, read-only `calendar find`, setup helper, agent wrapper) becomes the next active theme. Calendar writes and Task Chains / `supersede` are both shipped.
+- Decide which remaining `docs/active-spikes/lifeos-tools-v2.md` theme (Trello write-safety pass, Drive read expansion, read-only `calendar find`, setup helper, agent wrapper) becomes the next active theme. Calendar writes and Task Chains / `supersede` are both shipped.
 
 ## Waiting For Human QA
 - None.
