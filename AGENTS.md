@@ -97,7 +97,7 @@ The rules that matter most, because breaking them is silent:
 - **Never `--amend`, rebase, force-push, or `--no-verify`.**
 - **One commit does one thing.** If the summary needs the word "and," it is two commits.
 
-`gitall` is the user's own sweep-and-push helper and is not to be changed. It is a bare commit over the shared index, so **do not run `gitall` in this repo while an agent is working in it.**
+`gitall` and `gitcommit` in [git/git.sh](git/git.sh) are the user's own sweep helpers and are not to be changed by an agent. Both run `git add -A` followed by a bare `git commit`, so both will silently absorb an agent's in-progress files into an unrelated commit. **Do not run `gitall` or `gitcommit` in this repo while an agent is working in it.** `gitpush` is safe: it touches no index, and pushing is the user's job anyway.
 
 ## Secrets and local env
 This repo may contain public-safe tools that use private local secrets. Real secret-bearing

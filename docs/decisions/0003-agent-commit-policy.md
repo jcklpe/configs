@@ -29,7 +29,9 @@ Commit scope stops being an accident of when someone got around to running `gita
 
 `git log --grep='Spike: <slug>$' --reverse` reconstructs any spike's history in order, and the archival commit's message is a synthesis of it. Together these make the commit log a durable, greppable index into the spike docs, in the same way that `🔗 Continues in:` markers index Trello cards to one another.
 
-`gitall` is not deprecated, guarded, or changed. It stays for casual work and will fall out of use on its own. It is, however, the one remaining command that can sweep an agent's in-progress work into an unrelated commit, because it is a bare commit over the shared index. **Do not run `gitall` in a repo where an agent is working.**
+`gitall` and `gitcommit` are not deprecated, guarded, or changed. They stay for casual work. They are, however, the commands that can sweep an agent's in-progress work into an unrelated commit, because each is `git add -A` followed by a bare commit over the shared index. **Do not run `gitall` or `gitcommit` in a repo where an agent is working.** Verified: an agent's untracked scratch file lands inside the resulting commit, silently.
+
+`gitpush` is safe to run at any time. It touches no index, and it is the human-only step this record turns on.
 
 The main risk is silent bad scope: an agent committing without confirmation could quietly produce an incoherent history. Mitigations are that commits are unpushed and cheap to undo, that the pathspec rule forces the agent to name every file it commits, and that stray work outside a spike's scope triggers a question rather than a commit.
 
