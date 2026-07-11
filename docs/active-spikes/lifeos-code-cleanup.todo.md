@@ -13,17 +13,23 @@ Rough target shape (names finalized while doing the work):
 lifeos-tools/
   lifeos            # thin wrapper, exec's lifeos.sh (unchanged)
   lifeos.sh         # thin dispatcher: bootstrap + top-level case, sources lib/
-  lib/
+  lib/              # the implementation library, language-agnostic
     common.sh       # shared helpers: config/.env loading, output, _var_is, etc.
     trello.sh
     calendar.sh
     google.sh       # auth, accounts, drive, gmail, sheets, people
     open-austin-org.sh
     vault.sh
-  python/           # google-*.py helpers, relocated from root
+    google-calendar-render.py   # Python helpers live here too — organized by
+    google-calendar-write.py    # purpose, not language. lib/*.sh is sourced;
+    google-calendar-auth.py     # the .py files are invoked by path.
+    google-gmail-render.py
+    google-sheets-render.py
+    google-people.py
+    google-oauth.py
   skills/           # tool-operation skills seam (filled by the conversion spike)
-  secrets/          # .env, *token*.json, *credentials*.json, *-accounts.json (all gitignored)
-  qa/               # trello-qa.md, calendar-qa.md, open-austin-org-qa/ (all gitignored)
+  secrets/          # .env, *token*.json, *credentials*.json, *-accounts.json (already ignored at any depth)
+  qa/               # trello-qa.md, calendar-qa.md, open-austin-org-qa/ (already ignored at any depth)
   tests/            # existing test harness (stays)
   .env.example, *.example.json  # tracked example files, beside their real counterparts
 ```
@@ -47,8 +53,8 @@ lifeos-tools/
 - [ ] Extract `common.sh`: config/`.env` loading, output/rendering helpers, and generic utilities. Source it first from `lifeos.sh`. Keep `SCRIPT_DIR` defined in `lifeos.sh` (not recomputed in the lib).
 - [ ] Extract each feature module (`trello.sh`, `calendar.sh`, `google.sh`, `open-austin-org.sh`, `vault.sh`) from `lifeos.sh` into `lib/`, one feature per commit, running `tests/` after each.
 - [ ] Reduce `lifeos.sh` to the dispatcher: bootstrap, `source lib/*.sh`, and the top-level `case`.
-- [ ] Relocate the Python helpers into `python/` and re-point their invocations — **7 sites in `lifeos.sh` and 4 in `tests/`** (`test-calendar-render.sh`, `test-google-renderers.sh` both call `${TOOL_DIR}/google-*.py`). Run the tests after.
-- [ ] **Decision gate before this one:** confirm with the user whether relocating secrets/QA is worth the risk, or whether they stay in root (already gitignored). If yes: relocate secrets into `secrets/` and QA artifacts into `qa/`, re-pointing every `SCRIPT_DIR`-anchored reference, updating `.gitignore` patterns, and running `git check-ignore` on each new secret path plus `git status` to confirm nothing secret is newly tracked.
+- [ ] Move the Python helpers into `lib/` (not a separate `python/` folder — language-agnostic library) and re-point their invocations: **7 sites in `lifeos.sh` and 4 in `tests/`** (`test-calendar-render.sh`, `test-google-renderers.sh` both call `${TOOL_DIR}/google-*.py`). Run the tests after.
+- [ ] Relocate secrets into `secrets/` and QA artifacts into `qa/`, re-pointing every `SCRIPT_DIR`-anchored reference. **No `.gitignore` change needed** — the patterns are filename-based and follow the files (verified); still run `git status` afterward as a sanity check. Cosmetic tidiness, no leak risk.
 - [ ] Settle the `skills/` seam: document the location decision in the conceptual doc / `AGENTS.md` if needed. Do not create an empty folder.
 - [ ] Update `lifeos-tools/README.md` and `AGENT.md` if the reorganization changes any documented path or invocation.
 - [ ] Full regression: run `tests/`, then exercise a real read-only command of each feature (e.g. `lifeos doctor`, `lifeos trello list-lists`) and confirm identical behavior.
@@ -72,4 +78,4 @@ No unit-test-style suite for the shell beyond `tests/`. Validate by:
 - `git status --short` after secret/QA relocation — nothing secret newly tracked.
 
 ## Public Safety And Secrets
-`lifeos-tools/` lives in the **public** configs repo. Real secrets live here but are gitignored. The single biggest risk in this spike is a relocation that moves a secret file out from under its `.gitignore` pattern and into a tracked path. Every secret move must be followed by a `git status` check and, ideally, a `git check-ignore` on the new path. See `docs/decisions/0001-secrets-and-local-env.md`.
+`lifeos-tools/` lives in the **public** configs repo. Real secrets live here but are gitignored. Relocating them is **safe**: the `.gitignore` patterns are filename-based (`.env`, `*token*.json`, `*credentials*.json`, `google-accounts.json`), so they match at any depth — verified 2026-07-10 that `secrets/.env`, `secrets/google-token.json`, and `secrets/google-credentials.json` all stay ignored, while `secrets/.env.example` stays tracked. No gitignore change is required to move secrets into `secrets/`. Run `git status` after the move as a cheap confirmation. See `docs/decisions/0001-secrets-and-local-env.md`.
