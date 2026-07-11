@@ -183,7 +183,7 @@ lifeos calendar list-calendars
 lifeos calendar sync
 ```
 
-`calendar sync` is read-only. It uses comma-separated `GOOGLE_CALENDAR_IDS` from `~/configs/lifeos-tools/.env`, with `primary` as the default. Run `list-calendars` to inspect available calendar IDs before expanding the configured set.
+`calendar sync` is read-only. It uses comma-separated `GOOGLE_CALENDAR_IDS` from `~/configs/lifeos-tools/secrets/.env`, with `primary` as the default. Run `list-calendars` to inspect available calendar IDs before expanding the configured set.
 
 The snapshot uses `## Combined Agenda` as one date-grouped agenda across all synced calendars. Every event line includes `calendar: <calendar name>` so agents can tell which calendar produced the event. Event locations appear inline as `location: ...`. Descriptions are cleaned and bounded so long imported event text does not dominate the snapshot.
 
@@ -256,7 +256,7 @@ Drive read commands are on-demand. Do not clone Drive into LifeOS, recursively i
 `drive import-doc` is the only approved Drive write command. It imports a local source file as a native Google Doc, is dry-run by default, and only writes with `--execute`. Use it only when Aslan explicitly asks to create/import a Drive document. Prefer specifying `--folder FOLDER_ID` so the document lands in the intended personal or Open Austin Drive location. Do not use Drive tooling to edit, delete, move, share, or bulk-create Drive files unless a bounded command exists and Aslan explicitly asks for that specific action.
 
 ## Safety Notes
-- Do not print or inspect `~/configs/lifeos-tools/.env`.
+- Do not print or inspect `~/configs/lifeos-tools/secrets/.env`.
 - Do not print or inspect Google token files or `google-accounts.json`.
 - Do not hard-delete Trello cards.
 - Description replacement overwrites the full Trello description. Prefer comments for additive notes. Task-chain links (`supersede`) are stored as comments for this reason.
