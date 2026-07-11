@@ -63,7 +63,8 @@ The investigation, plus the correction that gitignore is relocation-safe, gives 
 
 1. **Modularize `lifeos.sh` into `lib/`** — the core. `SCRIPT_DIR` stays at the root, no assets move, behavior is identical. First.
 2. **Move the Python helpers into `lib/`** — re-points 7 references in `lifeos.sh` and 4 in `tests/`. Contained; run the tests after.
-3. **Relocate QA artifacts (`qa/`) and secrets (`secrets/`)** — cosmetic tidiness, no leak risk (gitignore follows the files), no gitignore change. Re-points the remaining `SCRIPT_DIR` references. Lowest value, but now low-risk too.
+3. **Relocate QA artifacts (`qa/`)** — self-contained: the QA output paths are hardcoded to `${SCRIPT_DIR}`, gitignore follows the files by name, so this is re-point-five-references-and-ensure-the-dir. Low value, low risk.
+4. **Relocate secrets (`secrets/`)** — *not* self-contained, discovered during execution. The credential/token/accounts/aliases paths are set in the **user's private `.env`** (`GOOGLE_CALENDAR_CREDENTIALS_PATH="$CONFIGS/lifeos-tools/google-credentials.json"`, etc.), which is gitignored and cannot be edited from the repo. Moving the files would require the user to update their `.env` by hand, and until they do, the tool breaks at runtime (`doctor` reports "credentials file does not exist"). So this is a user decision, not a mechanical step — the gitignore is relocation-safe, but the `.env` coupling is not. Recommendation: leave secrets in root (already gitignored, so the committed repo is already clean; only a local `ls` sees them), since the cost is real and the gain is cosmetic.
 
 ## Open Questions
 - Should the Python helpers merely relocate into `lib/`, or get light cleanup while being moved? Default: relocate only, keep this a pure structural refactor; note any Python smells for a later pass rather than fixing them here.
