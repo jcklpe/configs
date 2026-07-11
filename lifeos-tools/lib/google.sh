@@ -269,7 +269,7 @@ _gmail_output_for_alias() {
     local alias="$1"
     local qa="$2"
     if [ "$qa" = "1" ]; then
-        printf '%s/gmail-qa/%s.md\n' "$SCRIPT_DIR" "$alias"
+        printf '%s/gmail-qa/%s.md\n' "$QA_DIR" "$alias"
     else
         printf '%s/%s.md\n' "$(_gmail_sources_dir)" "$alias"
     fi
@@ -360,7 +360,7 @@ _gmail_sync() {
         aliases="$(_google_enabled_aliases gmail)" || return 1
         [ -n "$aliases" ] || { _err "No Gmail-enabled Google aliases configured"; return 1; }
         if [ "$qa" -eq 1 ]; then
-            dir="${SCRIPT_DIR}/gmail-qa"
+            dir="${QA_DIR}/gmail-qa"
         else
             _vault_ready || return 1
             _ensure_sources_dir || return 1
@@ -929,7 +929,7 @@ _calendar_sync() {
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --qa)
-                custom_out="${SCRIPT_DIR}/calendar-qa.md"
+                custom_out="${QA_DIR}/calendar-qa.md"
                 shift
                 ;;
             --output)

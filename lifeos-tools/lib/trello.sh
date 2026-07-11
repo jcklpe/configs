@@ -523,7 +523,7 @@ _trello_sync() {
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --qa)
-                custom_out="${SCRIPT_DIR}/trello-qa.md"
+                custom_out="${QA_DIR}/trello-qa.md"
                 shift
                 ;;
             --output)

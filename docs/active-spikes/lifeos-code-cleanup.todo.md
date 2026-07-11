@@ -54,12 +54,13 @@ lifeos-tools/
 
 ## To Do
 - [ ] **Decision (user):** relocate secrets into `secrets/`? Blocked on the user's private `.env`, which sets the credential/token/accounts/aliases paths to `$CONFIGS/lifeos-tools/*.json`. Moving the files needs a hand-edit of that `.env` or the tool breaks. Recommendation: leave in root (gitignored; committed repo already clean). Awaiting the user's call.
-- [ ] **Optional (user):** relocate QA artifacts into `qa/`? Self-contained (5 hardcoded `${SCRIPT_DIR}` refs, gitignore follows by name), but low value. Awaiting the user's call.
 
 ## Ready for Human QA
-- None yet. Likely QA items: live commands that write to Trello/Google or hit real APIs, which cannot be safely exercised from the terminal and need the user to run them on their machine with real secrets.
+- [ ] **Confirm a `--qa` run writes into `qa/`.** The QA relocation was verified offline (dir auto-creation via `_ensure_parent_dir`/`mkdir -p`, all five paths re-pointed to `QA_DIR`), but a live `--qa` run needs the network. Run e.g. `lifeos trello sync --qa` (or `calendar sync --qa`) and confirm the output lands in `lifeos-tools/qa/` rather than the root. Read-only against the remote; writes only a local snapshot.
 
 ## Done
+- [x] **Relocate QA artifacts into `qa/`.** *(User chose to move them, 2026-07-11.)* Added a `QA_DIR="${SCRIPT_DIR}/qa"` bootstrap variable and re-pointed all five QA references to it: `trello-qa.md`, `calendar-qa.md`, `gmail-qa/` (dir + the per-alias output printf), and `open-austin-org-qa/`. Confirmed every QA writer already creates its target dir (`_ensure_parent_dir` for trello/calendar, `mkdir -p` for gmail and the open-austin snapshot copy), so no dir-creation code was needed. Moved the three existing artifacts (`trello-qa.md`, `calendar-qa.md`, `open-austin-org-qa/`) into `qa/`; they stay gitignored (patterns are filename/dirname-based, verified). Offline test confirmed `QA_DIR` + `_ensure_parent_dir` auto-creates the dir; golden/tests unchanged. Live `--qa` confirmation is a Human QA item.
+
 - [x] **Settle the `skills/` seam: document the location decision.** Done — no new file needed. `AGENTS.md`'s "Where things go" table already documents `Tool-specific skill → beside the tool, e.g. lifeos-tools/skills/<skill-name>/SKILL.md`, and the conceptual doc records that tool skills live there and get symlinked into `~/.claude/skills` and `~/.codex/skills`. Git does not track empty folders, so the folder itself arrives with the first real tool skill (the Vault Runbook Conversion spike). The seam is a documented location, which now exists.
 
 - [x] **Update `lifeos-tools/README.md` and `AGENT.md` if the reorganization changes any documented path or invocation.** Checked — no change needed. Both docs reference only the public CLI surface (`lifeos <cmd>`, `./lifeos.sh help`), never the internal file layout or the `google-*.py` helpers. The reorg is entirely internal; the public interface is unchanged.
