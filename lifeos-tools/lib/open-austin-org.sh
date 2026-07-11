@@ -67,7 +67,7 @@ _open_austin_org_sync() {
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --qa)
-                custom_out="${SCRIPT_DIR}/open-austin-org-qa"
+                custom_out="${QA_DIR}/open-austin-org-qa"
                 shift
                 ;;
             --output)

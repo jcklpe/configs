@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIGS="${CONFIGS:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 LIB_DIR="${SCRIPT_DIR}/lib"
 ENV_FILE="${SCRIPT_DIR}/.env"
+QA_DIR="${SCRIPT_DIR}/qa"
 
 LIFEOS_DAYS_BACK="${LIFEOS_DAYS_BACK:-14}"
 LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
