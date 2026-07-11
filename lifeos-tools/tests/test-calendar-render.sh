@@ -7,7 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TOOL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 OUT="${TMPDIR:-/tmp}/lifeos-calendar-render-test.md"
 
-python3 "${TOOL_DIR}/google-calendar-render.py" \
+python3 "${TOOL_DIR}/lib/google-calendar-render.py" \
     "${SCRIPT_DIR}/fixtures/calendar.json" \
     "${SCRIPT_DIR}/fixtures/events.json" \
     "${SCRIPT_DIR}/fixtures/calendar-secondary.json" \
@@ -87,7 +87,7 @@ assert_contains "- continues-01:15 - Cross Midnight Event (continues, 2026-06-26
 ##- LIFEOS_CALENDAR_NO_DESCRIPTION omits descriptions for the named calendars,
 ##- but events that also live on a high-signal calendar keep their description.
 OUT="${TMPDIR:-/tmp}/lifeos-calendar-render-suppressed.md"
-LIFEOS_CALENDAR_NO_DESCRIPTION="Other Calendar" python3 "${TOOL_DIR}/google-calendar-render.py" \
+LIFEOS_CALENDAR_NO_DESCRIPTION="Other Calendar" python3 "${TOOL_DIR}/lib/google-calendar-render.py" \
     "${SCRIPT_DIR}/fixtures/calendar.json" \
     "${SCRIPT_DIR}/fixtures/events.json" \
     "${SCRIPT_DIR}/fixtures/calendar-secondary.json" \
