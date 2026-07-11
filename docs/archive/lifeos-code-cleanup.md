@@ -1,7 +1,7 @@
 # LifeOS Code Cleanup
-Status: **active spike.** Opened 2026-07-10. Reorganize `configs/lifeos-tools/` and modularize the 2,550-line `lifeos.sh` on maintainability grounds. No behavior change, no new capabilities.
+Status: **archived 2026-07-11.** Opened 2026-07-10. Reorganized `configs/lifeos-tools/` and modularized `lifeos.sh` (2,550 → 324 lines) into a dispatcher plus `lib/` modules, moved the Python helpers into `lib/`, and relocated secrets and QA output into `secrets/` and `qa/`. Behavior unchanged throughout, verified against a golden baseline. This doc is historical context, not current rules.
 
-Companion to-do: `docs/active-spikes/lifeos-code-cleanup.todo.md`.
+Companion to-do: `docs/archive/lifeos-code-cleanup.todo.md`.
 
 This is one of three sibling spikes from the same design conversation. The others are LifeOS Handoff (a global skill for feeding progress to the LifeOS vault) and Vault Runbook Conversion (turning the vault's runbooks into skills). This spike is a prerequisite for the conversion: it establishes the `lifeos-tools/skills/` folder that the conversion later fills with tool-operation skills.
 
