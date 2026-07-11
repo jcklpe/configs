@@ -29,8 +29,8 @@ The CLI is a *cohesive application*, not a bag of independent scripts: a dispatc
 
 - `lifeos.sh` shrinks to a **thin dispatcher** — the top-level `case` block plus bootstrap — that sources the libs.
 - `lib/` holds **feature modules**, split along the seams the functions already follow: `trello`, `calendar`, `google` (auth/accounts/drive/gmail/sheets/people), `open-austin-org`, `vault`, and a `common` module for the genuinely shared helpers.
-- Python helpers (`google-*.py`) move into their own home rather than sitting in root.
-- Secrets and QA artifacts get subfolders, out of the root.
+- The **Python helpers (`google-*.py`) also live in `lib/`**, as library code that happens to be Python. Organize by what they are — feature implementation — not by language. `lib/*.sh` is sourced; the `.py` files are invoked by path; the filenames keep the distinction obvious. A separate `python/` or `helpers/` folder would be a format-first split, the same mistake as organizing by skill format.
+- Secrets and QA artifacts get subfolders (`secrets/`, `qa/`), out of the root. The `.gitignore` patterns are filename-based and follow the files into any subfolder (verified), so this is a purely cosmetic move with no leak risk and no gitignore change required.
 
 The exact folder names are a to-do detail, settled while doing the work.
 
@@ -50,7 +50,7 @@ The feature cohesion that skills-first offers is obtained instead from feature-n
 - **Bash 3.2 only.** Confirmed 2026-07-10: `lifeos.sh` uses zero bash-4 features, and no Homebrew bash is installed, so `env bash` resolves to macOS system bash 3.2.57. The refactor must stay 3.2-safe — no associative arrays, no `${var,,}`/`${var^^}`, no `mapfile`/`readarray`, no `&>`, no `${!indirect}`.
 - **Everything is `SCRIPT_DIR`-anchored, and that is the coupling to manage.** Assets are referenced as `${SCRIPT_DIR}/<file>`: the Python helpers (7 call sites), `.env`/`.env.example` (7), QA artifacts (8), account/credential JSON (6). The `tests/` also invoke the Python helpers by path (`${TOOL_DIR}/google-*.py`, 4 sites). So relocating any asset means re-pointing every reference across both `lifeos.sh` and `tests/`, together, or the CLI breaks. The clean technique is to centralize each asset location as a named variable in the bootstrap (the code already does this for `ENV_FILE`), so a move becomes one definition change rather than a call-site hunt.
 - **`SCRIPT_DIR` must stay defined once, in `lifeos.sh`, and be inherited by the sourced libs.** It is derived from `lifeos.sh`'s own `BASH_SOURCE`, so it points at the `lifeos-tools/` root. A `lib/` module must *not* recompute its own directory for asset paths — that would resolve to `lib/` and break everything.
-- **Secrets stay ignored.** After any secret move, confirm the relocated file is still matched by `.gitignore` (`git check-ignore` on the new path) and that `git status` shows nothing newly tracked. A relocation that de-ignores a token is a leak into a public repo.
+- **Secrets stay ignored automatically.** Verified 2026-07-10: the `.gitignore` patterns are filename-based (`.env`, `*token*.json`, `*credentials*.json`, `google-accounts.json`), so they match at any depth — a secret moved into `secrets/` stays ignored, and the `!*.example` negations keep the example templates tracked. No gitignore change is needed to relocate secrets. Still run `git status` after the move as a cheap sanity check, but the earlier "de-ignoring a token" worry was unfounded.
 
 ## The Skills Seam
 "Establish the seam" means **decide and document** that tool-operation skills live at `lifeos-tools/skills/<name>/SKILL.md`, symlinked into `~/.claude/skills/` and `~/.codex/skills/` for global availability to local agents. It does *not* necessarily mean creating an empty folder now — git does not track empty folders, and the first real tool skill arrives in the conversion spike. The deliverable here is the decision and the documented location, so the conversion spike has a stable target.
@@ -59,12 +59,11 @@ The feature cohesion that skills-first offers is obtained instead from feature-n
 Sibling to `docs/active-spikes/lifeos-handoff.md` (not yet created) and predecessor to `docs/active-spikes/vault-runbook-conversion.md` (not yet created). The conversion depends on this spike having settled where tool skills live. Formal `Continues in:` markers get added when those docs exist.
 
 ## Sequencing By Risk (from the investigation)
-The investigation revealed a clear risk gradient, and the work should follow it:
+The investigation, plus the correction that gitignore is relocation-safe, gives this order. Every step is mechanical; the only real hazard is re-pointing `SCRIPT_DIR` references, which the named-variable technique defuses.
 
-1. **Modularize `lifeos.sh` into `lib/`** — low risk, high value. `SCRIPT_DIR` stays at the root, no assets move, behavior is identical. This is the core of the spike and comes first.
-2. **Relocate the Python helpers into `python/`** — contained. No secrets, no `.gitignore` involvement, but it touches 7 references in `lifeos.sh` *and* 4 in `tests/`. Do it as one careful change with a full test run.
-3. **Relocate QA artifacts and secrets** — the delicate tail, and a genuine judgment call (see open question). Highest risk, lowest value.
+1. **Modularize `lifeos.sh` into `lib/`** — the core. `SCRIPT_DIR` stays at the root, no assets move, behavior is identical. First.
+2. **Move the Python helpers into `lib/`** — re-points 7 references in `lifeos.sh` and 4 in `tests/`. Contained; run the tests after.
+3. **Relocate QA artifacts (`qa/`) and secrets (`secrets/`)** — cosmetic tidiness, no leak risk (gitignore follows the files), no gitignore change. Re-points the remaining `SCRIPT_DIR` references. Lowest value, but now low-risk too.
 
 ## Open Questions
-- **Is relocating secrets and QA artifacts into subfolders worth the risk at all?** They are already gitignored, so root clutter is the *only* cost of leaving them. Relocating them carries real downside: a secret moved out from under its ignore pattern is a leak, and it re-points many `SCRIPT_DIR`-anchored references. Modularizing `lifeos.sh` and moving the Python helpers are clearly worth it; the secrets/QA move is a call to make deliberately when we reach it, not a foregone conclusion.
-- Should the Python helpers merely relocate, or get light cleanup while being moved? Default: relocate only, keep this a pure structural refactor; note any Python smells for a later pass rather than fixing them here.
+- Should the Python helpers merely relocate into `lib/`, or get light cleanup while being moved? Default: relocate only, keep this a pure structural refactor; note any Python smells for a later pass rather than fixing them here.
