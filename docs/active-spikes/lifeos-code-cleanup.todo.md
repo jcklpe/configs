@@ -53,15 +53,19 @@ lifeos-tools/
 **Verification technique + a lesson.** Reachability of each extracted module is probed by running one of its commands with the relevant credential/var cleared, so it fails at the readiness check *before* any network call, proving the functions resolve. **Use a read-only subcommand for this.** The open-austin probe mistakenly used `sync` (mutating); it printed two log lines and then failed at the empty vault path, writing nothing — verified no side effect (source repo reflog shows no pull, tree clean, no stray snapshot). Still, probe with read-only commands (`path`, `list-*`) only.
 
 ## To Do
-- [ ] Relocate secrets into `secrets/` and QA artifacts into `qa/`, re-pointing every `SCRIPT_DIR`-anchored reference. **No `.gitignore` change needed** — the patterns are filename-based and follow the files (verified); still run `git status` afterward as a sanity check. Cosmetic tidiness, no leak risk.
-- [ ] Settle the `skills/` seam: document the location decision in the conceptual doc / `AGENTS.md` if needed. Do not create an empty folder.
-- [ ] Update `lifeos-tools/README.md` and `AGENT.md` if the reorganization changes any documented path or invocation.
-- [ ] Full regression: run `tests/`, then exercise a real read-only command of each feature (e.g. `lifeos doctor`, `lifeos trello list-lists`) and confirm identical behavior.
+- [ ] **Decision (user):** relocate secrets into `secrets/`? Blocked on the user's private `.env`, which sets the credential/token/accounts/aliases paths to `$CONFIGS/lifeos-tools/*.json`. Moving the files needs a hand-edit of that `.env` or the tool breaks. Recommendation: leave in root (gitignored; committed repo already clean). Awaiting the user's call.
+- [ ] **Optional (user):** relocate QA artifacts into `qa/`? Self-contained (5 hardcoded `${SCRIPT_DIR}` refs, gitignore follows by name), but low value. Awaiting the user's call.
 
 ## Ready for Human QA
 - None yet. Likely QA items: live commands that write to Trello/Google or hit real APIs, which cannot be safely exercised from the terminal and need the user to run them on their machine with real secrets.
 
 ## Done
+- [x] **Settle the `skills/` seam: document the location decision.** Done — no new file needed. `AGENTS.md`'s "Where things go" table already documents `Tool-specific skill → beside the tool, e.g. lifeos-tools/skills/<skill-name>/SKILL.md`, and the conceptual doc records that tool skills live there and get symlinked into `~/.claude/skills` and `~/.codex/skills`. Git does not track empty folders, so the folder itself arrives with the first real tool skill (the Vault Runbook Conversion spike). The seam is a documented location, which now exists.
+
+- [x] **Update `lifeos-tools/README.md` and `AGENT.md` if the reorganization changes any documented path or invocation.** Checked — no change needed. Both docs reference only the public CLI surface (`lifeos <cmd>`, `./lifeos.sh help`), never the internal file layout or the `google-*.py` helpers. The reorg is entirely internal; the public interface is unchanged.
+
+- [x] **Full regression: run `tests/`, then exercise a read-only command of each feature and confirm identical behavior.** Passed 2026-07-11. All shell files `bash -n` clean under 3.2; both renderer tests pass; `doctor`/`help`/`context` byte-identical to golden; trello and google fail cleanly at readiness with cleared creds (reachable, no network); `open-austin-org path` works read-only. Tree clean. `lifeos.sh` 322 lines, down from 2,550.
+
 - [x] **Move the Python helpers into `lib/` (not a separate `python/` folder — language-agnostic library) and re-point their invocations.** Done. All 7 `google-*.py` files moved from root into `lib/`, alongside the bash modules. Re-pointed the 7 invocations in `lib/google.sh` from `${SCRIPT_DIR}/` to `${LIB_DIR}/` and the 4 in `tests/` from `${TOOL_DIR}/` to `${TOOL_DIR}/lib/`. The `google-accounts.example.json` reference (also `${SCRIPT_DIR}/google-...`) was correctly left untouched by the `.py`-only substitution. Verified the helpers take all asset paths as arguments — none use `__file__` to locate siblings (an earlier grep flagged two, but it had matched `os.path.dirname(path)` on a passed argument, not `__file__`), so moving them breaks nothing internally. Tests pass from the new path, doctor/help/context match golden.
 
 - [x] **Centralize asset locations as named variables in the bootstrap (`PYTHON_DIR`, and later `SECRETS_DIR`/`QA_DIR`), extending the existing `ENV_FILE` pattern.** Started: `LIB_DIR` added to the bootstrap and used for the `source` lines. `PYTHON_DIR`/`SECRETS_DIR`/`QA_DIR` will land with their respective relocation steps, since a variable with no files behind it yet would be dead.
