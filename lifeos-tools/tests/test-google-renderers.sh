@@ -8,7 +8,7 @@ TOOL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 GMAIL_OUT="${TMPDIR:-/tmp}/lifeos-gmail-render-test.md"
 SHEET_OUT="${TMPDIR:-/tmp}/lifeos-sheet-render-test.md"
 
-python3 "${TOOL_DIR}/google-gmail-render.py" \
+python3 "${TOOL_DIR}/lib/google-gmail-render.py" \
     personal \
     aslan@example.com \
     "in:inbox newer_than:30d" \
@@ -17,7 +17,7 @@ python3 "${TOOL_DIR}/google-gmail-render.py" \
     "2026-06-01 18:00:00 UTC" \
     "${SCRIPT_DIR}/fixtures/gmail-messages.json" > "$GMAIL_OUT"
 
-python3 "${TOOL_DIR}/google-sheets-render.py" \
+python3 "${TOOL_DIR}/lib/google-sheets-render.py" \
     open-austin \
     sheet_id_123 \
     "${SCRIPT_DIR}/fixtures/sheet-meta.json" \
