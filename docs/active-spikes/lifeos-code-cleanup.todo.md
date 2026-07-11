@@ -40,15 +40,15 @@ lifeos-tools/
 - Root also holds: `google-*.py` (6 Python helpers), secret JSON tokens/credentials, `google-accounts.json`, `people-aliases.json`, QA artifacts (`calendar-qa.md`, `trello-qa.md`, `open-austin-org-qa/`), example files, `tests/`, `tmp/`, `__pycache__/`.
 - `.gitignore` already correctly ignores secrets, caches, generated `sources/`, and QA artifacts. They are just physically in root, not in subfolders. So this spike relocates already-ignored files; it does not change what is ignored (only, possibly, the patterns if paths change).
 
+**Investigation complete (2026-07-10), baseline green.** bash 3.2 confirmed as the only interpreter; assets are uniformly `SCRIPT_DIR`-anchored; both `tests/` pass offline. Details in Done. The plan is now risk-ordered: modularize first (safe), move Python helpers next (contained, touches tests), treat secrets/QA relocation as a deliberate decision gate rather than a given.
+
 ## To Do
-- [ ] Answer the bash-version question: grep `lifeos.sh` for bash-4-isms (`declare -A`, `${var,,}`, `mapfile`/`readarray`, `${var^^}`) and check whether the `lifeos` wrapper or install assumes Homebrew bash. Record the answer; it constrains the refactor.
-- [ ] Map the secret/QA path coupling: grep `lifeos.sh` and `google-*.py` for every referenced filename (`.env`, `*token*.json`, `google-accounts.json`, `people-aliases.json`, the `*-qa` paths). List each reference so relocation can re-point them all.
-- [ ] Confirm how `tests/` is run (harness, command, whether it hits the network) so it can serve as the refactor's regression check.
-- [ ] Extract `common.sh`: config/`.env` loading, output/rendering helpers, and generic utilities. Source it first from `lifeos.sh`.
+- [ ] Centralize asset locations as named variables in the bootstrap (`PYTHON_DIR`, and later `SECRETS_DIR`/`QA_DIR`), extending the existing `ENV_FILE` pattern, so relocations become one-line definition changes instead of call-site hunts.
+- [ ] Extract `common.sh`: config/`.env` loading, output/rendering helpers, and generic utilities. Source it first from `lifeos.sh`. Keep `SCRIPT_DIR` defined in `lifeos.sh` (not recomputed in the lib).
 - [ ] Extract each feature module (`trello.sh`, `calendar.sh`, `google.sh`, `open-austin-org.sh`, `vault.sh`) from `lifeos.sh` into `lib/`, one feature per commit, running `tests/` after each.
 - [ ] Reduce `lifeos.sh` to the dispatcher: bootstrap, `source lib/*.sh`, and the top-level `case`.
-- [ ] Relocate the Python helpers into `python/` and re-point their invocations.
-- [ ] Relocate secrets into `secrets/` and QA artifacts into `qa/`, re-pointing every path found in the coupling map, and updating `.gitignore` patterns to match the new locations. Verify `git status` shows no secret newly tracked.
+- [ ] Relocate the Python helpers into `python/` and re-point their invocations — **7 sites in `lifeos.sh` and 4 in `tests/`** (`test-calendar-render.sh`, `test-google-renderers.sh` both call `${TOOL_DIR}/google-*.py`). Run the tests after.
+- [ ] **Decision gate before this one:** confirm with the user whether relocating secrets/QA is worth the risk, or whether they stay in root (already gitignored). If yes: relocate secrets into `secrets/` and QA artifacts into `qa/`, re-pointing every `SCRIPT_DIR`-anchored reference, updating `.gitignore` patterns, and running `git check-ignore` on each new secret path plus `git status` to confirm nothing secret is newly tracked.
 - [ ] Settle the `skills/` seam: document the location decision in the conceptual doc / `AGENTS.md` if needed. Do not create an empty folder.
 - [ ] Update `lifeos-tools/README.md` and `AGENT.md` if the reorganization changes any documented path or invocation.
 - [ ] Full regression: run `tests/`, then exercise a real read-only command of each feature (e.g. `lifeos doctor`, `lifeos trello list-lists`) and confirm identical behavior.
@@ -57,7 +57,11 @@ lifeos-tools/
 - None yet. Likely QA items: live commands that write to Trello/Google or hit real APIs, which cannot be safely exercised from the terminal and need the user to run them on their machine with real secrets.
 
 ## Done
-- None yet.
+- [x] **Answer the bash-version question: grep `lifeos.sh` for bash-4-isms (`declare -A`, `${var,,}`, `mapfile`/`readarray`, `${var^^}`) and check whether the `lifeos` wrapper or install assumes Homebrew bash. Record the answer; it constrains the refactor.** Answered 2026-07-10: **bash 3.2 only.** Zero bash-4 features (`declare/local -A`: 0, `${x,,}`/`${x^^}`: 0, `mapfile`/`readarray`: 0, `|&`: 0, `&>`: 0, `${!indirect}`: 0). No Homebrew bash is installed — `command -v bash` → `/bin/bash`, which is `GNU bash 3.2.57(1) arm64-apple-darwin24`. `env bash` therefore runs 3.2. The refactor must stay 3.2-safe; folded into the conceptual doc's Constraints.
+
+- [x] **Map the secret/QA path coupling: grep `lifeos.sh` and `google-*.py` for every referenced filename. List each reference so relocation can re-point them all.** Done. Everything is `${SCRIPT_DIR}/<file>`-anchored. Counts in `lifeos.sh`: 7 `python3 ${SCRIPT_DIR}/*.py`, 7 `.env`/`ENV_FILE`, 8 `*-qa` (md + dir), 6 accounts/credentials JSON. `SCRIPT_DIR` is set at line 5 from `BASH_SOURCE`, `ENV_FILE` at line 7, and vault paths come from `LIFEOS_VAULT_PATH` (which correctly refuses to point inside the configs repo, line 163). The Python helpers are invoked at lines 949/953/1012/1016/1125/1222/1549. **The `tests/` also reference the helpers** (`${TOOL_DIR}/google-*.py`, 4 sites) — so a `python/` move touches the tests too. This surfaced the risk gradient now recorded in the conceptual doc's "Sequencing By Risk."
+
+- [x] **Confirm how `tests/` is run (harness, command, whether it hits the network) so it can serve as the refactor's regression check.** Done. Two shell tests: `test-calendar-render.sh` and `test-google-renderers.sh`, each `bash tests/test-*.sh`, `set -eu`, asserting on rendered Markdown from JSON fixtures in `tests/fixtures/`. **Fully offline** — no network, no secrets, fixture-driven. **Both PASS on current code** (baseline green, 2026-07-10). `bash -n lifeos.sh` is clean under 3.2. These are the regression harness; run after each extraction.
 
 ## Validation
 No unit-test-style suite for the shell beyond `tests/`. Validate by:
