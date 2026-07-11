@@ -1,7 +1,7 @@
 # LifeOS Code Cleanup To-Do
-Status: **active.** Nothing refactored yet. Design settled in the conceptual doc; this tracks execution.
+Status: **archived 2026-07-11.** All work done and human-QA'd. `lifeos.sh` 2,550 → 324 lines; code in `lib/`, secrets in `secrets/`, QA output in `qa/`. This is the implementation trail, kept for texture.
 
-Conceptual doc: `docs/active-spikes/lifeos-code-cleanup.md`.
+Conceptual doc: `docs/archive/lifeos-code-cleanup.md`.
 
 ## Background
 `configs/lifeos-tools/` is a working `lifeos` CLI dumped into one folder with no structure, fronted by a 2,550-line `lifeos.sh`. This spike reshapes it into a dispatcher-plus-libs application and organizes the folder, with zero behavior change. Design worked out in conversation on 2026-07-10.
@@ -56,9 +56,11 @@ lifeos-tools/
 - Nothing open. Two human-QA items remain (below); the spike is otherwise complete and ready to archive once those pass.
 
 ## Ready for Human QA
-- [ ] **Confirm a `--qa` run writes into `qa/`.** The QA relocation was verified offline (dir auto-creation via `_ensure_parent_dir`/`mkdir -p`, all five paths re-pointed to `QA_DIR`), but a live `--qa` run needs the network. Run e.g. `lifeos trello sync --qa` (or `calendar sync --qa`) and confirm the output lands in `lifeos-tools/qa/` rather than the root. Read-only against the remote; writes only a local snapshot.
+- None. Both items passed; see Done.
 
 ## Done
+- [x] **Confirm a `--qa` run writes into `qa/`.** *(Human QA passed 2026-07-11.)* The user ran `lifeos trello sync --qa` and confirmed the output landed in `lifeos-tools/qa/`. Git hygiene re-audited afterward: `qa/` tracks nothing, `secrets/` tracks only the five `.example` templates, no real secret was added by any session commit, and the committed examples contain no token/key-shaped strings.
+
 - [x] **Update your private `.env`, then confirm `doctor` passes.** *(Human QA passed 2026-07-11.)* The user edited the two path vars their `.env` actually carried — `GOOGLE_CALENDAR_CREDENTIALS_PATH` and `GOOGLE_CALENDAR_TOKEN_PATH` — to `secrets/`. The other two the earlier note listed (`GOOGLE_ACCOUNTS_PATH`, `LIFEOS_PEOPLE_ALIASES_PATH`) are **not present in their `.env`**, so the code's defaults apply — and those defaults were re-pointed to `secrets/` in this spike, so they resolve automatically with no edit. `lifeos doctor` now returns all-OK, exit 0 with the real `.env`: account config found, all three alias tokens found. Lesson: the "edit four vars" instruction over-generalized from `.env.example`; only edit the path vars a given `.env` actually sets, since absent optional ones fall back to the (now-`secrets/`) defaults.
 
 - [x] **Relocate secrets into `secrets/`.** *(User chose to move them, 2026-07-11.)* Added a `SECRETS_DIR="${SCRIPT_DIR}/secrets"` bootstrap var; `ENV_FILE` now resolves to `${SECRETS_DIR}/.env`. Re-pointed the five secret-path code references in `lib/google.sh` (accounts default, the relative per-account credential/token resolution, and three `cp`-example hints) and two hints in `lifeos.sh` to `SECRETS_DIR`. Updated `.env.example`'s four path vars and one comment to `secrets/`. Moved all real secrets and example files into `secrets/`; reals stay gitignored at the new depth, examples stay tracked (verified). Confirmed via `grep` that the real `google-accounts.json` uses bare relative per-account paths, so no JSON edit is needed. **Verified via env-override that the move is correct and complete:** with the four `.env` path vars pointed at `secrets/`, `doctor` returns exit 0, all files found — the only diff from golden is the expected `.env` path line. The user must make that `.env` edit permanent (blocking Human QA item above); until then Google features are down while Trello (API-key creds, no file paths) keeps working.
