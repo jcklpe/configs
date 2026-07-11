@@ -7,7 +7,7 @@ The vault and real secrets are local-only. This folder commits public-safe scrip
 Copy the example env file and fill in local values:
 
 ```sh
-cp lifeos-tools/.env.example lifeos-tools/.env
+cp lifeos-tools/secrets/.env.example lifeos-tools/secrets/.env
 ```
 
 Required local tools:
@@ -32,8 +32,15 @@ lifeos help
 lifeos doctor
 ```
 
+## Layout
+- `lifeos.sh` — the CLI dispatcher (bootstrap, top-level commands, and the command `case`).
+- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `open-austin-org.sh`) over shared `common.sh`, plus the `google-*.py` render/auth helpers. `lib/*.sh` is sourced; the `.py` files are invoked by path.
+- `secrets/` — real secrets and their `.example` templates.
+- `qa/` — `--qa` snapshot output.
+- `tests/` — offline renderer tests and fixtures.
+
 ## Secrets
-Real files such as `.env`, `google-token.json`, and OAuth credential JSON are ignored by git. Keep fake `.example` files tracked beside them.
+Real files (`.env`, `google-token.json`, OAuth credential JSON, `google-accounts.json`, `people-aliases.json`) live in `secrets/` and are ignored by git. Fake `.example` templates are tracked beside them in the same folder.
 
 ## Commands
 ```sh
@@ -85,7 +92,7 @@ Agent-facing usage notes live in `lifeos-tools/AGENT.md`. On this machine, the L
 To recreate that symlink on a configured machine:
 
 ```sh
-. ~/configs/lifeos-tools/.env
+. ~/configs/lifeos-tools/secrets/.env
 mkdir -p "$LIFEOS_VAULT_PATH/docs/runbooks"
 ln -sf "$HOME/configs/lifeos-tools/AGENT.md" "$LIFEOS_VAULT_PATH/docs/runbooks/lifeos-tools.md"
 ```
