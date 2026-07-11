@@ -5,7 +5,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIGS="${CONFIGS:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 LIB_DIR="${SCRIPT_DIR}/lib"
-ENV_FILE="${SCRIPT_DIR}/.env"
+SECRETS_DIR="${SCRIPT_DIR}/secrets"
+ENV_FILE="${SECRETS_DIR}/.env"
 QA_DIR="${SCRIPT_DIR}/qa"
 
 LIFEOS_DAYS_BACK="${LIFEOS_DAYS_BACK:-14}"
@@ -80,7 +81,7 @@ _doctor() {
         _say "OK: ${ENV_FILE}"
     else
         _say "MISSING: ${ENV_FILE}"
-        _say "NEXT: cp ${SCRIPT_DIR}/.env.example ${ENV_FILE}"
+        _say "NEXT: cp ${SECRETS_DIR}/.env.example ${ENV_FILE}"
         issues=$((issues + 1))
     fi
 
@@ -167,7 +168,7 @@ _doctor() {
         fi
     else
         _say "OPTIONAL: Google account alias config is not set up for Gmail/Drive"
-        _say "NEXT: cp ${SCRIPT_DIR}/google-accounts.example.json $google_accounts"
+        _say "NEXT: cp ${SECRETS_DIR}/google-accounts.example.json $google_accounts"
     fi
 
     if [ "$issues" -eq 0 ]; then

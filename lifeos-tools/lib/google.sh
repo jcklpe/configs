@@ -81,7 +81,7 @@ _google_accounts_path() {
     if _var_is_set GOOGLE_ACCOUNTS_PATH; then
         _path_value GOOGLE_ACCOUNTS_PATH
     else
-        printf '%s/google-accounts.json\n' "$SCRIPT_DIR"
+        printf '%s/google-accounts.json\n' "$SECRETS_DIR"
     fi
 }
 
@@ -93,7 +93,7 @@ _tool_path() {
         ~/*) printf '%s/%s\n' "$HOME" "${value#~/}" ;;
         \$CONFIGS/*) printf '%s/%s\n' "$CONFIGS" "${value#\$CONFIGS/}" ;;
         \$HOME/*) printf '%s/%s\n' "$HOME" "${value#\$HOME/}" ;;
-        *) printf '%s/%s\n' "$SCRIPT_DIR" "$value" ;;
+        *) printf '%s/%s\n' "$SECRETS_DIR" "$value" ;;
     esac
 }
 
@@ -105,7 +105,7 @@ _google_accounts_ready() {
     _check_command python3 >/dev/null || { _err "python3 is required"; return 1; }
     if [ ! -f "$config" ]; then
         _err "Google account config does not exist: $config"
-        _say "NEXT: cp ${SCRIPT_DIR}/google-accounts.example.json $config"
+        _say "NEXT: cp ${SECRETS_DIR}/google-accounts.example.json $config"
         return 1
     fi
     return 0
@@ -717,7 +717,7 @@ _people_aliases_path() {
     if _var_is_set LIFEOS_PEOPLE_ALIASES_PATH; then
         _path_value LIFEOS_PEOPLE_ALIASES_PATH
     else
-        printf '%s/people-aliases.json\n' "$SCRIPT_DIR"
+        printf '%s/people-aliases.json\n' "$SECRETS_DIR"
     fi
 }
 
@@ -828,7 +828,7 @@ _people_list_aliases() {
     path="$(_people_aliases_path)"
     if [ ! -f "$path" ]; then
         _say "No alias file yet: $path"
-        _say "NEXT: cp ${SCRIPT_DIR}/people-aliases.example.json $path"
+        _say "NEXT: cp ${SECRETS_DIR}/people-aliases.example.json $path"
         return 0
     fi
     jq -r '(.aliases // {}) | to_entries[] | "  " + .key + " -> " + .value' "$path"
