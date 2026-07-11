@@ -60,59 +60,6 @@ Real config lives in .env, copied from .env.example.
 EOF
 }
 
-_vault_path() {
-    _path_value LIFEOS_VAULT_PATH
-}
-
-_vault_ready() {
-    local vault repo
-
-    _require_var LIFEOS_VAULT_PATH || return 1
-    vault="$(_vault_path)"
-
-    if [ ! -d "$vault" ]; then
-        _err "LIFEOS_VAULT_PATH does not exist: $vault"
-        return 1
-    fi
-
-    vault="$(_real_dir "$vault")" || return 1
-    repo="$(_real_dir "$CONFIGS")" || return 1
-
-    case "$vault" in
-        "$repo"|"$repo"/*)
-            _err "LIFEOS_VAULT_PATH points inside this configs repo: $vault"
-            return 1
-            ;;
-    esac
-
-    return 0
-}
-
-_sources_dir() {
-    printf '%s/sources\n' "$(_vault_path)"
-}
-
-_ensure_sources_dir() {
-    local dir
-    dir="$(_sources_dir)"
-    [ -d "$dir" ] || mkdir -p "$dir"
-}
-
-_ensure_parent_dir() {
-    local dir
-    dir="$(dirname "$1")"
-    [ -d "$dir" ] || mkdir -p "$dir"
-}
-
-_check_command() {
-    if command -v "$1" >/dev/null 2>&1; then
-        _say "OK: command '$1' found"
-        return 0
-    fi
-    _say "MISSING: command '$1'"
-    return 1
-}
-
 _doctor_file() {
     if [ -f "$1" ]; then
         _say "OK: $1"
