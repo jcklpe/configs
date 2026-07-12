@@ -1,4 +1,12 @@
-# LifeOS Tools Agent Guide
+---
+name: lifeos-cli
+description: "Use when operating the lifeos CLI: refreshing LifeOS source snapshots (Trello, Calendar, Gmail, Drive, Open Austin GitHub) into the vault, making deliberate Trello card writes or task-chain links, creating dry-run-by-default Google Calendar events, or creating Open Austin GitHub issues. Covers the commands, flags, and the write-safety model (dry-run defaults, allowlisted calendars, attendee-notify blast radius, no deletes)."
+---
+
+# LifeOS CLI
+## Local Precedence
+If the current repo already has `lifeos-tools/skills/lifeos-cli/SKILL.md`, read and follow the repo-local skill first. Treat this as fallback seed material.
+
 Use the local `lifeos` command to refresh LifeOS source context and make deliberate Trello updates.
 
 ## Core Rule
@@ -29,7 +37,7 @@ lifeos trello sync --qa
 That writes:
 
 ```text
-~/configs/lifeos-tools/trello-qa.md
+~/configs/lifeos-tools/qa/trello-qa.md
 ```
 
 `lifeos calendar sync` writes the current Google Calendar snapshot to:
@@ -47,7 +55,7 @@ lifeos calendar sync --qa
 That writes:
 
 ```text
-~/configs/lifeos-tools/calendar-qa.md
+~/configs/lifeos-tools/qa/calendar-qa.md
 ```
 
 `lifeos gmail sync --all` writes bounded read-only Gmail snapshots to:
@@ -65,9 +73,8 @@ lifeos gmail sync --all --qa
 That writes ignored files under:
 
 ```text
-~/configs/lifeos-tools/gmail-qa/
+~/configs/lifeos-tools/qa/gmail-qa/
 ```
-
 
 ## Open Austin Org GitHub Snapshot
 ```sh
@@ -88,7 +95,6 @@ Use this when LifeOS needs broad Open Austin GitHub issue/project context. The s
 The expected snapshot includes `issues.md`, `issues/*.md`, `labels.md`, `board-org-kanban.md`, `board-open-roles.md`, and `weekly-summary.md` when present.
 
 Do not copy or inspect the org repo `.env`, `.git`, `.github`, tools, workflows, or token/config files. Do not make GitHub writes from LifeOS without explicit user approval and the org repo write-safety rules.
-
 
 ### Creating GitHub Issues
 Use this only when Open Austin work needs to be public / org-visible in GitHub. Private strategy, personal bandwidth planning, or sensitive context belongs in LifeOS or Trello instead.
