@@ -20,9 +20,16 @@ The sort (done in the vault spike) found that only `lifeos-tools.md` was genuine
 - **Delete `AGENT.md` and update all references**, rather than leaving a pointer. Cleaner end state; the decision record gets edited too.
 - **Vault-side references to `AGENT.md`** (vault `AGENTS.md`, `operating-procedures.md`, `decisions.md`, `runbooks/README.md`) are updated in the **vault** spike pass, since they are vault files (no git) and the `runbooks/lifeos-tools.md` symlink is being deleted there anyway. Tracked as a task in the vault spike's to-do.
 
+## Split Into Service Skills (2026-07-12)
+Reverses the original "one skill" plan, at the user's call. The single `lifeos-cli` skill is split into a thin core plus one skill per service:
+
+- `lifeos-cli` — thin core: what the tool is, the Core Rule, `doctor`, Google account setup (shared by Gmail/Drive), the snapshot/`--qa` pattern, cross-cutting safety, and pointers.
+- `lifeos-trello`, `lifeos-calendar` (incl. attendee resolution + availability), `lifeos-gmail`, `lifeos-drive`, `lifeos-open-austin` — one per service.
+
+**Why split the skill when the code stays a cohesive app.** The `lifeos.sh` refactor deliberately did *not* organize the code skills-first, because code has shared infrastructure (the Google auth layer serves calendar/gmail/drive/people). A skill is agent-facing *guidance*, which has almost no shared infrastructure — an agent doing Trello work does not want the calendar write-safety model in its context. So the two layers pull opposite ways and both are right: cohesive app for the code, per-service split for the guidance. Each service skill gets a tight, service-specific `description` so it triggers precisely.
+
 ## Non-Goals
-- Not splitting the CLI guide into multiple granular skills. One `lifeos-cli` skill mirrors the single guide; splitting can come later if it earns it.
-- Not changing what the guide says beyond what skill form requires (frontmatter + description).
+- Not changing what the guide says beyond what skill form and the split require.
 
 ## Constraints
 - The skill is co-located in `lifeos-tools/` (public repo) and contains **no vault-private detail** — it is CLI mechanics only. Anything needing vault-private policy belongs in a vault skill, not here.
