@@ -40,6 +40,7 @@ Usage:
   ./lifeos.sh trello chain --card CARD_ID_OR_URL [--json]
   ./lifeos.sh calendar auth
   ./lifeos.sh calendar list-calendars
+  ./lifeos.sh calendar find QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
   ./lifeos.sh calendar sync [--qa | --output FILE]
   ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--notify] [--execute]
   ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--notify] [--execute]
@@ -267,6 +268,7 @@ case "${1:-help}" in
         case "${2:-}" in
             auth) shift 2; _calendar_auth "$@" ;;
             list-calendars) shift 2; _calendar_list_calendars "$@" ;;
+            find) shift 2; _calendar_find "$@" ;;
             sync) shift 2; _calendar_sync "$@" ;;
             create-event) shift 2; _calendar_create_event "$@" ;;
             update-event) shift 2; _calendar_update_event "$@" ;;

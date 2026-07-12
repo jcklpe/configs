@@ -141,10 +141,10 @@ Done:
 - Single-occurrence vs `--series` recurring edits; `--recurrence` for creating series.
 - Attendee name resolution (alias map → People API) with interactive disambiguation via `people resolve` / `add-alias`.
 - Access role is already visible in `list-calendars` output.
+- Read-only `calendar find` returns event IDs, calendar IDs, start/end, and links for update lookup.
 
 Still open:
 
-- Add a read-only `calendar find` command that returns calendar ID, event ID, title, start/end, and link, so the agent does not have to grep `sources/calendar.md` for an event ID before `update-event`. This is now the most useful next calendar item.
 - Decide whether generated Calendar snapshots should include event IDs inline or keep IDs behind a `calendar find` lookup.
 - Decide whether to auto-run `calendar sync` after a successful write (currently manual).
 - Add filtering controls only if the configured calendar set becomes noisy.
