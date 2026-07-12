@@ -65,6 +65,7 @@ create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.codex/skill
 create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.codex/skills/track-deferred-decisions"
 create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.codex/skills/commit-work"
 create_symlink_if_needed "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.codex/skills/lifeos-handoff"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-cli" "${HOME}/.codex/skills/lifeos-cli"
 
 ##- Claude global skill symlinks
 # Mirror the same global seed skills for Claude Code while keeping configs/ as the source of truth.
@@ -77,6 +78,7 @@ create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.claude/skil
 create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.claude/skills/track-deferred-decisions"
 create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.claude/skills/commit-work"
 create_symlink_if_needed "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.claude/skills/lifeos-handoff"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-cli" "${HOME}/.claude/skills/lifeos-cli"
 
 # WezTerm uses XDG on all platforms
 ensure_dir "${HOME}/.config/wezterm"
