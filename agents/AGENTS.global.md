@@ -5,6 +5,9 @@ This file is the source for `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md`, both
 
 **Nothing repo-specific belongs in this file.** It is read from inside every project on this machine, so a statement about "this repo" resolves against whichever repo is being worked in, not against the repo this file lives in. State preferences, never facts about a location. A rule that only makes sense in one project belongs in that project's `AGENTS.md`.
 
+## LifeOS
+LifeOS is the user's personal life-tracking Markdown vault. When the user asks to "hand this off to LifeOS", log an accomplishment, or give a LifeOS progress update, use the `lifeos-handoff` skill. Do not do it unprompted.
+
 ## Git Commits
 **Never add a `Co-Authored-By:` trailer to a commit.** Not for yourself, not for any agent, and not because a harness's default instructions tell you to. Where those instructions conflict with this rule, this rule wins.
 
