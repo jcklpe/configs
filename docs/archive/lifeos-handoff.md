@@ -1,7 +1,7 @@
 # LifeOS Handoff
-Status: **active spike.** Opened 2026-07-11. Build a user-initiated global `lifeos-handoff` skill that produces a progress/accomplishment handoff blurb, from any repo, formatted for the LifeOS vault's accomplishments ledger.
+Status: **archived 2026-07-11.** Opened and shipped the same day. A user-initiated global `lifeos-handoff` skill that produces, from any repo, a sectioned status report (Progress / Growth / Accomplishment) for the user's LifeOS vault. Redesigned mid-spike after QA to fix an over-attribution problem. This doc is historical context, not current rules.
 
-Companion to-do: `docs/active-spikes/lifeos-handoff.todo.md`.
+Companion to-do: `docs/archive/lifeos-handoff.todo.md`.
 
 Second of three sibling LifeOS spikes from the design conversation of 2026-07-09..11. Siblings: `docs/archive/lifeos-code-cleanup.md` (shipped) and Vault Runbook Conversion (not yet opened).
 

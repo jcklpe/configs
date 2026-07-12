@@ -1,7 +1,7 @@
 # LifeOS Handoff To-Do
-Status: **active.** Design settled in the conceptual doc; this tracks execution.
+Status: **archived 2026-07-11.** Skill built, redesigned after QA into the three-dimension PM-report model, wired global, and tentatively QA-passed. This is the implementation trail.
 
-Conceptual doc: `docs/active-spikes/lifeos-handoff.md`.
+Conceptual doc: `docs/archive/lifeos-handoff.md`.
 
 ## Background
 LifeOS already receives accomplishments (vault `AGENTS.md` + `career/accomplishments.md`). This spike builds the missing producer half: a global, user-initiated `lifeos-handoff` skill that generates a ledger-ready handoff blurb from any repo. Design worked out 2026-07-09..11.
@@ -26,9 +26,11 @@ Nothing built yet. The vault side is mature and untouched: `career/accomplishmen
 - [ ] Verify: the skill surfaces in a fresh session (its description appears), and a dry run produces a blurb in the correct entry shape from a real example (e.g. hand off the lifeos-code-cleanup spike and confirm the output would drop cleanly into the ledger).
 
 ## Ready for Human QA
-- [ ] **Confirm the redesigned three-dimension output feels right.** Look at the new example in the skill (Progress / Growth / Accomplishment for the lifeos-code-cleanup work). Check: (1) attribution reads honestly — it credits direction/judgment, not hand-writing the code; (2) the Progress and Growth sections are at the altitude you want your PM/vault to see; (3) the generic strategic framing is neither too thin nor over-reaching into private positioning. This replaces the earlier tone/granularity check, which the redesign addressed.
+- None. The redesigned output passed; see Done.
 
 ## Done
+- [x] **Confirm the redesigned three-dimension output feels right.** *(Human QA passed 2026-07-11, tentatively.)* Shown the Progress / Growth / Accomplishment example for the lifeos-code-cleanup work, the user judged it "seems decent, at least for now, we'll see how it goes." Accepted as a pass with a watch-and-adjust caveat — the altitude and attribution feel right on paper; real use may prompt tuning.
+
 - [x] **Redesigned the skill after human QA.** *(Unplanned; 2026-07-11.)* The first draft was accomplishment-only and, worse, over-claimed — the dry-run blurb said "refactored 2,550 lines," work an AI agent executed under the user's direction, which the user cannot defend as their own. Reviewing that blurb with the user reframed the whole skill: it is a **status report to the LifeOS vault agent acting as project manager**, carrying up to three dimensions (Progress / Growth / Accomplishment), not an accomplishment harvester with a progress mode. Added a strict **attribution** principle (credit the user's real role — direction, architecture, constraints, judgment, decisions, error-catching — never phrase AI-produced artifacts as hand-made; infer role from the session, ask when unclear), a **generic-only strategic framing** rule (public repo; no private career specifics; the vault does specific positioning), and a **do-not-presuppose-vault-structure** rule (emit sectioned material, let the vault route it, since the vault evolves fast). Kept the `Resume angle` field and the accomplishment entry shape. Conceptual doc updated with the settled model and the attribution decision.
 
 - [x] **Verify: the skill surfaces in a fresh session, and a dry run produces a blurb in the correct entry shape from a real example.** Mechanical part done: the skill appears in the session skill list after symlinking, and a dry run handing off the lifeos-code-cleanup spike produced a clean six-field entry (Date/Focus/Accomplishment/Evidence/Resume angle/Notes) citing the `Spike:` grep and the archived doc as evidence, with real numbers (2,550 → 324) and no invented metrics. The subjective tone/granularity check is the remaining Human QA item.
