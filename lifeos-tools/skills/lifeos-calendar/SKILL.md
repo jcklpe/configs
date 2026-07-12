@@ -13,8 +13,12 @@ Calendar has its own auth, separate from the Gmail/Drive account aliases. See `l
 ```sh
 lifeos calendar auth
 lifeos calendar list-calendars
+lifeos calendar find "Dinner"
+lifeos calendar find "Dinner" --from 2026-07-01 --to 2026-07-31
 lifeos calendar sync
 ```
+
+`calendar find QUERY` is read-only and returns update-ready event IDs across the configured calendars and normal sync window by default. Use `--from YYYY-MM-DD`, `--to YYYY-MM-DD`, `--calendar CALENDAR_ID`, or `--json` when narrowing or scripting the lookup. Prefer `calendar find` over grepping `sources/calendar.md` when you need an event ID for `update-event`.
 
 `calendar sync` is read-only and writes to `$LIFEOS_VAULT_PATH/sources/calendar.md` (or `~/configs/lifeos-tools/qa/calendar-qa.md` with `--qa`). It uses comma-separated `GOOGLE_CALENDAR_IDS` from the `.env`, defaulting to `primary`; run `list-calendars` to inspect IDs before expanding the set.
 

@@ -63,6 +63,8 @@ lifeos trello supersede --create --from https://trello.com/c/abc123 --list "On D
 lifeos trello chain --card https://trello.com/c/abc123
 lifeos calendar auth
 lifeos calendar list-calendars
+lifeos calendar find "Dinner"
+lifeos calendar find "Dinner" --from 2026-07-01 --to 2026-07-31 --json
 lifeos calendar sync
 lifeos calendar sync --qa
 lifeos calendar create-event --title "Dinner" --start 2026-06-25T18:00 --attendee lindsey --execute
@@ -134,6 +136,8 @@ Google Calendar auth/list/sync plus event create/update is implemented. `google-
 `lifeos calendar create-event` and `update-event` are **dry-run by default** and only write with `--execute`. Writes are restricted to the calendars in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`); there is no delete. Attendees are not emailed unless `--notify` is passed (`sendUpdates=none` by default). `--attendee VALUE` resolves in order: a literal `email@host`, then the local `people-aliases.json` map (case-insensitive short names for frequent invitees), then Google Contacts via the People API; ambiguous or unmatched People API names fail with candidates rather than guessing. Copy `people-aliases.example.json` to the ignored `people-aliases.json` to set up aliases like `lindsey`. `update-event` merges new attendees into the existing list unless `--replace-attendees` is given, and edits only the single occurrence of a recurring event unless `--series` is passed (which retargets the series master). Create recurring events with repeatable `--recurrence "RRULE:..."`. When an attendee name is ambiguous or unmatched, the write stops with candidates; `lifeos people resolve NAME --json` lists them and `lifeos people add-alias NAME EMAIL` records a pick in the gitignored `people-aliases.json`. See the `lifeos-calendar` skill for the full safety model.
 
 Calendar sync uses comma-separated `GOOGLE_CALENDAR_IDS`, with `primary` as the default. `lifeos calendar sync` writes a combined date-grouped agenda to `$LIFEOS_VAULT_PATH/sources/calendar.md`; `lifeos calendar sync --qa` writes an ignored local snapshot to `lifeos-tools/calendar-qa.md`.
+
+`lifeos calendar find QUERY` searches the configured calendars over the normal sync window and prints calendar ID, event ID, title, start/end, location, and link. Use it before `update-event` when you need the exact event ID. Narrow with `--from YYYY-MM-DD`, `--to YYYY-MM-DD`, `--calendar CALENDAR_ID`, or pass `--json` for machine-readable output.
 
 Event lines include `calendar: <calendar name>`, inline `location: ...` when present, direct meeting links when available, and cleaned bounded descriptions. Multi-day all-day events and timed events crossing midnight are expanded under every affected date so agents do not mistake continuation days as free.
 

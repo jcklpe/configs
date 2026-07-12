@@ -887,6 +887,139 @@ _calendar_list_calendars() {
         '
 }
 
+_calendar_find_human() {
+    jq -r '
+      (.items // [])[] |
+      [
+        ("- " + (.summary // "Untitled event")),
+        ("calendar: " + (._calendar_summary // ._calendar_id // "")),
+        ("calendar_id: " + (._calendar_id // "")),
+        ("event_id: " + (.id // "")),
+        (if .recurringEventId then "series_id: " + .recurringEventId else empty end),
+        ("start: " + (.start.dateTime // .start.date // "")),
+        ("end: " + (.end.dateTime // .end.date // "")),
+        (if (.location // "") != "" then "location: " + .location else empty end),
+        (if (.htmlLink // "") != "" then .htmlLink else empty end)
+      ] | join(" | ")
+    '
+}
+
+_calendar_find() {
+    local query="" calendar_ids="" calendar_id encoded_id calendar_file calendar_list_file events_file combined_file
+    local window time_min time_max from="" to="" json=0 calendar_name
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --calendar)
+                [ -n "${2:-}" ] || { _err "--calendar requires CALENDAR_ID"; return 1; }
+                calendar_ids="$2"
+                shift 2
+                ;;
+            --from)
+                [ -n "${2:-}" ] || { _err "--from requires YYYY-MM-DD"; return 1; }
+                from="$2"
+                shift 2
+                ;;
+            --to)
+                [ -n "${2:-}" ] || { _err "--to requires YYYY-MM-DD"; return 1; }
+                to="$2"
+                shift 2
+                ;;
+            --json)
+                json=1
+                shift
+                ;;
+            -*)
+                _err "Unknown calendar find option: $1"
+                return 1
+                ;;
+            *)
+                if [ -z "$query" ]; then
+                    query="$1"
+                    shift
+                else
+                    _err "Unexpected calendar find argument: $1"
+                    return 1
+                fi
+                ;;
+        esac
+    done
+
+    [ -n "$query" ] || { _err "calendar find requires QUERY"; return 1; }
+    _calendar_token_ready || return 1
+
+    if [ -n "$from" ]; then
+        time_min="${from}T00:00:00Z"
+    else
+        window="$(_calendar_window)" || return 1
+        time_min="$(printf '%s\n' "$window" | sed -n '1p')"
+    fi
+    if [ -n "$to" ]; then
+        time_max="${to}T23:59:59Z"
+    else
+        if [ -z "${window:-}" ]; then
+            window="$(_calendar_window)" || return 1
+        fi
+        time_max="$(printf '%s\n' "$window" | sed -n '2p')"
+    fi
+    if [ -z "$calendar_ids" ]; then
+        calendar_ids="$(printf '%s' "$(_calendar_ids)" | tr ',' ' ')"
+    fi
+
+    calendar_list_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-calendar-find-list.XXXXXX")" || return 1
+    combined_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-calendar-find.XXXXXX")" || return 1
+    jq -n '{items: []}' > "$combined_file"
+
+    _calendar_get "/users/me/calendarList" \
+        --data-urlencode "fields=items(id,summary,primary,selected,hidden,accessRole,timeZone)" > "$calendar_list_file" || return 1
+
+    for calendar_id in $calendar_ids; do
+        calendar_id="$(_trim "$calendar_id")"
+        [ -n "$calendar_id" ] || continue
+        encoded_id="$(_urlencode "$calendar_id")" || return 1
+        calendar_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-calendar-find-meta.XXXXXX")" || return 1
+        events_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-calendar-find-events.XXXXXX")" || return 1
+        _calendar_write_metadata "$calendar_list_file" "$calendar_id" "$calendar_file"
+        calendar_name="$(jq -r '.summary // .id // "Calendar"' "$calendar_file")"
+        _say "Finding events in calendar: ${calendar_name}" >&2
+
+        _calendar_get "/calendars/${encoded_id}/events" \
+            --data-urlencode "singleEvents=true" \
+            --data-urlencode "orderBy=startTime" \
+            --data-urlencode "showDeleted=false" \
+            --data-urlencode "timeMin=${time_min}" \
+            --data-urlencode "timeMax=${time_max}" \
+            --data-urlencode "q=${query}" \
+            --data-urlencode "maxResults=50" \
+            --data-urlencode "fields=items(id,recurringEventId,status,summary,description,location,htmlLink,start,end)" > "$events_file" || return 1
+
+        jq -s --slurpfile meta "$calendar_file" '
+          .[0] as $existing |
+          .[1] as $incoming |
+          $existing + {
+            items: (
+              ($existing.items // []) +
+              (($incoming.items // []) | map(. + {
+                _calendar_id: ($meta[0].id // ""),
+                _calendar_summary: ($meta[0].summary // "")
+              }))
+            )
+          }
+        ' "$combined_file" "$events_file" > "${combined_file}.next" || return 1
+        mv "${combined_file}.next" "$combined_file"
+    done
+
+    if [ "$json" -eq 1 ]; then
+        cat "$combined_file"
+    else
+        if [ "$(jq '(.items // []) | length' "$combined_file")" -eq 0 ]; then
+            _say "No matching events found."
+            return 0
+        fi
+        _calendar_find_human < "$combined_file"
+    fi
+}
+
 _calendar_window() {
     _calendar_helper date-window "$LIFEOS_DAYS_BACK" "$LIFEOS_DAYS_AHEAD"
 }
@@ -1259,5 +1392,4 @@ EOF
     updated="$(_calendar_write PATCH "/calendars/${encoded}/events/${target_encoded}?sendUpdates=${send_updates}" "$body")" || return 1
     _say "Updated event: $(printf '%s' "$updated" | jq -r '.htmlLink // .id // "(unknown)"')"
 }
-
 
