@@ -87,15 +87,7 @@ lifeos open-austin-org create-issue --title "Task title" --body-file /tmp/issue.
 lifeos sync
 ```
 
-Agent-facing usage notes live in `lifeos-tools/AGENT.md`. On this machine, the LifeOS vault has a local symlink at `docs/runbooks/lifeos-tools.md` pointing back to that tracked file.
-
-To recreate that symlink on a configured machine:
-
-```sh
-. ~/configs/lifeos-tools/secrets/.env
-mkdir -p "$LIFEOS_VAULT_PATH/docs/runbooks"
-ln -sf "$HOME/configs/lifeos-tools/AGENT.md" "$LIFEOS_VAULT_PATH/docs/runbooks/lifeos-tools.md"
-```
+Agent-facing usage notes live in the `lifeos-cli` skill (`lifeos-tools/skills/lifeos-cli/SKILL.md`), co-located with the tool and symlinked into `~/.claude/skills/` and `~/.codex/skills/` by the installer, so local agents get it globally.
 
 
 ## Open Austin Org Snapshots
@@ -139,7 +131,7 @@ After a successful create, the command refreshes `sources/open-austin-org/` unle
 
 Google Calendar auth/list/sync plus event create/update is implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them. The calendar token carries the `calendar.events` (read+write) and Contacts read scopes; re-run `lifeos calendar auth` after pulling this change to re-consent, and enable the People API for the same Google project so attendee-name lookups work.
 
-`lifeos calendar create-event` and `update-event` are **dry-run by default** and only write with `--execute`. Writes are restricted to the calendars in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`); there is no delete. Attendees are not emailed unless `--notify` is passed (`sendUpdates=none` by default). `--attendee VALUE` resolves in order: a literal `email@host`, then the local `people-aliases.json` map (case-insensitive short names for frequent invitees), then Google Contacts via the People API; ambiguous or unmatched People API names fail with candidates rather than guessing. Copy `people-aliases.example.json` to the ignored `people-aliases.json` to set up aliases like `lindsey`. `update-event` merges new attendees into the existing list unless `--replace-attendees` is given, and edits only the single occurrence of a recurring event unless `--series` is passed (which retargets the series master). Create recurring events with repeatable `--recurrence "RRULE:..."`. When an attendee name is ambiguous or unmatched, the write stops with candidates; `lifeos people resolve NAME --json` lists them and `lifeos people add-alias NAME EMAIL` records a pick in the gitignored `people-aliases.json`. See `AGENT.md` for the full safety model.
+`lifeos calendar create-event` and `update-event` are **dry-run by default** and only write with `--execute`. Writes are restricted to the calendars in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`); there is no delete. Attendees are not emailed unless `--notify` is passed (`sendUpdates=none` by default). `--attendee VALUE` resolves in order: a literal `email@host`, then the local `people-aliases.json` map (case-insensitive short names for frequent invitees), then Google Contacts via the People API; ambiguous or unmatched People API names fail with candidates rather than guessing. Copy `people-aliases.example.json` to the ignored `people-aliases.json` to set up aliases like `lindsey`. `update-event` merges new attendees into the existing list unless `--replace-attendees` is given, and edits only the single occurrence of a recurring event unless `--series` is passed (which retargets the series master). Create recurring events with repeatable `--recurrence "RRULE:..."`. When an attendee name is ambiguous or unmatched, the write stops with candidates; `lifeos people resolve NAME --json` lists them and `lifeos people add-alias NAME EMAIL` records a pick in the gitignored `people-aliases.json`. See the `lifeos-cli` skill for the full safety model.
 
 Calendar sync uses comma-separated `GOOGLE_CALENDAR_IDS`, with `primary` as the default. `lifeos calendar sync` writes a combined date-grouped agenda to `$LIFEOS_VAULT_PATH/sources/calendar.md`; `lifeos calendar sync --qa` writes an ignored local snapshot to `lifeos-tools/calendar-qa.md`.
 
