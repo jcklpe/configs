@@ -66,6 +66,11 @@ create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.
 create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.codex/skills/commit-work"
 create_symlink_if_needed "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.codex/skills/lifeos-handoff"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-cli" "${HOME}/.codex/skills/lifeos-cli"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-trello" "${HOME}/.codex/skills/lifeos-trello"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-calendar" "${HOME}/.codex/skills/lifeos-calendar"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-gmail" "${HOME}/.codex/skills/lifeos-gmail"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-drive" "${HOME}/.codex/skills/lifeos-drive"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-open-austin" "${HOME}/.codex/skills/lifeos-open-austin"
 
 ##- Claude global skill symlinks
 # Mirror the same global seed skills for Claude Code while keeping configs/ as the source of truth.
@@ -79,6 +84,11 @@ create_symlink_if_needed "${CONFIGS}/skills/track-deferred-decisions" "${HOME}/.
 create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.claude/skills/commit-work"
 create_symlink_if_needed "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.claude/skills/lifeos-handoff"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-cli" "${HOME}/.claude/skills/lifeos-cli"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-trello" "${HOME}/.claude/skills/lifeos-trello"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-calendar" "${HOME}/.claude/skills/lifeos-calendar"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-gmail" "${HOME}/.claude/skills/lifeos-gmail"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-drive" "${HOME}/.claude/skills/lifeos-drive"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-open-austin" "${HOME}/.claude/skills/lifeos-open-austin"
 
 # WezTerm uses XDG on all platforms
 ensure_dir "${HOME}/.config/wezterm"

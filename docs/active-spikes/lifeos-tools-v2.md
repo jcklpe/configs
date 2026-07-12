@@ -50,7 +50,7 @@ Decision: **the link record is a labeled comment**, not a description stanza.
   near-simultaneous supersedes can't clobber each other. `set-desc` is a **full overwrite**
   (`PUT desc=`); editing the description to add a line means GET → append → PUT, which races
   against any other description edit. The v2 notes already flag description edits as needing a
-  safer section-aware approach (below), and the `lifeos-cli` skill already says "prefer comments for
+  safer section-aware approach (below), and the `lifeos-trello` skill already says "prefer comments for
   additive notes."
 - A supersede is a point-in-time *event* ("work continued elsewhere as of this moment"). A
   timestamped, immutable comment is the semantically honest home for that, the same way a git
