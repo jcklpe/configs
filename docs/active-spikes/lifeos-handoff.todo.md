@@ -22,13 +22,15 @@ LifeOS already receives accomplishments (vault `AGENTS.md` + `career/accomplishm
 Nothing built yet. The vault side is mature and untouched: `career/accomplishments.md` has a defined entry shape (Date/Focus/Accomplishment/Evidence/Resume angle/Notes) and a "Current Harvest Queue", and the vault `AGENTS.md` already instructs in-vault agents to harvest into it.
 
 ## To Do
-- [ ] Verify: the skill surfaces in a fresh session (its description appears), and a dry run produces a blurb in the correct entry shape from a real example (e.g. hand off the lifeos-code-cleanup spike and confirm the output would drop cleanly into the ledger).
+- Nothing open. One human-QA item below (tone/granularity); otherwise ready to archive.
 - [ ] Verify: the skill surfaces in a fresh session (its description appears), and a dry run produces a blurb in the correct entry shape from a real example (e.g. hand off the lifeos-code-cleanup spike and confirm the output would drop cleanly into the ledger).
 
 ## Ready for Human QA
 - Likely: confirm the handoff blurb's tone and shape feel right when pasted into the real `career/accomplishments.md`, and that the granularity matches what the user wants LifeOS to track (not too fine).
 
 ## Done
+- [x] **Verify: the skill surfaces in a fresh session, and a dry run produces a blurb in the correct entry shape from a real example.** Mechanical part done: the skill appears in the session skill list after symlinking, and a dry run handing off the lifeos-code-cleanup spike produced a clean six-field entry (Date/Focus/Accomplishment/Evidence/Resume angle/Notes) citing the `Spike:` grep and the archived doc as evidence, with real numbers (2,550 → 324) and no invented metrics. The subjective tone/granularity check is the remaining Human QA item.
+
 - [x] **Write `skills/lifeos-handoff/SKILL.md`.** Done. Covers what LifeOS is, when-to-invoke (user-request only, explicit "never unprompted"), the two flavors, the exact ledger entry shape, the fill rules (real evidence, no invented metrics, no vague praise, coarser than commits), the paste destination, and a worked example (handing off lifeos-code-cleanup). Description leads with triggers and the "user-initiated, never writes the vault" boundary.
 - [x] **Add the `lifeos-handoff` symlink to the Codex and Claude blocks of `install-script/functions/symlinks.sh`, and create the two symlinks directly so it is live without a full installer run.** Done; both `~/.claude/skills/lifeos-handoff` and `~/.codex/skills/lifeos-handoff` are live, and the skill surfaces in this session's skill list.
 - [x] **Add the one-line LifeOS pointer to `agents/AGENTS.global.md` (global scope — not mirrored into configs/AGENTS.md, since that mirror is only for the Markdown/prose rules).** Done as a two-line `## LifeOS` section: what LifeOS is + use `lifeos-handoff` when asked, never unprompted. Position-independent (states a preference, names no repo). Deliberately not added to `configs/AGENTS.md` — only the prose-style rules are mirrored there.
