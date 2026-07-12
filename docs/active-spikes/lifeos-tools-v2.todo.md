@@ -49,7 +49,6 @@ list, `--dry-run`/preview, auto-`sync` after write, vault-side writes.
 - For Trello write safety, decide whether writes should auto-sync afterward.
 - For Trello write expansion, consider `set-due`.
 - For Trello write expansion, consider `archive-card`; do not add hard delete.
-- For Calendar, consider read-only `calendar find` (event ID lookup to pair with the shipped writes). Most useful remaining calendar item.
 - For Calendar, decide whether a successful write should auto-run `calendar sync`.
 - For Calendar, decide whether snapshots should expose event IDs inline or keep them behind `calendar find`.
 
@@ -66,3 +65,6 @@ Calendar writes shipped (`create-event` / `update-event`, attendees, allowlist, 
 - Do not add Drive-wide cloning or recursive indexing.
 - Do not add `calendar delete-event`, and do not relax the writable-calendar allowlist or the `--notify`-gated email-out. (Calendar create/update are now allowed within those bounds; see `docs/decisions/0002-lifeos-calendar-writes.md`.)
 - Do not replace the CLI with MCP/plugin tooling.
+
+## Done Since Task Chains
+- [x] Added read-only `lifeos calendar find QUERY` for event ID lookup before `update-event`. It searches configured calendars over the normal sync window by default, supports `--from`, `--to`, `--calendar`, and `--json`, and prints calendar/event IDs plus start/end/link details. Validation: `bash -n lifeos-tools/lifeos.sh`, calendar render fixtures, and calendar find formatter fixture.
