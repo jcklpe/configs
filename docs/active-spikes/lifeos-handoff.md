@@ -6,9 +6,11 @@ Companion to-do: `docs/active-spikes/lifeos-handoff.todo.md`.
 Second of three sibling LifeOS spikes from the design conversation of 2026-07-09..11. Siblings: `docs/archive/lifeos-code-cleanup.md` (shipped) and Vault Runbook Conversion (not yet opened).
 
 ## Purpose
-LifeOS already knows how to *receive* accomplishments. Its `AGENTS.md` tells any agent working *inside the vault* to accrete career-relevant outcomes into `career/accomplishments.md`, a durable raw-material ledger. What is missing is the *producer* half: when the user does real work in a **different** repo — configs, a website project, anywhere — there is no way to hand LifeOS a summary of that progress without the user reconstructing it from memory later.
+Treat the LifeOS vault agent as the user's **project manager**: it wants to know what the user is up to, how their projects are going, why things take the time they take, and what the user is learning and becoming. Today there is no way to report that from a *different* repo — configs, a website project, anywhere the user actually works — without reconstructing it from memory later.
 
-This skill fills that gap. Invoked from any repo, it produces a handoff blurb — progress on a project, or a concrete accomplishment — shaped to drop straight into the vault's ledger. The user carries it over; the skill does not touch the vault.
+This skill is the **producer** of that report. Invoked from any repo, it emits a sectioned status report the user carries into the vault. It does not touch the vault, and it does not decide where the material lands — the vault (receiver) handles filing.
+
+Accomplishment harvesting for resume/career material is *one facet* of the report, not the whole of it. The vault's `AGENTS.md` + `career/accomplishments.md` already handle the receiver side of that facet.
 
 ## The Two Halves
 - **Receiver (already exists, in the vault):** the vault's `AGENTS.md` + `career/accomplishments.md`. An agent working in the vault harvests accomplishments into the ledger.
@@ -41,13 +43,25 @@ The producer's output must match what `career/accomplishments.md` expects, so it
 
 The ledger also has a "Current Harvest Queue" for not-yet-resume-ready material. The skill's output should be ready for either, and should follow the ledger's own guidance: concrete facts (what changed, who benefited, what artifact/scope), evidence links, numbers only when real, no invented metrics, no vague praise.
 
-## Progress vs Accomplishment
-The user wants two flavors, and the skill should handle both:
+## The Three Dimensions
+The report carries up to three things; most handoffs touch more than one:
 
-- **Accomplishment** — a completed, resume-relevant outcome. Full entry shape.
-- **Progress update** — "here's where project X stands and what moved," which may not be resume-worthy yet. A lighter note, still dated and evidenced, suitable for the harvest queue or a project note.
+- **Progress** — where a project stands, what moved, what is blocking it, and *why it is taking as long as it is*. The PM wants the pace-and-blocker story. Agent-executed work belongs here — it is still the user's project.
+- **Growth** — the human development under the work: skills built, things learned, new techniques/stacks/tools tried, workflows refined, new ideas. Honest even for agent-executed work, because the user is learning to define and direct it. Often the most valuable thing to track over time.
+- **Accomplishment** — a concrete, claimable win in the ledger's entry shape; the one facet with a strict honesty bar.
 
-The skill asks or infers which is wanted, and does not inflate a progress update into a false accomplishment.
+## Attribution: The Central Nuance
+This is the decision that shaped the skill. The user directs and reviews work an AI agent often executes, so the report must reflect what the user can honestly stand behind.
+
+In **Progress** and **Growth**, agent-executed work is reported as real project movement and real learning, made clear that it was AI-executed under the user's direction. In **Accomplishment**, the bar is strict: credit the user's actual contribution — defining the problem, the architecture, the constraints, the judgment calls, the errors caught in review, the decisions, the effective direction of the tool — and never phrase an AI-produced artifact as something the user hand-made. "Directed and architected an AI-executed refactor that shipped with zero regression" is true and defensible; "refactored 2,550 lines" is not, if an agent wrote it.
+
+The reframe resolves the tension rather than suppressing it: framing the work as the user's *direction and judgment* is simultaneously the honest attribution and the more strategic, more 2026-relevant competency. The agent producing the handoff infers the user's real role from the session (what they approved, directed, decided, caught) and asks only when genuinely unclear.
+
+## Strategic Framing Stays Generic
+The producer lives in a public repo and cannot see the user's private career strategy. It may name generic transferable competencies (systems thinking, technical judgment, direction, process design, AI orchestration) and gesture lightly at the user's domains, but must not bake in specific positioning — named contacts, particular goals, "emphasize X to land Y". Specific positioning is the vault's job, because the vault is private and holds the career context. Harvest facts; let the vault frame.
+
+## Destinations Are The Vault's Job
+The producer emits cleanly-labeled sections and hands them over. It does **not** presuppose the vault's structure or route the material, because the vault evolves quickly — a note or folder that exists this week may be gone or renamed next week. Routing is the vault agent's job. The one stable format the producer commits to is the accomplishment entry shape below, since that facet has a known ledger shape.
 
 ## Where The Material Comes From
 Invoked in a repo, the skill draws on what is actually available: the session's work, the git log (especially `Spike:` trailers and archival summaries, which are already synthesized), spike docs, and what the user says the handoff is about. It favors evidence that already exists — a commit range, an archived spike doc, a shipped artifact — over prose it makes up.
@@ -60,6 +74,15 @@ Invoked in a repo, the skill draws on what is actually available: the session's 
 Continues from: docs/archive/lifeos-code-cleanup.md
 Sibling: Vault Runbook Conversion (not yet opened). Independent of both — it can ship without them.
 
+## Settled During Human QA (2026-07-11)
+The first draft was accomplishment-only and over-claimed AI-executed work as the user's. Reviewing a dry-run blurb with the user settled the model above:
+
+- It is a **PM status report**, not an accomplishment harvester; three dimensions, not two flavors.
+- **Attribution** is strict on the accomplishment facet and permissive-but-honest on progress/growth.
+- **Keep the `Resume angle` field** — it frames the material toward concrete wins, which is part of the point.
+- **Infer the user's role from the session; ask only when unclear** — the user is present in the working context, so inference should usually suffice.
+- **Light gestures at domains are fine; specific private strategy is not** (no named contacts or goals).
+- **Produce sectioned material; the vault agent routes it** — the producer must not presuppose the vault's dynamically-evolving structure.
+
 ## Open Questions
-- Should the pointer live in `AGENTS.global.md` at all, or is the skill's own `description` enough? A global skill is already surfaced by its description. The pointer buys *ambient* awareness (an agent knows "LifeOS" is a thing the user references) at a small always-loaded cost. Leaning: include a single line, because "hand this to LifeOS" is a phrase the user will use across repos and agents should know what it means.
-- Does the skill ever help the user actually *append* to the ledger when it happens to be run inside the vault or a repo with vault access, or is it always produce-only? Leaning produce-only for simplicity and safety; revisit if the friction of manual paste proves annoying.
+- Does the skill ever help the user actually *append* to the vault when run somewhere with vault access, or is it always produce-only? Leaning produce-only for simplicity and safety; revisit if manual paste proves annoying.
