@@ -2,6 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
+- LifeOS CLI Skill — formalize `lifeos-tools/AGENT.md` into a co-located tool skill (`lifeos-tools/skills/lifeos-cli/`), symlinked global, and repoint every reference. The configs half of the LifeOS runbook conversion; the vault half is tracked in the vault (`LifeOS/docs/spike.runbook-conversion.*`). `docs/active-spikes/lifeos-cli-skill.md`, `docs/active-spikes/lifeos-cli-skill.todo.md`.
 - LifeOS Tools v2 — open spike, parking lot for remaining v2 ideas. `docs/active-spikes/lifeos-tools-v2.md`, `docs/active-spikes/lifeos-tools-v2.todo.md`. (Task Chains / `supersede` theme is shipped — see Recently Shipped. Other v2 ideas stay parked.)
 
 ## Later Spikes (this conversation, not yet opened)
