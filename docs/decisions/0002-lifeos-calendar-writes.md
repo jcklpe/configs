@@ -17,7 +17,7 @@ Scopes on the calendar token expand from read-only to `calendar.events` (read+wr
 
 ## Consequences
 - The LifeOS agent can schedule and adjust events and invite people, which was the goal.
-- The prior "calendar is read-only" and "never touch attendees" rules are explicitly retired. The `lifeos-cli` skill and the v2 scratch notes are updated to match; this record is the authority if they drift.
+- The prior "calendar is read-only" and "never touch attendees" rules are explicitly retired. The `lifeos-calendar` skill and the v2 scratch notes are updated to match; this record is the authority if they drift.
 - Blast radius is now real but bounded: the worst unattended action is creating/editing an event on an allowlisted calendar without notifying anyone. Emailing real people requires an explicit `--notify`, and editing a whole recurring series requires an explicit `--series`.
 - Contacts access is broader than strictly needed (the People API can read all contacts). The local alias map exists partly to avoid depending on it for frequent invitees, whose common first names are ambiguous or unresolvable in Contacts anyway.
 - The dedicated `LifeOS Reminders` calendar idea from the v2 notes is no longer the chosen path; the allowlist generalizes it.
