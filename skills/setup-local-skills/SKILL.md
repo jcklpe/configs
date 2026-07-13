@@ -1,6 +1,6 @@
 ---
 name: setup-local-skills
-description: "Copy reusable seed skill folders from a personal configs skill library into a repository's local skills folder, or update a local copy that already exists from the current global one. Use when the user wants a project repo to carry its own skills after clone, asks to vendor or copy global skills locally, wants to pull upstream skill changes down into a repo, or wants repo-local skill authority without symlinking."
+description: "Copy reusable seed skill folders from a personal configs skill library into a repository's local skills folder for first-time vendoring. Use when the user wants a project repo to carry its own skills after clone, asks to vendor or copy global skills locally, or wants repo-local skill authority without symlinking."
 ---
 
 # Setup Local Skills
@@ -9,6 +9,8 @@ If the current repo already has `skills/setup-local-skills/SKILL.md`, read and f
 
 ## Purpose
 Copy complete skill folders from a seed library into the current repo so the repo is self-contained for future agents and collaborators. The copied skill becomes part of the repo's operating contract and may evolve independently.
+
+Use `update-local-skills` when a repo already has the skill and the user wants to refresh, compare, sync, or update it from the global seed version.
 
 Default seed source:
 
@@ -40,7 +42,7 @@ Keep a skill global-only when it is merely a personal preference, experimental, 
 4. Create `skills/` in the repo if missing.
 5. Copy each requested skill folder wholesale, preserving `SKILL.md` and any `references/`, `scripts/`, or `assets/` folders.
 6. Do not copy generated caches, `.DS_Store`, secrets, local env files, or unrelated scratch material.
-7. If the skill already exists in the repo, this is an update, not a copy. Use the update workflow below.
+7. If the skill already exists in the repo, this is an update, not a copy. Use `update-local-skills`.
 8. Update or suggest updating `AGENTS.md` with local skill precedence.
 
 Copy the skill **verbatim**. Do not adapt its text on the way in. See "Why Verbatim Copies Are Correct" below.
@@ -57,19 +59,6 @@ Never rewrite a copied skill to assert that it *is* the repo-local one. That sta
 **Seed text states conditions. It never states facts about its own location.**
 
 Genuine repo-specific facts — that spike docs live in `notes/` rather than `docs/`, say — belong in the repo's `AGENTS.md`, which already outranks skills, not inside the skill file.
-
-## Update Workflow
-When the repo's copy already exists, changes flow **one way**: from the global skill down into the local copy. Nothing is pushed back upstream. A local copy is allowed to have diverged on purpose.
-
-1. Read the global `SKILL.md` and the repo's copy, both in full.
-2. Work out what changed upstream. Separately, work out how the local copy has diverged.
-3. Report both to the user before writing anything. This report is the whole value of the skill.
-4. Apply the upstream changes to the local copy, leaving intentional local divergence alone.
-5. Where an upstream change collides with a local divergence, do not guess. Show both and ask.
-
-Overwriting the local copy entirely is a legitimate outcome — the user may simply want the global version back. This skill holds no policy about that. Its one rule is that **overwriting is never the silent outcome.**
-
-Do not add frontmatter metadata, content hashes, version numbers, or merge-base markers, and do not reach for git. There is no automated three-way merge here and there does not need to be: a human is in the loop, the operation is rare, and the repo's own version control is the undo.
 
 ## Local Precedence Text
 Add this to `AGENTS.md` when the repo has local skills:

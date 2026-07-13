@@ -2,6 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
+- Skill Taxonomy — align global/local skills around `pinned-issues`, `future-ideas`, `misc`, `decisions/`, active spikes, and reusable skill feedback; then vendor the updated local skills into LifeOS and `my-website`. `docs/active-spikes/skill-taxonomy.md`, `docs/active-spikes/skill-taxonomy.todo.md`.
 - LifeOS CLI Skill — formalize `lifeos-tools/AGENT.md` into a co-located tool skill (`lifeos-tools/skills/lifeos-cli/`), symlinked global, and repoint every reference. The configs half of the LifeOS runbook conversion; the vault half is tracked in the vault (`LifeOS/docs/spike.runbook-conversion.*`). `docs/active-spikes/lifeos-cli-skill.md`, `docs/active-spikes/lifeos-cli-skill.todo.md`.
 - LifeOS Tools v2 — open spike, parking lot for remaining v2 ideas. `docs/active-spikes/lifeos-tools-v2.md`, `docs/active-spikes/lifeos-tools-v2.todo.md`. (Task Chains / `supersede` theme is shipped — see Recently Shipped. Other v2 ideas stay parked.)
 
@@ -9,6 +10,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - Vault Runbook Conversion — sort the vault's runbooks by tool-vs-vault, convert to skills (tool ones to `lifeos-tools/skills/` symlinked global, vault ones physically in the vault), retire the vault's `how-to-spike.md`, vendor a commit-work-stripped `run-project-spike` into the vault. Straddles configs (git) and the vault (Drive-only). Prerequisite (LifeOS Code Cleanup) is now shipped, so this is unblocked.
 
 ## Scratch / Future
+- Future ideas: `docs/scratch/future-ideas.md`
 - LifeOS Bitwarden cleanup (parked): `docs/scratch/lifeos-bitwarden.md`, `docs/scratch/lifeos-bitwarden.todo.md`
 - `run` dispatcher notes: `docs/scratch/run-command.md`, `docs/scratch/run-command.todo.md`
 
@@ -38,7 +40,8 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - Finished LifeOS v1 spike history lives in `docs/archive/lifeos-tools.md`, `docs/archive/lifeos-tools.todo.md`, `docs/archive/lifeos-google-sources.md`, and `docs/archive/lifeos-google-sources.todo.md`. The secrets/env spike is in `docs/archive/secrets-env.md`, folded into decision `0001`.
 - Use `skills/run-project-spike/SKILL.md` for spike workflow.
 - Use `docs/active-spikes/` for the conceptual + to-do pair of each active spike.
-- Use `docs/deferred-decisions.md` for questions we are intentionally not answering yet.
+- Use `docs/pinned-issues.md` for unresolved issues we are intentionally preserving for later.
+- Use `docs/scratch/future-ideas.md` for conceptual someday material that is not ready for active spike work.
 - Use `docs/scratch/` for rough, non-authoritative notes.
 - Use `docs/archive/` for finished spike history.
 - Use `docs/decisions/` for durable tradeoffs and settled repo direction.
