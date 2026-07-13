@@ -1,5 +1,5 @@
 # Skill Taxonomy
-Status: active.
+Status: active; configs-side implementation committed in `cc7a790 skills: align project workflow taxonomy`.
 
 This spike aligns the personal project workflow skills around a clearer taxonomy for unresolved issues, future ideas, misc intake, durable decisions, active spikes, and reusable skill feedback.
 
@@ -42,3 +42,17 @@ Use the first matching category:
 
 ## Local Vendoring
 Local projects should carry the skills that shape their normal workflow. Updating those copies needs to preserve local authority: read global and local versions, identify upstream changes and local divergence, and avoid silent overwrites.
+
+## Outcome
+The configs seed layer now carries the taxonomy directly:
+
+- `pin-issue` owns `docs/pinned-issues.md`.
+- `log-future-idea` owns `docs/scratch/future-ideas.md`.
+- `triage-project-misc` routes raw issue intake without leaking future concepts or pins into misc.
+- `write-skills` captures light-touch skill authoring guidance.
+- `log-skills-feedback` writes cross-project skill observations to `agents/skills-feedback-log.md`.
+- `update-local-skills` owns refreshes of existing repo-local skill copies.
+
+The LifeOS vault has been migrated to the same model, including individual decision records under `docs/decisions/`.
+
+The `my-website` project has local migration edits in its working tree but they are intentionally uncommitted from this repo. Its current docs/skills link check passes when archived historical docs are excluded.
