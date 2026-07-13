@@ -8,4 +8,4 @@ Not a roadmap, not an archive. When an item earns a home, route it with the `tri
 ## Latest Routing Session
 Reviewed 2026-07-13.
 
-- Promoted the skill-feedback loop item into `docs/active-spikes/skill-taxonomy.md` and `docs/active-spikes/skill-taxonomy.todo.md`.
+- Promoted the skill-feedback loop item into `docs/archive/skill-taxonomy.md` and `docs/archive/skill-taxonomy.todo.md`.
