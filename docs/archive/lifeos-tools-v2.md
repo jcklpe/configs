@@ -1,11 +1,10 @@
 # LifeOS Tools V2
-Status: **active spike.** Promoted from scratch on 2026-06-25 to carry one concrete theme:
-**Trello Task Chains and the `supersede` command** (see the section below). That theme is now
-**shipped and human-QA'd** (live smoke test via the LifeOS agent, 2026-06-25); the spike stays
-open as the home for the remaining parking-lot v2 ideas. Those stay out of scope until the user
-pulls one in.
+Status: **archived 2026-07-13.** Promoted from scratch on 2026-06-25 to carry one concrete theme:
+**Trello Task Chains and the `supersede` command** (see the section below). That theme shipped
+and passed human QA (live smoke test via the LifeOS agent, 2026-06-25). Later `calendar find`
+also shipped. Remaining parking-lot ideas now live in [../scratch/future-ideas.md](../scratch/future-ideas.md#lifeos-tools-v2-future-ideas).
 
-Companion to-do: `docs/active-spikes/lifeos-tools-v2.todo.md`.
+Companion to-do: `docs/archive/lifeos-tools-v2.todo.md`.
 
 ## Purpose
 Preserve useful next-step ideas without keeping the v1 spike docs open forever. Most of this

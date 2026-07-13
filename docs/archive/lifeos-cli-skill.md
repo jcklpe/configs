@@ -1,7 +1,7 @@
 # LifeOS CLI Skill
-Status: **active spike.** Opened 2026-07-12. The configs half of the LifeOS runbook conversion: formalize the `lifeos` CLI agent guide (`lifeos-tools/AGENT.md`) into a proper, co-located tool skill.
+Status: **archived 2026-07-13.** Opened 2026-07-12. The configs half of the LifeOS runbook conversion: formalized the `lifeos` CLI agent guide into co-located tool skills under `lifeos-tools/skills/`, symlinked them globally, and removed the old `AGENT.md` surface.
 
-Companion to-do: `docs/active-spikes/lifeos-cli-skill.todo.md`.
+Companion to-do: `docs/archive/lifeos-cli-skill.todo.md`.
 
 Continues from: docs/archive/lifeos-code-cleanup.md
 

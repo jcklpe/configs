@@ -1,4 +1,6 @@
 # Skill Taxonomy To-Do
+Status: **archived 2026-07-13.** All items done; the configs seed layer, LifeOS vault, and `my-website` local project docs/skills were migrated to the taxonomy.
+
 ## Current State
 Opened 2026-07-13 from a conversation about LifeOS, `my-website`, and `configs` all needing the same routing taxonomy for pinned issues, future ideas, misc intake, decisions, active spikes, and skill feedback.
 
