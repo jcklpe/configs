@@ -1,5 +1,5 @@
 # Skill Taxonomy
-Status: active; configs-side implementation committed in `cc7a790 skills: align project workflow taxonomy`.
+Status: **archived 2026-07-13.** Configs-side implementation committed in `cc7a790 skills: align project workflow taxonomy`; outcome note committed in `bd6fb16 skills: record taxonomy spike outcome`.
 
 This spike aligns the personal project workflow skills around a clearer taxonomy for unresolved issues, future ideas, misc intake, durable decisions, active spikes, and reusable skill feedback.
 

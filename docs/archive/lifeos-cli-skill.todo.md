@@ -1,5 +1,5 @@
 # LifeOS CLI Skill To-Do
-Status: **active.** Conceptual doc: `docs/active-spikes/lifeos-cli-skill.md`.
+Status: **archived 2026-07-13.** All configs-side items done. Conceptual doc: `docs/archive/lifeos-cli-skill.md`.
 
 ## Background
 Formalize `lifeos-tools/AGENT.md` (the `lifeos` CLI agent guide) into a co-located tool skill at `lifeos-tools/skills/lifeos-cli/SKILL.md`, symlinked global, and update every reference to point at it. The configs half of the runbook-conversion effort; the vault half is tracked in the vault at `docs/spike.runbook-conversion.*`.
@@ -11,7 +11,7 @@ Formalize `lifeos-tools/AGENT.md` (the `lifeos` CLI agent guide) into a co-locat
 - One commit per coherent change; `Spike: lifeos-cli-skill` trailer.
 
 ## To Do
-- Nothing open. This half is done pending the vault-side reference repoint (tracked in the vault spike).
+None. This half is done; the vault-side runbook conversion was handled in the LifeOS vault pass.
 
 ## Ready for Human QA
 - None expected; this is a docs move. Possibly: confirm the skill's description/triggers read well.
