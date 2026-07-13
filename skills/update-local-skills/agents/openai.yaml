@@ -1,0 +1,3 @@
+interface:
+  display_name: "Update Local Skills"
+  short_description: "Refresh repo-local skill copies while preserving local divergence."

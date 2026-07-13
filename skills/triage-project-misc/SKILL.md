@@ -1,6 +1,6 @@
 ---
 name: triage-project-misc
-description: "Triage a project's loose scratch inbox at docs/scratch/misc.md into addressed items, thematic scratch docs, numbered misc buckets, active spikes, or durable docs. Use when the user asks to review misc notes, route loose observations, clean up scratch material, cluster possible future work, or process a docs/scratch/misc.md inbox."
+description: "Triage a project's loose scratch inbox at docs/scratch/misc.md into addressed items, future ideas, pinned issues, thematic scratch docs, numbered misc buckets, active spikes, or durable docs. Use when the user asks to review misc notes, route loose observations, clean up scratch material, cluster possible future work, or process a docs/scratch/misc.md inbox."
 ---
 
 # Triage Project Misc
@@ -8,7 +8,7 @@ description: "Triage a project's loose scratch inbox at docs/scratch/misc.md int
 If the current repo already has `skills/triage-project-misc/SKILL.md`, read and follow the repo-local skill first. Treat this global skill as fallback seed material.
 
 ## Purpose
-`docs/scratch/misc.md` is a live inbox for loose thoughts. Use it for observations that are real enough to keep but too raw to classify yet: small bugs noticed during another spike, taste reactions, possible features, visual discomforts, "this should maybe be better someday" notes, and half-formed clusters that have not earned a named spike doc.
+`docs/scratch/misc.md` is a live inbox for loose observations. Use it for observations that are real enough to keep but too raw to classify yet: small bugs noticed during another spike, QA nits, taste reactions, visual discomforts, "this should maybe be better someday" notes, and half-formed clusters that have not earned a named scratch doc or spike.
 
 `misc.md` is not a roadmap, not an archive, and not a dumping ground that should grow forever. It is an intake surface.
 
@@ -21,22 +21,36 @@ The flow is:
 
 1. A thought lands in `docs/scratch/misc.md`.
 2. When the user asks for a triage pass, an agent reviews `misc.md` alongside existing scratch docs.
-3. Each item is deleted, moved, clustered into a thematic scratch doc, or swept into a numbered miscellaneous bucket.
+3. Each item is deleted, moved, clustered into a thematic scratch doc, swept into a numbered miscellaneous bucket, moved to future ideas, pinned for later, promoted to active work, or recorded as a durable decision.
 4. Once a bucket becomes active implementation work, use `run-project-spike` to promote it into the two-doc active spike pattern.
 
 ## File Roles
 - `docs/scratch/misc.md` is the live inbox for unrouted loose notes.
+- `docs/scratch/future-ideas.md` is for conceptual someday material that is more coherent and farther-horizon than raw misc intake.
 - `docs/scratch/misc-1.md`, `misc-2.md`, and so on are numbered miscellaneous buckets for real work that does not yet form a clean thematic spike.
+- `docs/pinned-issues.md` is for unresolved issues intentionally preserved for later.
+- `docs/decisions/` is for settled durable rules.
 - Thematic scratch docs such as `syntax-highlighting.md`, `brand-voice.md`, or `embed-media-support.md` are preferred when notes cluster around a coherent theme.
 - Active spike docs in `docs/active-spikes/` exist only after a scratch topic becomes the current implementation focus.
 - Archived spike docs in `docs/archive/` are historical context after a spike closes.
+
+## Routing Taxonomy
+Use the first matching destination:
+
+- If it is a durable rule the project is adopting, move it into a decision record under `docs/decisions/`.
+- If it is an unresolved issue, concern, question, or tradeoff being intentionally preserved for later, move it to `docs/pinned-issues.md` with `pin-issue`.
+- If it is conceptual someday material, move it to `docs/scratch/future-ideas.md` with `log-future-idea`.
+- If it is raw observed friction, a bug, a nit, a QA reaction, or issue intake, keep or route it through `docs/scratch/misc.md`.
+- If it is active scoped work, promote it into `docs/active-spikes/` with `run-project-spike`.
+
+Future ideas are not a higher-status misc bucket. They are farther-horizon conceptual material. Misc is allowed to be gritty, atomic, nitpicky, and uneven.
 
 ## What Belongs In Misc
 Good `misc.md` entries are specific enough to preserve the observation:
 
 - a visual detail that feels off
 - a bug seen while testing a different surface
-- a potential feature without enough shape yet
+- a potential feature without enough shape yet, if it is still issue intake rather than a coherent future concept
 - a design or taste reaction in the user's own phrasing
 - a link or reference that might matter later
 - a cluster seed that may become a spike after more related items appear
@@ -99,6 +113,21 @@ Shape the new thematic scratch doc like a lightweight conceptual spike doc, but 
 
 Do not create a full active spike to-do yet unless the user is actually starting that work. The thematic scratch doc is candidate conceptual context; `run-project-spike` handles active promotion.
 
+### Future Ideas
+If an item is a coherent someday concept, move it to `docs/scratch/future-ideas.md`.
+
+Preserve why the idea is future-facing and why it is not active now. Do not move raw QA notes, nit lists, bug reports, or rambling reaction logs into future ideas; those stay in misc or route to a thematic scratch doc.
+
+### Pinned Issues
+If an item is an unresolved issue that should be intentionally preserved but not solved yet, move it to `docs/pinned-issues.md`.
+
+Use a concrete revisit trigger. Do not pin ordinary tasks, bugs, or future feature concepts just because they are not active yet.
+
+### Durable Decision
+If an item is already settled as a project rule, add or update a record under `docs/decisions/`.
+
+Do not create a decision record for every local implementation choice. Use decision records only for rules that should outlive current spike context.
+
 ### Numbered Miscellaneous Bucket
 If an item is real but does not belong to an existing doc and does not cluster into a thematic spike, sweep it into a numbered `misc-#.md` bucket.
 
@@ -128,15 +157,12 @@ Use this shape:
 
 ```md
 # Misc Inbox
-
 Live inbox for loose observations.
 
 ## Unrouted Items
-
 - ...
 
 ## Latest Routing Session
-
 Reviewed YYYY-MM-DD.
 
 - Moved ...

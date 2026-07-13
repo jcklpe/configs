@@ -1,0 +1,3 @@
+interface:
+  display_name: "Log Skills Feedback"
+  short_description: "Capture cross-project skill feedback without immediately rewriting skills."

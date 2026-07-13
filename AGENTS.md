@@ -72,7 +72,9 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Committing work as an agent | `skills/commit-work/SKILL.md`, policy in [docs/decisions/0003-agent-commit-policy.md](docs/decisions/0003-agent-commit-policy.md) |
 | Durable decision record | [docs/decisions/](docs/decisions/) |
 | Rough or historical notes | [docs/scratch/](docs/scratch/) (not authoritative), [docs/archive/](docs/archive/) (historical, not current rules) |
-| Intentionally postponed decision | [docs/deferred-decisions.md](docs/deferred-decisions.md) |
+| Unresolved issue to revisit later | [docs/pinned-issues.md](docs/pinned-issues.md) |
+| Conceptual future idea | [docs/scratch/future-ideas.md](docs/scratch/future-ideas.md) |
+| Cross-project skill feedback | [agents/skills-feedback-log.md](agents/skills-feedback-log.md) |
 
 ## Docs workflow
 Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when a body

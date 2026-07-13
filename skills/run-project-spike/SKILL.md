@@ -24,9 +24,11 @@ docs/
     topic.todo.md
   scratch/
     misc.md
+    future-ideas.md
     misc-1.md
   archive/
   decisions/
+  pinned-issues.md
 ```
 
 Do not add a `README.md` to `docs/` or any subfolder of it. `TODO.md` is the index, and a per-folder README will only restate the authority rules that already live in `AGENTS.md`.
@@ -168,6 +170,16 @@ Promotion means move, not copy. When promoting a scratch doc into `docs/active-s
 If a scratch doc contains multiple themes, split it deliberately: move each useful piece into the right destination, then remove the routed source material. Preserve nuance and concrete user phrasing while moving it.
 
 For loose unrouted notes, use `docs/scratch/misc.md` and the `triage-project-misc` skill.
+
+Use the shared routing taxonomy before promoting scratch material:
+
+- `docs/pinned-issues.md` for unresolved issues intentionally preserved for later.
+- `docs/scratch/future-ideas.md` for conceptual someday material.
+- `docs/scratch/misc.md` for raw observed friction and issue intake.
+- `docs/decisions/` for settled durable rules.
+- `docs/active-spikes/` for active scoped work.
+
+Only promote material into an active spike when the user is actually starting scoped work or the project needs an active implementation container now.
 
 ## Durable Decisions
 Decision records are part of the project's durable docs structure, not the spike process itself. During a spike, create or update a decision record only when a tradeoff has become a durable project rule that should outlive the spike.
