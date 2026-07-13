@@ -1,6 +1,6 @@
 ---
 name: setup-project-docs
-description: "Set up or retrofit a repository's durable project documentation for agent-assisted work: root README, .gitignore, AGENTS.md, CLAUDE.md symlink, TODO.md, docs/active-spikes, docs/scratch, docs/archive, docs/decisions, and optional repo-local skills. Use when starting a new repo, adding the spike/scratch/archive/decision workflow to an existing repo, or making repo docs cloneable for future agents and collaborators."
+description: "Set up or retrofit a repository's durable project documentation for agent-assisted work: root README, .gitignore, AGENTS.md, CLAUDE.md symlink, TODO.md, docs/active-spikes, docs/scratch, docs/archive, docs/decisions, optional pinned issues/future ideas, and optional repo-local skills. Use when starting a new repo, adding the spike/scratch/archive/decision workflow to an existing repo, or making repo docs cloneable for future agents and collaborators."
 ---
 
 # Setup Project Docs
@@ -10,7 +10,7 @@ If the current repo already has `skills/setup-project-docs/SKILL.md`, read and f
 ## Purpose
 Set up a low-ceremony docs ecology that lets humans and agents keep context over time without turning every thought into a ticket. The structure should preserve the difference between durable rules, active work, scratch thinking, and historical context.
 
-This skill initializes the structure. Use `run-project-spike` to conduct active spike work, `triage-project-misc` to route loose notes, `track-deferred-decisions` to pin decisions that should be revisited later, and `setup-local-skills` to copy seed skills into a project repo.
+This skill initializes the structure. Use `run-project-spike` to conduct active spike work, `triage-project-misc` to route loose notes, `log-future-idea` to capture conceptual someday material, `pin-issue` to preserve unresolved issues for later, `setup-local-skills` to copy seed skills into a project repo, and `update-local-skills` to refresh existing local skill copies.
 
 ## Default Structure
 Create only what the repo needs, but prefer this baseline for new repos:
@@ -39,7 +39,7 @@ repo/
     triage-project-misc/
 ```
 
-Use the `setup-local-skills` skill to copy full skill folders from the seed library, usually `~/configs/skills/`, into the project. Do not symlink repo-local skills; copied skills are allowed to evolve with the repo.
+Use the `setup-local-skills` skill to copy full skill folders from the seed library, usually `~/configs/skills/`, into the project. Use `update-local-skills` when the repo already has local skills and the user wants to refresh them from the seed versions. Do not symlink repo-local skills; copied skills are allowed to evolve with the repo.
 
 Do not copy a whole personal skill library into a repo by default. Add repo-local skills only when they are part of how the repo should be operated after clone.
 
@@ -83,7 +83,9 @@ Related spikes, TODO items, or files.
 
 Do not create a `README.md` inside `docs/` or any of its subfolders. In a folder where every file is documentation, `README` names nothing, and such a file inevitably restates the authority rules that already live in `AGENTS.md` while carrying a hand-maintained file listing that `ls` provides for free. `TODO.md` is the index.
 
-Use `docs/deferred-decisions.md` only when the repo needs a short register for intentionally postponed decisions. Create it with the `track-deferred-decisions` skill instead of adding it to every project by default.
+Use `docs/pinned-issues.md` only when the repo needs a short register for unresolved issues intentionally preserved for later. Create it with the `pin-issue` skill instead of adding it to every project by default.
+
+Use `docs/scratch/future-ideas.md` only when the repo has conceptual someday material that is more coherent and farther-horizon than raw misc intake. Create it with `log-future-idea`.
 
 ## AGENTS.md Baseline
 When creating or updating `AGENTS.md`, include these ideas when they fit the repo:
@@ -154,6 +156,6 @@ The detailed routing process belongs in the `triage-project-misc` skill.
 3. Create missing folders and initial files with the least content needed to make the structure understandable.
 4. Add or update `.gitignore` before creating local-only agent or secret files.
 5. Add or update `README.md`, `AGENTS.md`, `CLAUDE.md`, and `TODO.md` only with repo-relevant guidance.
-6. If adding repo-local skills, use `setup-local-skills` to copy full skill folders into `repo/skills/`.
+6. If adding repo-local skills, use `setup-local-skills` to copy full skill folders into `repo/skills/`. If local skills already exist and should be refreshed, use `update-local-skills`.
 7. Keep private or sensitive information out of public repos. Use examples and placeholders for local-only values.
 8. Report what was created, what was intentionally skipped, and which docs need human review.
