@@ -7,6 +7,8 @@
 !*credentials*.example.json
 google-accounts.json
 google-accounts.local.json
+m365-accounts.json
+m365-accounts.local.json
 people-aliases.json
 !people-aliases.example.json
 cache/
@@ -22,3 +24,4 @@ gmail-qa/
 drive-qa.md
 drive-qa/
 open-austin-org-qa/
+m365/

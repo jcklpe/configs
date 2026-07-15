@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- None.
+- **LifeOS Microsoft 365:** add delegated Microsoft Graph access for read-only mail plus read/write calendar and Outlook contacts, with dry-run writes and no deletes. See `docs/active-spikes/lifeos-m365.md` and `docs/active-spikes/lifeos-m365.todo.md`.
 
 ## Later Spikes (this conversation, not yet opened)
 - None.

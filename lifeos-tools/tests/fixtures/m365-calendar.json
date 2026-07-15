@@ -1,0 +1,49 @@
+{
+  "calendars": [
+    {
+      "id": "primary",
+      "graphId": "calendar-1",
+      "name": "Calendar",
+      "events": [
+        {
+          "id": "event-1",
+          "subject": "Graduate orientation",
+          "body": {
+            "contentType": "text",
+            "content": "Bring a photo ID."
+          },
+          "bodyPreview": "Bring a photo ID.",
+          "start": {
+            "dateTime": "2026-08-18T09:30:00.0000000",
+            "timeZone": "Central Standard Time"
+          },
+          "end": {
+            "dateTime": "2026-08-18T15:30:00.0000000",
+            "timeZone": "Central Standard Time"
+          },
+          "isAllDay": false,
+          "isOnlineMeeting": false,
+          "location": {
+            "displayName": "Santa Rita Room"
+          },
+          "organizer": {
+            "emailAddress": {
+              "name": "UT iSchool",
+              "address": "ischool@example.edu"
+            }
+          },
+          "attendees": [
+            {
+              "emailAddress": {
+                "name": "Aslan French",
+                "address": "student@my.example.edu"
+              },
+              "type": "required"
+            }
+          ],
+          "webLink": "https://outlook.office.com/calendar/item/event-1"
+        }
+      ]
+    }
+  ]
+}
