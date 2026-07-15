@@ -1,0 +1,34 @@
+{
+  "value": [
+    {
+      "id": "message-1",
+      "conversationId": "conversation-1",
+      "subject": "Orientation details",
+      "from": {
+        "emailAddress": {
+          "name": "UT iSchool",
+          "address": "ischool@example.edu"
+        }
+      },
+      "toRecipients": [
+        {
+          "emailAddress": {
+            "name": "Aslan French",
+            "address": "student@my.example.edu"
+          }
+        }
+      ],
+      "ccRecipients": [],
+      "receivedDateTime": "2026-07-15T14:30:00Z",
+      "body": {
+        "contentType": "html",
+        "content": "<p>Welcome to orientation.</p><p><a href=\"https://example.edu/orientation\">Read the agenda</a></p>"
+      },
+      "bodyPreview": "Welcome to orientation.",
+      "hasAttachments": true,
+      "isRead": false,
+      "importance": "high",
+      "webLink": "https://outlook.office.com/mail/deeplink/read/message-1"
+    }
+  ]
+}

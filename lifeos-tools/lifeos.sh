@@ -16,6 +16,7 @@ LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
 . "${LIB_DIR}/common.sh"
 . "${LIB_DIR}/trello.sh"
 . "${LIB_DIR}/google.sh"
+. "${LIB_DIR}/m365.sh"
 . "${LIB_DIR}/open-austin-org.sh"
 . "${LIB_DIR}/resume.sh"
 
@@ -59,6 +60,20 @@ Usage:
   ./lifeos.sh drive meta ALIAS FILE_URL_OR_ID [--json]
   ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
+  ./lifeos.sh m365 accounts
+  ./lifeos.sh m365 auth ALIAS [--no-browser]
+  ./lifeos.sh m365 profile ALIAS [--json]
+  ./lifeos.sh m365 mail sync ALIAS [--qa | --output FILE]
+  ./lifeos.sh m365 calendar list-calendars ALIAS
+  ./lifeos.sh m365 calendar find ALIAS QUERY [--calendar ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
+  ./lifeos.sh m365 calendar sync ALIAS [--qa | --output FILE]
+  ./lifeos.sh m365 calendar create-event ALIAS --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--notify] [--execute]
+  ./lifeos.sh m365 calendar update-event ALIAS --event ID [--calendar ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--notify] [--execute]
+  ./lifeos.sh m365 contacts list ALIAS [--json]
+  ./lifeos.sh m365 contacts find ALIAS QUERY [--json]
+  ./lifeos.sh m365 contacts sync ALIAS [--qa | --output FILE]
+  ./lifeos.sh m365 contacts create ALIAS [--display-name TEXT] [--given-name TEXT] [--surname TEXT] [--email ADDRESS]... [--phone NUMBER]... [--mobile NUMBER] [--company TEXT] [--job-title TEXT] [--notes TEXT | --notes-file FILE] [--execute]
+  ./lifeos.sh m365 contacts update ALIAS --contact ID [contact fields...] [--execute]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh open-austin-org path
   ./lifeos.sh open-austin-org sync [--qa | --output DIR]
@@ -89,7 +104,7 @@ _doctor_file() {
 }
 
 _doctor() {
-    local issues=0 vault sources file google_accounts google_aliases google_alias google_token
+    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_token
 
     if [ -f "$ENV_FILE" ]; then
         _say "OK: ${ENV_FILE}"
@@ -197,6 +212,36 @@ _doctor() {
         _say "NEXT: cp ${SECRETS_DIR}/google-accounts.example.json $google_accounts"
     fi
 
+    m365_accounts="$(_m365_accounts_path)"
+    if [ -f "$m365_accounts" ]; then
+        if jq -e '.accounts | type == "array"' "$m365_accounts" >/dev/null 2>&1; then
+            _say "OK: Microsoft 365 account alias config exists"
+            if "$LIFEOS_PY" -c 'import msal' >/dev/null 2>&1; then
+                _say "OK: MSAL is installed"
+            else
+                _say "MISSING: MSAL Python dependency"
+                _say "NEXT: run './lifeos.sh setup'"
+                issues=$((issues + 1))
+            fi
+            m365_aliases="$(jq -r '(.accounts // [])[] | select((.mail.enabled // false) == true or (.calendar.enabled // false) == true or (.contacts.enabled // false) == true) | .alias' "$m365_accounts")"
+            for m365_alias in $m365_aliases; do
+                m365_token="$(_m365_account_path "$m365_alias" '.token_path')" || m365_token=""
+                if [ -n "$m365_token" ] && [ -f "$m365_token" ]; then
+                    _say "OK: Microsoft token cache exists for alias '$m365_alias'"
+                else
+                    _say "MISSING: Microsoft token cache for alias '$m365_alias'"
+                    _say "NEXT: run './lifeos.sh m365 auth $m365_alias'"
+                fi
+            done
+        else
+            _say "MISSING: Microsoft 365 account alias config is not valid JSON shape"
+            issues=$((issues + 1))
+        fi
+    else
+        _say "OPTIONAL: Microsoft 365 account alias config is not set up"
+        _say "NEXT: cp ${SECRETS_DIR}/m365-accounts.example.json $m365_accounts"
+    fi
+
     if [ "$issues" -eq 0 ]; then
         _say "OK: doctor found no blocking issues for the implemented commands"
         return 0
@@ -228,6 +273,7 @@ $vault/weekly-review.md
 $vault/sources/trello.md
 $vault/sources/calendar.md
 $vault/sources/gmail/
+$vault/sources/m365/
 
 For Open Austin GitHub/org work, also read:
 
@@ -334,6 +380,10 @@ case "${1:-help}" in
             import-doc) shift 2; _drive_import_doc "$@" ;;
             *) _err "Unknown Drive command: ${2:-}"; _usage; exit 1 ;;
         esac
+        ;;
+    m365)
+        shift
+        _m365_dispatch "$@"
         ;;
     resume)
         case "${2:-}" in

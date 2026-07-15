@@ -13,7 +13,7 @@ cp lifeos-tools/secrets/.env.example lifeos-tools/secrets/.env
 Required local tools:
 
 - `bash`, `curl`, `jq`
-- `python3` (the `lib/*.py` scripts are standard-library only)
+- `python3` (Microsoft delegated auth also uses MSAL from the managed environment)
 - `uv` — manages the Python env (`.venv`) from `pyproject.toml` + `uv.lock`
 - `pandoc` + `weasyprint` — only needed for `resume render`
 
@@ -43,14 +43,14 @@ lifeos doctor
 
 ## Layout
 - `lifeos.sh` — the CLI dispatcher (bootstrap, top-level commands, and the command `case`).
-- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `open-austin-org.sh`, `resume.sh`) over shared `common.sh`, plus the `google-*.py` render/auth helpers and the vendored `resume-theme/`. `lib/*.sh` is sourced; the `.py` files are invoked by path.
+- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `m365.sh`, `open-austin-org.sh`, `resume.sh`) over shared `common.sh`, plus render/auth/write helpers and the vendored `resume-theme/`. `lib/*.sh` is sourced; the `.py` files are invoked by path.
 - `pyproject.toml` / `uv.lock` — Python env manifest + lockfile (managed by `uv`; the `.venv` is git-ignored and rebuilt by `./lifeos.sh setup`).
 - `secrets/` — real secrets and their `.example` templates.
 - `qa/` — `--qa` snapshot output.
 - `tests/` — offline renderer tests and fixtures.
 
 ## Secrets
-Real files (`.env`, `google-token.json`, OAuth credential JSON, `google-accounts.json`, `people-aliases.json`) live in `secrets/` and are ignored by git. Fake `.example` templates are tracked beside them in the same folder.
+Real files (`.env`, Google/Microsoft token files, OAuth credential JSON, `google-accounts.json`, `m365-accounts.json`, `people-aliases.json`) live in `secrets/` and are ignored by git. Fake `.example` templates are tracked beside them in the same folder.
 
 ## Commands
 ```sh
@@ -91,6 +91,20 @@ lifeos drive search open-austin "landlord mapper"
 lifeos drive meta open-austin https://docs.google.com/document/d/abc123/edit
 lifeos drive read open-austin https://docs.google.com/spreadsheets/d/abc123/edit
 lifeos drive import-doc open-austin /tmp/brief.html --title "Workshop brief" --folder FOLDER_ID --execute
+lifeos m365 accounts
+lifeos m365 auth ut
+lifeos m365 profile ut
+lifeos m365 mail sync ut --qa
+lifeos m365 calendar list-calendars ut
+lifeos m365 calendar find ut "Orientation"
+lifeos m365 calendar sync ut --qa
+lifeos m365 calendar create-event ut --title "Coffee" --start 2026-08-20T10:00
+lifeos m365 calendar update-event ut --event EVENT_ID --location "UTA"
+lifeos m365 contacts list ut
+lifeos m365 contacts find ut "Name"
+lifeos m365 contacts sync ut --qa
+lifeos m365 contacts create ut --display-name "Name" --email name@example.com
+lifeos m365 contacts update ut --contact CONTACT_ID --company "Organization"
 lifeos open-austin-org path
 lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
@@ -100,6 +114,25 @@ lifeos sync
 ```
 
 Agent-facing usage notes live in the `lifeos-cli` skill (`lifeos-tools/skills/lifeos-cli/SKILL.md`), co-located with the tool and symlinked into `~/.claude/skills/` and `~/.codex/skills/` by the installer, so local agents get it globally.
+
+## Microsoft 365
+Microsoft 365 is a separate delegated Graph integration for bounded Inbox reads, calendar reads and gated event create/update writes, and Outlook contact reads and gated contact create/update writes. It does not send or mutate mail, expose delete commands, read the UT organization directory, or request application-wide access.
+
+Copy the ignored account configuration and fill in the registered application's public client ID:
+
+```sh
+cp lifeos-tools/secrets/m365-accounts.example.json lifeos-tools/secrets/m365-accounts.json
+lifeos setup
+lifeos m365 accounts
+lifeos m365 auth ut
+lifeos m365 profile ut
+```
+
+Register the local application in Microsoft Entra as a public mobile/desktop client with a `http://localhost` redirect and delegated `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite` permissions. Do not create a client secret or add application permissions. Enable public-client flows if `--no-browser` device-code authorization will be used. If UT prevents app registration or consent, stop at that tenant gate instead of adding broader permissions.
+
+Mail snapshots are read-only and bounded by the alias's days, count, and body limits. Calendar sync uses Graph calendar views over the normal LifeOS date window. Contact sync reads only the user's default Outlook Contacts folder and does not recurse through additional contact folders. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` snapshots go to ignored `lifeos-tools/qa/m365/`.
+
+Calendar and contact writes are dry-run by default and require `--execute`. There are no delete commands. Calendar writes are restricted to configured writable calendar IDs. Because Microsoft can send invitations or meeting updates for attendee-bearing events, those writes also require `--notify` as an explicit acknowledgement; unlike the Google API, Graph does not expose it here as a suppress-delivery switch. During contact updates, supplied email or phone values replace that complete field array. See the `lifeos-m365` skill for the full safety model.
 
 
 ## Open Austin Org Snapshots
@@ -206,3 +239,12 @@ lifeos trello sync --qa
 ```
 
 `--qa` writes a gitignored local snapshot to `lifeos-tools/trello-qa.md`. Use the created card URL from command output or from that QA snapshot for move/rename/comment/description tests, then move it to `Done` when finished.
+
+## Validation
+Run every offline renderer, formatter, pagination, body-builder, and dry-run-gate fixture:
+
+```sh
+for test in tests/test-*.sh; do bash "$test" || exit; done
+```
+
+These tests use synthetic data and do not require live Google, Microsoft, Trello, or GitHub credentials.
