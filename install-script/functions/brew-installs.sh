@@ -41,6 +41,8 @@ brew_install_if_needed jump
 brew_install_if_needed fnm
 brew_install_if_needed jq
 brew_install_if_needed python
+# uv: Python env/dependency manager for lifeos-tools (creates its .venv from pyproject/uv.lock).
+brew_install_if_needed uv
 # trash: on Fedora, trash-cli is installed via dnf instead
 if [ "${OS_TYPE}" != "fedora" ]; then
     brew_install_if_needed trash
@@ -52,6 +54,9 @@ if [ "${OS_TYPE}" != "fedora" ]; then
     brew_install_if_needed mc
     brew_install_if_needed ranger
     brew_install_if_needed micro
+    # lifeos resume render pipeline (Markdown -> themed PDF): pandoc + weasyprint.
+    brew_install_if_needed pandoc
+    brew_install_if_needed weasyprint
 fi
 
 # zsh: not needed on mac (pre-installed), not needed on Fedora (dnf handles it)
