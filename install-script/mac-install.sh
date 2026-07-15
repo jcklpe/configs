@@ -42,4 +42,7 @@ source ${CONFIGS}/install-script/functions/symlinks.sh
 # Configure git
 source ${CONFIGS}/install-script/functions/git-config.sh
 
+# Set up the lifeos-tools Python env (uv-managed venv)
+source ${CONFIGS}/install-script/functions/lifeos-tools-setup.sh
+
 echo "✓ Mac installation complete!"
