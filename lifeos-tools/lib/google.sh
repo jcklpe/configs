@@ -3,11 +3,11 @@
 ##- Sourced by lifeos.sh; depends on lib/common.sh and the bootstrap vars. Large and cohesive; could be split into per-service modules later if that ever pays off.
 
 _calendar_helper() {
-    python3 "${LIB_DIR}/google-calendar-auth.py" "$@"
+    "$LIFEOS_PY" "${LIB_DIR}/google-calendar-auth.py" "$@"
 }
 
 _calendar_render_helper() {
-    python3 "${LIB_DIR}/google-calendar-render.py" "$@"
+    "$LIFEOS_PY" "${LIB_DIR}/google-calendar-render.py" "$@"
 }
 
 _calendar_ready() {
@@ -66,11 +66,11 @@ _calendar_write() {
 }
 
 _people_helper() {
-    python3 "${LIB_DIR}/google-people.py" "$@"
+    "$LIFEOS_PY" "${LIB_DIR}/google-people.py" "$@"
 }
 
 _calendar_write_helper() {
-    python3 "${LIB_DIR}/google-calendar-write.py" "$@"
+    "$LIFEOS_PY" "${LIB_DIR}/google-calendar-write.py" "$@"
 }
 
 _urlencode() {
@@ -179,7 +179,7 @@ _google_account_scopes() {
 }
 
 _google_oauth_helper() {
-    python3 "${LIB_DIR}/google-oauth.py" "$@"
+    "$LIFEOS_PY" "${LIB_DIR}/google-oauth.py" "$@"
 }
 
 _google_auth() {
@@ -276,7 +276,7 @@ _gmail_output_for_alias() {
 }
 
 _gmail_render_helper() {
-    python3 "${LIB_DIR}/google-gmail-render.py" "$@"
+    "$LIFEOS_PY" "${LIB_DIR}/google-gmail-render.py" "$@"
 }
 
 _gmail_sync_alias() {
@@ -551,7 +551,7 @@ _single_quote_sheet_name() {
 }
 
 _text_cap_file() {
-    python3 -c 'import sys
+    "$LIFEOS_PY" -c 'import sys
 limit = int(sys.argv[1])
 data = sys.stdin.read()
 if len(data) <= limit:
@@ -603,7 +603,7 @@ _drive_read() {
             fi
             encoded_range="$(_urlencode "$range")" || return 1
             _google_get_url "$alias" "https://sheets.googleapis.com/v4/spreadsheets/${file_id}/values/${encoded_range}" > "$values_file" || return 1
-            python3 "${LIB_DIR}/google-sheets-render.py" "$alias" "$file_id" "$sheet_meta_file" "$values_file"
+            "$LIFEOS_PY" "${LIB_DIR}/google-sheets-render.py" "$alias" "$file_id" "$sheet_meta_file" "$values_file"
             ;;
         *)
             _warn "Drive read supports Google Docs and Google Sheets for now. Showing metadata only."

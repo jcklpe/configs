@@ -17,6 +17,7 @@ LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
 . "${LIB_DIR}/trello.sh"
 . "${LIB_DIR}/google.sh"
 . "${LIB_DIR}/open-austin-org.sh"
+. "${LIB_DIR}/resume.sh"
 
 _usage() {
     cat <<'EOF'
@@ -25,6 +26,7 @@ LifeOS helper
 Usage:
   ./lifeos.sh help
   ./lifeos.sh doctor
+  ./lifeos.sh setup
   ./lifeos.sh open
   ./lifeos.sh context
   ./lifeos.sh trello list-boards
@@ -57,6 +59,7 @@ Usage:
   ./lifeos.sh drive meta ALIAS FILE_URL_OR_ID [--json]
   ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
+  ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh open-austin-org path
   ./lifeos.sh open-austin-org sync [--qa | --output DIR]
   ./lifeos.sh open-austin-org create-issue --title TITLE [--body TEXT | --body-file FILE] [--label LABEL] [--assign-me | --assignee LOGIN] [--repo OWNER/REPO] [--execute] [--no-sync]
@@ -64,6 +67,16 @@ Usage:
 
 Real config lives in .env, copied from .env.example.
 EOF
+}
+
+_setup() {
+    if ! command -v uv >/dev/null 2>&1; then
+        _err "uv is required for setup — install it (brew install uv), then re-run"
+        return 1
+    fi
+    _say "Syncing lifeos-tools Python env (uv sync)..."
+    ( cd "${SCRIPT_DIR}" && uv sync ) || { _err "uv sync failed"; return 1; }
+    _say "OK: .venv ready ($(${SCRIPT_DIR}/.venv/bin/python --version 2>&1))"
 }
 
 _doctor_file() {
@@ -89,6 +102,18 @@ _doctor() {
     _check_command curl || issues=$((issues + 1))
     _check_command jq || issues=$((issues + 1))
     _check_command python3 || issues=$((issues + 1))
+
+    # Resume render pipeline (optional feature): pandoc + weasyprint.
+    _check_command pandoc
+    _check_command weasyprint
+
+    # Python env for lib/*.py: uv-managed venv preferred, system python3 as fallback.
+    _check_command uv
+    if [ -x "${SCRIPT_DIR}/.venv/bin/python" ]; then
+        _say "OK: uv venv present ($(${SCRIPT_DIR}/.venv/bin/python --version 2>&1))"
+    else
+        _say "OPTIONAL: uv venv (.venv) not set up; using system python3. Run './lifeos.sh setup' to create it."
+    fi
 
     if _var_is_set LIFEOS_VAULT_PATH; then
         vault="$(_vault_path)"
@@ -243,6 +268,9 @@ case "${1:-help}" in
     doctor)
         _doctor
         ;;
+    setup)
+        _setup
+        ;;
     open)
         _open_vault
         ;;
@@ -305,6 +333,12 @@ case "${1:-help}" in
             read) shift 2; _drive_read "$@" ;;
             import-doc) shift 2; _drive_import_doc "$@" ;;
             *) _err "Unknown Drive command: ${2:-}"; _usage; exit 1 ;;
+        esac
+        ;;
+    resume)
+        case "${2:-}" in
+            render) shift 2; _resume_render "$@" ;;
+            *) _err "Unknown Resume command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
     open-austin-org)
