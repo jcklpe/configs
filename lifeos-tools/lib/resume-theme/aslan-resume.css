@@ -1,0 +1,266 @@
+/*
+Aslan Resume — Typora Theme (matches the provided PDF)
+Fonts: Merriweather Black (headings), Arial (body)
+Tips:
+- Contact line is H6 → right aligned.
+- Role is H3, Company line is H4 with <span class="date">…</span>.
+- Bullets are tight; pages are Letter w/ ~0.7" margins.
+*/
+
+/* ---------- Base & Vars ---------- */
+:root {
+    --font-serif-heavy: "Merriweather Black", "Merriweather", "Georgia", "Times New Roman", Times, serif;
+    --font-serif-medium: "Merriweather", "Georgia", "Times New Roman", Times, serif;
+    --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --text: #111;
+    --muted: #5a5a5a;
+    --rule: #e7e7e7;
+    --link: #1b5adf;
+}
+
+html,
+body {
+    background: #fff;
+    color: var(--text);
+}
+
+#write,
+.typora-export .typora-export-content {
+    max-width: 860px;
+    margin: 0 auto;
+    /* padding: 56px 72px; */
+    font-family: var(--font-sans);
+    font-size: 12pt;
+    line-height: 1.32;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+p {
+    margin: 0;
+}
+
+/* Links */
+a {
+    color: var(--link);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Rules */
+hr {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: 18px 0;
+}
+
+/* ---------- Headings ---------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-serif-medium);
+    color: var(--text);
+    margin: 0;
+}
+
+h1 {
+    font-family: var(--font-serif-heavy);
+    font-size: 18pt;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    margin: 0;
+    padding-top: 10px;
+}
+
+/* contact line under name */
+h6 {
+    font-family: var(--font-serif-medium);
+    font-size: 10pt;
+    font-weight: 600;
+    text-align: right;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.08;
+}
+
+/* Section titles like "Summary of Relevant Experience" */
+h2 {
+    font-size: 17pt;
+    font-weight: 800;
+    margin: 16pt 0 2pt 0;
+}
+
+/* Role titles (e.g., Product Designer) */
+h3 {
+    font-size: 13pt;
+    font-weight: 800;
+    margin: 10pt 0 1pt 0;
+}
+
+/* Company + right-aligned date */
+h4 {
+    font-size: 11pt;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: var(--font-sans);
+}
+
+h4 .date {
+    margin-left: auto;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 11pt;
+    white-space: nowrap;
+}
+
+/* ---------- Lists ---------- */
+ul,
+ol {
+    margin: 0;
+    padding-left: 1.9em;
+    padding-right: 0.5em;
+}
+
+ul>li,
+ol>li {
+    margin: 0;
+    line-height: 1.2;
+}
+
+ul>li::marker,
+ol>li::marker {
+    font-size: 2.5em;
+    font-weight: 900;
+    color: var(--text);
+}
+
+/* ---------- Tables (if any) ---------- */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 12pt;
+    margin: 6px 0 12px 0;
+}
+
+th,
+td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--rule);
+}
+
+th {
+    text-align: left;
+    font-weight: 700;
+}
+
+/* ---------- Helpers ---------- */
+.right {
+    float: right;
+    text-align: right;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.small {
+    font-size: 11pt;
+}
+
+.tight {
+    margin-bottom: 2px !important;
+}
+
+.upper {
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* ---------- Print / Export ---------- */
+.typora-export h1 {
+    margin-top: 0;
+}
+
+.typora-export a {
+    color: var(--link);
+}
+
+@page {
+    size: letter;
+    margin: 0.7in;
+}
+
+@media print {
+    #write {
+        padding: 0;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ---------- Dark mode (optional) ---------- */
+html[theme=dark] body {
+    background: #0f0f0f;
+    color: #f2f2f2;
+}
+
+html[theme=dark] a {
+    color: #7aa5ff;
+}
+
+html[theme=dark] hr {
+    border-top-color: #2a2a2a;
+}
+
+
+/* fixing list items */
+/* Nuke any default inter-item gap (highest specificity + important) */
+#write ul>li+li,
+#write ol>li+li {
+    margin-top: 0 !important;
+}
+
+/* Belt-and-suspenders: remove logical block margins/padding some engines add */
+#write li {
+    margin-block: 0 !important;
+    padding-block: 0 !important;
+}
+
+/* If Typora/GFM wraps list text in <p>, ensure that doesn't reintroduce spacing */
+#write li>p {
+    margin: 0 !important;
+}
+
+/* Keep list density tight; adjust this number to taste (only affects wrapping, not gaps) */
+#write ul>li,
+#write ol>li {
+    line-height: 1.15;
+    /* or 1.12–1.2 */
+}
+
+/* Optional: slightly heavier dot and clear indent you already wanted */
+#write ul>li::marker,
+#write ol>li::marker {
+    font-weight: 800;
+    font-size: 1.05em;
+}

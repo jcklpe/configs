@@ -141,3 +141,15 @@ _check_command() {
     return 1
 }
 
+##- Python interpreter for the lib/*.py scripts.
+##- Prefer the uv-managed project venv; fall back to system python3 if it isn't set up yet
+##- (the scripts are stdlib-only, so the fallback works until real deps are added).
+_lifeos_python() {
+    if [ -x "${SCRIPT_DIR}/.venv/bin/python" ]; then
+        printf '%s\n' "${SCRIPT_DIR}/.venv/bin/python"
+    else
+        printf 'python3\n'
+    fi
+}
+LIFEOS_PY="$(_lifeos_python)"
+
