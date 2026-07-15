@@ -12,10 +12,19 @@ cp lifeos-tools/secrets/.env.example lifeos-tools/secrets/.env
 
 Required local tools:
 
-- `bash`
-- `curl`
-- `jq`
-- `python3`
+- `bash`, `curl`, `jq`
+- `python3` (the `lib/*.py` scripts are standard-library only)
+- `uv` — manages the Python env (`.venv`) from `pyproject.toml` + `uv.lock`
+- `pandoc` + `weasyprint` — only needed for `resume render`
+
+These are installed by the configs installer (`install-script/functions/brew-installs.sh` on mac, `dnf-installs.sh` on Fedora). Then build the Python env:
+
+```sh
+cd ~/configs/lifeos-tools
+./lifeos.sh setup     # runs `uv sync` to build .venv from pyproject.toml + uv.lock
+```
+
+Add a Python dependency later with `uv add <package>` (updates `pyproject.toml` + `uv.lock`); the CLI calls the venv's python automatically, falling back to system `python3` if `.venv` is absent.
 
 Run commands from this folder:
 
@@ -34,7 +43,8 @@ lifeos doctor
 
 ## Layout
 - `lifeos.sh` — the CLI dispatcher (bootstrap, top-level commands, and the command `case`).
-- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `open-austin-org.sh`) over shared `common.sh`, plus the `google-*.py` render/auth helpers. `lib/*.sh` is sourced; the `.py` files are invoked by path.
+- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `open-austin-org.sh`, `resume.sh`) over shared `common.sh`, plus the `google-*.py` render/auth helpers and the vendored `resume-theme/`. `lib/*.sh` is sourced; the `.py` files are invoked by path.
+- `pyproject.toml` / `uv.lock` — Python env manifest + lockfile (managed by `uv`; the `.venv` is git-ignored and rebuilt by `./lifeos.sh setup`).
 - `secrets/` — real secrets and their `.example` templates.
 - `qa/` — `--qa` snapshot output.
 - `tests/` — offline renderer tests and fixtures.

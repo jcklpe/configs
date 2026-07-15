@@ -1,0 +1,13 @@
+[project]
+name = "lifeos-tools"
+version = "0.1.0"
+description = "LifeOS helper CLI: pulls source data into the private vault and supports bounded, explicit writes."
+requires-python = ">=3.11"
+# The lib/*.py scripts are currently standard-library only (OAuth + REST are hand-rolled
+# over urllib/http), so there are no third-party runtime dependencies yet.
+# Add one with:  uv add <package>   (updates this file + uv.lock; then `uv sync`)
+dependencies = []
+
+[tool.uv]
+# This is an application, not a distributable package — don't try to build/install it.
+package = false

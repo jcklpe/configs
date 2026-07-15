@@ -13,6 +13,7 @@ cache/
 tmp/
 *.log
 __pycache__/
+.venv/
 sources/
 trello-qa.md
 calendar-qa.md
