@@ -37,6 +37,10 @@ dnf_install_if_needed micro
 dnf_install_if_needed trash-cli
 dnf_install_if_needed jq
 dnf_install_if_needed python3
+# lifeos resume render pipeline (Markdown -> themed PDF): pandoc + weasyprint.
+# (weasyprint may be packaged as python3-weasyprint on some Fedora releases; verify.)
+dnf_install_if_needed pandoc
+dnf_install_if_needed weasyprint
 
 ##- WezTerm (official RPM from GitHub releases)
 if ! rpm -q wezterm &>/dev/null; then

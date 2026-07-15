@@ -55,6 +55,9 @@ fi
 # Configure git
 source ${CONFIGS}/install-script/functions/git-config.sh
 
+# Set up the lifeos-tools Python env (uv-managed venv; skips gracefully if uv absent, e.g. pre-nix)
+source ${CONFIGS}/install-script/functions/lifeos-tools-setup.sh
+
 # Set Tabby as the default GNOME terminal (used by Nautilus "Open Terminal Here")
 # Uses xdg-settings with dynamic .desktop file lookup for compatibility across GNOME versions
 if command -v xdg-settings &>/dev/null; then
