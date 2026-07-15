@@ -16,6 +16,11 @@ The UTmail Gmail account forwards into the primary Microsoft 365 mailbox, so Mic
 
 Microsoft Graph's `Mail.Read`, `Calendars.ReadWrite`, `Contacts.ReadWrite`, and `User.Read` delegated permissions are the intended permission boundary. The first implementation gate is whether the UT tenant permits the required app registration and user consent.
 
+## Live Authorization Finding
+On 2026-07-15, direct registration was tested in the UT Entra tenant. The account could open the App registrations list, but selecting `New registration` returned a 401 "You do not have access" response. Direct student-owned registration inside UT's tenant is therefore unavailable.
+
+This result does not establish whether UT permits user consent to an already registered multitenant client. The next technical probe is Microsoft's maintained Graph PowerShell client, which can request delegated scopes through a Microsoft-published client while leaving UT's consent policy fully in force. If UT requires administrator approval, ask Enterprise Technology whether it will approve this narrowly delegated integration. Consider a user-owned multitenant registration only if UT explicitly permits that pattern. Do not expand to application permissions, a client secret, or an unattended service to get around the tenant restriction.
+
 ## Safety Model
 All calendar and contact writes are dry-run by default and require `--execute`. Neither surface exposes delete commands.
 
