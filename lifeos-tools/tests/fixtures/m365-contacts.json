@@ -1,0 +1,22 @@
+{
+  "value": [
+    {
+      "id": "contact-1",
+      "displayName": "Ada Lovelace",
+      "givenName": "Ada",
+      "surname": "Lovelace",
+      "emailAddresses": [
+        {
+          "name": "Ada Lovelace",
+          "address": "ada@example.com"
+        }
+      ],
+      "businessPhones": ["+1 512 555 0100"],
+      "mobilePhone": "+1 512 555 0101",
+      "companyName": "Analytical Engines",
+      "jobTitle": "Researcher",
+      "personalNotes": "Met through a research seminar.",
+      "parentFolderId": "contacts"
+    }
+  ]
+}
