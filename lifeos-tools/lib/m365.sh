@@ -25,16 +25,10 @@ _m365_path() {
 _m365_accounts_ready() {
     local config
     config="$(_m365_accounts_path)"
-    _check_command curl >/dev/null || { _err "curl is required"; return 1; }
     _check_command jq >/dev/null || { _err "jq is required"; return 1; }
     if [ ! -f "$config" ]; then
         _err "Microsoft 365 account config does not exist: $config"
         _say "NEXT: cp ${SECRETS_DIR}/m365-accounts.example.json $config"
-        return 1
-    fi
-    if ! "$LIFEOS_PY" -c 'import msal' >/dev/null 2>&1; then
-        _err "MSAL is not installed in the LifeOS Python environment"
-        _say "NEXT: run './lifeos.sh setup'"
         return 1
     fi
     return 0
@@ -49,6 +43,10 @@ _m365_account_exists() {
 _m365_account_value() {
     local alias="$1" filter="$2"
     jq -er --arg alias "$alias" "(.accounts[]? | select(.alias == \$alias) | ${filter}) // empty" "$(_m365_accounts_path)"
+}
+
+_m365_auth_provider() {
+    _m365_account_value "$1" '.auth_provider // "msal"'
 }
 
 _m365_account_path() {
@@ -71,6 +69,7 @@ _m365_accounts_list() {
     jq -r '
       (.accounts // [])[] |
       "- " + (.alias // "missing-alias") +
+      " | auth: " + (.auth_provider // "msal") +
       " | tenant: " + (.tenant // "organizations") +
       " | mail: " + (((.mail.enabled // false) == true) | tostring) +
       " | calendar: " + (((.calendar.enabled // false) == true) | tostring) +
@@ -92,8 +91,108 @@ _m365_auth_helper() {
     "$LIFEOS_PY" "${LIB_DIR}/m365-auth.py" "$@"
 }
 
+_m365_powershell_bin() {
+    printf '%s\n' "${M365_PWSH_BIN:-pwsh}"
+}
+
+_m365_powershell_helper() {
+    printf '%s/m365-graph.ps1\n' "$LIB_DIR"
+}
+
+_m365_powershell_ready() {
+    local pwsh
+    pwsh="$(_m365_powershell_bin)"
+    command -v "$pwsh" >/dev/null 2>&1 || { _err "PowerShell is required for Microsoft 365 auth_provider graph-powershell"; return 1; }
+    "$pwsh" -NoLogo -NoProfile -Command 'if (-not (Get-Module -ListAvailable -Name Microsoft.Graph.Authentication)) { exit 1 }' >/dev/null 2>&1 || {
+        _err "Microsoft.Graph.Authentication is not installed for PowerShell"
+        _say "NEXT: Install-Module Microsoft.Graph.Authentication -Scope CurrentUser"
+        return 1
+    }
+}
+
+_m365_msal_ready() {
+    _check_command curl >/dev/null || { _err "curl is required for Microsoft 365 auth_provider msal"; return 1; }
+    "$LIFEOS_PY" -c 'import msal' >/dev/null 2>&1 || {
+        _err "MSAL is not installed in the LifeOS Python environment"
+        _say "NEXT: run './lifeos.sh setup'"
+        return 1
+    }
+}
+
+_m365_scopes_json() {
+    _m365_scopes "$1" | jq -Rsc 'split("\n") | map(select(length > 0))'
+}
+
+_m365_uri_encode() {
+    jq -rn --arg value "$1" '$value | @uri'
+}
+
+_m365_prepare_powershell_request() {
+    local method="$1" alias="$2" url="$3" body="$4" out="$5" pair key value separator header name headers_json scopes_json tenant
+    shift 5
+    headers_json='{}'
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --data-urlencode)
+                [ "$#" -ge 2 ] || { _err "--data-urlencode requires a value"; return 1; }
+                pair="$2"
+                key="${pair%%=*}"
+                if [ "$key" = "$pair" ]; then value=""; else value="${pair#*=}"; fi
+                case "$url" in *\?*) separator='&' ;; *) separator='?' ;; esac
+                url="${url}${separator}$(_m365_uri_encode "$key")=$(_m365_uri_encode "$value")"
+                shift 2
+                ;;
+            -H|--header)
+                [ "$#" -ge 2 ] || { _err "$1 requires a header value"; return 1; }
+                header="$2"
+                name="${header%%:*}"
+                value="${header#*:}"
+                while [ "${value# }" != "$value" ]; do value="${value# }"; done
+                headers_json="$(jq -cn --argjson current "$headers_json" --arg name "$name" --arg value "$value" '$current + {($name): $value}')" || return 1
+                shift 2
+                ;;
+            *)
+                _err "Unsupported Microsoft Graph request option for graph-powershell: $1"
+                return 1
+                ;;
+        esac
+    done
+    scopes_json="$(_m365_scopes_json "$alias")" || return 1
+    tenant="$(_m365_account_value "$alias" '.tenant // "organizations"')" || tenant="organizations"
+    jq -n \
+        --arg method "$method" \
+        --arg uri "$url" \
+        --arg body "$body" \
+        --arg tenant "$tenant" \
+        --argjson headers "$headers_json" \
+        --argjson scopes "$scopes_json" \
+        '{method: $method, uri: $uri, body: $body, tenant: $tenant, headers: $headers, scopes: $scopes}' > "$out"
+}
+
+_m365_powershell_invoke() {
+    local mode="$1" request_path="$2" pwsh
+    pwsh="$(_m365_powershell_bin)"
+    "$pwsh" -NoLogo -NoProfile -File "$(_m365_powershell_helper)" -Mode "$mode" -RequestPath "$request_path"
+}
+
+_m365_powershell_auth() {
+    local alias="$1" no_browser="$2" request scopes_json tenant status
+    _m365_powershell_ready || return 1
+    request="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-auth.XXXXXX")" || return 1
+    scopes_json="$(_m365_scopes_json "$alias")" || return 1
+    tenant="$(_m365_account_value "$alias" '.tenant // "organizations"')" || tenant="organizations"
+    jq -n \
+        --arg tenant "$tenant" \
+        --argjson scopes "$scopes_json" \
+        --argjson no_browser "$([ -n "$no_browser" ] && printf true || printf false)" \
+        '{tenant: $tenant, scopes: $scopes, no_browser: $no_browser}' > "$request" || return 1
+    if _m365_powershell_invoke auth "$request"; then status=0; else status=$?; fi
+    rm -f "$request"
+    return "$status"
+}
+
 _m365_auth() {
-    local alias="${1:-}" no_browser="" client_id tenant token_path scope scopes=()
+    local alias="${1:-}" no_browser="" provider client_id tenant token_path scope scopes=()
     [ -n "$alias" ] || { _err "m365 auth requires ALIAS"; return 1; }
     shift || true
     while [ "$#" -gt 0 ]; do
@@ -103,6 +202,15 @@ _m365_auth() {
         esac
     done
     _m365_account_exists "$alias" || { _err "Unknown Microsoft 365 account alias: $alias"; return 1; }
+    provider="$(_m365_auth_provider "$alias")" || return 1
+    case "$provider" in
+        graph-powershell)
+            _m365_powershell_auth "$alias" "$no_browser"
+            return
+            ;;
+        msal) _m365_msal_ready || return 1 ;;
+        *) _err "Unsupported Microsoft 365 auth_provider for alias '$alias': $provider"; return 1 ;;
+    esac
     client_id="$(_m365_account_value "$alias" '.client_id')" || { _err "Microsoft 365 alias '$alias' needs client_id"; return 1; }
     tenant="$(_m365_account_value "$alias" '.tenant // "organizations"')" || tenant="organizations"
     token_path="$(_m365_account_path "$alias" '.token_path')" || { _err "Microsoft 365 alias '$alias' needs token_path"; return 1; }
@@ -119,8 +227,11 @@ EOF
 }
 
 _m365_access_token() {
-    local alias="$1" client_id tenant token_path scope scopes=()
+    local alias="$1" provider client_id tenant token_path scope scopes=()
     _m365_account_exists "$alias" || { _err "Unknown Microsoft 365 account alias: $alias"; return 1; }
+    provider="$(_m365_auth_provider "$alias")" || return 1
+    [ "$provider" = "msal" ] || { _err "Raw access tokens are unavailable for Microsoft 365 auth_provider '$provider'"; return 1; }
+    _m365_msal_ready || return 1
     client_id="$(_m365_account_value "$alias" '.client_id')" || return 1
     tenant="$(_m365_account_value "$alias" '.tenant // "organizations"')" || tenant="organizations"
     token_path="$(_m365_account_path "$alias" '.token_path')" || return 1
@@ -142,7 +253,7 @@ _m365_graph_base() {
     _m365_account_value "$alias" '.graph_base // "https://graph.microsoft.com/v1.0"' 2>/dev/null || printf 'https://graph.microsoft.com/v1.0'
 }
 
-_m365_http() {
+_m365_http_msal() {
     local method="$1" alias="$2" url="$3" body="$4" token response http_code message
     shift 4
     token="$(_m365_access_token "$alias")" || return 1
@@ -165,6 +276,28 @@ _m365_http() {
             _err "$message"
             return 1
             ;;
+    esac
+}
+
+_m365_http_powershell() {
+    local method="$1" alias="$2" url="$3" body="$4" request status
+    shift 4
+    _m365_powershell_ready || return 1
+    request="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-request.XXXXXX")" || return 1
+    _m365_prepare_powershell_request "$method" "$alias" "$url" "$body" "$request" "$@" || { rm -f "$request"; return 1; }
+    if _m365_powershell_invoke request "$request"; then status=0; else status=$?; fi
+    rm -f "$request"
+    return "$status"
+}
+
+_m365_http() {
+    local method="$1" alias="$2" url="$3" body="$4" provider
+    shift 4
+    provider="$(_m365_auth_provider "$alias")" || return 1
+    case "$provider" in
+        graph-powershell) _m365_http_powershell "$method" "$alias" "$url" "$body" "$@" ;;
+        msal) _m365_http_msal "$method" "$alias" "$url" "$body" "$@" ;;
+        *) _err "Unsupported Microsoft 365 auth_provider for alias '$alias': $provider"; return 1 ;;
     esac
 }
 

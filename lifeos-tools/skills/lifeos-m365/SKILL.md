@@ -7,7 +7,7 @@ description: "Use when reading or writing a configured Microsoft 365 account thr
 ## Local Precedence
 If the current repo already has `lifeos-tools/skills/lifeos-m365/SKILL.md`, read and follow the repo-local skill first. Treat this as fallback seed material.
 
-Microsoft 365 uses its own delegated public-client authentication and account aliases. It is separate from Google Calendar and the Google Gmail/Drive alias layer.
+Microsoft 365 uses delegated authentication and account aliases. It is separate from Google Calendar and the Google Gmail/Drive alias layer.
 
 ## Setup And Identity
 ```sh
@@ -17,9 +17,11 @@ lifeos m365 auth ALIAS
 lifeos m365 profile ALIAS
 ```
 
-Real account configuration lives in ignored `m365-accounts.json`, copied from `m365-accounts.example.json`. Each alias has a separate ignored token cache. Never print or inspect the real account config or token cache. `profile` is the safe way to confirm which mailbox Graph authorized.
+Real account configuration lives in ignored `m365-accounts.json`, copied from `m365-accounts.example.json`. The default `graph-powershell` provider stores its authenticated context in PowerShell's protected CurrentUser cache and never exposes a raw token through the LifeOS CLI. Never print or inspect the real account config or authentication cache. `profile` is the safe way to confirm which mailbox Graph authorized.
 
-Authentication requests only the delegated scopes enabled for the alias: `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`. There is no client secret and no app-only tenant access. If the institution blocks app registration or user consent, stop and report the tenant error rather than broadening permissions.
+Authentication requests the delegated scopes enabled for the alias: `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`. Microsoft's shared Graph PowerShell client can have a broader cumulative effective scope set in a managed tenant; this is an accepted transport tradeoff for the configured UT account. Do not expose or add a generic Graph request command. Enforce the narrower LifeOS capability surface below regardless of the authenticated context. There is no client secret and no app-only tenant access.
+
+The optional `msal` provider may be used with a dedicated public-client application ID and its own ignored token cache. It does not change the command safety boundaries.
 
 ## Mail
 ```sh
