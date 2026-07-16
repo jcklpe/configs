@@ -9,11 +9,13 @@ Aslan configured the UTmail Gmail address to forward into the primary Microsoft 
 - The first external gate is UT tenant authorization and consent.
 - Offline implementation and verification are complete. Direct app registration was tested with the UT account on 2026-07-15 and the tenant returned a 401 "You do not have access" response when `New registration` was selected.
 - The spike is waiting on a sanctioned registration/consent route. The next technical probe is Microsoft's maintained Graph PowerShell client, which still leaves UT in control of delegated consent; UT support is the escalation path if consent is denied. A separately owned multitenant registration should be considered only if UT explicitly permits it.
+- The Codex Outlook Email and Outlook Calendar connectors were installed and both profile checks successfully reached the intended UT mailbox. They provide immediate agent access to mail and calendar, including calendar writes, but they do not expose Outlook contacts or a reusable credential to the standalone `lifeos` CLI.
 
 ## To Do
 _No offline implementation work remains._
 
 ## Ready for Human QA
+- [ ] Decide whether connector-backed Codex workflows should become the interim M365 mail/calendar path while the native `lifeos m365` backend remains dormant but available for a future sanctioned client.
 - [ ] With approval to install the dependency, test Microsoft's maintained Graph PowerShell client using only `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`; record whether UT permits user consent or requires administrator approval.
 - [ ] Ask UT Enterprise Technology whether it will register/approve a delegated public-client integration for one user's mailbox, calendar, and default Outlook contacts, or whether it permits a user-owned multitenant app to request those delegated scopes.
 - [ ] Once a sanctioned client registration exists, run `lifeos m365 auth ut`; confirm the consent screen requests only profile, mail read, calendar read/write, and contacts read/write access.
@@ -22,6 +24,7 @@ _No offline implementation work remains._
 - [ ] Approve and execute one disposable contact create/update test, then remove the disposable records manually because the CLI intentionally has no delete commands.
 
 ## Done
+- [x] Verify the installed Outlook Email and Outlook Calendar connectors. Read-only profile calls from both connectors succeeded against the same intended UT mailbox; no mailbox contents or calendar events were read during this check.
 - [x] Test direct application registration with the UT account. The App registrations page was readable, but selecting `New registration` returned a 401 "You do not have access" response, confirming that this account cannot create an app in UT's tenant.
 - [x] Add the Microsoft account config example, ignore rules, doctor checks, and delegated auth/token-cache helper. Added ignored per-alias config/token paths, a fake tracked example, MSAL browser/device authentication with atomic private token caches, and redacted doctor checks.
 - [x] Add Graph request helpers, verified-profile output, pagination, and actionable error rendering without exposing tokens. Added token-backed JSON requests, bounded next-link pagination, `m365 profile`, and Graph error messages that never print bearer tokens.

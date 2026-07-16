@@ -21,6 +21,8 @@ On 2026-07-15, direct registration was tested in the UT Entra tenant. The accoun
 
 This result does not establish whether UT permits user consent to an already registered multitenant client. The next technical probe is Microsoft's maintained Graph PowerShell client, which can request delegated scopes through a Microsoft-published client while leaving UT's consent policy fully in force. If UT requires administrator approval, ask Enterprise Technology whether it will approve this narrowly delegated integration. Consider a user-owned multitenant registration only if UT explicitly permits that pattern. Do not expand to application permissions, a client secret, or an unattended service to get around the tenant restriction.
 
+The Codex Outlook Email and Outlook Calendar connectors were subsequently installed, and read-only profile checks through both connectors reached the intended UT mailbox. These connectors solve immediate agent access to mail and calendar inside Codex and include calendar write operations. They do not expose Outlook contacts, and their authorization cannot be exported for use by the standalone `lifeos` CLI. An open architecture decision remains: use connector-backed Codex workflows as the interim mail/calendar integration, or continue pursuing a separately authenticated native CLI primarily for portability and contacts.
+
 ## Safety Model
 All calendar and contact writes are dry-run by default and require `--execute`. Neither surface exposes delete commands.
 
