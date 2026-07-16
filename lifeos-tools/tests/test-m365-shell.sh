@@ -22,6 +22,7 @@ export M365_ACCOUNTS_PATH
 PAGES_OUT="${TMPDIR:-/tmp}/lifeos-m365-pages-test.json"
 CALENDAR_OUT="${TMPDIR:-/tmp}/lifeos-m365-calendar-find-test.txt"
 CONTACTS_OUT="${TMPDIR:-/tmp}/lifeos-m365-contacts-find-test.txt"
+REQUEST_OUT="${TMPDIR:-/tmp}/lifeos-m365-powershell-request-test.json"
 
 _m365_get() {
     case "$2" in
@@ -33,6 +34,16 @@ _m365_get() {
 
 _m365_get_paginated ut 2 "$PAGES_OUT" page-one
 jq -e '(.value | length) == 2 and .value[0].id == "one" and .value[1].id == "two"' "$PAGES_OUT" >/dev/null
+
+_m365_prepare_powershell_request GET ut 'https://graph.microsoft.com/v1.0/me' '' "$REQUEST_OUT" \
+    --data-urlencode '$select=id,displayName' \
+    -H 'Prefer: outlook.body-content-type="text"'
+jq -e '
+  .method == "GET" and
+  (.uri | contains("%24select=id%2CdisplayName")) and
+  .headers.Prefer == "outlook.body-content-type=\"text\"" and
+  (.scopes | sort) == (["Calendars.ReadWrite", "Contacts.ReadWrite", "Mail.Read", "User.Read"] | sort)
+' "$REQUEST_OUT" >/dev/null
 
 _m365_calendar_fetch() {
     cp "${TEST_DIR}/fixtures/m365-calendar.json" "$5"

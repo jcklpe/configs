@@ -13,7 +13,8 @@ cp lifeos-tools/secrets/.env.example lifeos-tools/secrets/.env
 Required local tools:
 
 - `bash`, `curl`, `jq`
-- `python3` (Microsoft delegated auth also uses MSAL from the managed environment)
+- `python3` (the optional custom-client Microsoft auth path uses MSAL from the managed environment)
+- `pwsh` + `Microsoft.Graph.Authentication` (the default Microsoft 365 transport)
 - `uv` — manages the Python env (`.venv`) from `pyproject.toml` + `uv.lock`
 - `pandoc` + `weasyprint` — only needed for `resume render`
 
@@ -118,7 +119,7 @@ Agent-facing usage notes live in the `lifeos-cli` skill (`lifeos-tools/skills/li
 ## Microsoft 365
 Microsoft 365 is a separate delegated Graph integration for bounded Inbox reads, calendar reads and gated event create/update writes, and Outlook contact reads and gated contact create/update writes. It does not send or mutate mail, expose delete commands, read the UT organization directory, or request application-wide access.
 
-Copy the ignored account configuration and fill in the registered application's public client ID:
+Copy the ignored account configuration and authenticate through Microsoft's Graph PowerShell client:
 
 ```sh
 cp lifeos-tools/secrets/m365-accounts.example.json lifeos-tools/secrets/m365-accounts.json
@@ -128,7 +129,9 @@ lifeos m365 auth ut
 lifeos m365 profile ut
 ```
 
-Register the local application in Microsoft Entra as a public mobile/desktop client with a `http://localhost` redirect and delegated `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite` permissions. Do not create a client secret or add application permissions. Enable public-client flows if `--no-browser` device-code authorization will be used. If UT prevents app registration or consent, stop at that tenant gate instead of adding broader permissions.
+The default `graph-powershell` provider asks for delegated `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`, stores its authenticated context in PowerShell's protected CurrentUser cache, and never exposes a raw token through the LifeOS CLI. In some managed tenants, Microsoft's shared client may already have a cumulative effective scope set broader than the scopes LifeOS requests. LifeOS does not expose a generic Graph request command: its mail surface remains read-only, calendar and contact writes remain dry-run-gated, and no delete commands exist.
+
+The optional `msal` provider remains available when a dedicated public-client application ID is available. Set `"auth_provider": "msal"`, `client_id`, and `token_path` in the ignored account config. Do not create a client secret or add application permissions.
 
 Mail snapshots are read-only and bounded by the alias's days, count, and body limits. Calendar sync uses Graph calendar views over the normal LifeOS date window. Contact sync reads only the user's default Outlook Contacts folder and does not recurse through additional contact folders. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` snapshots go to ignored `lifeos-tools/qa/m365/`.
 

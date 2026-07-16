@@ -6,24 +6,25 @@ Aslan configured the UTmail Gmail address to forward into the primary Microsoft 
 - Spike scope is mail read-only, calendar read/write, and Outlook contacts read/write.
 - Writes will be dry-run by default, explicit with `--execute`, and deletion-free.
 - The configs working tree was clean when the spike began on 2026-07-15.
-- The first external gate is UT tenant authorization and consent.
+- The original external gate was UT tenant authorization and consent.
 - Offline implementation and verification are complete. Direct app registration was tested with the UT account on 2026-07-15 and the tenant returned a 401 "You do not have access" response when `New registration` was selected.
-- The spike is waiting on a sanctioned registration/consent route. The next technical probe is Microsoft's maintained Graph PowerShell client, which still leaves UT in control of delegated consent; UT support is the escalation path if consent is denied. A separately owned multitenant registration should be considered only if UT explicitly permits it.
+- Microsoft's maintained Graph PowerShell client authenticated successfully. Its context contains a cumulative permission set broader than the four requested scopes; Aslan explicitly accepted that tradeoff on 2026-07-15, with the LifeOS command surface serving as the compensating boundary.
+- A safe profile request through Graph PowerShell confirmed the intended UT mailbox. Bounded read-only mail, calendar, and contact QA all succeeded through the CLI transport.
 - The Codex Outlook Email and Outlook Calendar connectors were installed and both profile checks successfully reached the intended UT mailbox. They provide immediate agent access to mail and calendar, including calendar writes, but they do not expose Outlook contacts or a reusable credential to the standalone `lifeos` CLI.
 
 ## To Do
-_No offline implementation work remains._
+_No implementation or read-only QA work remains._
 
 ## Ready for Human QA
-- [ ] Decide whether connector-backed Codex workflows should become the interim M365 mail/calendar path while the native `lifeos m365` backend remains dormant but available for a future sanctioned client.
-- [ ] With approval to install the dependency, test Microsoft's maintained Graph PowerShell client using only `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`; record whether UT permits user consent or requires administrator approval.
-- [ ] Ask UT Enterprise Technology whether it will register/approve a delegated public-client integration for one user's mailbox, calendar, and default Outlook contacts, or whether it permits a user-owned multitenant app to request those delegated scopes.
-- [ ] Once a sanctioned client registration exists, run `lifeos m365 auth ut`; confirm the consent screen requests only profile, mail read, calendar read/write, and contacts read/write access.
-- [ ] Verify `profile`, mail/calendar/contact QA snapshots, and confirm the expected UT mailbox identity before any live write.
 - [ ] Approve and execute one disposable calendar create/update test, including the attendee-notification gate if an attendee is tested.
 - [ ] Approve and execute one disposable contact create/update test, then remove the disposable records manually because the CLI intentionally has no delete commands.
 
 ## Done
+- [x] Adapt `lifeos m365` to the Graph PowerShell transport while retaining the optional custom-client MSAL provider. Added provider-aware auth/request dispatch, PowerShell-owned authentication context, protected request handoff, and doctor/config documentation.
+- [x] Run full regression and live read-only QA. Shell and PowerShell syntax passed, every offline fixture passed, provider-aware `lifeos doctor` passed, and bounded mail/calendar/contact snapshots were generated in the ignored QA area.
+- [x] Exercise calendar and contact create commands as dry runs. Both rendered the intended plans and made no changes.
+- [x] Test Microsoft Graph PowerShell as a first-party CLI transport. Authentication succeeded, `Get-MgContext` reported a cumulative effective scope set broader than the four requested scopes, and Aslan accepted that tradeoff with compensating CLI controls.
+- [x] Verify the intended mailbox through a safe Graph PowerShell `/me` profile request without reading mail, calendar events, or contacts.
 - [x] Verify the installed Outlook Email and Outlook Calendar connectors. Read-only profile calls from both connectors succeeded against the same intended UT mailbox; no mailbox contents or calendar events were read during this check.
 - [x] Test direct application registration with the UT account. The App registrations page was readable, but selecting `New registration` returned a 401 "You do not have access" response, confirming that this account cannot create an app in UT's tenant.
 - [x] Add the Microsoft account config example, ignore rules, doctor checks, and delegated auth/token-cache helper. Added ignored per-alias config/token paths, a fake tracked example, MSAL browser/device authentication with atomic private token caches, and redacted doctor checks.

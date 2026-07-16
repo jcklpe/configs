@@ -104,7 +104,7 @@ _doctor_file() {
 }
 
 _doctor() {
-    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_token
+    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_provider m365_token pwsh
 
     if [ -f "$ENV_FILE" ]; then
         _say "OK: ${ENV_FILE}"
@@ -216,22 +216,41 @@ _doctor() {
     if [ -f "$m365_accounts" ]; then
         if jq -e '.accounts | type == "array"' "$m365_accounts" >/dev/null 2>&1; then
             _say "OK: Microsoft 365 account alias config exists"
-            if "$LIFEOS_PY" -c 'import msal' >/dev/null 2>&1; then
-                _say "OK: MSAL is installed"
-            else
-                _say "MISSING: MSAL Python dependency"
-                _say "NEXT: run './lifeos.sh setup'"
-                issues=$((issues + 1))
-            fi
             m365_aliases="$(jq -r '(.accounts // [])[] | select((.mail.enabled // false) == true or (.calendar.enabled // false) == true or (.contacts.enabled // false) == true) | .alias' "$m365_accounts")"
             for m365_alias in $m365_aliases; do
-                m365_token="$(_m365_account_path "$m365_alias" '.token_path')" || m365_token=""
-                if [ -n "$m365_token" ] && [ -f "$m365_token" ]; then
-                    _say "OK: Microsoft token cache exists for alias '$m365_alias'"
-                else
-                    _say "MISSING: Microsoft token cache for alias '$m365_alias'"
-                    _say "NEXT: run './lifeos.sh m365 auth $m365_alias'"
-                fi
+                m365_provider="$(_m365_auth_provider "$m365_alias")" || m365_provider=""
+                case "$m365_provider" in
+                    graph-powershell)
+                        pwsh="$(_m365_powershell_bin)"
+                        if command -v "$pwsh" >/dev/null 2>&1 && "$pwsh" -NoLogo -NoProfile -Command 'if (-not (Get-Module -ListAvailable -Name Microsoft.Graph.Authentication)) { exit 1 }' >/dev/null 2>&1; then
+                            _say "OK: Microsoft Graph PowerShell provider is ready for alias '$m365_alias'"
+                        else
+                            _say "MISSING: PowerShell or Microsoft.Graph.Authentication for alias '$m365_alias'"
+                            _say "NEXT: install PowerShell, then run 'Install-Module Microsoft.Graph.Authentication -Scope CurrentUser'"
+                            issues=$((issues + 1))
+                        fi
+                        ;;
+                    msal)
+                        if "$LIFEOS_PY" -c 'import msal' >/dev/null 2>&1; then
+                            _say "OK: MSAL is installed for alias '$m365_alias'"
+                        else
+                            _say "MISSING: MSAL Python dependency for alias '$m365_alias'"
+                            _say "NEXT: run './lifeos.sh setup'"
+                            issues=$((issues + 1))
+                        fi
+                        m365_token="$(_m365_account_path "$m365_alias" '.token_path')" || m365_token=""
+                        if [ -n "$m365_token" ] && [ -f "$m365_token" ]; then
+                            _say "OK: Microsoft token cache exists for alias '$m365_alias'"
+                        else
+                            _say "MISSING: Microsoft token cache for alias '$m365_alias'"
+                            _say "NEXT: run './lifeos.sh m365 auth $m365_alias'"
+                        fi
+                        ;;
+                    *)
+                        _say "MISSING: supported Microsoft auth_provider for alias '$m365_alias'"
+                        issues=$((issues + 1))
+                        ;;
+                esac
             done
         else
             _say "MISSING: Microsoft 365 account alias config is not valid JSON shape"
