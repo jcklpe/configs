@@ -1,6 +1,6 @@
 ---
 name: log-future-idea
-description: "Capture conceptual someday project ideas in docs/scratch/future-ideas.md without promoting them to active spikes. Use when the user has a far-future feature, direction, capability, design concept, or exploratory idea that is more coherent than misc intake but not ready for scoped work."
+description: "Capture meta-level someday ideas about a project or vault's infrastructure, tooling, documentation system, automation, or workflow in docs/scratch/future-ideas.md without promoting them to active work. Do not use for writing, art, research, product, career, or other domain-content ideas; route those to the relevant subject-area scratch or idea system."
 ---
 
 # Log Future Idea
@@ -8,7 +8,12 @@ description: "Capture conceptual someday project ideas in docs/scratch/future-id
 If the current repo already has `skills/log-future-idea/SKILL.md`, read and follow the repo-local skill first. Treat this global skill as fallback seed material.
 
 ## Purpose
-Use this skill for conceptual future material: ideas that may matter someday but are not ready to become active work.
+Use this skill only for meta-level project or vault buildout ideas that may matter someday but are not ready to become active work.
+
+## Hard Boundary
+A user calling something a "future idea" is not sufficient to trigger this skill. The subject of the idea must be the project's own infrastructure, tooling, documentation system, automation, workflow, or operating model.
+
+Do not route writing concepts, art ideas, research angles, product concepts, career ideas, or other domain content here, even when they are far-horizon or explicitly called future ideas. Route them to the relevant subject-area scratch, ideas, or focus-thread system. If the correct destination is unclear, inspect that subject area instead of defaulting to `docs/scratch/future-ideas.md`.
 
 Default file:
 
@@ -23,7 +28,7 @@ Use the first matching destination:
 
 - `docs/decisions/` for settled durable rules.
 - `docs/pinned-issues.md` for unresolved issues intentionally preserved for later.
-- `docs/scratch/future-ideas.md` for conceptual someday material.
+- `docs/scratch/future-ideas.md` for conceptual someday project or vault buildout material.
 - `docs/scratch/misc.md` for raw observed friction, QA nits, bugs, and issue intake.
 - `docs/active-spikes/` for active scoped work.
 
@@ -32,10 +37,10 @@ Future ideas are more conceptual and farther-horizon than misc notes. They are n
 ## What Belongs Here
 Good future idea entries are coherent enough to reread later as an idea:
 
-- future capabilities or product directions
-- design concepts that need a real phase later
-- exploratory architecture or content directions
-- feature families that are too early to scope
+- future infrastructure or tooling capabilities
+- documentation-system or workflow concepts that need a real phase later
+- exploratory architecture, automation, or operating-model directions
+- project-system feature families that are too early to scope
 - retired ideas worth remembering as possible later context
 
 Do not put raw QA observations, nit lists, bug reports, tiny fixes, rambling reaction logs, or unresolved decision questions here. Put those in `misc.md` or `pinned-issues.md`.
@@ -58,12 +63,13 @@ Current blockers or reasons not now: ...
 Short bullet entries are fine when the idea is small. Longer sections are fine when the idea already has a coherent shape.
 
 ## Workflow
-1. Read the current user request and `docs/scratch/future-ideas.md` if it exists.
-2. Check nearby `docs/scratch/misc.md`, `docs/pinned-issues.md`, and active spikes if the idea might already be captured.
-3. Confirm it is conceptual someday material, not raw issue intake, a durable rule, a pin, or active scoped work.
-4. Add or update one entry in `docs/scratch/future-ideas.md`.
-5. Preserve the user's framing and why the idea is future-facing.
-6. Do not create a spike unless the user is actually starting the work.
+1. Identify the subject of the idea. Stop using this skill if it is domain content rather than meta-level project or vault buildout.
+2. Read the current user request and `docs/scratch/future-ideas.md` if it exists.
+3. Check nearby `docs/scratch/misc.md`, `docs/pinned-issues.md`, and active spikes if the idea might already be captured.
+4. Confirm it is conceptual someday buildout material, not raw issue intake, a durable rule, a pin, or active scoped work.
+5. Add or update one entry in `docs/scratch/future-ideas.md`.
+6. Preserve the user's framing and why the idea is future-facing.
+7. Do not create a spike unless the user is actually starting the work.
 
 ## Triage
 During later triage:
