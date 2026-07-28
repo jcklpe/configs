@@ -194,6 +194,43 @@ _trello_move_card() {
         jq -r '"Moved card: " + (.name // "Untitled card") + " | " + (.url // .id)'
 }
 
+##- Snooze: defer a card until a wake date. Moves it to the Snoozed list and sets the
+##- native `start` date. A Trello Butler scheduled automation reactivates it: it collects
+##- cards in Snoozed whose start date is today/past and moves them back to On Deck. Never
+##- archives (snoozed cards stay visible in the sync snapshot, so no separate register is
+##- needed). See skills/lifeos-trello/SKILL.md and the vault trello-conventions skill.
+_trello_snooze() {
+    local board_id="" card="" until_date="" list_ref="Snoozed" list_id start_iso
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --board) board_id="$2"; shift 2 ;;
+            --card) card="$(_card_ref "$2")"; shift 2 ;;
+            --until) until_date="$2"; shift 2 ;;
+            --list) list_ref="$2"; shift 2 ;;
+            *) _err "Unknown snooze option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$card" ] || { _err "snooze requires --card"; return 1; }
+    [ -n "$until_date" ] || { _err "snooze requires --until YYYY-MM-DD"; return 1; }
+    case "$until_date" in
+        [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) : ;;
+        *) _err "snooze --until must be an ISO date YYYY-MM-DD (got '$until_date')"; return 1 ;;
+    esac
+
+    list_id="$(_trello_resolve_list_id "$board_id" "$list_ref")" || return 1
+    # Anchor the start at 12:00 UTC so the wake calendar date is stable across US time zones
+    # (noon UTC is still the same date in the morning Central/Eastern, where Butler evaluates it).
+    start_iso="${until_date}T12:00:00.000Z"
+    _trello_write PUT "/cards/${card}" \
+        --data-urlencode "idList=${list_id}" \
+        --data-urlencode "start=${start_iso}" |
+        jq -r --arg d "$until_date" \
+            '"Snoozed card: " + (.name // "Untitled card") + " until " + $d + " | " + (.url // .id)'
+}
+
 _trello_rename_card() {
     local card="" name=""
 
