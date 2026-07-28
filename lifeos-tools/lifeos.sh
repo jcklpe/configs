@@ -35,6 +35,7 @@ Usage:
   ./lifeos.sh trello sync [--qa | --output FILE]
   ./lifeos.sh trello add-card --list LIST --name NAME [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
   ./lifeos.sh trello move-card --card CARD_ID_OR_URL --list LIST [--board BOARD_ID]
+  ./lifeos.sh trello snooze --card CARD_ID_OR_URL --until YYYY-MM-DD [--list LIST] [--board BOARD_ID]
   ./lifeos.sh trello rename-card --card CARD_ID_OR_URL --name NAME
   ./lifeos.sh trello set-desc --card CARD_ID_OR_URL --file FILE
   ./lifeos.sh trello comment --card CARD_ID_OR_URL (--text TEXT | --file FILE)
@@ -349,6 +350,7 @@ case "${1:-help}" in
             sync) shift 2; _trello_sync "$@" ;;
             add-card) shift 2; _trello_add_card "$@" ;;
             move-card) shift 2; _trello_move_card "$@" ;;
+            snooze) shift 2; _trello_snooze "$@" ;;
             rename-card) shift 2; _trello_rename_card "$@" ;;
             set-desc) shift 2; _trello_set_desc "$@" ;;
             comment) shift 2; _trello_comment "$@" ;;

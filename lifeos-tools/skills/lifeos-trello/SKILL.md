@@ -31,6 +31,19 @@ lifeos trello comment --card CARD_ID_OR_URL --text "Comment text"
 
 Run `lifeos trello sync` after any write to refresh the snapshot.
 
+## Snooze (defer a card to a wake date)
+Snooze = **Parked with a wake date**. Rather than leaving a dated card cluttering the active board, snooze it: it moves to the `Snoozed` list and gets a native `start` date, and a Trello Butler scheduled automation moves it back to `On Deck` on that date. Snoozed cards are **never archived**, so they stay visible in `sources/trello.md` (no separate register needed).
+
+```sh
+lifeos trello snooze --card CARD_ID_OR_URL --until YYYY-MM-DD [--list LIST] [--board BOARD_ID]
+```
+
+- Defaults to the `Snoozed` list; sets the card's `start` date to noon UTC on the given day (stable across US time zones). Leaves the due date untouched.
+- **Reactivation is not this command's job.** A Butler scheduled rule on the board handles it (daily: collect cards in `Snoozed` whose start date is today/past → move to `On Deck`), so no cron or local scheduler is needed. Setup is one-time: create the `Snoozed` list and the Butler rule.
+- List semantics: `Waiting` = blocked on a reactive signal; `Parked` = deferred indefinitely; `Snoozed` = Parked with a wake date. Do **not** use the due-date field for snoozing (start date avoids the false-deadline semantics).
+
+Run `lifeos trello sync` after to refresh the snapshot.
+
 ## Task Chains (supersede)
 When a card hits a gate — a wait on an external party, a future date, a handoff, or a substantial prerequisite — do not keep mutating it. Create a successor and link them. `supersede` writes the bidirectional link atomically (a `🔗 Continues in:` comment on the predecessor and a `🔗 Continues from:` comment on the successor), so it can't be left half-applied:
 

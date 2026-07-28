@@ -66,6 +66,7 @@ lifeos trello sync --qa
 lifeos trello sync --output /tmp/trello.md
 lifeos trello add-card --list "On Deck" --name "Call dentist"
 lifeos trello move-card --card https://trello.com/c/abc123 --list Done
+lifeos trello snooze --card https://trello.com/c/abc123 --until 2026-09-09
 lifeos trello rename-card --card https://trello.com/c/abc123 --name "New title"
 lifeos trello set-desc --card https://trello.com/c/abc123 --file /tmp/card-desc.md
 lifeos trello comment --card https://trello.com/c/abc123 --text "Called today."
