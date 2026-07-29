@@ -32,9 +32,12 @@ Gmail and Drive share an account-alias system. (Google Calendar has its own auth
 ```sh
 lifeos google accounts        # list configured account aliases
 lifeos google auth ALIAS      # authorize an alias
+lifeos google auth ALIAS --docs-write  # additionally authorize bounded tools to edit existing native Google Docs
 ```
 
 Alias config lives in the gitignored `google-accounts.json` (copy `google-accounts.example.json`). Each alias carries its own Gmail/Drive settings and token file.
+
+`--docs-write` grants the token the Google Docs write scope through incremental authorization. It grants capability only; it does not authorize an edit. The specific tool and workflow performing a write must still be bounded, dry-run-first, and explicitly approved.
 
 ## Microsoft 365 Account Setup
 Microsoft 365 uses a separate ignored `m365-accounts.json` and per-alias token cache. Copy `m365-accounts.example.json`, configure the registered public-client application and enabled services, then run:

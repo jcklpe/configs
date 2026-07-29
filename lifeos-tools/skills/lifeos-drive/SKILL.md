@@ -9,6 +9,8 @@ If the current repo already has `lifeos-tools/skills/lifeos-drive/SKILL.md`, rea
 
 Drive uses the shared Google account-alias system — set up aliases with `lifeos google accounts` / `lifeos google auth ALIAS` (see `lifeos-cli`).
 
+When a separate bounded tool needs to edit an existing native Google Doc through the same account token, authorize the additional scope with `lifeos google auth ALIAS --docs-write`. This changes OAuth capability only; `lifeos drive` itself still does not expose an existing-Doc edit command.
+
 ## Reads
 ```sh
 lifeos drive accounts
