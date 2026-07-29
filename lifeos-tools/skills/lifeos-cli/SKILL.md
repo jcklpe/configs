@@ -18,7 +18,7 @@ Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the 
 - **`lifeos-gmail`** — bounded read-only Gmail snapshots.
 - **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import.
 - **`lifeos-m365`** — delegated Microsoft 365 mail reads plus gated calendar and Outlook contact reads/writes.
-- **`lifeos-open-austin`** — Open Austin GitHub snapshot and issue creation.
+- **`lifeos-open-austin`** — Open Austin GitHub snapshot refresh and routing to the public org repo for writes.
 
 ## Health Check
 ```sh
@@ -53,5 +53,5 @@ Most `sync` commands write a snapshot into `$LIFEOS_VAULT_PATH/sources/`. Passin
 
 ## Cross-Cutting Safety
 - Do not print or inspect `~/configs/lifeos-tools/secrets/.env`, Google or Microsoft token files, `google-accounts.json`, or `m365-accounts.json`.
-- Actions that touch real people or public state are gated per service — calendar `--notify` sends live invites, Open Austin issue creation is public. See the service skills.
+- Actions that touch real people or public state are gated per service — calendar `--notify` sends live invites, and Open Austin writes are handled through the public org repo. See the service skills.
 - Per-service safety notes live in each service skill.

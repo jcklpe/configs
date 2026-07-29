@@ -1,6 +1,6 @@
 ---
 name: lifeos-open-austin
-description: "Use when Open Austin work touches the public open-austin/org GitHub repo through the lifeos CLI: syncing the GitHub snapshot into the vault, or creating issues (dry-run by default, --execute to write). Covers the public/private boundary and the issue-creation approval gates."
+description: "Use when refreshing Open Austin GitHub context into LifeOS through the lifeos CLI. Covers locating the public org repo, running its sync, copying generated snapshots into the vault, and routing public write work back to the org repo instead of duplicating it in private tooling."
 ---
 
 # LifeOS Open Austin
@@ -18,17 +18,17 @@ lifeos open-austin-org sync --qa
 
 Do not copy or inspect the org repo `.env`, `.git`, `.github`, tools, workflows, or token/config files.
 
-## Creating Issues
-Use this only when Open Austin work needs to be public / org-visible in GitHub. Private strategy, personal bandwidth planning, or sensitive context belongs in LifeOS or Trello instead.
+## Public Writes Belong In The Org Repo
+The LifeOS CLI does not implement Open Austin issue writes. Use the public repo's guarded tool and repo-local skill:
 
 ```sh
-lifeos open-austin-org create-issue --title "Task title" --body "Context" --label infrastructure --assign-me
-lifeos open-austin-org create-issue --title "Task title" --body-file /tmp/issue.md --label board --assign-me --execute
+cd /Users/aslan/work/org
+tools/issues/create.sh --title "Task title" --body-file /tmp/issue.md --label infrastructure --assign-me
 ```
 
-The command is **dry-run by default** and prints the plan; it creates an issue only with `--execute`. After creating one it refreshes `sources/open-austin-org/` unless `--no-sync` is passed. Allowed fields: title, body/body-file, labels, assignees, repo override. Before `--execute`, the user should have approved the exact title/body/labels/assignees.
+Read `/Users/aslan/work/org/AGENTS.md` and the relevant repo-local skill before a public write. The issue tool is dry-run by default and creates only with `--execute`. Shared weekly-meeting reconciliation follows `/Users/aslan/work/org/skills/process-weekly-meeting/SKILL.md`.
 
 ## Safety
 - Do not put private strategy, personal bandwidth planning, or sensitive context into public GitHub issues.
-- Do not add comments, close/reopen issues, move project items, or bulk-edit GitHub state unless the user explicitly approves that specific action — comments and issue writes notify real people or change public org state.
+- Do not add comments, create or close issues, move project items, or bulk-edit GitHub state unless the user explicitly approves that specific action — comments and issue writes notify real people or change public org state.
 - Do not manually edit `sources/open-austin-org/` to change GitHub state.

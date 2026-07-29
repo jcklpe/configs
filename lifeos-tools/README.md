@@ -110,8 +110,6 @@ lifeos m365 contacts update ut --contact CONTACT_ID --company "Organization"
 lifeos open-austin-org path
 lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
-lifeos open-austin-org create-issue --title "Task title" --body "Context" --label infrastructure --assign-me
-lifeos open-austin-org create-issue --title "Task title" --body-file /tmp/issue.md --label board --assign-me --execute
 lifeos sync
 ```
 
@@ -155,28 +153,7 @@ This command does not copy the full repo, `.env`, `.git`, `.github`, tools, work
 `lifeos open-austin-org sync --qa` writes to ignored `lifeos-tools/open-austin-org-qa/` instead of the vault.
 
 
-### GitHub Issue Creation
-`lifeos open-austin-org create-issue` creates public Open Austin GitHub issues through `gh`, but is dry-run by default. Use it when work needs to be visible in the org repo rather than only tracked privately in Trello/LifeOS.
-
-Examples:
-
-```sh
-lifeos open-austin-org create-issue --title "Task title" --body "Context" --label infrastructure --assign-me
-lifeos open-austin-org create-issue --title "Task title" --body-file /tmp/issue.md --label board --assignee jcklpe --execute
-```
-
-Options:
-
-- `--title TEXT` is required.
-- `--body TEXT` or `--body-file FILE` supplies the issue body.
-- `--label LABEL` can be repeated.
-- `--assign-me` resolves the current GitHub user during execution.
-- `--assignee LOGIN` can be repeated.
-- `--repo OWNER/REPO` overrides the default `open-austin/org`.
-- `--execute` is required to create the issue. Without it, the command prints a dry-run plan.
-- `--no-sync` skips the post-create LifeOS source refresh.
-
-After a successful create, the command refreshes `sources/open-austin-org/` unless `--no-sync` is passed.
+Public Open Austin writes are implemented in `$OPEN_AUSTIN_ORG_REPO_PATH` rather than this private adapter. Use `tools/issues/create.sh` in that repo for dry-run-first issue creation and follow its `AGENTS.md` and repo-local skills. After approved public writes, run `lifeos open-austin-org sync` to refresh LifeOS context.
 
 Google Calendar auth/list/sync plus event create/update is implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them. The calendar token carries the `calendar.events` (read+write) and Contacts read scopes; re-run `lifeos calendar auth` after pulling this change to re-consent, and enable the People API for the same Google project so attendee-name lookups work.
 
