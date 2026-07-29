@@ -183,7 +183,7 @@ _google_oauth_helper() {
 }
 
 _google_auth() {
-    local alias="${1:-}" credentials_path token_path no_browser=""
+    local alias="${1:-}" credentials_path token_path no_browser="" docs_write=""
     local scopes=() scope
 
     [ -n "$alias" ] || { _err "google auth requires ALIAS"; return 1; }
@@ -191,6 +191,7 @@ _google_auth() {
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --no-browser) no_browser="--no-browser"; shift ;;
+            --docs-write) docs_write="1"; shift ;;
             *) _err "Unknown google auth option: $1"; return 1 ;;
         esac
     done
@@ -209,6 +210,10 @@ _google_auth() {
     done <<EOF
 $(_google_account_scopes "$alias")
 EOF
+
+    if [ "$docs_write" = "1" ]; then
+        scopes+=( "https://www.googleapis.com/auth/documents" )
+    fi
 
     if [ "${#scopes[@]}" -eq 0 ]; then
         _err "Google account '$alias' has no enabled Gmail or Drive scopes"
@@ -1392,4 +1397,3 @@ EOF
     updated="$(_calendar_write PATCH "/calendars/${encoded}/events/${target_encoded}?sendUpdates=${send_updates}" "$body")" || return 1
     _say "Updated event: $(printf '%s' "$updated" | jq -r '.htmlLink // .id // "(unknown)"')"
 }
-

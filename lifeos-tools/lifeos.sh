@@ -52,7 +52,7 @@ Usage:
   ./lifeos.sh people list-aliases
   ./lifeos.sh people add-alias NAME EMAIL
   ./lifeos.sh google accounts
-  ./lifeos.sh google auth ALIAS [--no-browser]
+  ./lifeos.sh google auth ALIAS [--docs-write] [--no-browser]
   ./lifeos.sh gmail sync ALIAS [--qa | --output FILE]
   ./lifeos.sh gmail sync --all [--qa]
   ./lifeos.sh drive accounts
