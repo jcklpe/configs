@@ -78,7 +78,6 @@ Usage:
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh open-austin-org path
   ./lifeos.sh open-austin-org sync [--qa | --output DIR]
-  ./lifeos.sh open-austin-org create-issue --title TITLE [--body TEXT | --body-file FILE] [--label LABEL] [--assign-me | --assignee LOGIN] [--repo OWNER/REPO] [--execute] [--no-sync]
   ./lifeos.sh sync
 
 Real config lives in .env, copied from .env.example.
@@ -416,7 +415,6 @@ case "${1:-help}" in
         case "${2:-}" in
             path) shift 2; _open_austin_org_path "$@" ;;
             sync) shift 2; _open_austin_org_sync "$@" ;;
-            create-issue) shift 2; _open_austin_org_create_issue "$@" ;;
             *) _err "Unknown Open Austin org command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
