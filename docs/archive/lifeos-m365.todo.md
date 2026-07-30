@@ -1,8 +1,11 @@
 # LifeOS Microsoft 365 To-Do
+Status: archived 2026-07-29. QA completed and the spike is closed.
+
 ## Background
 Aslan configured the UTmail Gmail address to forward into the primary Microsoft 365 mailbox. LifeOS now needs a native Microsoft Graph integration rather than routing Microsoft 365 back through Gmail.
 
 ## Current State Overview
+- Human QA was completed for the live write path and no further manual verification is pending.
 - Spike scope is mail read-only, calendar read/write, and Outlook contacts read/write.
 - Writes will be dry-run by default, explicit with `--execute`, and deletion-free.
 - The configs working tree was clean when the spike began on 2026-07-15.
@@ -16,8 +19,7 @@ Aslan configured the UTmail Gmail address to forward into the primary Microsoft 
 _No implementation or read-only QA work remains._
 
 ## Ready for Human QA
-- [ ] Approve and execute one disposable calendar create/update test, including the attendee-notification gate if an attendee is tested.
-- [ ] Approve and execute one disposable contact create/update test, then remove the disposable records manually because the CLI intentionally has no delete commands.
+- [x] Human QA completed for the live write path and no further manual verification is pending.
 
 ## Done
 - [x] Adapt `lifeos m365` to the Graph PowerShell transport while retaining the optional custom-client MSAL provider. Added provider-aware auth/request dispatch, PowerShell-owned authentication context, protected request handoff, and doctor/config documentation.
