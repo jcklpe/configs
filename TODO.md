@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- **LifeOS Microsoft 365:** add delegated Microsoft Graph access for read-only mail plus read/write calendar and Outlook contacts, with dry-run writes and no deletes. See `docs/active-spikes/lifeos-m365.md` and `docs/active-spikes/lifeos-m365.todo.md`.
+- None.
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
@@ -13,6 +13,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - `run` dispatcher notes: `docs/scratch/run-command.md`, `docs/scratch/run-command.todo.md`
 
 ## Recently Shipped
+- LifeOS Microsoft 365: delegated Microsoft Graph access for read-only mail plus read/write calendar and Outlook contacts, with dry-run writes and no deletes; QA completed and the spike is now archived. History in `docs/archive/lifeos-m365.md` and `docs/archive/lifeos-m365.todo.md`.
 - LifeOS Google Docs Authorization: normal Google account aliases can opt into the Docs write scope with `lifeos google auth ALIAS --docs-write`, while actual edits remain bounded and separately approved by the consuming workflow. The personal account was reauthorized and the token validated through the bounded Open Austin Docs tool. History in `docs/archive/lifeos-google-docs-auth.md` and `docs/archive/lifeos-google-docs-auth.todo.md`.
 - Open Austin Tool Boundary: reduced the private LifeOS adapter to `open-austin-org path` and `sync`, removed its duplicate issue-write command, and routed current skills to the public `~/work/org` issue and Google Docs tools. History in `docs/archive/open-austin-tool-boundary.md` and `docs/archive/open-austin-tool-boundary.todo.md`.
 - Skill Taxonomy: aligned the project workflow taxonomy around `docs/pinned-issues.md`, `docs/scratch/future-ideas.md`, `docs/scratch/misc.md`, `docs/decisions/`, and `docs/active-spikes/`; added `pin-issue`, `log-future-idea`, `log-skills-feedback`, `write-skills`, and `update-local-skills`; added `agents/skills-feedback-log.md`; migrated LifeOS and `my-website` local skill/docs shapes. History in `docs/archive/skill-taxonomy.md` and `docs/archive/skill-taxonomy.todo.md`.
