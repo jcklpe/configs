@@ -1,9 +1,9 @@
 ---
-name: approval-slate
+name: draft-approval-slate
 description: "Present a numbered slate of proposed changes for human review before executing external or hard-to-reverse writes — GitHub issues, published docs, shared records, batch edits. Use when a batch of pending create/edit/delete actions should be red-lined first, or when the user asks for an 'approval slate'."
 ---
 
-# Approval Slate
+# Draft Approval Slate
 ## Purpose
 Before a batch of external or hard-to-reverse changes — creating or editing GitHub issues, posting comments, publishing docs, editing shared records, or any multi-item mutation — gather them into one reviewable slate and present the final copy for the user to red-line. Execute only what the user approves, and only after they have seen what will actually ship.
 
