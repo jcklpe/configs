@@ -2,6 +2,8 @@
 
 Status: archived 2026-08-05. The spike drafted a general `approval-slate` skill and closed after the skill text and global symlink wiring were in place.
 
+> Rename note (2026-08-07): the skill was renamed `approval-slate` → `draft-approval-slate` (a verb-first imperative). Live path is now `~/configs/skills/draft-approval-slate/`, symlinked to `~/.codex/skills/draft-approval-slate` and `~/.claude/skills/draft-approval-slate`. The historical prose below predates the rename and is left as-is.
+
 Companion to-do: `docs/archive/approval-slate-skill.todo.md`.
 
 ## Purpose
