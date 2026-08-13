@@ -617,6 +617,118 @@ _drive_read() {
     esac
 }
 
+_drive_export_default_mime() {
+    # native google mimeType -> default export mimeType (space) extension
+    case "$1" in
+        application/vnd.google-apps.document) printf 'application/pdf pdf' ;;
+        application/vnd.google-apps.spreadsheet) printf 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet xlsx' ;;
+        application/vnd.google-apps.presentation) printf 'application/pdf pdf' ;;
+        application/vnd.google-apps.drawing) printf 'image/png png' ;;
+        *) printf '' ;;
+    esac
+}
+
+_drive_ext_for_mime() {
+    case "$1" in
+        application/pdf) printf 'pdf' ;;
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document) printf 'docx' ;;
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet) printf 'xlsx' ;;
+        application/vnd.openxmlformats-officedocument.presentationml.presentation) printf 'pptx' ;;
+        application/msword) printf 'doc' ;;
+        application/vnd.ms-excel) printf 'xls' ;;
+        text/plain) printf 'txt' ;;
+        text/html) printf 'html' ;;
+        text/csv) printf 'csv' ;;
+        image/png) printf 'png' ;;
+        image/jpeg) printf 'jpg' ;;
+        image/gif) printf 'gif' ;;
+        application/vnd.oasis.opendocument.text) printf 'odt' ;;
+        application/zip) printf 'zip' ;;
+        *) printf '' ;;
+    esac
+}
+
+# drive download ALIAS FILE_URL_OR_ID [--out PATH] [--mime EXPORT_MIME] [--force]
+# Binary files download byte-for-byte via alt=media; native Google files export
+# (Doc->PDF, Sheet->XLSX, Slides->PDF, Drawing->PNG by default, override with --mime).
+_drive_download() {
+    local alias="${1:-}" ref="${2:-}" out="" export_mime="" force=0
+    local file_id meta_file mime name is_native default_pair token url target dest_dir ext
+    [ -n "$alias" ] || { _err "drive download requires ALIAS"; return 1; }
+    [ -n "$ref" ] || { _err "drive download requires FILE_URL_OR_ID"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --out) [ -n "${2:-}" ] || { _err "--out requires PATH"; return 1; }; out="$2"; shift 2 ;;
+            --mime) [ -n "${2:-}" ] || { _err "--mime requires EXPORT_MIME"; return 1; }; export_mime="$2"; shift 2 ;;
+            --force) force=1; shift ;;
+            *) _err "Unknown drive download option: $1"; return 1 ;;
+        esac
+    done
+
+    file_id="$(_drive_file_id "$ref")"
+    meta_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-dl-meta.XXXXXX")" || return 1
+    _drive_fetch_meta "$alias" "$file_id" > "$meta_file" || return 1
+    mime="$(jq -r '.mimeType // ""' "$meta_file")"
+    name="$(jq -r '.name // "download"' "$meta_file")"
+
+    case "$mime" in
+        application/vnd.google-apps.*) is_native=1 ;;
+        *) is_native=0 ;;
+    esac
+
+    if [ "$is_native" -eq 1 ]; then
+        if [ -z "$export_mime" ]; then
+            default_pair="$(_drive_export_default_mime "$mime")"
+            [ -n "$default_pair" ] || { _err "No default export format for Google type '$mime'. Pass --mime EXPORT_MIME."; return 1; }
+            export_mime="${default_pair%% *}"
+        fi
+        ext="$(_drive_ext_for_mime "$export_mime")"
+    else
+        ext="$(_drive_ext_for_mime "$mime")"
+    fi
+
+    if [ -z "$out" ]; then
+        target="./$name"
+    elif [ -d "$out" ]; then
+        target="${out%/}/$name"
+    else
+        target="$out"
+    fi
+    # Native exports carry the resulting format's extension when the target lacks it.
+    if [ "$is_native" -eq 1 ] && [ -n "$ext" ]; then
+        case "$target" in
+            *.$ext) : ;;
+            *) target="${target}.${ext}" ;;
+        esac
+    fi
+
+    if [ -e "$target" ] && [ "$force" -ne 1 ]; then
+        _err "Refusing to overwrite existing file: $target (use --force)"; return 1
+    fi
+    dest_dir="$(dirname "$target")"
+    [ -d "$dest_dir" ] || { _err "Destination directory does not exist: $dest_dir"; return 1; }
+
+    token="$(_google_access_token "$alias")" || return 1
+    if [ "$is_native" -eq 1 ]; then
+        url="https://www.googleapis.com/drive/v3/files/${file_id}/export?mimeType=$(_urlencode "$export_mime")&supportsAllDrives=true"
+    else
+        url="https://www.googleapis.com/drive/v3/files/${file_id}?alt=media&supportsAllDrives=true"
+    fi
+
+    if ! curl -fsSL -o "$target" "$url" -H "Authorization: Bearer ${token}"; then
+        rm -f "$target"
+        _err "Download failed (no access, or export unsupported for this type: $mime)"
+        return 1
+    fi
+
+    _say "Downloaded: $target"
+    _say "Source: $name ($mime)"
+    if [ "$is_native" -eq 1 ]; then
+        _say "Exported as: $export_mime"
+    fi
+}
+
 _drive_import_source_mime() {
     local source="$1"
     case "$source" in
