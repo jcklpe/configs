@@ -18,9 +18,12 @@ lifeos drive search ALIAS "query text"
 lifeos drive list ALIAS FOLDER_ID
 lifeos drive meta ALIAS FILE_URL_OR_ID
 lifeos drive read ALIAS FILE_URL_OR_ID
+lifeos drive download ALIAS FILE_URL_OR_ID [--out PATH] [--mime EXPORT_MIME] [--force]
 ```
 
 Drive reads are on-demand. Do not clone Drive into LifeOS, recursively index whole Drives, or generate broad Drive summaries. Use `drive search`, then `drive meta` or `drive read` on a specific file. `drive read` supports Google Docs text and bounded Google Sheets previews.
+
+Use `drive download` when a file is **not** a native Google Doc/Sheet — `.pdf`, `.docx`, `.xlsx`, `.png`, etc. — which `drive read` can only show as metadata. It fetches binaries byte-for-byte and exports native Google files (Doc→PDF, Sheet→XLSX, Slides→PDF, Drawing→PNG by default; override with `--mime`). `--out` accepts a file path or an existing directory (the file lands there under its Drive name); with no `--out` it writes to the CWD. It never overwrites without `--force`, works on shared drives, and adds no OAuth scope. Still on-demand and one file per call — not a mirror/sync; keep the "do not clone Drive" boundary.
 
 ## Import (the only write)
 ```sh
