@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- None.
+- LifeOS Drive Download: `lifeos drive download` fetches binary Drive files and exports native Google files to disk (closing the `drive read` metadata-only gap). Implemented and validated against a shared drive; one real-terminal QA item pending. `docs/active-spikes/lifeos-drive-download.md`, `docs/active-spikes/lifeos-drive-download.todo.md`.
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
