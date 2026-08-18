@@ -1,5 +1,5 @@
 # Spike: LifeOS Docs Editing as a First-Class Capability
-Conceptual doc. Status: **implemented (Option 1, 2026-08-18) — pending human QA** (real-terminal `--execute`). See the to-do doc.
+Conceptual doc. Status: **complete (Option 1, verified 2026-08-18) — archived.** The durable rule lives in `docs/decisions/0005-docs-editing-in-lifeos-tools.md` and the `lifeos-drive` / `lifeos-cli` skills.
 
 ## Purpose
 Make Google Docs *editing* a discoverable, general-purpose LifeOS capability, instead of something that only effectively exists inside the Open Austin org repo. Today the capability works but is invisible: agents read `lifeos help`, see only `drive read`/`import-doc`, read the `lifeos-drive` skill line that says "`lifeos drive` itself still does not expose an existing-Doc edit command," and conclude docs are read-only — then fail to make edits the user explicitly asked for. (This spike exists because that failure happened repeatedly.)
