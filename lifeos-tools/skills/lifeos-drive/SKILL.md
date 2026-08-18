@@ -9,7 +9,7 @@ If the current repo already has `lifeos-tools/skills/lifeos-drive/SKILL.md`, rea
 
 Drive uses the shared Google account-alias system — set up aliases with `lifeos google accounts` / `lifeos google auth ALIAS` (see `lifeos-cli`).
 
-When a separate bounded tool needs to edit an existing native Google Doc through the same account token, authorize the additional scope with `lifeos google auth ALIAS --docs-write`. This changes OAuth capability only; `lifeos drive` itself still does not expose an existing-Doc edit command.
+To **edit** an existing native Google Doc, use `lifeos docs replace-once` (see "Editing an existing Doc" below) — a bounded, dry-run-by-default, revision-guarded single-exact-replacement. Editing lives under the separate `docs` command, not `drive`. It needs the Docs write scope: authorize it once per alias with `lifeos google auth ALIAS --docs-write`.
 
 ## Reads
 ```sh
@@ -30,4 +30,11 @@ Use `drive download` when a file is **not** a native Google Doc/Sheet — `.pdf`
 lifeos drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
 ```
 
-`import-doc` is the only approved Drive write. It imports a local source file (`.html`, `.md`, `.txt`, `.rtf`, `.doc`, `.docx`) as a native Google Doc, is **dry-run by default**, and only writes with `--execute`. Use it only when the user explicitly asks to create/import a Drive document. Prefer `--folder FOLDER_ID` so the doc lands in the intended location. Do not edit, delete, move, share, or bulk-create Drive files unless a bounded command exists and the user explicitly asks for that specific action.
+`import-doc` is the only approved `drive` write (it *creates* a Doc). It imports a local source file (`.html`, `.md`, `.txt`, `.rtf`, `.doc`, `.docx`) as a native Google Doc, is **dry-run by default**, and only writes with `--execute`. Use it only when the user explicitly asks to create/import a Drive document. Prefer `--folder FOLDER_ID` so the doc lands in the intended location. Do not delete, move, share, or bulk-create Drive files unless a bounded command exists and the user explicitly asks for that specific action.
+
+## Editing an existing Doc
+```
+lifeos docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
+lifeos docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
+```
+`docs replace-once` makes **one exact, uniquely-matched replacement**, is **dry-run by default** (re-fetches the live doc and guards on its revision id), and only writes with `--execute`. Add repeatable `--link "Visible text=https://…"` when the replacement text needs an embedded link (each visible label must occur exactly once in the replacement). Requires the Docs write scope (`lifeos google auth ALIAS --docs-write`). This is a general capability (any Doc on any alias) — it is the same tool the Open Austin `~/work/org` repo carries for its weekly-meeting workflow, intentionally duplicated here so doc editing does not require that repo. See `docs/decisions/0005-docs-editing-in-lifeos-tools.md`.
