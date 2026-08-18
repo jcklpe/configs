@@ -3,6 +3,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 - LifeOS Drive Download: `lifeos drive download` fetches binary Drive files and exports native Google files to disk (closing the `drive read` metadata-only gap). Implemented and validated against a shared drive; one real-terminal QA item pending. `docs/active-spikes/lifeos-drive-download.md`, `docs/active-spikes/lifeos-drive-download.todo.md`.
+- LifeOS Docs Editing: general-purpose `lifeos docs read` / `replace-once` (dry-run, revision-guarded), ported from the org repo so doc editing no longer needs an Open Austin checkout. **Implemented (Option 1, 2026-08-18); human-QA pending** (a real-terminal `--execute`). Decision: `docs/decisions/0005-docs-editing-in-lifeos-tools.md`. Spike: `docs/active-spikes/lifeos-docs-editing.md`, `docs/active-spikes/lifeos-docs-editing.todo.md`.
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
