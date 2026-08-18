@@ -62,6 +62,8 @@ Usage:
   ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
   ./lifeos.sh drive download ALIAS FILE_URL_OR_ID [--out PATH] [--mime EXPORT_MIME] [--force]
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
+  ./lifeos.sh docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
+  ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
   ./lifeos.sh m365 accounts
   ./lifeos.sh m365 auth ALIAS [--no-browser]
   ./lifeos.sh m365 profile ALIAS [--json]
@@ -401,6 +403,13 @@ case "${1:-help}" in
             download) shift 2; _drive_download "$@" ;;
             import-doc) shift 2; _drive_import_doc "$@" ;;
             *) _err "Unknown Drive command: ${2:-}"; _usage; exit 1 ;;
+        esac
+        ;;
+    docs)
+        case "${2:-}" in
+            read) shift 2; _docs_run read "$@" ;;
+            replace-once) shift 2; _docs_run replace-once "$@" ;;
+            *) _err "Unknown Docs command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
     m365)
