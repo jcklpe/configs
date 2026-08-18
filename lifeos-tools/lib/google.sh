@@ -251,6 +251,25 @@ _google_get_url() {
         "$@"
 }
 
+_docs_helper() {
+    "$LIFEOS_PY" "${LIB_DIR}/google-docs.py" "$@"
+}
+
+# _docs_run SUBCOMMAND ALIAS DOC_URL_OR_ID [extra python args...]
+# General-purpose Google Docs read + one-exact-replacement. Ported into
+# lifeos-tools from the org repo's tool so doc editing does not require an
+# Open Austin checkout (see docs/decisions/docs-editing-in-lifeos-tools.md).
+_docs_run() {
+    local sub="${1:-}" alias="${2:-}" raw="${3:-}" doc_id token
+    [ -n "$sub" ] || { _err "docs requires a subcommand (read|replace-once)"; return 1; }
+    [ -n "$alias" ] || { _err "docs $sub requires ALIAS"; return 1; }
+    [ -n "$raw" ] || { _err "docs $sub requires DOC_URL_OR_ID"; return 1; }
+    shift 3
+    doc_id="$(_drive_file_id "$raw")" || return 1
+    token="$(_google_access_token "$alias")" || return 1
+    GOOGLE_ACCESS_TOKEN="$token" LIFEOS_DOCS_ALIAS="$alias" _docs_helper "$sub" --document-id "$doc_id" "$@"
+}
+
 _gmail_query() {
     local alias="$1"
     _google_account_value "$alias" '.gmail.query // "in:inbox newer_than:30d -label:Newsletters"' 2>/dev/null || printf 'in:inbox newer_than:30d -label:Newsletters'
