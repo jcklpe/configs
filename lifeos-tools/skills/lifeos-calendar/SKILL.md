@@ -41,6 +41,8 @@ Writes are **dry-run by default** — the command prints the full plan and chang
 
 Times: `YYYY-MM-DD` makes an all-day event, `YYYY-MM-DDTHH:MM` a timed one (zoned to the calendar's time zone unless `--tz`). Missing `--end` defaults to +1 day (all-day, exclusive) or +1 hour (timed). Run `lifeos calendar sync` after a write.
 
+**Check the plan's `Time zone:` line before `--execute` on any timed event.** The zone is resolved from the calendar, but if that lookup fails the command falls back to the machine's zone and then to UTC, printing a `WARN:` when it does. A wrong zone writes a real event at the wrong hour and looks otherwise normal, so read the line rather than assuming it. Pass `--tz America/Chicago` (an IANA name, never an abbreviation like `CDT`) whenever you want certainty.
+
 ## Disambiguating An Attendee
 When `--attendee NAME` is ambiguous or unmatched, the write stops and lists candidates. Do not silently drop the attendee or pick one yourself:
 
