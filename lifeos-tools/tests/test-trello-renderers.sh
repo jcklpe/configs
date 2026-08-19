@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+##- Test the Trello card renderer. Offline: fixtures only, no credentials and no network.
+
+set -eu
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TOOL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+CONFIGS="$(cd "${TOOL_DIR}/.." && pwd)"
+SECRETS_DIR="${TOOL_DIR}/secrets"
+ENV_FILE="${SECRETS_DIR}/.env"
+LIB_DIR="${TOOL_DIR}/lib"
+QA_DIR="${TOOL_DIR}/qa"
+export CONFIGS SECRETS_DIR ENV_FILE LIB_DIR QA_DIR
+
+# shellcheck source=/dev/null
+. "${LIB_DIR}/common.sh"
+# shellcheck source=/dev/null
+. "${LIB_DIR}/trello.sh"
+
+OUT="${TMPDIR:-/tmp}/lifeos-trello-render-test.md"
+
+fail() {
+    printf 'FAIL: %s\n' "$*" >&2
+    printf -- '--- rendered output ---\n' >&2
+    cat "$OUT" >&2
+    exit 1
+}
+
+line_for() {
+    grep -F -- "$1" "$OUT" | head -1
+}
+
+_trello_render_cards \
+    "${SCRIPT_DIR}/fixtures/trello-lists.json" \
+    "${SCRIPT_DIR}/fixtures/trello-cards.json" > "$OUT"
+
+##- A start date is rendered raw, matching the existing `due:` convention.
+got="$(line_for 'Correctly snoozed card')"
+case "$got" in
+    *"| start: 2026-09-21T12:00:00.000Z"*) : ;;
+    *) fail "a snoozed card must render its start date raw; got: ${got}" ;;
+esac
+
+##- The whole point: a snoozed card's wake date must be readable from the snapshot.
+case "$got" in
+    *MISSING*) fail "a card with a start date must not be flagged as missing; got: ${got}" ;;
+esac
+
+##- A card in Snoozed with no start date will never be woken by Butler. Say so, loudly —
+# rendering it as a plain absence leaves the defect as invisible as it was before.
+got="$(line_for 'Broken snooze, dragged by hand')"
+case "$got" in
+    *"| start: MISSING (snoozed card will never wake)"*) : ;;
+    *) fail "a Snoozed card without a start date must be flagged; got: ${got}" ;;
+esac
+
+##- The marker is scoped to Snoozed. Absence elsewhere is ordinary, not a defect.
+got="$(line_for 'Plain card, no dates')"
+case "$got" in
+    *start:*) fail "a non-snoozed card without a start date must render no start clause; got: ${got}" ;;
+    *due:*) fail "a card with no due date must render no due clause; got: ${got}" ;;
+esac
+
+got="$(line_for 'Parked card with no start')"
+case "$got" in
+    *start:*) fail "the MISSING marker must not leak to non-Snoozed lists; got: ${got}" ;;
+esac
+
+##- Both fields coexist, start first, so the line reads chronologically.
+got="$(line_for 'Card with both start and due')"
+case "$got" in
+    *"| start: 2026-09-01T12:00:00.000Z | due: 2026-09-15T20:46:00.000Z"*) : ;;
+    *) fail "start must render immediately before due; got: ${got}" ;;
+esac
+
+rm -f "$OUT"
+printf 'ok: trello card renderer\n'

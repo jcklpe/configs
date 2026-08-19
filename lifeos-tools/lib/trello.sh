@@ -542,6 +542,9 @@ _trello_render_cards() {
         "### " + list_name(.[0].idList) + "\n\n" +
         (map(
           "- [" + (.name // "Untitled card") + "](" + (.url // "") + ")" +
+          (if (.start // "") != "" then " | start: " + .start
+           elif list_name(.idList) == "Snoozed" then " | start: MISSING (snoozed card will never wake)"
+           else "" end) +
           (if (.due // "") != "" then " | due: " + .due else "" end) +
           (if (labels | length) > 0 then " | labels: " + labels else "" end) +
           (if (checklist_progress | length) > 0 then " | checklists: " + checklist_progress else "" end) +
@@ -619,7 +622,7 @@ _trello_sync() {
             --data-urlencode "fields=name" > "$lists_file" || return 1
 
         _trello_get "/boards/${board_id}/cards/open" \
-            --data-urlencode "fields=name,idList,due,url,labels,desc" \
+            --data-urlencode "fields=name,idList,start,due,url,labels,desc" \
             --data-urlencode "checklists=all" \
             --data-urlencode "actions=commentCard" \
             --data-urlencode "actions_limit=1000" \
