@@ -17,8 +17,8 @@ $ _calendar_get "/users/me/calendarList/primary" --data-urlencode "fields=timeZo
 
 ## Goals
 - Resolve the calendar's real zone through an endpoint the current token can actually read.
-- Make the system-zone fallback work on macOS, the primary machine.
-- Make any fallback **loud**, so a silently wrong zone can never again look like a normal run.
+- Detect the machine's zone portably (macOS included) so the failure message can suggest a concrete value.
+- Never write a timed event on a guessed zone. Fail loudly instead, with an error that names the workaround.
 - Keep an offline regression test so the fallback ladder does not rot.
 
 ## Non-Goals
@@ -28,17 +28,20 @@ $ _calendar_get "/users/me/calendarList/primary" --data-urlencode "fields=timeZo
 - Do not retroactively audit or repair previously written events. Only one timed-event write predates this fix on the affected path, and it was corrected in the same session by passing `--tz`.
 
 ## Design: The Resolution Ladder
-Four rungs, most specific first:
+Two rungs, and then a stop:
 
-1. **Explicit `--tz`** — always wins, no lookup, no warning.
+1. **Explicit `--tz`** — always wins, no lookup.
 2. **The calendar's own zone** via `GET /users/me/calendarList/{id}`. The normal path.
-3. **The machine's zone**, detected portably: `/etc/timezone` where it exists (Linux), else the `/etc/localtime` symlink target (macOS and most modern Linux), else `TZ` if set.
-4. **`UTC`** as the last resort.
+3. **Failure.** If the zone cannot be read, the command stops and writes nothing.
 
-Rungs 3 and 4 emit a warning to stderr naming the zone used and why. Rung 2 is silent because it is the intended path.
+### Why it fails instead of guessing
+**Reversed 2026-08-19 at the user's direction.** The first implementation had two more rungs — the machine's zone, then `UTC` — each emitting a warning. The argument for that was continuity: a hard failure turns a rare wrong-hour risk into a common cannot-write-at-all outage, so making the macOS rung correct seemed to shrink the blast radius more than failing would.
 
-### Why warn rather than fail
-Failing closed on rung 3 is defensible — a wrong zone is silent data corruption, which is exactly the failure class this spike exists to fix. It was not chosen because the fallback ladder is a deliberate existing affordance and a hard failure would break `create-event` on any machine where the metadata read is unavailable, turning a rare wrong-zone risk into a common cannot-write-at-all outage. Making rung 3 actually correct on the primary OS reduces the practical blast radius far more than failing would, and the warning plus the dry-run plan's `Time zone:` line means a human sees the zone before any write lands. Revisit if a fallback ever produces a wrong write despite the warning.
+The user rejected the premise, correctly. A guessed zone is **silent data corruption**: the event is written, it looks entirely normal, and nothing downstream can detect that it is seven hours off. A warning on stderr does not fix that, because warnings are exactly what gets scrolled past in a long agent transcript — and the whole reason this bug survived was that its symptom was invisible. Meanwhile the "outage" objection turns out to be hollow, because **the failure is one flag away from resolution**: the error names the exact `--tz` value to pass. So writing is never actually blocked; it just stops being automatic in the one situation where automatic is unsafe.
+
+The general rule this settles for the repo: **when a write cannot be made correctly, stop and surface it — do not proceed on a guess.** Prefer a loud stop that hands over the workaround to a quiet success that might be wrong.
+
+`_system_tz` survives the reversal, demoted. It no longer supplies a value; it only supplies a **hint inside the error message** ("e.g. `--tz America/Chicago` (this machine's zone)"), which is what keeps the stop actionable rather than merely obstructive.
 
 ## Constraints
 - **bash 3.2.** No associative arrays, no `${var,,}`, no `mapfile`. Applies to everything in `lib/`.
