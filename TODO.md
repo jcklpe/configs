@@ -3,7 +3,8 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 - LifeOS Drive Download: `lifeos drive download` fetches binary Drive files and exports native Google files to disk (closing the `drive read` metadata-only gap). Implemented and validated against a shared drive; one real-terminal QA item pending. `docs/active-spikes/lifeos-drive-download.md`, `docs/active-spikes/lifeos-drive-download.todo.md`.
-- LifeOS Calendar Time Zone: `calendar create-event`/`update-event` silently planned timed events in UTC — the calendar-metadata read 403s under the current scope and both fallbacks fail on macOS. Repointing at `calendarList`, making the system-zone fallback portable, and making fallbacks loud. `docs/active-spikes/lifeos-calendar-timezone.md`, `docs/active-spikes/lifeos-calendar-timezone.todo.md`.
+- LifeOS Trello Start Dates: render each card's `start` date in the snapshot, so a snoozed card's wake date is auditable from the vault and a hand-dragged card that Butler will never wake stops looking identical to a correct one. `docs/active-spikes/lifeos-trello-start-dates.md`, `docs/active-spikes/lifeos-trello-start-dates.todo.md`.
+- LifeOS Calendar Time Zone: `calendar create-event`/`update-event` silently planned timed events in UTC — the calendar-metadata read 403s under the current scope and both fallbacks failed on macOS. Repointed at `calendarList`; the fallbacks are gone entirely, since an unreadable zone now fails with an error naming the `--tz` remedy rather than guessing (`docs/decisions/0006-writes-fail-rather-than-guess.md`). One round-trip QA item pending. `docs/active-spikes/lifeos-calendar-timezone.md`, `docs/active-spikes/lifeos-calendar-timezone.todo.md`.
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
