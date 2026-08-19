@@ -3,6 +3,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 - LifeOS Drive Download: `lifeos drive download` fetches binary Drive files and exports native Google files to disk (closing the `drive read` metadata-only gap). Implemented and validated against a shared drive; one real-terminal QA item pending. `docs/active-spikes/lifeos-drive-download.md`, `docs/active-spikes/lifeos-drive-download.todo.md`.
+- LifeOS Calendar Time Zone: `calendar create-event`/`update-event` silently planned timed events in UTC — the calendar-metadata read 403s under the current scope and both fallbacks fail on macOS. Repointing at `calendarList`, making the system-zone fallback portable, and making fallbacks loud. `docs/active-spikes/lifeos-calendar-timezone.md`, `docs/active-spikes/lifeos-calendar-timezone.todo.md`.
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
