@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Plain card, no dates",
+    "idList": "list_ondeck",
+    "url": "https://trello.com/c/aaa/1-plain",
+    "start": null,
+    "due": null,
+    "labels": [],
+    "desc": ""
+  },
+  {
+    "name": "Correctly snoozed card",
+    "idList": "list_snoozed",
+    "url": "https://trello.com/c/bbb/2-snoozed-ok",
+    "start": "2026-09-21T12:00:00.000Z",
+    "due": null,
+    "labels": [],
+    "desc": ""
+  },
+  {
+    "name": "Broken snooze, dragged by hand",
+    "idList": "list_snoozed",
+    "url": "https://trello.com/c/ccc/3-snoozed-broken",
+    "start": null,
+    "due": null,
+    "labels": [],
+    "desc": ""
+  },
+  {
+    "name": "Card with both start and due",
+    "idList": "list_ondeck",
+    "url": "https://trello.com/c/ddd/4-both",
+    "start": "2026-09-01T12:00:00.000Z",
+    "due": "2026-09-15T20:46:00.000Z",
+    "labels": [],
+    "desc": ""
+  },
+  {
+    "name": "Parked card with no start",
+    "idList": "list_parked",
+    "url": "https://trello.com/c/eee/5-parked",
+    "start": null,
+    "due": null,
+    "labels": [],
+    "desc": ""
+  }
+]
