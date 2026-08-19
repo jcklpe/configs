@@ -992,20 +992,53 @@ _people_add_alias() {
     fi
 }
 
-# Default time zone for timed events: explicit override wins, else the target
-# calendar's own time zone, else the system zone.
-_calendar_default_tz() {
-    local calendar_id="$1" encoded tz
-    encoded="$(_urlencode "$calendar_id")" || return 1
-    tz="$(_calendar_get "/calendars/${encoded}" --data-urlencode "fields=timeZone" 2>/dev/null | jq -r '.timeZone // empty')"
-    if [ -n "$tz" ]; then
-        printf '%s' "$tz"
-        return 0
-    fi
+# The machine's IANA zone, portably. /etc/timezone is Linux-only; macOS only has the
+# /etc/localtime symlink. Never fall back to `date +%Z` — that yields an abbreviation
+# like CDT, which is not a valid IANA identifier and Google will reject it.
+_system_tz() {
+    local target
     if [ -f /etc/timezone ]; then
         _trim "$(cat /etc/timezone)"
         return 0
     fi
+    if [ -L /etc/localtime ]; then
+        target="$(readlink /etc/localtime)"
+        # Strip everything up to and including the zoneinfo dir, leaving e.g. America/Chicago.
+        case "$target" in
+            */zoneinfo/*) printf '%s' "${target##*/zoneinfo/}"; return 0 ;;
+        esac
+    fi
+    if [ -n "${TZ:-}" ]; then
+        printf '%s' "$TZ"
+        return 0
+    fi
+    return 1
+}
+
+# Default time zone for timed events: explicit override wins, else the target calendar's
+# own time zone, else the system zone, else UTC.
+#
+# Reads the zone from /users/me/calendarList/{id} rather than /calendars/{id}: the latter
+# 403s under the scope this token holds, and because _calendar_get is `curl -fsS` that
+# failure is silent. Combined with /etc/timezone being absent on macOS, the old chain
+# reached the hardcoded UTC on every call and planned local events seven hours off.
+# Do not "simplify" this back to /calendars/{id} without re-verifying the scope.
+_calendar_default_tz() {
+    local calendar_id="$1" encoded tz
+    encoded="$(_urlencode "$calendar_id")" || return 1
+    tz="$(_calendar_get "/users/me/calendarList/${encoded}" --data-urlencode "fields=timeZone" 2>/dev/null | jq -r '.timeZone // empty')"
+    if [ -n "$tz" ]; then
+        printf '%s' "$tz"
+        return 0
+    fi
+    # Every path below here is a guess about what the user meant. Say so loudly: a wrong
+    # zone writes a real event at the wrong hour, and silence is what made this a bug.
+    if tz="$(_system_tz)" && [ -n "$tz" ]; then
+        _warn "could not read the time zone for calendar '${calendar_id}'; using this machine's zone ${tz}. Pass --tz to be explicit."
+        printf '%s' "$tz"
+        return 0
+    fi
+    _warn "could not read the time zone for calendar '${calendar_id}' or from this machine; falling back to UTC. Pass --tz to avoid a wrong-hour event."
     printf 'UTC'
 }
 
