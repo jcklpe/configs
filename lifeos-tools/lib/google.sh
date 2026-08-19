@@ -993,8 +993,10 @@ _people_add_alias() {
 }
 
 # The machine's IANA zone, portably. /etc/timezone is Linux-only; macOS only has the
-# /etc/localtime symlink. Never fall back to `date +%Z` — that yields an abbreviation
-# like CDT, which is not a valid IANA identifier and Google will reject it.
+# /etc/localtime symlink. Never use `date +%Z` — that yields an abbreviation like CDT,
+# which is not a valid IANA identifier and Google will reject it.
+# This is only ever a *hint* for the error message, never a silent substitute for the
+# calendar's real zone. See _calendar_default_tz.
 _system_tz() {
     local target
     if [ -f /etc/timezone ]; then
@@ -1015,31 +1017,36 @@ _system_tz() {
     return 1
 }
 
-# Default time zone for timed events: explicit override wins, else the target calendar's
-# own time zone, else the system zone, else UTC.
+# Default time zone for timed events: an explicit --tz wins, else the target calendar's
+# own zone. There is no third rung — if the zone cannot be read, this FAILS.
 #
-# Reads the zone from /users/me/calendarList/{id} rather than /calendars/{id}: the latter
-# 403s under the scope this token holds, and because _calendar_get is `curl -fsS` that
-# failure is silent. Combined with /etc/timezone being absent on macOS, the old chain
-# reached the hardcoded UTC on every call and planned local events seven hours off.
-# Do not "simplify" this back to /calendars/{id} without re-verifying the scope.
+# Guessing is not safe here. A wrong zone still writes a real event, just at the wrong
+# hour, and nothing downstream can detect it; the event looks entirely normal. That is
+# silent data corruption, so the only honest options are the calendar's actual zone or a
+# stop. Writing is not blocked by the stop: the error names the exact --tz value to pass,
+# so the operator is one flag away from proceeding deliberately.
+#
+# Reads from /users/me/calendarList/{id} rather than /calendars/{id}: the latter 403s
+# under the scope this token holds, and because _calendar_get is `curl -fsS` that failure
+# is silent. Do not "simplify" this back to /calendars/{id} without re-verifying scope.
 _calendar_default_tz() {
-    local calendar_id="$1" encoded tz
+    local calendar_id="$1" encoded tz hint
     encoded="$(_urlencode "$calendar_id")" || return 1
     tz="$(_calendar_get "/users/me/calendarList/${encoded}" --data-urlencode "fields=timeZone" 2>/dev/null | jq -r '.timeZone // empty')"
     if [ -n "$tz" ]; then
         printf '%s' "$tz"
         return 0
     fi
-    # Every path below here is a guess about what the user meant. Say so loudly: a wrong
-    # zone writes a real event at the wrong hour, and silence is what made this a bug.
-    if tz="$(_system_tz)" && [ -n "$tz" ]; then
-        _warn "could not read the time zone for calendar '${calendar_id}'; using this machine's zone ${tz}. Pass --tz to be explicit."
-        printf '%s' "$tz"
-        return 0
+    hint="$(_system_tz 2>/dev/null)" || hint=""
+    _err "could not read the time zone for calendar '${calendar_id}'."
+    _err "Refusing to guess: a wrong zone writes the event at the wrong hour and looks normal afterward."
+    if [ -n "$hint" ]; then
+        _err "Re-run with an explicit zone, e.g. --tz ${hint} (this machine's zone), or whichever zone the event belongs in."
+    else
+        _err "Re-run with an explicit zone, e.g. --tz America/Chicago (an IANA name, never an abbreviation like CDT)."
     fi
-    _warn "could not read the time zone for calendar '${calendar_id}' or from this machine; falling back to UTC. Pass --tz to avoid a wrong-hour event."
-    printf 'UTC'
+    _err "If this keeps happening, the calendar metadata read may be failing: check 'lifeos calendar list-calendars' and the token scope."
+    return 1
 }
 
 _calendar_list_calendars() {

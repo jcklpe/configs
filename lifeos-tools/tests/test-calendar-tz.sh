@@ -41,26 +41,40 @@ got="$(_calendar_default_tz primary 2>"$WARN_OUT")"
 [ "$got" = "Europe/Berlin" ] || fail "expected Europe/Berlin from the calendar lookup, got '${got}'"
 [ ! -s "$WARN_OUT" ] || fail "the successful lookup path must not warn, but wrote: $(cat "$WARN_OUT")"
 
-##- Rung 2 must beat rung 3: a calendar pinned to another zone is legitimate (travel, shared calendars).
+##- The calendar's zone must win over the machine's: a calendar pinned to another zone is
+# legitimate (travel, shared calendars). Guard against the stub accidentally matching.
 [ "$got" != "$system_tz" ] || fail "test is degenerate: pick a stub zone that differs from the machine zone"
 
-##- Rung 3: lookup failure falls back to the machine zone, loudly.
+##- A failed lookup must FAIL, not guess. Guessing writes a real event at the wrong hour.
 _calendar_get() { return 1; }
-got="$(_calendar_default_tz primary 2>"$WARN_OUT")"
-[ "$got" = "$system_tz" ] || fail "expected the system zone '${system_tz}' after a failed lookup, got '${got}'"
-grep -F -- "WARN:" "$WARN_OUT" >/dev/null || fail "a fallback to the machine zone must warn on stderr"
+if got="$(_calendar_default_tz primary 2>"$WARN_OUT")"; then
+    fail "a failed metadata read must return nonzero, but it succeeded with '${got}'"
+fi
+[ -z "$got" ] || fail "a failed resolution must print no zone to stdout, got '${got}'"
+grep -F -- "Refusing to guess" "$WARN_OUT" >/dev/null || fail "the failure must say it is refusing to guess"
 
-##- Rung 4: no lookup and no system zone means UTC, loudly.
-_system_tz() { return 1; }
-got="$(_calendar_default_tz primary 2>"$WARN_OUT")"
-[ "$got" = "UTC" ] || fail "expected UTC as the last resort, got '${got}'"
-grep -F -- "WARN:" "$WARN_OUT" >/dev/null || fail "the UTC fallback must warn on stderr"
+##- The error must hand over the workaround, so a stop never blocks writing outright.
+grep -F -- "--tz" "$WARN_OUT" >/dev/null || fail "the failure must tell the operator to pass --tz"
+grep -F -- "$system_tz" "$WARN_OUT" >/dev/null || fail "the failure should suggest this machine's zone '${system_tz}' as the concrete value"
 
 ##- An empty timeZone field is a failed read, not a valid zone.
 _calendar_get() { printf '{}'; }
-_system_tz() { printf 'America/Chicago'; }
-got="$(_calendar_default_tz primary 2>"$WARN_OUT")"
-[ "$got" = "America/Chicago" ] || fail "an empty timeZone must fall through to the machine zone, got '${got}'"
+if _calendar_default_tz primary >/dev/null 2>"$WARN_OUT"; then
+    fail "an empty timeZone field must be treated as a failed read"
+fi
+
+##- With no machine zone to suggest, it still fails and still names an IANA example.
+_calendar_get() { return 1; }
+_system_tz() { return 1; }
+if _calendar_default_tz primary >/dev/null 2>"$WARN_OUT"; then
+    fail "no lookup and no machine zone must still fail"
+fi
+grep -F -- "America/Chicago" "$WARN_OUT" >/dev/null || fail "with no hint available, the error should still show an IANA-shaped example"
+grep -F -- "CDT" "$WARN_OUT" >/dev/null || fail "the error should warn against abbreviations like CDT"
+
+# Not covered here: dispatcher-level propagation. Forcing the lookup to fail through
+# ./lifeos.sh trips the credentials check first, so it cannot be isolated offline. Both
+# call sites use `tz="$(_calendar_default_tz ...)" || return 1`, verified by inspection.
 
 rm -f "$WARN_OUT"
 printf 'ok: calendar time-zone ladder\n'
