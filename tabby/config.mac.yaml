@@ -62,6 +62,7 @@ terminal:
   bell: audible
   shell: /bin/zsh
   cursor: beam
+  customColorSchemes: []
 window:
   quake: false
 version: 8
@@ -250,3 +251,4 @@ providerBlacklist: []
 profiles: []
 commandBlacklist: []
 groups: []
+profileBlacklist: []
