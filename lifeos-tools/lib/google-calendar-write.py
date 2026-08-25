@@ -55,12 +55,15 @@ def build_times(start, end, tz):
     if is_all_day(start):
         if end is not None and not is_all_day(end):
             fail("all-day --start needs an all-day (YYYY-MM-DD) --end")
-        start_obj = {"date": start}
+        # dateTime is nulled explicitly so a PATCH can convert an existing timed
+        # event to all-day. Without it Google sees both date and dateTime on the
+        # stored event and rejects the update with a 400.
+        start_obj = {"date": start, "dateTime": None}
         if end is None:
             end_date = parse_date(start) + timedelta(days=1)
-            end_obj = {"date": end_date.strftime("%Y-%m-%d")}
+            end_obj = {"date": end_date.strftime("%Y-%m-%d"), "dateTime": None}
         else:
-            end_obj = {"date": end}
+            end_obj = {"date": end, "dateTime": None}
         return start_obj, end_obj
 
     if not tz:
@@ -68,14 +71,15 @@ def build_times(start, end, tz):
     if end is not None and is_all_day(end):
         fail("timed --start needs a timed (YYYY-MM-DDTHH:MM) --end")
     start_dt = parse_datetime(start)
-    start_obj = {"dateTime": start_dt.isoformat(timespec="seconds"), "timeZone": tz}
+    # date is nulled for the same reason, in the all-day -> timed direction.
+    start_obj = {"dateTime": start_dt.isoformat(timespec="seconds"), "timeZone": tz, "date": None}
     if end is None:
         end_dt = start_dt + timedelta(hours=1)
     else:
         end_dt = parse_datetime(end)
     if end_dt <= start_dt:
         fail("event end must be after start")
-    end_obj = {"dateTime": end_dt.isoformat(timespec="seconds"), "timeZone": tz}
+    end_obj = {"dateTime": end_dt.isoformat(timespec="seconds"), "timeZone": tz, "date": None}
     return start_obj, end_obj
 
 
