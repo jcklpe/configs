@@ -45,7 +45,7 @@ Usage:
   ./lifeos.sh calendar auth
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar find QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
-  ./lifeos.sh calendar sync [--qa | --output FILE]
+  ./lifeos.sh calendar sync [--google-only] [--qa | --output FILE]   # also syncs M365 calendars
   ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--notify] [--execute]
   ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--notify] [--execute]
   ./lifeos.sh people resolve NAME [--json]
@@ -309,6 +309,45 @@ $vault/open-austin/index.open-austin.md
 EOF
 }
 
+# Sync every configured M365 account that has calendar enabled. Google-only setups
+# skip silently; a missing/!ready M365 config is a warning, not a failure.
+# `lifeos calendar sync` means "refresh my calendar", and UT meetings live in M365.
+# Syncing only Google silently hides every Teams meeting, so fan out by default.
+# --google-only restores the old behaviour; --qa/--output stay Google-scoped since
+# the M365 renderer writes its own per-account file.
+_calendar_sync_combined() {
+    local status=0 google_only=0 passthrough=() scoped=0
+    for arg in "$@"; do
+        case "$arg" in
+            --google-only) google_only=1 ;;
+            --qa|--output) scoped=1; passthrough+=("$arg") ;;
+            *) passthrough+=("$arg") ;;
+        esac
+    done
+    _calendar_sync "${passthrough[@]}" || status=$?
+    if [ "$google_only" -eq 1 ] || [ "$scoped" -eq 1 ]; then
+        return "$status"
+    fi
+    _m365_calendar_sync_all || status=$?
+    return "$status"
+}
+
+_m365_calendar_sync_all() {
+    local status=0 accounts_path aliases alias
+    command -v jq >/dev/null 2>&1 || return 0
+    accounts_path="${LIB_DIR%/lib}/secrets/m365-accounts.json"
+    [ -f "$accounts_path" ] || return 0
+    aliases="$(jq -r '(.accounts // [])[] | select((.calendar.enabled // false) == true) | .alias' "$accounts_path" 2>/dev/null)" || return 0
+    [ -n "$aliases" ] || return 0
+    while IFS= read -r alias; do
+        [ -n "$alias" ] || continue
+        _m365_calendar_sync "$alias" || { _warn "M365 calendar sync failed for alias: ${alias}"; status=1; }
+    done <<EOF_ALIASES
+$aliases
+EOF_ALIASES
+    return "$status"
+}
+
 _sync() {
     local status=0
 
@@ -323,6 +362,8 @@ _sync() {
     else
         _warn "Skipping Calendar sync: Google Calendar is not configured."
     fi
+
+    _m365_calendar_sync_all || status=$?
 
     return "$status"
 }
@@ -366,7 +407,10 @@ case "${1:-help}" in
             auth) shift 2; _calendar_auth "$@" ;;
             list-calendars) shift 2; _calendar_list_calendars "$@" ;;
             find) shift 2; _calendar_find "$@" ;;
-            sync) shift 2; _calendar_sync "$@" ;;
+            sync)
+                shift 2
+                _calendar_sync_combined "$@"
+                ;;
             create-event) shift 2; _calendar_create_event "$@" ;;
             update-event) shift 2; _calendar_update_event "$@" ;;
             *) _err "Unknown Calendar command: ${2:-}"; _usage; exit 1 ;;
