@@ -42,6 +42,68 @@ function gitpush() {
     git push --set-upstream origin "$branch"
 }
 
+# Push every branch rewritten by git filter-branch, using the saved original
+# remote tip as an exact force-with-lease guard. This is intentionally narrower
+# than an unconditional "push every local branch" helper.
+function gitpushall() {
+    local original_ref
+    local remote_ref
+    local branch
+    local old_oid
+    local new_oid
+    local source_ref
+    local rewritten_count=0
+
+    if ! git rev-parse --git-dir >/dev/null 2>&1; then
+        echo "gitpushall: not inside a Git repository" >&2
+        return 1
+    fi
+
+    if ! git remote get-url origin >/dev/null 2>&1; then
+        echo "gitpushall: this repository has no origin remote" >&2
+        return 1
+    fi
+
+    if ! git for-each-ref --format='%(refname)' refs/original/refs/remotes/origin | grep -q .; then
+        echo "gitpushall: no filter-branch backup refs found for origin" >&2
+        echo "gitpushall: use gitpush for an ordinary current-branch push" >&2
+        return 1
+    fi
+
+    while IFS= read -r original_ref; do
+        remote_ref="${original_ref#refs/original/}"
+        branch="${remote_ref#refs/remotes/origin/}"
+
+        [ "$branch" = "HEAD" ] && continue
+
+        old_oid=$(git rev-parse --verify "$original_ref") || return 1
+        new_oid=$(git rev-parse --verify "$remote_ref") || return 1
+
+        [ "$old_oid" = "$new_oid" ] && continue
+
+        if git show-ref --verify --quiet "refs/heads/$branch"; then
+            source_ref="refs/heads/$branch"
+        else
+            source_ref="$remote_ref"
+        fi
+
+        echo "gitpushall: pushing rewritten branch $branch"
+        git push origin \
+            "--force-with-lease=refs/heads/${branch}:${old_oid}" \
+            "${source_ref}:refs/heads/${branch}" || return 1
+
+        rewritten_count=$((rewritten_count + 1))
+    done < <(git for-each-ref --format='%(refname)' refs/original/refs/remotes/origin)
+
+    if [ "$rewritten_count" -eq 0 ]; then
+        echo "gitpushall: no rewritten origin branches need pushing"
+        return 0
+    fi
+
+    echo "gitpushall: pushed $rewritten_count rewritten branch(es)"
+    echo "gitpushall: verify the remote purge before deleting refs/original"
+}
+
 function gitreset() {
     git fetch origin
     git reset --hard origin/$(git symbolic-ref --short HEAD)
