@@ -1,0 +1,9 @@
+/* Letter variant of the resume theme: same typography, slightly tighter page box.
+   A letter of interest should land on one page, and prose paragraphs pack less
+   efficiently than the resume's bulleted sections. Everything else is inherited. */
+@import "aslan-resume.css";
+
+@page {
+    size: letter;
+    margin: 0.6in;
+}
