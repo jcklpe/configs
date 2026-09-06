@@ -9,7 +9,7 @@ If the current repo already has `lifeos-tools/skills/lifeos-drive/SKILL.md`, rea
 
 Drive uses the shared Google account-alias system — set up aliases with `lifeos google accounts` / `lifeos google auth ALIAS` (see `lifeos-cli`).
 
-To **edit** an existing native Google Doc, use `lifeos docs replace-once` (see "Editing an existing Doc" below) — a bounded, dry-run-by-default, revision-guarded single-exact-replacement. Editing lives under the separate `docs` command, not `drive`. It needs the Docs write scope: authorize it once per alias with `lifeos google auth ALIAS --docs-write`.
+To **edit** an existing native Google Doc, use `lifeos docs` — a separate command group with its own skill, **`lifeos-docs`**. Editing does not live under `drive`. This skill covers reading Drive and *creating* a Doc from a local file; changing a Doc that already exists is `lifeos-docs`.
 
 ## Reads
 ```sh
@@ -35,8 +35,6 @@ lifeos drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--
 **Markdown converts semantically.** `.md` and `.markdown` upload as `text/markdown`, which Drive turns into real Doc structure: Heading 1/2/3, bulleted and numbered lists, tables, bold and italic. Verified end to end 2026-09-06. `.txt` remains `text/plain`, which imports the characters literally — so do **not** rename a Markdown file to `.txt`, and do not pre-convert Markdown to HTML with pandoc "to be safe." Both produce worse results than passing the `.md` directly. Use it only when the user explicitly asks to create/import a Drive document. Prefer `--folder FOLDER_ID` so the doc lands in the intended location. Do not delete, move, share, or bulk-create Drive files unless a bounded command exists and the user explicitly asks for that specific action.
 
 ## Editing an existing Doc
-```
-lifeos docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
-lifeos docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
-```
-`docs replace-once` makes **one exact, uniquely-matched replacement**, is **dry-run by default** (re-fetches the live doc and guards on its revision id), and only writes with `--execute`. Add repeatable `--link "Visible text=https://…"` when the replacement text needs an embedded link (each visible label must occur exactly once in the replacement). Requires the Docs write scope (`lifeos google auth ALIAS --docs-write`). This is a general capability (any Doc on any alias) — it is the same tool the Open Austin `~/work/org` repo carries for its weekly-meeting workflow, intentionally duplicated here so doc editing does not require that repo. See `docs/decisions/0005-docs-editing-in-lifeos-tools.md`.
+Not here. `lifeos docs read` and `lifeos docs replace-once` own that, and the **`lifeos-docs`** skill covers them — the safety model, the exact-match requirement, and the punctuation and empty-document gotchas that make a first attempt fail.
+
+`drive import-doc` *creates*; `docs replace-once` *changes*. Reach for this skill only when the Doc does not exist yet.
