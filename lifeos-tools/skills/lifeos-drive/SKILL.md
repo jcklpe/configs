@@ -30,7 +30,9 @@ Use `drive download` when a file is **not** a native Google Doc/Sheet — `.pdf`
 lifeos drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
 ```
 
-`import-doc` is the only approved `drive` write (it *creates* a Doc). It imports a local source file (`.html`, `.md`, `.txt`, `.rtf`, `.doc`, `.docx`) as a native Google Doc, is **dry-run by default**, and only writes with `--execute`. Use it only when the user explicitly asks to create/import a Drive document. Prefer `--folder FOLDER_ID` so the doc lands in the intended location. Do not delete, move, share, or bulk-create Drive files unless a bounded command exists and the user explicitly asks for that specific action.
+`import-doc` is the only approved `drive` write (it *creates* a Doc). It imports a local source file (`.html`, `.md`, `.txt`, `.rtf`, `.doc`, `.docx`) as a native Google Doc, is **dry-run by default**, and only writes with `--execute`. The plan prints an `Upload type:` line showing the MIME type the file will be sent as — read it, because that is what determines whether formatting survives.
+
+**Markdown converts semantically.** `.md` and `.markdown` upload as `text/markdown`, which Drive turns into real Doc structure: Heading 1/2/3, bulleted and numbered lists, tables, bold and italic. Verified end to end 2026-09-06. `.txt` remains `text/plain`, which imports the characters literally — so do **not** rename a Markdown file to `.txt`, and do not pre-convert Markdown to HTML with pandoc "to be safe." Both produce worse results than passing the `.md` directly. Use it only when the user explicitly asks to create/import a Drive document. Prefer `--folder FOLDER_ID` so the doc lands in the intended location. Do not delete, move, share, or bulk-create Drive files unless a bounded command exists and the user explicitly asks for that specific action.
 
 ## Editing an existing Doc
 ```
