@@ -57,3 +57,16 @@ Context/evidence: LifeOS MOHELA task-chain update on 2026-07-16. The intended ph
 Candidate change: add a shell-safety warning and a recommended safe text-passing pattern to `lifeos-trello`; preferably extend the CLI with `trello comment --text-file` or stdin support so agents can use a temporary file instead of embedding prose in a shell command. Apply the same principle to other commands that accept durable free-form text.
 
 Scope: global reusable.
+
+### 2026-09-05 - A Write Path Whose Dry Run Was The Only Thing Ever Exercised
+Skill or area: `lifeos-drive`, and reusable guidance for any dry-run-gated write command.
+
+Observed behavior: `lifeos drive import-doc --execute` had never once succeeded on macOS. Its temp-file templates ended in `.XXXXXX.json`, and BSD `mktemp` only substitutes X's at the very end of a template, so every execute died at `mkstemp failed ... File exists` before reaching the API. The bug survived undetected because the dry-run path never touches those files, and dry run is what agents are told to run first. A second latent bug rode along: `.md` was mapped to `text/plain`, so any successful execute would have produced a Doc with literal `## Heading` and `**bold**` — the opposite of the command's stated purpose.
+
+Expected better behavior: a command that is dry-run by default has two code paths, and the safe one gets all the exercise. The unexercised path should not be assumed to work because the plan output looks right. Verification of a write command means performing a real write and reading the result back through a different route, not re-reading the plan.
+
+Context/evidence: LifeOS Drive import work, 2026-09-05. Fixed in configs `b5ae896`. Verified by importing a fixture with headings, a table, a list and bold text, then exporting the created Doc back as HTML and confirming real `h1`/`h2`/`table`/`ul`/`li` and bold styling with no literal Markdown. The `Upload type:` line was added to the plan output because the MIME type decides whether formatting survives and was previously invisible.
+
+Candidate change: add to the dry-run guidance across the lifeos skills that a dry run proves the plan, not the write, and that the first real `--execute` of any command should be treated as untested. Where a command's whole purpose is a format conversion, the verification must inspect the converted artifact rather than the request.
+
+Scope: global reusable.
