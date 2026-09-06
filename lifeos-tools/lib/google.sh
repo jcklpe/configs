@@ -752,7 +752,9 @@ _drive_import_source_mime() {
     local source="$1"
     case "$source" in
         *.html|*.htm) printf 'text/html' ;;
-        *.txt|*.md|*.markdown) printf 'text/plain' ;;
+        # Markdown gets its own type so Drive converts headings, lists, tables and emphasis into real Doc styles. Sending it as text/plain makes Google import the syntax literally, so the Doc shows "## Heading" and "**bold**" as visible characters. Confirmed against drive/v3/about?fields=importFormats, which lists text/markdown -> application/vnd.google-apps.document.
+        *.md|*.markdown) printf 'text/markdown' ;;
+        *.txt) printf 'text/plain' ;;
         *.rtf) printf 'application/rtf' ;;
         *.docx) printf 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ;;
         *.doc) printf 'application/msword' ;;
@@ -783,8 +785,10 @@ _drive_import_doc() {
     }
 
     _say "Google Drive import-doc plan:"
+    mime="$(_drive_import_source_mime "$source_file")"
     _say "Account: $alias"
     _say "Source: $source_file"
+    _say "Upload type: $mime"
     _say "Title: $title"
     if [ -n "$folder" ]; then
         _say "Folder: $folder"
@@ -797,8 +801,9 @@ _drive_import_doc() {
         return 0
     fi
 
-    metadata_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-import-meta.XXXXXX.json")" || return 1
-    result_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-import-result.XXXXXX.json")" || return 1
+    # BSD mktemp only substitutes X's at the very end of the template, so a trailing ".json" made this fail on macOS every time. Both files are handed to curl with an explicit content type, so the extension was never doing any work.
+    metadata_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-import-meta.XXXXXX")" || return 1
+    result_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-drive-import-result.XXXXXX")" || return 1
     if [ -n "$folder" ]; then
         jq -n --arg name "$title" --arg parent "$folder" \
             '{name: $name, mimeType: "application/vnd.google-apps.document", parents: [$parent]}' > "$metadata_file" || return 1
@@ -807,7 +812,6 @@ _drive_import_doc() {
             '{name: $name, mimeType: "application/vnd.google-apps.document"}' > "$metadata_file" || return 1
     fi
 
-    mime="$(_drive_import_source_mime "$source_file")"
     token="$(_google_access_token "$alias")" || return 1
     curl -fsS -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name,mimeType,webViewLink,parents,driveId" \
         -H "Authorization: Bearer ${token}" \
