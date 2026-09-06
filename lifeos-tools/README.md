@@ -94,6 +94,8 @@ lifeos drive search open-austin "landlord mapper"
 lifeos drive meta open-austin https://docs.google.com/document/d/abc123/edit
 lifeos drive read open-austin https://docs.google.com/spreadsheets/d/abc123/edit
 lifeos drive import-doc open-austin /tmp/brief.html --title "Workshop brief" --folder FOLDER_ID --execute
+lifeos docs read ut https://docs.google.com/document/d/abc123/edit
+lifeos docs replace-once ut https://docs.google.com/document/d/abc123/edit --old-file /tmp/old.txt --new-file /tmp/new.txt --execute
 lifeos m365 accounts
 lifeos m365 auth ut
 lifeos m365 profile ut
@@ -174,7 +176,7 @@ Gmail sync is read-only and writes bounded Markdown snapshots to `$LIFEOS_VAULT_
 
 Drive read commands are on-demand. They search/list/inspect files and can read Google Docs as text or Google Sheets as a bounded table preview. They do not clone Drive into LifeOS.
 
-`lifeos google auth ALIAS --docs-write` adds the Google Docs write scope to that account's normal LifeOS token. The OAuth helper requests incremental authorization, so an existing Gmail/Drive token keeps its previously granted scopes. This grants the token capability to edit existing native Google Docs; it does not itself edit a document or waive the approval rules of whichever bounded write tool is used. The generic `lifeos drive` command still has no existing-Doc edit operation.
+`lifeos google auth ALIAS --docs-write` adds the Google Docs write scope to that account's normal LifeOS token. The OAuth helper requests incremental authorization, so an existing Gmail/Drive token keeps its previously granted scopes. This grants the token capability to edit existing native Google Docs; it does not itself edit a document or waive the approval rules of whichever bounded write tool is used. The command that consumes the scope is `lifeos docs replace-once`, documented in the `lifeos-drive` skill under "Editing an existing Doc". `lifeos drive` itself has no existing-Doc edit operation and is not where to look for one.
 
 `lifeos drive import-doc` is the only Drive write path. It imports a local `.html`, `.md`, `.txt`, `.rtf`, `.doc`, or `.docx` source file as a native Google Doc. It is **dry-run by default** and only writes with `--execute`. The target account must have `"drive": { "write_enabled": true }` in ignored `google-accounts.json`; after enabling that flag, re-run `lifeos google auth ALIAS` so the token receives the `drive.file` scope.
 
