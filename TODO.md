@@ -6,6 +6,8 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - LifeOS Trello Start Dates: render each card's `start` date in the snapshot, so a snoozed card's wake date is auditable from the vault and a hand-dragged card that Butler will never wake stops looking identical to a correct one. `docs/active-spikes/lifeos-trello-start-dates.md`, `docs/active-spikes/lifeos-trello-start-dates.todo.md`.
 - LifeOS Calendar Time Zone: `calendar create-event`/`update-event` silently planned timed events in UTC — the calendar-metadata read 403s under the current scope and both fallbacks failed on macOS. Repointed at `calendarList`; the fallbacks are gone entirely, since an unreadable zone now fails with an error naming the `--tz` remedy rather than guessing (`docs/decisions/0006-writes-fail-rather-than-guess.md`). One round-trip QA item pending. `docs/active-spikes/lifeos-calendar-timezone.md`, `docs/active-spikes/lifeos-calendar-timezone.todo.md`.
 
+- LifeOS Docs Skill: `lifeos docs` shipped without a skill of its own, so agents scanning skill names inferred the capability did not exist — one did exactly that on 2026-09-06 and proposed rebuilding it. Skill written and wired in; one installer QA item pending. `docs/active-spikes/lifeos-docs-skill.md`, `docs/active-spikes/lifeos-docs-skill.todo.md`.
+
 ## Later Spikes (this conversation, not yet opened)
 - None.
 
@@ -35,7 +37,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - Promote a LifeOS Tools future idea from `docs/scratch/future-ideas.md` only when one concrete theme becomes active work.
 
 ## Waiting For Human QA
-- None.
+- LifeOS Docs Skill: the two `lifeos-docs` lines added to `install-script/functions/symlinks.sh` have not been exercised by a real installer run. Live symlinks were created by hand, so the skill works now. Confirm on the next install.
 
 ## Later
 - Confirm GitHub Copilot reads `~/.claude/CLAUDE.md`. From a repo with neither `CLAUDE.md` nor `AGENTS.md`, ask whether its instructions contain the heading `Global Agent Instructions` — that string exists only in `agents/AGENTS.global.md`. Copilot answered yes from inside this repo, where its own `CLAUDE.md -> AGENTS.md` symlink makes the answer ambiguous. If it cannot see the global file, `symlinks.sh` needs a Copilot-specific instruction path.
