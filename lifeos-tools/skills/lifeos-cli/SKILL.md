@@ -16,7 +16,8 @@ Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the 
 - **`lifeos-trello`** — Trello reads, writes, and task-chain links.
 - **`lifeos-calendar`** — Google Calendar reads/writes, attendee resolution, availability reading.
 - **`lifeos-gmail`** — bounded read-only Gmail snapshots.
-- **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import.
+- **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import (creating a Doc).
+- **`lifeos-docs`** — editing a Google Doc that already exists: one exact replacement, dry-run by default, revision-guarded.
 - **`lifeos-m365`** — delegated Microsoft 365 mail reads plus gated calendar and Outlook contact reads/writes.
 - **`lifeos-open-austin`** — Open Austin GitHub snapshot refresh and routing to the public org repo for writes.
 
@@ -37,7 +38,7 @@ lifeos google auth ALIAS --docs-write  # additionally authorize bounded tools to
 
 Alias config lives in the gitignored `google-accounts.json` (copy `google-accounts.example.json`). Each alias carries its own Gmail/Drive settings and token file.
 
-`--docs-write` grants the token the Google Docs write scope through incremental authorization. It grants capability only; it does not authorize an edit. The specific tool and workflow performing a write must still be bounded, dry-run-first, and explicitly approved. The bounded editor is **`lifeos docs replace-once`** (dry-run by default, revision-guarded, one exact replacement) — see the lifeos-drive skill.
+`--docs-write` grants the token the Google Docs write scope through incremental authorization. It grants capability only; it does not authorize an edit. The specific tool and workflow performing a write must still be bounded, dry-run-first, and explicitly approved. The bounded editor is **`lifeos docs replace-once`** (dry-run by default, revision-guarded, one exact replacement) — see the `lifeos-docs` skill.
 
 ## Microsoft 365 Account Setup
 Microsoft 365 uses a separate ignored `m365-accounts.json` and per-alias token cache. Copy `m365-accounts.example.json`, configure the registered public-client application and enabled services, then run:
