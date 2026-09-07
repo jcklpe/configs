@@ -18,10 +18,26 @@ lifeos github sync --qa               # write to lifeos-tools/qa/ instead of the
 lifeos github sync --output DIR       # write somewhere specific
 ```
 
-## Read-Only
-**This command never writes to GitHub.** No issue creation, no labeling, no board moves, no comments. Snapshots are context, not a control surface — editing one changes nothing on GitHub. To change GitHub state, use `gh` directly, subject to whatever approval rules that repo's own `AGENTS.md` sets.
+Creating an issue is the one write, and it is dry-run by default:
 
-Board **automation** is a separate matter and lives where it belongs: Open Austin's board routing, status sync, and archiving run as GitHub Actions workflows inside `open-austin/org`. Nothing here touches them, and nothing here should try to reproduce them.
+```sh
+lifeos github create-issue --repo hai --title "..." --body-file /tmp/body.md --label agent
+lifeos github create-issue --repo open-austin/org --title "..." --body "..." --assign-me --execute
+```
+
+`--repo` takes a configured alias or a literal `OWNER/REPO`, so a one-off issue in an untracked repo works without editing config. Without `--execute` it prints the exact plan — repo, title, body preview, labels, assignees — and creates nothing.
+
+## The Write Boundary
+**`sync` never writes.** Snapshots are context, not a control surface — editing one changes nothing on GitHub.
+
+**`create-issue` is the only write, and it is gated.** Dry-run by default; `--execute` is required. Everything else — labeling an existing issue, closing, commenting, editing — goes through `gh` directly, subject to whatever approval rules that repo's own `AGENTS.md` sets. Open Austin's, for instance, requires explicit approval for all of those.
+
+### There Are Deliberately No Board Writes
+Moving a card between columns is **not** implemented, and should not be added without a specific reason.
+
+Board state in `open-austin/org` is maintained by **thirteen GitHub Actions workflows** — `add-issue-to-kanban`, `board-reopen-reconcile`, `close-to-done`, `reopened-to-todo`, `archive-old-done`, and the rest. That system took a full spike to get right, and its design is that **issue state drives board state**. Writing a status field directly from a personal tool would fight it: the card moves, then a reconcile workflow moves it back, and the two disagree silently.
+
+So the way to move a card is to change the issue — close it, reopen it, relabel it — and let the automation do its job. The org's own `AGENTS.md` independently forbids agents from moving board items without explicit approval, which points the same direction.
 
 ## Auth
 Authentication is whatever `gh auth status` reports. No token is stored in the LifeOS tooling, and none belongs there. If sync fails on auth, run `gh auth login`.
