@@ -19,6 +19,8 @@ Generalize GitHub syncing out of the Open-Austin-only adapter into a `lifeos git
 
 ## Current State Overview
 - Nothing implemented. Spike opened 2026-09-07.
+- **The org-side rip-out was investigated and cancelled the same day.** `skills/weekly-org-summary/SKILL.md` step 1 is `tools/sync/run.sh`; removing the sync tooling would break the weekly Slack summary. Full reasoning in the conceptual doc.
+- Verified 2026-09-07: `tools/sync` contains no writes. Board automation is thirteen separate GitHub Actions workflows in `.github/workflows/` and is out of scope entirely.
 - Verified 2026-09-07: `gh` is already authorized for both `open-austin` and `Agentic-Collaborative-Wiki-HAI`. The HAI repo has issues and discussions enabled, 18 open issues, 5 discussions.
 - Verified 2026-09-07: discussions are not reachable through `gh issue`/REST; the GraphQL query works.
 
@@ -35,11 +37,13 @@ Generalize GitHub syncing out of the Open-Austin-only adapter into a `lifeos git
 - [ ] Write `lifeos-tools/skills/lifeos-github/SKILL.md` and register it in `install-script/functions/symlinks.sh` for both hosts.
 - [ ] Add offline renderer tests with fixtures.
 - [ ] Run the full suite and `bash -n` both changed shell files.
-- [ ] Confirm whether `open-austin-org` becomes a thin alias over the generic path or stays as-is. **Open question — see below.**
+- [ ] Delete the `open-austin-org` adapter (`lib/open-austin-org.sh`, its dispatch case, usage lines, and the `lifeos-open-austin` skill) once the generic path syncs `open-austin/org`. **Resolved 2026-09-07 — see the conceptual doc.** The adapter is 100 lines of shell-out-and-copy and nothing needs it once the generic tool talks to the GitHub API directly.
+- [ ] Decide whether the vault should still receive Open Austin weekly summaries, and in what shape. The adapter currently ferries the legacy combined `weekly-summary.md`, which sync does not generate and which has been superseded by seven per-team files. Deleting the adapter removes the ferry. **This is a LifeOS-side call, tracked in the LifeOS spike.**
 
 ## Open Questions
-- **Does the generic tool eventually absorb `open-austin/org`, or does that adapter stay?** Aslan has not ruled. Absorbing it means one code path and one skill; keeping both means two sync paths forever but a smaller blast radius when changing either.
-- Whether HAI project context lives at `grad-school/courses/human-ai-interaction-inf-385t-13/agentic-wiki-project/` as the working home while the GitHub snapshot lands in `sources/github/`. Aslan specified both paths; confirming they are the two halves rather than alternatives.
+- **Resolved 2026-09-07: the generic tool absorbs `open-austin/org` and the adapter is deleted.** The org repo keeps its own `tools/sync/` because `weekly-org-summary` depends on it. Two separate consumers of the same public API, neither importing the other — not duplication to keep in step.
+- **Resolved 2026-09-07:** HAI working context at `grad-school/courses/human-ai-interaction-inf-385t-13/agentic-wiki-project/`, generated snapshot at `sources/github/`. Two halves, not alternatives. Confirmed by Aslan.
+- Still open: whether label sync survives the port. It exists in the org tooling to support the team-label routing table in `weekly-org-summary`, which stays in the org repo. The vault may not need it at all.
 
 ## Ready for Human QA
 - (none yet)

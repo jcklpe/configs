@@ -27,10 +27,36 @@ Rejected alternatives, and why:
 - **Re-provisioning via `setup-local-skills`** — recreates the dual-maintenance problem the move exists to solve, for people who have not asked.
 - **A link reference in the org repo** — considered and explicitly declined by Aslan. The org repo should carry no reference to the private tooling at all, matching the precedent set by `docs/decisions/0005`, where `lifeos docs` was ported out of the org repo and the org repo was left with no `lifeos` mention.
 
-## Sequencing Constraint
-**Build here first, then rip out there.** Removing `tools/sync/` before the generic tool works leaves a window with no working org sync at all. The org-side removal is a successor spike, not part of this one.
+## Correction 2026-09-07: The Org-Side Rip-Out Is Mostly Cancelled
+The original plan had a successor spike removing `tools/sync/` from `~/work/org`. **Investigation says do not do that**, and the evidence is direct.
 
-Continues in: the org-repo removal spike (to be opened in `~/work/org/docs/active-spikes/` once this ships)
+`~/work/org/skills/weekly-org-summary/SKILL.md` **step 1 is literally `tools/sync/run.sh`**, and steps 2 onward read `snapshot/issues.md`, `snapshot/labels.md`, and `snapshot/issues/*.md`. The weekly summary — the genuinely collaborative capability, the one that posts to seven Open Austin team Slack channels — *is built on the sync tooling*. Removing `tools/sync/` breaks it.
+
+So the premise that started this ("nobody else uses the sync tooling") was true about one thing and false about another. Nobody else drives it into a LifeOS vault. But it is the input stage of a shared workflow any contributor should be able to run, which makes it org infrastructure rather than personal tooling that happens to live in a shared repo.
+
+**The resulting design is better than the one it replaces.** Instead of moving code between repos:
+
+- The generic `lifeos github` tool **syncs `open-austin/org` directly from the GitHub API**, exactly as it will sync every other repo.
+- `~/work/org` **keeps `tools/sync/` unchanged**, for `weekly-org-summary` and any contributor who wants a local snapshot.
+- The `open-austin-org` adapter in this repo **is deleted**, because nothing needs it once the generic path exists.
+
+That is one code path in each repo, no duplication to keep in step, and — the actual win — **the vault stops reaching into a sibling checkout to sync itself.** Today `lifeos open-austin-org sync` fails outright if `~/work/org` is missing or its `run.sh` is not executable. After this, syncing Open Austin needs only `gh` auth.
+
+The org repo therefore needs **no removal at all**: not `tools/sync/`, not `tools/notify/`, not the PAT setup section (the weekly summary needs `gh` auth too), not `tools/issues/create.sh`. The org-side spike is cancelled pending Aslan's agreement.
+
+## Also Found: The Adapter Ferries A Hand-Authored File
+`_copy_open_austin_org_snapshot` copies `weekly-summary.md`, which `tools/sync/run.sh` **does not generate**. It is agent-authored via `weekly-org-summary` and rendered to Slack by `tools/notify/`. So the adapter has been doing two unrelated jobs — syncing generated GitHub state, and ferrying a hand-written summary into the vault.
+
+Worse, it copies only the legacy combined `weekly-summary.md` while the snapshot now holds seven per-team files (`weekly-summary-board.md`, `-communications.md`, `-engagement.md`, `-finance.md`, `-fundraising.md`, `-infrastructure.md`, `-org.md`) from the weekly-summary-channels work. **The vault has been receiving a stale artifact shape.**
+
+Deleting the adapter removes the ferry too, so decide deliberately whether the vault should still receive weekly summaries and in what shape. That is a LifeOS-side question, not a GitHub-sync one.
+
+## Board Sync Is Read-Only, And That Matters For Scope
+Verified: every `gh` call in `tools/sync` is a read — `issue list`, `label list`, `project item-list`, `api`. There are no writes anywhere in it.
+
+Board *automation* is a completely separate system: **thirteen GitHub Actions workflows** in `~/work/org/.github/workflows/` (`add-issue-to-kanban`, `board-reopen-reconcile`, `close-to-done`, `stale-role-warning`, and the rest). Those are org-specific governance, they stay put, and nothing here touches them.
+
+So "board sync" in this spike means **reading board state into local context**, nothing more.
 
 ## Design Notes Carried Forward
 - **Discussions need GraphQL.** Issues, PRs, and board items are reachable through `gh` and REST; discussions are GraphQL-only. Verified 2026-09-07 against the HAI repo.
