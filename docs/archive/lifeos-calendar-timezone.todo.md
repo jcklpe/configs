@@ -24,9 +24,10 @@ Root cause confirmed empirically:
 - (none)
 
 ## Ready for Human QA
-- **Confirm a real timed event lands at the right hour.** The dry-run plan now reports `Time zone: America/Chicago` without `--tz`, but no `--execute` has been run through the fixed path. Next time a timed event is created for real, check the resulting event's start time in the Google Calendar UI. Everything up to the write is verified; only the round-trip is not.
+- (none)
 
 ## Done
+- **Confirm a real timed event lands at the right hour.** The dry-run plan now reports `Time zone: America/Chicago` without `--tz`, but no `--execute` has been run through the fixed path. Next time a timed event is created for real, check the resulting event's start time in the Google Calendar UI. Everything up to the write is verified; only the round-trip is not. — **Passed 2026-09-07.** Aslan reports creating dozens of timed events since the fix with no wrong-hour incident. The evidence holds up on inspection: the fix landed in `b15786c` and `ed65c8b` on 2026-08-19, there is no second code path a later event could have taken, and a UTC regression would have been immediately visible as a five- or six-hour offset. The QA item was written before the code had any real use and simply outlived its own accuracy.
 - [x] Repoint `_calendar_default_tz` at `/users/me/calendarList/{id}`. — Done. `GET /calendars/{id}` returned `curl: (56) ... 403` under the current token; `GET /users/me/calendarList/{id}?fields=timeZone` returns `{"timeZone": "America/Chicago"}`. Left a comment at the call site warning against "simplifying" it back, since the old form looks more natural and fails silently.
 - [x] Add portable system-zone detection: `/etc/timezone`, else the `/etc/localtime` symlink target, else `$TZ`. — Done as a new `_system_tz`. macOS has no `/etc/timezone`; `/etc/localtime` → `/var/db/timezone/zoneinfo/America/Chicago`, so the symlink target is stripped at `*/zoneinfo/`. Deliberately did **not** use `readlink -f` (unavailable on macOS) or `date +%Z` (yields `CDT`, not a valid IANA name — Google rejects it).
 - [x] Warn on stderr whenever a fallback rung is used, naming the zone and the reason. — Done via `_warn`. Rung 2 stays silent because it is the intended path; rungs 3 and 4 warn. The silence was the actual defect: the old code reached hardcoded UTC on every call and looked like a normal run.
