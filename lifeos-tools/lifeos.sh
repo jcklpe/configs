@@ -18,7 +18,6 @@ LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
 . "${LIB_DIR}/google.sh"
 . "${LIB_DIR}/m365.sh"
 . "${LIB_DIR}/github.sh"
-. "${LIB_DIR}/open-austin-org.sh"
 . "${LIB_DIR}/resume.sh"
 
 _usage() {
@@ -82,8 +81,7 @@ Usage:
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh github list-repos
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
-  ./lifeos.sh open-austin-org path
-  ./lifeos.sh open-austin-org sync [--qa | --output DIR]
+  ./lifeos.sh github create-issue --repo ALIAS_OR_OWNER/REPO --title TITLE [--body TEXT | --body-file FILE] [--label NAME]... [--assignee LOGIN]... [--assign-me] [--execute]
   ./lifeos.sh sync
 
 Real config lives in .env, copied from .env.example.
@@ -303,8 +301,8 @@ $vault/sources/m365/
 For Open Austin GitHub/org work, also read:
 
 $vault/open-austin/repo.md
-$vault/sources/open-austin-org/issues.md
-$vault/sources/open-austin-org/board-org-kanban.md
+$vault/sources/github/open-austin-org/issues.md
+$vault/sources/github/open-austin-org/board-org-kanban.md
 
 Then add the relevant focus-thread file, such as:
 
@@ -469,17 +467,11 @@ case "${1:-help}" in
             *) _err "Unknown Resume command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
-    open-austin-org)
-        case "${2:-}" in
-            path) shift 2; _open_austin_org_path "$@" ;;
-            sync) shift 2; _open_austin_org_sync "$@" ;;
-            *) _err "Unknown Open Austin org command: ${2:-}"; _usage; exit 1 ;;
-        esac
-        ;;
     github)
         case "${2:-}" in
             list-repos) shift 2; _github_list_repos "$@" ;;
             sync) shift 2; _github_sync "$@" ;;
+            create-issue) shift 2; _github_create_issue "$@" ;;
             *) _err "Unknown GitHub command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;

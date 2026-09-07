@@ -187,3 +187,88 @@ _github_sync() {
     fi
     return "$status"
 }
+
+##- Resolve a repo argument: either a configured alias or a literal owner/repo.
+##- Aliases are preferred because they carry the rest of the config, but a literal
+##- slug has to work for one-off issues in repos the vault does not track.
+_github_resolve_repo() {
+    local arg="$1" entry
+    case "$arg" in
+        */*) printf '%s\n' "$arg"; return 0 ;;
+    esac
+    entry="$(_github_repo_entry "$arg")" || return 1
+    printf '%s/%s\n' "$(printf '%s' "$entry" | jq -r '.owner')" "$(printf '%s' "$entry" | jq -r '.repo')"
+}
+
+##- Create one issue. Dry-run by default, per lifeos write policy and decision 0006:
+##- a write that cannot be shown before it happens should not happen.
+_github_create_issue() {
+    local repo_arg="" repo="" title="" body="" body_file="" execute=0 assign_me=0
+    local labels="" assignees="" cmd_out label assignee
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --repo) [ -n "${2:-}" ] || { _err "--repo requires ALIAS or OWNER/REPO"; return 1; }; repo_arg="$2"; shift 2 ;;
+            --title) [ -n "${2:-}" ] || { _err "--title requires TEXT"; return 1; }; title="$2"; shift 2 ;;
+            --body) [ -n "${2:-}" ] || { _err "--body requires TEXT"; return 1; }; body="$2"; shift 2 ;;
+            --body-file) [ -n "${2:-}" ] || { _err "--body-file requires FILE"; return 1; }; body_file="$2"; shift 2 ;;
+            --label) [ -n "${2:-}" ] || { _err "--label requires NAME"; return 1; }; labels="$labels$2\n"; shift 2 ;;
+            --assignee) [ -n "${2:-}" ] || { _err "--assignee requires LOGIN"; return 1; }; assignees="$assignees$2\n"; shift 2 ;;
+            --assign-me) assign_me=1; shift ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown create-issue option: $1"; return 1 ;;
+        esac
+    done
+
+    _github_ready || return 1
+    [ -n "$title" ] || { _err "--title is required"; return 1; }
+    [ -n "$repo_arg" ] || { _err "--repo is required (alias or OWNER/REPO)"; return 1; }
+    [ -z "$body_file" ] || [ -f "$body_file" ] || { _err "Body file does not exist: $body_file"; return 1; }
+    repo="$(_github_resolve_repo "$repo_arg")" || return 1
+
+    if [ "$assign_me" -eq 1 ]; then
+        if [ "$execute" -eq 1 ]; then
+            assignees="$assignees$(gh api user --jq .login)\n"
+        else
+            assignees="${assignees}@me\n"
+        fi
+    fi
+
+    _say "GitHub issue create plan:"
+    _say "Repo: $repo"
+    _say "Title: $title"
+    if [ -n "$body_file" ]; then
+        _say "Body file: $body_file"
+        _say "--- body preview ---"
+        sed -n '1,240p' "$body_file"
+        _say "--- end body preview ---"
+    elif [ -n "$body" ]; then
+        _say "Body:"
+        printf '%s\n' "$body"
+    else
+        _say "Body: <empty>"
+    fi
+    _say "Labels: $(printf '%b' "$labels" | grep -c . | tr -d ' ') -> $(printf '%b' "$labels" | paste -sd, - | sed 's/,$//')"
+    _say "Assignees: $(printf '%b' "$assignees" | grep -c . | tr -d ' ') -> $(printf '%b' "$assignees" | paste -sd, - | sed 's/,$//')"
+
+    if [ "$execute" -ne 1 ]; then
+        _say "DRY RUN: no GitHub issue was created. Re-run with --execute after approval."
+        return 0
+    fi
+
+    gh repo view "$repo" --json nameWithOwner --jq .nameWithOwner >/dev/null || {
+        _err "Cannot reach repo: $repo"; return 1; }
+
+    set -- gh issue create --repo "$repo" --title "$title"
+    if [ -n "$body_file" ]; then set -- "$@" --body-file "$body_file"; else set -- "$@" --body "$body"; fi
+    while IFS= read -r label; do [ -n "$label" ] && set -- "$@" --label "$label"; done <<EOF_LABELS
+$(printf '%b' "$labels")
+EOF_LABELS
+    while IFS= read -r assignee; do [ -n "$assignee" ] && set -- "$@" --assignee "$assignee"; done <<EOF_ASSIGNEES
+$(printf '%b' "$assignees")
+EOF_ASSIGNEES
+
+    cmd_out="$("$@")" || { _err "Issue creation failed"; return 1; }
+    _say "Created issue: $cmd_out"
+}
