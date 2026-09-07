@@ -77,6 +77,7 @@ create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-calendar" "${HOM
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-gmail" "${HOME}/.codex/skills/lifeos-gmail"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-drive" "${HOME}/.codex/skills/lifeos-drive"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-docs" "${HOME}/.codex/skills/lifeos-docs"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-github" "${HOME}/.codex/skills/lifeos-github"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-m365" "${HOME}/.codex/skills/lifeos-m365"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-open-austin" "${HOME}/.codex/skills/lifeos-open-austin"
 
@@ -103,6 +104,7 @@ create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-calendar" "${HOM
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-gmail" "${HOME}/.claude/skills/lifeos-gmail"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-drive" "${HOME}/.claude/skills/lifeos-drive"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-docs" "${HOME}/.claude/skills/lifeos-docs"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-github" "${HOME}/.claude/skills/lifeos-github"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-m365" "${HOME}/.claude/skills/lifeos-m365"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-open-austin" "${HOME}/.claude/skills/lifeos-open-austin"
 

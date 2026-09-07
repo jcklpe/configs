@@ -25,20 +25,24 @@ Generalize GitHub syncing out of the Open-Austin-only adapter into a `lifeos git
 - Verified 2026-09-07: discussions are not reachable through `gh issue`/REST; the GraphQL query works.
 
 ## To Do
-- [ ] Decide the snapshot layout under `sources/github/`. Aslan specified `sources/github/` as the destination; per-repo subdirectory naming is still open.
-- [ ] Define the repo config file shape and write the `.example.json`.
-- [ ] Port issue sync, including full comment threads, from `tools/sync/issues.py`.
-- [ ] Add PR sync. No prior art — this is new.
-- [ ] Add discussion sync via GraphQL. No prior art — this is new.
-- [ ] Port board sync from `tools/sync/boards.py` (Projects v2).
-- [ ] Decide whether label sync survives the port or is dropped as org-specific.
-- [ ] Carry over the issue and board write paths the vault needs, dry-run by default.
-- [ ] Wire `github)` into the dispatcher and the usage block.
-- [ ] Write `lifeos-tools/skills/lifeos-github/SKILL.md` and register it in `install-script/functions/symlinks.sh` for both hosts.
-- [ ] Add offline renderer tests with fixtures.
-- [ ] Run the full suite and `bash -n` both changed shell files.
-- [ ] Delete the `open-austin-org` adapter (`lib/open-austin-org.sh`, its dispatch case, usage lines, and the `lifeos-open-austin` skill) once the generic path syncs `open-austin/org`. **Resolved 2026-09-07 — see the conceptual doc.** The adapter is 100 lines of shell-out-and-copy and nothing needs it once the generic tool talks to the GitHub API directly.
-- [ ] Decide whether the vault should still receive Open Austin weekly summaries, and in what shape. The adapter currently ferries the legacy combined `weekly-summary.md`, which sync does not generate and which has been superseded by seven per-team files. Deleting the adapter removes the ferry. **This is a LifeOS-side call, tracked in the LifeOS spike.**
+- [ ] Carry over the issue and board write paths the vault needs, dry-run by default. **Not started** — sync is read-only today.
+- [ ] Delete the `open-austin-org` adapter (`lib/open-austin-org.sh`, its dispatch case, usage lines, the `lifeos-open-austin` skill) and retire `sources/open-austin-org/` in the vault, now that `sources/github/open-austin-org/` supersedes it.
+- [ ] Decide whether `tools/issues/create.sh` from the org repo becomes `lifeos github create-issue` here. See Open Questions.
+- [ ] Decide whether the vault should still receive Open Austin weekly summaries, and in what shape. **This is a LifeOS-side call, tracked in the LifeOS spike.**
+
+## Done
+- [x] Decide the snapshot layout under `sources/github/`. — `sources/github/<owner>-<repo>/` holding `issues.md` + `issues/<n>.md`, `pull-requests.md` + `pull-requests/<n>.md`, `discussions.md`, and `board-<name>.md`. Flat owner-repo slug rather than nested, so one `ls` shows every tracked repo.
+- [x] Define the repo config file shape and write the `.example.json`. — `secrets/github-repos.json`, gitignored, following the `google-accounts.json` pattern. Per-repo booleans for issues/prs/discussions plus a `projects` list. No token in it; auth is `gh`.
+- [x] Port issue sync, including full comment threads, from `tools/sync/issues.py`. — Ported into `lib/github-render.py` with two changes: detail directories are rebuilt each sync (the original accumulated stale files — 99 against 72 open issues), and an empty index is skipped entirely rather than written as a zero-count file.
+- [x] Add PR sync. No prior art — this is new. — Shares the issue code path, since the shapes match; `--kind` switches the labels so a PR index is never rendered as issues. A negative test guards that.
+- [x] Add discussion sync via GraphQL. No prior art — this is new. — `gh api graphql`, grouped by category, with author, comment count, and answered state. REST genuinely cannot see discussions, which is why they were invisible before.
+- [x] Port board sync from `tools/sync/boards.py` (Projects v2). — `gh project item-list`, grouped by status column. Verified against Org Kanban (88 items) and Open Roles (19).
+- [x] Decide whether label sync survives the port. — **Dropped.** It existed to support the team-label routing table in `weekly-org-summary`, which stays in the org repo, and the live taxonomy is visible in the GitHub UI or `gh label list`. Nothing in the vault reasons about it.
+- [x] Wire `github)` into the dispatcher and the usage block.
+- [x] Write `lifeos-tools/skills/lifeos-github/SKILL.md` and register it in `install-script/functions/symlinks.sh` for both hosts. — Both lines added; live symlinks created by hand so the skill works now.
+- [x] Add offline renderer tests with fixtures. — 21 assertions over 4 fixtures. Caught a bad fixture on first run: the truncation marker sat inside the 160-char preview window, so the test would have passed for the wrong reason.
+- [x] Run the full suite and `bash -n` both changed shell files. — All 9 test files pass.
+- [x] Unplanned: `lifeos-tools/qa/` was not gitignored and now holds real synced org data. Added `**/qa/` to `.gitignore`.
 
 ## Open Questions
 - **Resolved 2026-09-07: the generic tool absorbs `open-austin/org` and the adapter is deleted.** The org repo keeps its own `tools/sync/` because `weekly-org-summary` depends on it. Two separate consumers of the same public API, neither importing the other — not duplication to keep in step.
