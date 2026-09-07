@@ -1,0 +1,30 @@
+{
+ "items": [
+  {
+   "number": 42,
+   "title": "Fix the widget",
+   "updatedAt": "2026-09-01T00:00:00Z",
+   "createdAt": "2026-08-01T00:00:00Z",
+   "labels": [
+    {
+     "name": "infrastructure"
+    }
+   ],
+   "assignees": [
+    {
+     "login": "alice"
+    }
+   ],
+   "body": "short preview text. xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx PARAGRAPH_THAT_SHOULD_BE_TRUNCATED"
+  },
+  {
+   "number": 7,
+   "title": "No labels here",
+   "updatedAt": "2026-09-05T00:00:00Z",
+   "createdAt": "2026-09-01T00:00:00Z",
+   "labels": [],
+   "assignees": [],
+   "body": "unlabeled body"
+  }
+ ]
+}

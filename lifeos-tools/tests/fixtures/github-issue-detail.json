@@ -1,0 +1,5 @@
+{"number":42,"title":"Fix the widget","state":"OPEN","body":"full body text here",
+ "author":{"login":"alice"},"assignees":[{"login":"alice"}],"labels":[{"name":"infrastructure"}],
+ "createdAt":"2026-08-01T00:00:00Z","updatedAt":"2026-09-01T00:00:00Z",
+ "url":"https://github.com/o/r/issues/42",
+ "comments":[{"author":{"login":"bob"},"createdAt":"2026-08-15T12:00:00Z","body":"a comment"}]}

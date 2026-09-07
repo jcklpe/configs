@@ -1,0 +1,8 @@
+{"items":[
+ {"number":19,"title":"How do we work together?","url":"https://example.invalid/19","body":"body",
+  "updatedAt":"2026-09-05T00:00:00Z","isAnswered":false,"author":{"login":"jcklpe"},
+  "category":{"name":"General"},"commentCount":4},
+ {"number":20,"title":"Answered one","url":"https://example.invalid/20","body":"body",
+  "updatedAt":"2026-09-05T00:00:00Z","isAnswered":true,"author":{"login":"jcklpe"},
+  "category":{"name":"General"},"commentCount":1}
+]}
