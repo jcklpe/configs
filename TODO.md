@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- None.
+- LifeOS GitHub Sync: generalize GitHub syncing out of the Open-Austin-only adapter into a `lifeos github` command group covering issues, PRs, Discussions, and project boards for any configured repo, with the issue/board writes the vault needs. Motivated by the HAI term-project repo (18 issues, 5 discussions carrying live architecture decisions) being entirely invisible to the vault. Build here first; the org-repo removal is a successor spike, because ripping `tools/sync/` out before this ships would leave a window with no working org sync. `docs/active-spikes/lifeos-github-sync.md`, `docs/active-spikes/lifeos-github-sync.todo.md`.
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
