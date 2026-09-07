@@ -188,3 +188,7 @@ secrets/*
 !**/secrets/.gitignore
 !**/secrets/*.example
 !**/secrets/*.example.*
+
+# lifeos-tools --qa output: real synced data, never committed
+lifeos-tools/qa/
+**/qa/

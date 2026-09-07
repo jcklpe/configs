@@ -4,6 +4,15 @@
 
 The HAI term project (`Agentic-Collaborative-Wiki-HAI/mono-repo`) has 18 open issues and 5 discussions carrying live architecture decisions, and none of it reaches the vault. An agent working in LifeOS is blind to it.
 
+## Open Question: Where Does Issue Creation Live?
+`tools/issues/create.sh` in the org repo is a dry-run-gated wrapper over `gh issue create`. Aslan has noted it is not LifeOS-specific and suggested `configs/skills/`.
+
+**Recommendation: make it `lifeos github create-issue` here instead.** The argument is the one this whole spike is built on — the problem being solved was GitHub work split across two homes, forcing an agent to know which repo held which half. Putting sync in `lifeos-tools` and issue creation in `configs/skills/` recreates exactly that split at a smaller scale. One command group for reading and writing GitHub is the shape that avoids it.
+
+A `configs/skills/` skill would also be documentation without a tool, since the value of `create.sh` is the dry-run gate and approval discipline, not the `gh` call it wraps. That discipline belongs in the `lifeos-github` skill next to everything else.
+
+Not implemented. Flagged for Aslan's decision.
+
 ## Goals
 Sync **issues, pull requests, discussions, and project boards** for an arbitrary configured set of repos into `sources/github/<owner>-<repo>/`, and carry the write capability the vault needs for issues and boards.
 
