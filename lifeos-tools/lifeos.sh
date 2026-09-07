@@ -17,6 +17,7 @@ LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
 . "${LIB_DIR}/trello.sh"
 . "${LIB_DIR}/google.sh"
 . "${LIB_DIR}/m365.sh"
+. "${LIB_DIR}/github.sh"
 . "${LIB_DIR}/open-austin-org.sh"
 . "${LIB_DIR}/resume.sh"
 
@@ -79,6 +80,8 @@ Usage:
   ./lifeos.sh m365 contacts create ALIAS [--display-name TEXT] [--given-name TEXT] [--surname TEXT] [--email ADDRESS]... [--phone NUMBER]... [--mobile NUMBER] [--company TEXT] [--job-title TEXT] [--notes TEXT | --notes-file FILE] [--execute]
   ./lifeos.sh m365 contacts update ALIAS --contact ID [contact fields...] [--execute]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
+  ./lifeos.sh github list-repos
+  ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
   ./lifeos.sh open-austin-org path
   ./lifeos.sh open-austin-org sync [--qa | --output DIR]
   ./lifeos.sh sync
@@ -471,6 +474,13 @@ case "${1:-help}" in
             path) shift 2; _open_austin_org_path "$@" ;;
             sync) shift 2; _open_austin_org_sync "$@" ;;
             *) _err "Unknown Open Austin org command: ${2:-}"; _usage; exit 1 ;;
+        esac
+        ;;
+    github)
+        case "${2:-}" in
+            list-repos) shift 2; _github_list_repos "$@" ;;
+            sync) shift 2; _github_sync "$@" ;;
+            *) _err "Unknown GitHub command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
     sync)
