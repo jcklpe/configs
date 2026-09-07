@@ -18,9 +18,10 @@
 - (none)
 
 ## Ready for Human QA
-- Real-terminal sanity: run `lifeos drive download <alias> <id> --out ~/somewhere/` on your machine and confirm the file opens. All validation below was run from the agent environment against a real shared drive and passed.
+- (none)
 
 ## Done
+- Real-terminal sanity: run `lifeos drive download <alias> <id> --out ~/somewhere/` on your machine and confirm the file opens. All validation below was run from the agent environment against a real shared drive and passed. — **Confirmed de facto 2026-09-07.** Aslan closed this on the grounds that the command has been available since 2026-08-13 and no problem has surfaced. Note the weaker evidence class: this is absence-of-complaint, not a witnessed run.
 - Add `_drive_download` and helpers (`_drive_export_default_mime`, `_drive_ext_for_mime`) to `lib/google.sh`. Done: binaries via `files/{id}?alt=media&supportsAllDrives=true`; native via `/export`. Default export map Doc→PDF, Sheet→XLSX, Slides→PDF, Drawing→PNG; `--mime` overrides. Cleans up partial file and returns non-zero on failure.
 - Wire `download)` into the `drive)` dispatch in `lifeos.sh`. Done.
 - Add `drive download` to the CLI usage/help text if a drive help block exists. Done: added the usage line to the `drive` block in `lifeos.sh`.
