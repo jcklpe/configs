@@ -32,12 +32,19 @@ lifeos github create-issue --repo open-austin/org --title "..." --body "..." --a
 
 **`create-issue` is the only write, and it is gated.** Dry-run by default; `--execute` is required. Everything else — labeling an existing issue, closing, commenting, editing — goes through `gh` directly, subject to whatever approval rules that repo's own `AGENTS.md` sets. Open Austin's, for instance, requires explicit approval for all of those.
 
-### There Are Deliberately No Board Writes
-Moving a card between columns is **not** implemented, and should not be added without a specific reason.
+### Board Moves Are Supported, With A Latency Caveat
+```sh
+lifeos github move-card --repo hai --issue 18 --status Active
+lifeos github move-card --repo open-austin --issue 545 --status Done --execute
+```
 
-Board state in `open-austin/org` is maintained by **thirteen GitHub Actions workflows** — `add-issue-to-kanban`, `board-reopen-reconcile`, `close-to-done`, `reopened-to-todo`, `archive-old-done`, and the rest. That system took a full spike to get right, and its design is that **issue state drives board state**. Writing a status field directly from a personal tool would fight it: the card moves, then a reconcile workflow moves it back, and the two disagree silently.
+Dry-run by default; an unknown column lists the valid ones rather than failing blankly.
 
-So the way to move a card is to change the issue — close it, reopen it, relabel it — and let the automation do its job. The org's own `AGENTS.md` independently forbids agents from moving board items without explicit approval, which points the same direction.
+**A board move is a legitimate input to the automation, not a fight with it.** Both tracked repos wire board and issue state together deliberately: moving a card to Done triggers GitHub's native `Auto-close issue` and the issue closes; moving one out of a terminal column is picked up by a reconciler that reopens it. That is the designed path, documented in `open-austin/org`'s `docs/decisions/0005-board-sync-architecture.md`.
+
+**The real caveat is latency, not conflict.** Card→close is instant because it is native. Card→reopen is cron-driven — `*/5` in the org repo, `*/15` in HAI — and GitHub delays scheduled runs under load, with a measured first reopen taking 25+ minutes. **So a sync run immediately after a move will show the board and the issue disagreeing, and that is expected rather than broken.** Re-sync later.
+
+**Approval still applies.** `open-austin/org`'s `AGENTS.md` forbids agents from moving board items without explicit approval. That is a policy about who decides, not a claim that the capability is unsafe — do not confuse the two, and get approval before `--execute`.
 
 ## Auth
 Authentication is whatever `gh auth status` reports. No token is stored in the LifeOS tooling, and none belongs there. If sync fails on auth, run `gh auth login`.

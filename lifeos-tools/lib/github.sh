@@ -301,3 +301,105 @@ EOF_ASSIGNEES
     cmd_out="$("$@")" || { _err "Issue creation failed"; return 1; }
     _say "Created issue: $cmd_out"
 }
+
+##- Move a card between columns on a Projects v2 board. Dry-run by default.
+##- This is a legitimate input to board automation, not a fight with it: in a repo
+##- wired like open-austin/org or the HAI mono-repo, moving a card to Done triggers
+##- native Auto-close, and moving one out of a terminal column is picked up by a
+##- reconciler that reopens the issue. Expect lag on the reopen direction —
+##- reconcilers are cron-driven and GitHub delays scheduled runs, so a sync run
+##- immediately after a move can show the board and the issue disagreeing.
+_github_move_card() {
+    local repo_arg="" issue="" status="" execute=0
+    local owner repo entry proj_owner proj_number proj_id field_id option_id
+    local issue_node item_id current current_name
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --repo) repo_arg="${2:-}"; shift 2 ;;
+            --issue) issue="${2:-}"; shift 2 ;;
+            --status) status="${2:-}"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown move-card option: $1"; return 1 ;;
+        esac
+    done
+
+    _github_ready || return 1
+    [ -n "$repo_arg" ] || { _err "--repo is required (a configured alias)"; return 1; }
+    [ -n "$issue" ] || { _err "--issue NUMBER is required"; return 1; }
+    [ -n "$status" ] || { _err "--status NAME is required (e.g. Done, Backlog)"; return 1; }
+
+    entry="$(_github_repo_entry "$repo_arg")" || return 1
+    owner="$(printf '%s' "$entry" | jq -r '.owner')"
+    repo="$(printf '%s' "$entry" | jq -r '.repo')"
+    [ "$(printf '%s' "$entry" | jq '(.projects // []) | length')" -gt 0 ] || {
+        _err "No project board configured for alias: $repo_arg"; return 1; }
+    proj_number="$(printf '%s' "$entry" | jq -r '.projects[0].number')"
+    proj_owner="$(printf '%s' "$entry" | jq -r --arg d "$owner" '.project_owner // $d')"
+
+    # Resolve project node id, the Status field, and the target option in one query.
+    local meta
+    meta="$(gh api graphql -f owner="$proj_owner" -F number="$proj_number" -f query='
+      query($owner:String!, $number:Int!) {
+        organization(login:$owner) {
+          projectV2(number:$number) {
+            id
+            field(name:"Status") {
+              ... on ProjectV2SingleSelectField { id options { id name } }
+            }
+          }
+        }
+      }' 2>/dev/null)" || { _err "Could not read project #$proj_number for $proj_owner"; return 1; }
+
+    proj_id="$(printf '%s' "$meta" | jq -r '.data.organization.projectV2.id')"
+    field_id="$(printf '%s' "$meta" | jq -r '.data.organization.projectV2.field.id')"
+    option_id="$(printf '%s' "$meta" | jq -r --arg s "$status" '.data.organization.projectV2.field.options[] | select(.name == $s) | .id')"
+
+    if [ -z "$option_id" ] || [ "$option_id" = "null" ]; then
+        _err "No such status column: $status"
+        _say "Available: $(printf '%s' "$meta" | jq -r '[.data.organization.projectV2.field.options[].name] | join(", ")')"
+        return 1
+    fi
+
+    issue_node="$(gh issue view "$issue" --repo "$owner/$repo" --json id --jq .id 2>/dev/null)" || {
+        _err "Could not read issue #$issue in $owner/$repo"; return 1; }
+
+    item_id="$(gh api graphql --paginate -f project="$proj_id" -f query='
+      query($project: ID!, $endCursor: String) {
+        node(id: $project) { ... on ProjectV2 {
+          items(first:100, after:$endCursor) {
+            pageInfo { hasNextPage endCursor }
+            nodes { id content { ... on Issue { id } }
+                    fieldValueByName(name:"Status") { ... on ProjectV2ItemFieldSingleSelectValue { optionId name } } }
+        } } }' --jq ".data.node.items.nodes[] | select(.content.id == \"$issue_node\")" 2>/dev/null)"
+
+    [ -n "$item_id" ] || { _err "Issue #$issue is not on the board"; return 1; }
+    current="$(printf '%s' "$item_id" | jq -r '.fieldValueByName.optionId // ""')"
+    current_name="$(printf '%s' "$item_id" | jq -r '.fieldValueByName.name // "No Status"')"
+    item_id="$(printf '%s' "$item_id" | jq -r '.id')"
+
+    _say "GitHub board move plan:"
+    _say "Repo: $owner/$repo"
+    _say "Issue: #$issue"
+    _say "Board: $proj_owner project #$proj_number"
+    _say "Status: $current_name -> $status"
+
+    if [ "$current" = "$option_id" ]; then
+        _say "Already in $status — nothing to do."
+        return 0
+    fi
+    if [ "$execute" -ne 1 ]; then
+        _say "DRY RUN: no change made. Re-run with --execute after approval."
+        return 0
+    fi
+
+    gh api graphql -f project="$proj_id" -f item="$item_id" -f field="$field_id" -f option="$option_id" -f query='
+      mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+        updateProjectV2ItemFieldValue(input:{
+          projectId:$project, itemId:$item, fieldId:$field,
+          value:{ singleSelectOptionId:$option }}) { projectV2Item { id } }
+      }' >/dev/null || { _err "Board move failed"; return 1; }
+    _say "Moved #$issue to $status."
+    _warn "Board automation reacts on its own schedule. A Done move closes the issue via native Auto-close (fast); moving out of a terminal column reopens it via a cron reconciler, which can lag well past its interval. Re-sync later, not immediately."
+}
