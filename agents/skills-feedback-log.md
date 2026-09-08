@@ -70,3 +70,16 @@ Context/evidence: LifeOS Drive import work, 2026-09-05. Fixed in configs `b5ae89
 Candidate change: add to the dry-run guidance across the lifeos skills that a dry run proves the plan, not the write, and that the first real `--execute` of any command should be treated as untested. Where a command's whole purpose is a format conversion, the verification must inspect the converted artifact rather than the request.
 
 Scope: global reusable.
+
+### 2026-09-08 - The Skill Validator Rejects The LifeOS Vault's Own Frontmatter Convention
+Skill or area: `write-skills` validation step, and vault-local skill authoring generally.
+
+Observed behavior: `write-skills` says to run `quick_validate.py` when creating a skill. Running it against a newly written vault skill (`audit-vault-consistency`) produced: *"Unexpected key(s) in SKILL.md frontmatter: tags. Allowed properties are: allowed-tools, description, license, metadata, name."* Every vault-local skill in LifeOS carries a `tags:` block, deliberately — it is what makes skills visible in Obsidian's tag graph alongside the rest of the vault, and Aslan asked for `tags` to be *added* to `update-parents` on 2026-09-07 when it was found to be missing them.
+
+Expected better behavior: the validator's schema and the vault's convention disagree, and the vault's convention is the correct one for its context. An agent that runs the validator, sees a failure, and "fixes" it by stripping `tags` would silently degrade the vault to satisfy a tool that does not know about it. `write-skills` should say that a validator complaint about `tags` in a vault-local skill is expected and must not be acted on.
+
+Context/evidence: LifeOS session 2026-09-08. Compounding this, the documented invocation still does not work — `quick_validate.py` imports `yaml`, absent from both system python3 and the lifeos-tools venv, so `python3 <path>` fails with ModuleNotFoundError and it only runs under `uv run --with pyyaml`. That was logged during the `lifeos-docs-skill` spike on 2026-09-06 and `write-skills` still gives the bare `python3` form. **Second occurrence of the same friction, which is the threshold that spike history says should prioritize a fix rather than another log entry.**
+
+Candidate change: correct the invocation in `write-skills` to the `uv run --with pyyaml` form, and add a short note that host-specific frontmatter conventions (LifeOS's `tags:`) will trip the validator and are not defects. Consider whether the validator is the right gate for vault-local skills at all, given it encodes one host's schema.
+
+Scope: global (`write-skills`), with a vault-local consequence.
