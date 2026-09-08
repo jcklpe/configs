@@ -60,11 +60,14 @@ sources/github/<owner>-<repo>/
   issues/<number>.md     full body plus the whole comment thread
   pull-requests.md       index (omitted entirely when there are none)
   pull-requests/<n>.md
-  discussions.md         grouped by category
+  discussions.md         index, grouped by category
+  discussions/<n>.md     the full thread: opening post, every comment, nested replies
   board-<name>.md        Projects v2 items grouped by status column
 ```
 
 Index files are orientation layers, not mirrors: a 160-character preview per item, with full text in the detail file. That follows LifeOS decision 0002 and keeps `sources/` scannable.
+
+**Discussions carry their full thread**, including nested replies rendered as blockquotes. That is deliberate and differs from how an issue is treated: an issue's substance is usually its title and body, while a discussion's substance *is* the argument in the replies. Truncating one would discard the thing worth having.
 
 Detail directories are **rebuilt** on every sync, so an issue that closes stops appearing. Do not assume a file's presence means the item is still open — the index is the authority on what is open.
 
@@ -74,4 +77,4 @@ Before reasoning about current state in any repo the vault tracks. A stale snaps
 ## Boundaries
 - Do not hand-edit anything under `sources/github/`. It is regenerated wholesale.
 - Do not add a repo to the config just because it exists. Every entry costs sync time and snapshot size; add repos whose issue state the vault actually reasons about.
-- Discussions can be long. The snapshot carries a preview and a comment count, not the thread. Read the thread on GitHub when a specific one matters.
+- Discussion fetching is bounded by GitHub's GraphQL node limit — 50 discussions, 50 comments each, 25 replies each. A thread past those caps is truncated and the detail file says so. The caps exist because 100/100/100 exceeds GitHub's 500,000-node ceiling and the whole query fails.
