@@ -82,6 +82,7 @@ Usage:
   ./lifeos.sh github list-repos
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
   ./lifeos.sh github create-issue --repo ALIAS_OR_OWNER/REPO --title TITLE [--body TEXT | --body-file FILE] [--label NAME]... [--assignee LOGIN]... [--assign-me] [--execute]
+  ./lifeos.sh github move-card --repo ALIAS --issue NUMBER --status COLUMN [--execute]
   ./lifeos.sh sync
 
 Real config lives in .env, copied from .env.example.
@@ -472,6 +473,7 @@ case "${1:-help}" in
             list-repos) shift 2; _github_list_repos "$@" ;;
             sync) shift 2; _github_sync "$@" ;;
             create-issue) shift 2; _github_create_issue "$@" ;;
+            move-card) shift 2; _github_move_card "$@" ;;
             *) _err "Unknown GitHub command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
