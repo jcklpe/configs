@@ -142,16 +142,20 @@ def render_discussions(data, args):
         out += ["## %s" % cat.upper(), ""]
         for d in by_cat[cat]:
             age = days_since(d.get("updatedAt"))
+            replies = d.get("replyCount") or 0
             out += [
-                "### [#%d %s](%s)" % (d["number"], d["title"], d.get("url", "")),
+                "### [#%d %s](discussions/%d.md)" % (d["number"], d["title"], d["number"]),
                 "",
-                "**Updated:** %sd ago | **Author:** @%s | **Comments:** %d%s"
+                "**Updated:** %sd ago | **Author:** @%s | **Comments:** %d%s%s"
                 % (
                     age if age is not None else "?",
                     (d.get("author") or {}).get("login", "unknown"),
                     d.get("commentCount", 0),
+                    " (+%d replies)" % replies if replies else "",
                     " | **Answered**" if d.get("isAnswered") else "",
                 ),
+                "",
+                "[On GitHub](%s)" % d.get("url", ""),
                 "",
             ]
             p = preview(d.get("body"))
@@ -198,7 +202,61 @@ def render_board(data, args):
     return "\n".join(out)
 
 
+def render_discussion_detail(data, args):
+    """A discussion is its argument, so this carries every comment and reply in full."""
+    d = data
+    created, updated = days_since(d.get("createdAt")), days_since(d.get("updatedAt"))
+    comments = (d.get("comments") or {}).get("nodes") or []
+    total = (d.get("comments") or {}).get("totalCount", len(comments))
+    out = [
+        "# #%d — %s" % (d["number"], d["title"]),
+        "",
+        "**Category:** %s" % (d.get("category") or {}).get("name", "Uncategorized"),
+        "",
+        "**Opened:** %sd ago by @%s" % (created if created is not None else "?",
+                                       (d.get("author") or {}).get("login", "unknown")),
+        "",
+        "**Updated:** %sd ago" % (updated if updated is not None else "?"),
+        "",
+    ]
+    if d.get("isAnswered"):
+        out += ["**Answered**", ""]
+    if d.get("url"):
+        out += ["**URL:** %s" % d["url"], ""]
+    out += ["---", "", "## Opening Post", "", d.get("body") or "(empty)", ""]
+
+    if comments:
+        out += ["---", "", "## Comments (%d)" % total, ""]
+        for c in comments:
+            who = (c.get("author") or {}).get("login", "unknown")
+            when = c.get("createdAt") or ""
+            try:
+                when = datetime.fromisoformat(when.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M UTC")
+            except ValueError:
+                pass
+            mark = " — **marked as answer**" if c.get("isAnswer") else ""
+            out += ["### @%s — %s%s" % (who, when, mark), "", c.get("body") or "", ""]
+            replies = (c.get("replies") or {}).get("nodes") or []
+            for r in replies:
+                rwho = (r.get("author") or {}).get("login", "unknown")
+                rwhen = r.get("createdAt") or ""
+                try:
+                    rwhen = datetime.fromisoformat(rwhen.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M UTC")
+                except ValueError:
+                    pass
+                # Replies are indented as a blockquote so nesting survives plain-text reading.
+                body = (r.get("body") or "").split("\n")
+                out += ["> **@%s — %s**" % (rwho, rwhen), ">"]
+                out += ["> " + line if line else ">" for line in body]
+                out += [""]
+            out += ["---", ""]
+    if total > len(comments):
+        out += ["*Note: %d of %d comments fetched; the thread exceeds the page size.*" % (len(comments), total), ""]
+    return "\n".join(out)
+
+
 RENDERERS = {
+    "discussion-detail": render_discussion_detail,
     "issue-index": render_issue_index,
     "item-detail": render_item_detail,
     "discussions": render_discussions,

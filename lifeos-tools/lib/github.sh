@@ -102,28 +102,57 @@ _github_sync_items() {
 }
 
 ##- Discussions are GraphQL-only; `gh issue`/REST cannot see them.
+##- Carries the full thread — comments and their nested replies — not just a preview,
+##- because a discussion IS the content. An issue's substance is its title and body;
+##- a discussion's substance is the argument in the replies.
 _github_sync_discussions() {
-    local owner="$1" repo="$2" dest="$3" nodes
+    local owner="$1" repo="$2" dest="$3" nodes numbers n gh_err
+    gh_err="$(mktemp)"
     nodes="$(gh api graphql -f owner="$owner" -f repo="$repo" -f query='
       query($owner:String!, $repo:String!) {
         repository(owner:$owner, name:$repo) {
-          discussions(first:100, orderBy:{field:UPDATED_AT, direction:DESC}) {
+          discussions(first:50, orderBy:{field:UPDATED_AT, direction:DESC}) {
             nodes {
-              number title url body updatedAt isAnswered
+              number title url body createdAt updatedAt isAnswered
               author { login }
               category { name }
-              comments { totalCount }
+              comments(first:50) {
+                totalCount
+                nodes {
+                  body createdAt isAnswer
+                  author { login }
+                  replies(first:25) {
+                    totalCount
+                    nodes { body createdAt author { login } }
+                  }
+                }
+              }
             }
           }
         }
-      }' --jq '.data.repository.discussions.nodes' 2>/dev/null)" || {
-        _warn "Could not read discussions for $owner/$repo (may be disabled)"; return 0; }
+      }' --jq ".data.repository.discussions.nodes" 2>"$gh_err")" || {
+        _warn "Could not read discussions for $owner/$repo: $(tr '\n' ' ' < "$gh_err")"
+        rm -f "$gh_err"; return 0; }
+    rm -f "$gh_err"
 
-    [ -n "$nodes" ] && [ "$nodes" != "null" ] || { _warn "No discussions for $owner/$repo"; return 0; }
+    [ -n "$nodes" ] && [ "$nodes" != "null" ] && [ "$(printf '%s' "$nodes" | jq 'length')" -gt 0 ] || {
+        rm -f "$dest/discussions.md"; rm -rf "$dest/discussions"
+        _say "  discussions: 0 (skipped)" >&2; return 0; }
 
     printf '%s' "$nodes" \
-        | jq '{items: [.[] | {number,title,url,body,updatedAt,isAnswered,author,category, commentCount: .comments.totalCount}]}' \
+        | jq '{items: [.[] | {number,title,url,body,createdAt,updatedAt,isAnswered,author,category,
+                              commentCount: .comments.totalCount,
+                              replyCount: ([.comments.nodes[]?.replies.totalCount] | add // 0)}]}' \
         | _github_render discussions --owner "$owner" --repo "$repo" > "$dest/discussions.md" || return 1
+
+    rm -rf "$dest/discussions"
+    mkdir -p "$dest/discussions" || return 1
+    numbers="$(printf '%s' "$nodes" | jq -r '.[].number')"
+    for n in $numbers; do
+        printf '%s' "$nodes" | jq --argjson n "$n" 'map(select(.number == $n))[0]' \
+            | _github_render discussion-detail --owner "$owner" --repo "$repo" \
+            > "$dest/discussions/$n.md" || return 1
+    done
     _say "  discussions: $(printf '%s' "$nodes" | jq 'length')" >&2
 }
 
