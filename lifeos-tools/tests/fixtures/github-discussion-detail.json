@@ -1,0 +1,8 @@
+{"number":21,"title":"How should we handle our agent/model stack?","url":"https://example.invalid/21",
+ "body":"opening post body","createdAt":"2026-09-01T00:00:00Z","updatedAt":"2026-09-03T00:00:00Z",
+ "isAnswered":true,"author":{"login":"jcklpe"},"category":{"name":"Group decision making thread"},
+ "comments":{"totalCount":2,"nodes":[
+   {"body":"first comment","createdAt":"2026-09-01T20:39:24Z","isAnswer":true,"author":{"login":"jcklpe"},
+    "replies":{"totalCount":1,"nodes":[{"body":"a nested reply\nwith two lines","createdAt":"2026-09-02T05:46:32Z","author":{"login":"alexuvlab"}}]}},
+   {"body":"second comment","createdAt":"2026-09-02T05:20:49Z","isAnswer":false,"author":{"login":"iamyfy"},
+    "replies":{"totalCount":0,"nodes":[]}}]}}
