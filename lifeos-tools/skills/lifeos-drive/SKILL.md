@@ -25,6 +25,27 @@ Drive reads are on-demand. Do not clone Drive into LifeOS, recursively index who
 
 Use `drive download` when a file is **not** a native Google Doc/Sheet — `.pdf`, `.docx`, `.xlsx`, `.png`, etc. — which `drive read` can only show as metadata. It fetches binaries byte-for-byte and exports native Google files (Doc→PDF, Sheet→XLSX, Slides→PDF, Drawing→PNG by default; override with `--mime`). `--out` accepts a file path or an existing directory (the file lands there under its Drive name); with no `--out` it writes to the CWD. It never overwrites without `--force`, works on shared drives, and adds no OAuth scope. Still on-demand and one file per call — not a mirror/sync; keep the "do not clone Drive" boundary.
 
+## Keeping The Index Fresh
+```sh
+lifeos drive sync personal          # writes sources/drive.md
+lifeos drive sync personal --qa     # writes to lifeos-tools/qa/ instead
+```
+
+**Re-sync before reasoning about what is in Drive.** The index is a snapshot, and a stale one is worse than none — it invites trusting a picture of Drive that has moved. The hand-maintained index this replaced went two months without a refresh, which is the failure the command exists to prevent.
+
+**It is an orientation layer, not a mirror** (LifeOS policy 0002). It answers "what is in Drive and roughly where," which search cannot. It does **not** answer "where is this specific file" — that is `drive search`, which is live.
+
+Bounds, tunable per run: 25 top-level folders, 12 children each, 30 files modified in the last 45 days. Raise them with `--folders`, `--recent`, `--recent-days` for a one-off deeper look, but **do not raise the defaults** — the point is a file small enough to read in full.
+
+`sources/drive.md` is generated and rewritten wholesale. **Never hand-edit it.** Durable interpretation of what a Drive document *means* belongs in the relevant focus note; the index only says what exists.
+
+## Excluded Folders Are A Privacy Boundary
+Folders named in each account's `drive.index_exclude` are listed by name in a "Deliberately Not Listed" section and never enumerated. **`journal` is excluded by default and should stay that way** — it is a personal journal archive, and the standing instruction is not to mine it casually, only when Aslan explicitly asks for something in it.
+
+An empty exclusion list is not the same as a considered one. If a new sensitive folder appears, add it to `index_exclude` rather than relying on an agent to notice.
+
+**Do not copy raw financial exports, medical records, legal files, tax documents, credentials, tokens, or API config into `sources/`.** The index links to folders; it does not replicate their contents, and neither should you.
+
 ## Import (the only write)
 ```sh
 lifeos drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
