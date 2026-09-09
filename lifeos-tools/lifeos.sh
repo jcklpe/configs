@@ -61,6 +61,7 @@ Usage:
   ./lifeos.sh drive meta ALIAS FILE_URL_OR_ID [--json]
   ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
   ./lifeos.sh drive download ALIAS FILE_URL_OR_ID [--out PATH] [--mime EXPORT_MIME] [--force]
+  ./lifeos.sh drive sync ALIAS [--folders N] [--recent N] [--recent-days N] [--qa | --output FILE]
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
   ./lifeos.sh docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
   ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
@@ -447,6 +448,7 @@ case "${1:-help}" in
             meta) shift 2; _drive_meta "$@" ;;
             read) shift 2; _drive_read "$@" ;;
             download) shift 2; _drive_download "$@" ;;
+            sync) shift 2; _drive_sync "$@" ;;
             import-doc) shift 2; _drive_import_doc "$@" ;;
             *) _err "Unknown Drive command: ${2:-}"; _usage; exit 1 ;;
         esac
