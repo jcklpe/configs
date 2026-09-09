@@ -748,6 +748,114 @@ _drive_download() {
     fi
 }
 
+##- Bounded Drive index. Orientation only, per LifeOS policy 0002 — top-level structure
+##- plus recent activity, never a full mirror. `drive search` is the live lookup; this is
+##- the "what is in here at all" layer that search cannot answer.
+##- Excluded folders are a privacy boundary, not an omission: see the lifeos-drive skill.
+##- Same shape as _m365_days_ago; kept local to this module rather than shared, since
+##- the two feature modules are otherwise independent.
+_drive_days_ago() {
+    "$LIFEOS_PY" -c 'from datetime import datetime, timedelta, timezone; import sys; print((datetime.now(timezone.utc) - timedelta(days=int(sys.argv[1]))).replace(microsecond=0).isoformat().replace("+00:00", "Z"))' "$1"
+}
+
+_drive_sync_excludes() {
+    local alias="$1"
+    _google_account_value "$alias" '(.drive.index_exclude // ["journal"]) | join("\n")' 2>/dev/null || printf 'journal'
+}
+
+_drive_render_index() {
+    "$LIFEOS_PY" "${LIB_DIR}/google-drive-render.py" "$@"
+}
+
+_drive_sync() {
+    local alias="" custom_out="" out
+    local max_folders=25 children=12 max_recent=30 recent_days=45
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --qa) custom_out="${QA_DIR}/drive.md"; shift ;;
+            --output) [ -n "${2:-}" ] || { _err "--output requires FILE"; return 1; }; custom_out="$2"; shift 2 ;;
+            --folders) max_folders="$2"; shift 2 ;;
+            --recent) max_recent="$2"; shift 2 ;;
+            --recent-days) recent_days="$2"; shift 2 ;;
+            -*) _err "Unknown drive sync option: $1"; return 1 ;;
+            *) alias="$1"; shift ;;
+        esac
+    done
+    [ -n "$alias" ] || { _err "drive sync requires an account ALIAS (see: lifeos drive accounts)"; return 1; }
+
+    local token email excludes exclude_clause folders_json recent_json payload
+    token="$(_google_access_token "$alias")" || return 1
+    email="$(_google_account_value "$alias" '.email // ""')"
+    excludes="$(_drive_sync_excludes "$alias")"
+
+    _say "Indexing Drive: $alias" >&2
+
+    # Top-level folders under My Drive.
+    folders_json="$(curl -sS -G "https://www.googleapis.com/drive/v3/files" \
+        -H "Authorization: Bearer $token" \
+        --data-urlencode "q='root' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false" \
+        --data-urlencode "fields=files(id,name,mimeType,modifiedTime,webViewLink)" \
+        --data-urlencode "orderBy=name" \
+        --data-urlencode "pageSize=$max_folders" 2>/dev/null | jq -c '.files // []')" || {
+        _err "Drive folder listing failed for $alias"; return 1; }
+
+    # Children of each folder, capped. Excluded folders are listed by name only.
+    local enriched="[]" fid fname skipped="[]" kids kid_count
+    while IFS= read -r row; do
+        [ -n "$row" ] || continue
+        fid="$(printf '%s' "$row" | jq -r '.id')"
+        fname="$(printf '%s' "$row" | jq -r '.name')"
+        if printf '%b' "$excludes" | grep -qxF "$fname"; then
+            skipped="$(printf '%s' "$skipped" | jq --arg n "$fname" '. + [$n]')"
+            continue
+        fi
+        kids="$(curl -sS -G "https://www.googleapis.com/drive/v3/files" \
+            -H "Authorization: Bearer $token" \
+            --data-urlencode "q='$fid' in parents and trashed=false" \
+            --data-urlencode "fields=files(id,name,mimeType,modifiedTime,webViewLink)" \
+            --data-urlencode "orderBy=folder,modifiedTime desc" \
+            --data-urlencode "pageSize=$((children + 1))" 2>/dev/null | jq -c '.files // []')"
+        [ -n "$kids" ] || kids="[]"
+        kid_count="$(printf '%s' "$kids" | jq 'length')"
+        enriched="$(printf '%s' "$enriched" | jq -c \
+            --argjson f "$row" --argjson k "$kids" --argjson n "$kid_count" --argjson cap "$children" \
+            '. + [$f + {children: ($k[0:$cap]), child_count: $n, child_truncated: ($n > $cap)}]')"
+    done <<EOF_FOLDERS
+$(printf '%s' "$folders_json" | jq -c '.[]')
+EOF_FOLDERS
+
+    # Recently modified files across the account.
+    local since
+    since="$(_drive_days_ago "$recent_days")"
+    recent_json="$(curl -sS -G "https://www.googleapis.com/drive/v3/files" \
+        -H "Authorization: Bearer $token" \
+        --data-urlencode "q=modifiedTime > '${since}' and trashed=false and mimeType != 'application/vnd.google-apps.folder'" \
+        --data-urlencode "fields=files(id,name,mimeType,modifiedTime,webViewLink)" \
+        --data-urlencode "orderBy=modifiedTime desc" \
+        --data-urlencode "pageSize=$max_recent" 2>/dev/null | jq -c '.files // []')"
+    [ -n "$recent_json" ] || recent_json="[]"
+
+    if [ -n "$custom_out" ]; then
+        out="$custom_out"
+    else
+        _vault_ready || return 1
+        _ensure_sources_dir || return 1
+        out="$(_sources_dir)/drive.md"
+    fi
+    _ensure_parent_dir "$out"
+
+    payload="$(jq -n --arg a "$alias" --arg e "$email" \
+        --argjson f "$enriched" --argjson r "$recent_json" --argjson s "$skipped" \
+        --argjson mf "$max_folders" --argjson cpf "$children" --argjson mr "$max_recent" --argjson rd "$recent_days" \
+        '{alias:$a, email:$e, folders:$f, recent:$r, skipped:$s,
+          caps:{max_folders:$mf, children_per_folder:$cpf, max_recent:$mr, recent_days:$rd}}')"
+    printf '%s' "$payload" | _drive_render_index > "$out" || return 1
+
+    _say "  folders: $(printf '%s' "$enriched" | jq 'length') | recent: $(printf '%s' "$recent_json" | jq 'length') | skipped: $(printf '%s' "$skipped" | jq 'length')" >&2
+    _say "Updated $out"
+}
+
 _drive_import_source_mime() {
     local source="$1"
     case "$source" in
