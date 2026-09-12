@@ -11,6 +11,7 @@ own OAuth, and requires an explicit --document-id. No dependency on any repo.
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -346,6 +347,221 @@ def command_replace_once(args):
     return 0
 
 
+
+# ---- set-body: replace a document's entire body in place (preserves doc id/history/links) ----
+
+def _flatten_tabs(tabs, out):
+    for tab in tabs or []:
+        props = tab.get("tabProperties", {})
+        body = tab.get("documentTab", {}).get("body", {})
+        out.append((props.get("tabId", ""), body))
+        _flatten_tabs(tab.get("childTabs", []), out)
+
+
+def get_target_tab(document, tab_ids):
+    tabs = document.get("tabs")
+    if tabs:
+        flat = []
+        _flatten_tabs(tabs, flat)
+        if not flat:
+            return None, document.get("body", {})
+        if tab_ids:
+            wanted = set(tab_ids)
+            for tid, body in flat:
+                if tid in wanted:
+                    return tid, body
+            raise ValueError(f"Unknown tab ID(s): {', '.join(tab_ids)}")
+        return flat[0]
+    return None, document.get("body", {})
+
+
+def body_end_index(body):
+    end = 1
+    for element in body.get("content", []) or []:
+        ei = element.get("endIndex")
+        if ei is not None and ei > end:
+            end = ei
+    return end
+
+
+_INLINE_TOKEN = re.compile(r"\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*")
+
+
+def parse_inline(text):
+    """Return (plain_text, spans). Spans are code-point ranges into plain_text."""
+    plain = ""
+    spans = []
+    pos = 0
+    for match in _INLINE_TOKEN.finditer(text):
+        plain += text[pos:match.start()]
+        if match.group(1) is not None:
+            label, url = match.group(1), match.group(2)
+            start = len(plain); plain += label; end = len(plain)
+            spans.append({"start": start, "end": end, "link": url})
+        elif match.group(3) is not None:
+            seg = match.group(3); start = len(plain); plain += seg; end = len(plain)
+            spans.append({"start": start, "end": end, "bold": True})
+        elif match.group(4) is not None:
+            seg = match.group(4); start = len(plain); plain += seg; end = len(plain)
+            spans.append({"start": start, "end": end, "italic": True})
+        pos = match.end()
+    plain += text[pos:]
+    return plain, spans
+
+
+_HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
+_BULLET_RE = re.compile(r"^([ \t]*)[-*]\s+(.*)$")
+
+
+def parse_markdown_blocks(md):
+    blocks = []
+    for raw in md.replace("\r\n", "\n").split("\n"):
+        line = raw.rstrip()
+        if line.strip() == "":
+            blocks.append({"style": "NORMAL_TEXT", "bullet": False, "level": 0, "text": "", "spans": []})
+            continue
+        mh = _HEADING_RE.match(line)
+        mb = _BULLET_RE.match(line)
+        if mh:
+            level = min(len(mh.group(1)), 6)
+            plain, spans = parse_inline(mh.group(2).strip())
+            blocks.append({"style": f"HEADING_{level}", "bullet": False, "level": 0, "text": plain, "spans": spans})
+        elif mb:
+            indent = mb.group(1).replace("\t", "  ")
+            plain, spans = parse_inline(mb.group(2).strip())
+            blocks.append({"style": "NORMAL_TEXT", "bullet": True, "level": len(indent) // 2, "text": plain, "spans": spans})
+        else:
+            plain, spans = parse_inline(line)
+            blocks.append({"style": "NORMAL_TEXT", "bullet": False, "level": 0, "text": plain, "spans": spans})
+    while blocks and blocks[-1]["text"] == "" and not blocks[-1]["bullet"]:
+        blocks.pop()
+    return blocks
+
+
+def _range(tab_id, start, end):
+    value = {"startIndex": start, "endIndex": end}
+    if tab_id:
+        value["tabId"] = tab_id
+    return value
+
+
+def _location(tab_id, index):
+    value = {"index": index}
+    if tab_id:
+        value["tabId"] = tab_id
+    return value
+
+
+def build_setbody_requests(tab_id, insert_start, blocks):
+    final = ""
+    metas = []
+    for i, block in enumerate(blocks):
+        cp_start = len(final)
+        final += block["text"]
+        cp_text_end = len(final)
+        if i != len(blocks) - 1:
+            final += "\n"
+        metas.append((cp_start, cp_text_end, block))
+
+    def abs_idx(cp):
+        return insert_start + utf16_length(final[:cp])
+
+    requests = [{"insertText": {"location": _location(tab_id, insert_start), "text": final}}]
+    for cp_start, cp_text_end, block in metas:
+        a = abs_idx(cp_start)
+        z = abs_idx(cp_text_end)
+        para_end = z if z > a else a + 1
+        if block["style"].startswith("HEADING_"):
+            requests.append({"updateParagraphStyle": {
+                "range": _range(tab_id, a, para_end),
+                "paragraphStyle": {"namedStyleType": block["style"]},
+                "fields": "namedStyleType"}})
+        if block["bullet"]:
+            requests.append({"createParagraphBullets": {
+                "range": _range(tab_id, a, para_end),
+                "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"}})
+            if block["level"] > 0:
+                indent_pt = 18 * (block["level"] + 1)
+                requests.append({"updateParagraphStyle": {
+                    "range": _range(tab_id, a, para_end),
+                    "paragraphStyle": {
+                        "indentStart": {"magnitude": indent_pt, "unit": "PT"},
+                        "indentFirstLine": {"magnitude": indent_pt, "unit": "PT"}},
+                    "fields": "indentStart,indentFirstLine"}})
+        for span in block["spans"]:
+            s = abs_idx(cp_start + span["start"])
+            e = abs_idx(cp_start + span["end"])
+            if e <= s:
+                continue
+            if span.get("link"):
+                requests.append({"updateTextStyle": {
+                    "range": _range(tab_id, s, e),
+                    "textStyle": {"link": {"url": span["link"]}},
+                    "fields": "link"}})
+            style = {}
+            fields = []
+            if span.get("bold"):
+                style["bold"] = True; fields.append("bold")
+            if span.get("italic"):
+                style["italic"] = True; fields.append("italic")
+            if fields:
+                requests.append({"updateTextStyle": {
+                    "range": _range(tab_id, s, e),
+                    "textStyle": style,
+                    "fields": ",".join(fields)}})
+    return requests, final
+
+
+def command_set_body(args):
+    document_id = document_id_from(args)
+    md = text_argument(args.new, args.file, "Body")
+    token = access_token()
+    document = get_document(document_id, token)
+    tab_id, body = get_target_tab(document, args.tab_id)
+    end_index = body_end_index(body)
+    blocks = parse_markdown_blocks(md)
+    if not blocks:
+        raise ValueError("Body content is empty")
+    _, final = build_setbody_requests(tab_id, 1, blocks)
+    print("Google Docs set-body plan:")
+    print(f"Document: {document.get('title', 'Untitled document')} ({document_id})")
+    print(f"Revision read: {document.get('revisionId', '<missing>')}")
+    print(f"Target tab: {tab_id or '<first / legacy body>'}")
+    print(f"Clears existing body [1, {end_index - 1}) and inserts {len(blocks)} block(s) in place (doc id, history, comments, and links preserved).")
+    print("--- new body (plain preview) ---")
+    print(final)
+    print("--- end plan ---")
+    if not args.execute:
+        print("DRY RUN: no Google Doc was changed. Re-run with --execute after approval.")
+        return 0
+
+    live = get_document(document_id, token)
+    revision_id = live.get("revisionId")
+    if not revision_id:
+        raise ValueError("Google Docs response did not include a revisionId")
+    live_tab_id, live_body = get_target_tab(live, args.tab_id)
+    live_end = body_end_index(live_body)
+    requests = []
+    if live_end > 2:
+        requests.append({"deleteContentRange": {"range": _range(live_tab_id, 1, live_end - 1)}})
+    body_requests, _ = build_setbody_requests(live_tab_id, 1, blocks)
+    requests.extend(body_requests)
+    payload = {"requests": requests, "writeControl": {"requiredRevisionId": revision_id}}
+    url = f"{DOCS_API}/{urllib.parse.quote(document_id)}:batchUpdate"
+    try:
+        api_json("POST", url, token, payload)
+    except RuntimeError as exc:
+        message = str(exc)
+        if "HTTP 403" in message or "PERMISSION_DENIED" in message or "insufficient" in message.lower():
+            alias = os.environ.get("LIFEOS_DOCS_ALIAS", "").strip()
+            hint = (f"run: lifeos google auth {alias} --docs-write" if alias
+                    else "authorize the Docs write scope: lifeos google auth ALIAS --docs-write")
+            raise RuntimeError(f"{message}\nHINT: editing needs the Google Docs write scope — {hint}") from exc
+        raise
+    print(f"Set body of document {document_id} in place ({len(blocks)} blocks).")
+    return 0
+
+
 def build_parser():
     parser = argparse.ArgumentParser(description="Read Google Docs and perform one exact, revision-guarded replacement.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -373,6 +589,15 @@ def build_parser():
     )
     replace_parser.add_argument("--execute", action="store_true")
     replace_parser.set_defaults(func=command_replace_once)
+
+    setbody_parser = subparsers.add_parser("set-body", help="Replace the document body in place with formatted content from markdown; dry-run by default")
+    setbody_parser.add_argument("--document-id")
+    body_group = setbody_parser.add_mutually_exclusive_group(required=True)
+    body_group.add_argument("--file", help="Path to a markdown source file")
+    body_group.add_argument("--new", help="Inline markdown body")
+    setbody_parser.add_argument("--tab-id", action="append", default=[])
+    setbody_parser.add_argument("--execute", action="store_true")
+    setbody_parser.set_defaults(func=command_set_body)
     return parser
 
 
