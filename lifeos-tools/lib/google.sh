@@ -261,7 +261,7 @@ _docs_helper() {
 # Open Austin checkout (see docs/decisions/docs-editing-in-lifeos-tools.md).
 _docs_run() {
     local sub="${1:-}" alias="${2:-}" raw="${3:-}" doc_id token
-    [ -n "$sub" ] || { _err "docs requires a subcommand (read|replace-once)"; return 1; }
+    [ -n "$sub" ] || { _err "docs requires a subcommand (read|replace-once|set-body)"; return 1; }
     [ -n "$alias" ] || { _err "docs $sub requires ALIAS"; return 1; }
     [ -n "$raw" ] || { _err "docs $sub requires DOC_URL_OR_ID"; return 1; }
     shift 3
