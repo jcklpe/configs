@@ -621,13 +621,49 @@ _trello_sync() {
             --data-urlencode "filter=open" \
             --data-urlencode "fields=name" > "$lists_file" || return 1
 
+        # Cards without nested actions: the nested comment expansion (actions=commentCard on
+        # /cards/open) returns 403 on large boards, so comments are fetched flat below and merged in.
         _trello_get "/boards/${board_id}/cards/open" \
             --data-urlencode "fields=name,idList,start,due,url,labels,desc" \
-            --data-urlencode "checklists=all" \
-            --data-urlencode "actions=commentCard" \
-            --data-urlencode "actions_limit=1000" \
-            --data-urlencode "action_fields=data,date,type" \
-            --data-urlencode "action_memberCreator_fields=fullName,username" > "$cards_file" || return 1
+            --data-urlencode "checklists=all" > "$cards_file" || return 1
+
+        # Fetch comment actions at the board level (a flat query, no nested expansion), paginating
+        # with `before` until exhausted, then merge them onto each card as .actions so the renderer
+        # sees the same shape it always did (comments, including task-chain links, are preserved).
+        local actions_file page_file before_cursor n
+        actions_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-actions.XXXXXX")" || return 1
+        page_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-actions-page.XXXXXX")" || return 1
+        printf '[]' > "$actions_file"
+        before_cursor=""
+        local page_i=0
+        while [ "$page_i" -lt 30 ]; do
+            if [ -n "$before_cursor" ]; then
+                _trello_get "/boards/${board_id}/actions" \
+                    --data-urlencode "filter=commentCard" \
+                    --data-urlencode "limit=1000" \
+                    --data-urlencode "memberCreator=true" \
+                    --data-urlencode "memberCreator_fields=fullName,username" \
+                    --data-urlencode "before=${before_cursor}" > "$page_file" || break
+            else
+                _trello_get "/boards/${board_id}/actions" \
+                    --data-urlencode "filter=commentCard" \
+                    --data-urlencode "limit=1000" \
+                    --data-urlencode "memberCreator=true" \
+                    --data-urlencode "memberCreator_fields=fullName,username" > "$page_file" || break
+            fi
+            n="$(jq 'length' "$page_file" 2>/dev/null || echo 0)"
+            [ "$n" -gt 0 ] || break
+            jq -s '.[0] + .[1]' "$actions_file" "$page_file" > "${actions_file}.new" && mv "${actions_file}.new" "$actions_file"
+            [ "$n" -lt 1000 ] && break
+            before_cursor="$(jq -r '.[-1].date' "$page_file")"
+            page_i=$((page_i + 1))
+        done
+        jq --slurpfile acts "$actions_file" '
+          ($acts[0] | map(select(.data.card.id != null)) | group_by(.data.card.id)
+            | map({key: (.[0].data.card.id), value: .}) | from_entries) as $bycard
+          | map(. + {actions: ($bycard[.id] // [])})
+        ' "$cards_file" > "${cards_file}.merged" && mv "${cards_file}.merged" "$cards_file"
+        rm -f "$page_file" "$actions_file"
 
         board_name="$(jq -r '.name // "Untitled board"' "$board_file")"
         board_url="$(jq -r '.url // ""' "$board_file")"
