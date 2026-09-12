@@ -65,6 +65,7 @@ Usage:
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
   ./lifeos.sh docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
   ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
+  ./lifeos.sh docs set-body ALIAS DOC_URL_OR_ID (--file FILE | --new MARKDOWN) [--tab-id ID]... [--execute]   # rewrite the doc body in place from markdown (preserves id/history/links)
   ./lifeos.sh m365 accounts
   ./lifeos.sh m365 auth ALIAS [--no-browser]
   ./lifeos.sh m365 profile ALIAS [--json]
@@ -457,6 +458,7 @@ case "${1:-help}" in
         case "${2:-}" in
             read) shift 2; _docs_run read "$@" ;;
             replace-once) shift 2; _docs_run replace-once "$@" ;;
+            set-body) shift 2; _docs_run set-body "$@" ;;
             *) _err "Unknown Docs command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
