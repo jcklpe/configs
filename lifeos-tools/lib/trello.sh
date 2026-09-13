@@ -139,6 +139,171 @@ _trello_resolve_list_id() {
     printf '%s\n' "$matches"
 }
 
+##- Labels: the board's color-coded index. A label is a filter/grouping layer, never the
+##- sole home of a fact — the durable context lives in the card title/description — so a
+##- label can be deleted later without losing information. list-labels is a read; the rest
+##- need the write token. See skills/lifeos-trello/SKILL.md and the vault trello-card template.
+_trello_list_labels() {
+    local board_id="${1:-}"
+
+    _trello_ready || return 1
+    if [ -z "$board_id" ]; then
+        board_id="$(_first_board_id)"
+    fi
+    if [ -z "$board_id" ]; then
+        _err "Pass a board ID or set TRELLO_BOARD_IDS"
+        return 1
+    fi
+
+    _trello_get "/boards/${board_id}/labels" \
+        --data-urlencode "fields=name,color" \
+        --data-urlencode "limit=1000" |
+        jq -r '.[] | "- " + (if (.name // "") == "" then "(unnamed)" else .name end) + " | id: " + .id + " | color: " + (.color // "none")'
+}
+
+# Resolve a label reference (24-hex id, or an exact label name on the board) to a label id.
+_trello_resolve_label_id() {
+    local board_id="$1"
+    local label_ref="$2"
+    local matches
+
+    if [ -z "$label_ref" ]; then
+        _err "Missing label"
+        return 1
+    fi
+
+    if _looks_like_trello_id "$label_ref"; then
+        printf '%s\n' "$label_ref"
+        return 0
+    fi
+
+    if [ -z "$board_id" ]; then
+        board_id="$(_first_board_id)"
+    fi
+    if [ -z "$board_id" ]; then
+        _err "Label names require --board or TRELLO_BOARD_IDS"
+        return 1
+    fi
+
+    matches="$(
+        _trello_get "/boards/${board_id}/labels" \
+            --data-urlencode "fields=name" \
+            --data-urlencode "limit=1000" |
+            jq -r --arg name "$label_ref" '.[] | select(.name == $name) | .id'
+    )" || return 1
+
+    if [ -z "$matches" ]; then
+        _err "No label named '$label_ref' found on board $board_id"
+        return 1
+    fi
+    if [ "$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')" != "1" ]; then
+        _err "Multiple labels named '$label_ref' found on board $board_id; use the label ID"
+        return 1
+    fi
+    printf '%s\n' "$matches"
+}
+
+_trello_create_label() {
+    local board_id="" name="" color=""
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --board) board_id="$2"; shift 2 ;;
+            --name) name="$2"; shift 2 ;;
+            --color) color="$2"; shift 2 ;;
+            *) _err "Unknown create-label option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$name" ] || { _err "create-label requires --name"; return 1; }
+    if [ -z "$board_id" ]; then
+        board_id="$(_first_board_id)"
+    fi
+    [ -n "$board_id" ] || { _err "create-label requires --board or TRELLO_BOARD_IDS"; return 1; }
+    # Trello label colors: 10 hues, each also with a _light and _dark shade (30 total), or empty for colorless.
+    case "$color" in
+        "") : ;;
+        green|yellow|orange|red|purple|blue|sky|lime|pink|black) : ;;
+        green_light|yellow_light|orange_light|red_light|purple_light|blue_light|sky_light|lime_light|pink_light|black_light) : ;;
+        green_dark|yellow_dark|orange_dark|red_dark|purple_dark|blue_dark|sky_dark|lime_dark|pink_dark|black_dark) : ;;
+        *) _err "create-label --color must be a Trello color (e.g. green, green_dark, sky_light) or omitted; hues: green yellow orange red purple blue sky lime pink black, each with optional _light/_dark"; return 1 ;;
+    esac
+
+    _trello_write POST "/labels" \
+        --data-urlencode "idBoard=${board_id}" \
+        --data-urlencode "name=${name}" \
+        --data-urlencode "color=${color}" |
+        jq -r '"Created label: " + (.name // "(unnamed)") + " | id: " + .id + " | color: " + (.color // "none")'
+}
+
+_trello_add_label() {
+    local board_id="" card="" label_ref="" label_id
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --board) board_id="$2"; shift 2 ;;
+            --card) card="$(_card_ref "$2")"; shift 2 ;;
+            --label) label_ref="$2"; shift 2 ;;
+            *) _err "Unknown add-label option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$card" ] || { _err "add-label requires --card"; return 1; }
+    [ -n "$label_ref" ] || { _err "add-label requires --label"; return 1; }
+
+    label_id="$(_trello_resolve_label_id "$board_id" "$label_ref")" || return 1
+    _trello_write POST "/cards/${card}/idLabels" \
+        --data-urlencode "value=${label_id}" >/dev/null \
+        || { _err "Failed to add label ${label_ref} to card ${card}"; return 1; }
+    _say "Added label ${label_ref} to card ${card}"
+}
+
+_trello_remove_label() {
+    local board_id="" card="" label_ref="" label_id
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --board) board_id="$2"; shift 2 ;;
+            --card) card="$(_card_ref "$2")"; shift 2 ;;
+            --label) label_ref="$2"; shift 2 ;;
+            *) _err "Unknown remove-label option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$card" ] || { _err "remove-label requires --card"; return 1; }
+    [ -n "$label_ref" ] || { _err "remove-label requires --label"; return 1; }
+
+    label_id="$(_trello_resolve_label_id "$board_id" "$label_ref")" || return 1
+    _trello_write DELETE "/cards/${card}/idLabels/${label_id}" >/dev/null \
+        || { _err "Failed to remove label ${label_ref} from card ${card}"; return 1; }
+    _say "Removed label ${label_ref} from card ${card}"
+}
+
+# Board-wide label deletion (retirement). Removes the label from every card that carries it;
+# durable context lives in card bodies, so this loses the filter, not information.
+_trello_delete_label() {
+    local board_id="" label_ref="" label_id
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --board) board_id="$2"; shift 2 ;;
+            --label) label_ref="$2"; shift 2 ;;
+            *) _err "Unknown delete-label option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$label_ref" ] || { _err "delete-label requires --label"; return 1; }
+
+    label_id="$(_trello_resolve_label_id "$board_id" "$label_ref")" || return 1
+    _trello_write DELETE "/labels/${label_id}" >/dev/null \
+        || { _err "Failed to delete label ${label_ref} (id ${label_id})"; return 1; }
+    _say "Deleted label ${label_ref} (id ${label_id}) board-wide"
+}
+
 _trello_add_card() {
     local board_id="" list_ref="" name="" desc="" desc_file="" list_id
 

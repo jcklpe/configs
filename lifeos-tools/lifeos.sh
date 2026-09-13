@@ -32,6 +32,7 @@ Usage:
   ./lifeos.sh context
   ./lifeos.sh trello list-boards
   ./lifeos.sh trello list-lists [board_id]
+  ./lifeos.sh trello list-labels [board_id]
   ./lifeos.sh trello sync [--qa | --output FILE]
   ./lifeos.sh trello add-card --list LIST --name NAME [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
   ./lifeos.sh trello move-card --card CARD_ID_OR_URL --list LIST [--board BOARD_ID]
@@ -39,6 +40,10 @@ Usage:
   ./lifeos.sh trello rename-card --card CARD_ID_OR_URL --name NAME
   ./lifeos.sh trello set-desc --card CARD_ID_OR_URL --file FILE
   ./lifeos.sh trello comment --card CARD_ID_OR_URL (--text TEXT | --file FILE)
+  ./lifeos.sh trello create-label --name NAME [--color COLOR] [--board BOARD_ID]
+  ./lifeos.sh trello add-label --card CARD_ID_OR_URL --label LABEL_ID_OR_NAME [--board BOARD_ID]
+  ./lifeos.sh trello remove-label --card CARD_ID_OR_URL --label LABEL_ID_OR_NAME [--board BOARD_ID]
+  ./lifeos.sh trello delete-label --label LABEL_ID_OR_NAME [--board BOARD_ID]
   ./lifeos.sh trello supersede --from CARD_ID_OR_URL --to CARD_ID_OR_URL [--board BOARD_ID]
   ./lifeos.sh trello supersede --create --from CARD_ID_OR_URL --list LIST --name NAME [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
   ./lifeos.sh trello chain --card CARD_ID_OR_URL [--json]
@@ -394,6 +399,7 @@ case "${1:-help}" in
         case "${2:-}" in
             list-boards) _trello_list_boards ;;
             list-lists) shift 2; _trello_list_lists "$@" ;;
+            list-labels) shift 2; _trello_list_labels "$@" ;;
             sync) shift 2; _trello_sync "$@" ;;
             add-card) shift 2; _trello_add_card "$@" ;;
             move-card) shift 2; _trello_move_card "$@" ;;
@@ -401,6 +407,10 @@ case "${1:-help}" in
             rename-card) shift 2; _trello_rename_card "$@" ;;
             set-desc) shift 2; _trello_set_desc "$@" ;;
             comment) shift 2; _trello_comment "$@" ;;
+            create-label) shift 2; _trello_create_label "$@" ;;
+            add-label) shift 2; _trello_add_label "$@" ;;
+            remove-label) shift 2; _trello_remove_label "$@" ;;
+            delete-label) shift 2; _trello_delete_label "$@" ;;
             supersede) shift 2; _trello_supersede "$@" ;;
             chain) shift 2; _trello_chain "$@" ;;
             *) _err "Unknown Trello command: ${2:-}"; _usage; exit 1 ;;

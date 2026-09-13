@@ -1,6 +1,6 @@
 ---
 name: lifeos-trello
-description: "Use when reading or writing Trello through the lifeos CLI: listing boards/lists, syncing the Trello snapshot, creating/moving/renaming cards, setting descriptions, commenting, or linking task-chain cards with supersede. Covers the commands and Trello-specific safety (no hard-delete, description overwrite caveat, prefer comments)."
+description: "Use when reading or writing Trello through the lifeos CLI: listing boards/lists/labels, syncing the Trello snapshot, creating/moving/renaming cards, setting descriptions, commenting, applying/creating/deleting labels, or linking task-chain cards with supersede. Covers the commands and Trello-specific safety (no hard-delete cards, description overwrite caveat, prefer comments)."
 ---
 
 # LifeOS Trello
@@ -13,6 +13,7 @@ The `sources/trello.md` snapshot is generated context, not a write-back database
 ```sh
 lifeos trello list-boards
 lifeos trello list-lists
+lifeos trello list-labels        # board labels: name | id | color
 lifeos trello sync
 ```
 
@@ -45,6 +46,23 @@ lifeos trello snooze --card CARD_ID_OR_URL --until YYYY-MM-DD [--list LIST] [--b
 
 Run `lifeos trello sync` after to refresh the snapshot.
 
+## Labels (the board's color-coded index)
+Labels carry course/thread grouping so the card title doesn't need a text prefix. A label is an **index, never a content layer**: no fact should live *only* in a label, so a label can be deleted at semester turnover without losing information (you lose the filter, not the record).
+
+```sh
+lifeos trello list-labels [BOARD_ID]                                  # inventory: name | id | color
+lifeos trello create-label --name "Quant" [--color green] [--board B] # colors: green yellow orange red purple blue sky lime pink black, each with optional _light/_dark
+lifeos trello add-label --card CARD_ID_OR_URL --label NAME_OR_ID [--board B]
+lifeos trello remove-label --card CARD_ID_OR_URL --label NAME_OR_ID [--board B]
+lifeos trello delete-label --label NAME_OR_ID [--board B]             # board-wide removal (retirement)
+```
+
+- `--label` accepts a 24-hex label id or an exact label name (resolved on the board; ambiguous names error, use the id).
+- **Retirement:** at semester end, `delete-label` the course labels once their cards are Done. It removes the label from any card still carrying it — durable context lives in the card body, so this is lossless. Course labels use plain names (`Quant`, `HAI`, `Perspectives`, `DataWrangling`); Aslan does this manually.
+- Card title/label format is specified in the vault's `templates/trello-card.md`.
+
+Run `lifeos trello sync` after label writes to refresh the snapshot.
+
 ## Task Chains (supersede)
 When a card hits a gate — a wait on an external party, a future date, a handoff, or a substantial prerequisite — do not keep mutating it. Create a successor and link them. `supersede` writes the bidirectional link atomically (a `🔗 Continues in:` comment on the predecessor and a `🔗 Continues from:` comment on the successor), so it can't be left half-applied:
 
@@ -64,6 +82,6 @@ lifeos trello chain --card ANY_CARD_ID_OR_URL [--json]
 ```
 
 ## Safety
-- Do not hard-delete Trello cards.
+- Do not hard-delete Trello cards. (`delete-label` deletes a *label* board-wide, which is fine for retirement; cards are never hard-deleted.)
 - `set-desc` overwrites the full description. Prefer `comment` for additive notes; task-chain links are stored as comments for this reason.
 - Trello writes have no dry-run or before/after output yet, including `supersede` — confirm the target before running.
