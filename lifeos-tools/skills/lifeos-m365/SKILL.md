@@ -69,3 +69,13 @@ lifeos m365 contacts update ALIAS --contact CONTACT_ID --company "Organization"
 These commands operate on the signed-in user's default Outlook Contacts folder, not the institutional organization directory. Reads are bounded and do not recurse through additional contact folders. Create/update writes are dry-run by default and require `--execute`; updates require the exact Graph contact ID. Passing `--email` or `--phone` during an update replaces that complete field array, which the dry-run plan displays. There are no contact or folder delete commands.
 
 After any successful calendar or contact write, re-run the corresponding `sync` command to refresh the LifeOS snapshot.
+
+## Files (OneDrive / SharePoint) — implemented but gated
+```sh
+lifeos m365 files search ALIAS "Work Plan"      # returns drive-item ids
+lifeos m365 files meta ALIAS ITEM_ID
+lifeos m365 files download ALIAS ITEM_ID --out PATH
+```
+These require the `Files.ReadWrite` delegated scope, enabled per account with `"files": {"enabled": true}` in `m365-accounts.json`.
+
+**⚠️ Gated on the UT tenant (verified 2026-09-14).** Enabling `files` for the `ut` account and re-consenting hits an **admin-approval wall**: the tenant requires a request-with-justification for the Files scope, so a student account cannot self-grant it. The `files` flag is therefore **disabled by default**; leaving it enabled drags `Files.ReadWrite` into every Graph call and breaks the already-consented mail/calendar/contacts scopes behind the same wall. The commands and scope plumbing are kept in place so this works immediately if UT admin approval is ever obtained. There is no rich Word-editing API (unlike Excel's workbook API), so any future edit path is download → local edit (e.g. python-docx) → `PUT .../content` (OneDrive keeps version history).

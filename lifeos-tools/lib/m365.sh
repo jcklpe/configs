@@ -84,6 +84,7 @@ _m365_scopes() {
     _m365_account_value "$alias" '(.mail.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Mail.Read\n'
     _m365_account_value "$alias" '(.calendar.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Calendars.ReadWrite\n'
     _m365_account_value "$alias" '(.contacts.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Contacts.ReadWrite\n'
+    _m365_account_value "$alias" '(.files.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Files.ReadWrite\n'
     return 0
 }
 
@@ -966,6 +967,62 @@ _m365_contacts_update() {
     _say "Updated contact: $(printf '%s' "$updated" | jq -r '(.displayName // "Contact") + " | id: " + (.id // "")')"
 }
 
+##- Files (OneDrive / SharePoint via Graph). Read-side commands for now: search returns
+##- drive-item ids; meta/download take an id. Word docs have no rich edit API, so a future
+##- write path is download -> local edit (python-docx) -> PUT .../content (new version).
+_m365_files_search() {
+    local alias="$1" query="$2" base enc
+    [ -n "$alias" ] || { _err "m365 files search requires ALIAS QUERY"; return 1; }
+    [ -n "$query" ] || { _err "m365 files search requires a QUERY"; return 1; }
+    _m365_require_enabled "$alias" files || return 1
+    base="$(_m365_graph_base "$alias")"
+    enc="$(_m365_uri_encode "$query")"
+    _m365_get "$alias" "${base}/me/drive/root/search(q='${enc}')" \
+        --data-urlencode "\$select=id,name,size,lastModifiedDateTime,webUrl,file,parentReference" \
+        --data-urlencode "\$top=25" |
+        jq -r '(.value // [])[] |
+            "- " + (.name // "?") +
+            "\n  id: " + (.id // "?") +
+            "\n  type: " + (.file.mimeType // "(folder)") +
+            "\n  modified: " + (.lastModifiedDateTime // "?") +
+            "\n  url: " + (.webUrl // "")'
+}
+
+_m365_files_meta() {
+    local alias="$1" item="$2" base
+    [ -n "$alias" ] || { _err "m365 files meta requires ALIAS ITEM_ID"; return 1; }
+    [ -n "$item" ] || { _err "m365 files meta requires a drive-item id (from 'files search')"; return 1; }
+    _m365_require_enabled "$alias" files || return 1
+    base="$(_m365_graph_base "$alias")"
+    _m365_get "$alias" "${base}/me/drive/items/${item}" \
+        --data-urlencode "\$select=id,name,size,lastModifiedDateTime,webUrl,file,parentReference" |
+        jq -r '"name: " + (.name // "?"),
+               "id: " + (.id // "?"),
+               "size: " + ((.size // 0) | tostring) + " bytes",
+               "modified: " + (.lastModifiedDateTime // "?"),
+               "mimeType: " + (.file.mimeType // "(folder or unknown)"),
+               "path: " + ((.parentReference.path // "") + "/" + (.name // "")),
+               "url: " + (.webUrl // "")'
+}
+
+_m365_files_download() {
+    local alias="$1" item="$2" out="" base
+    shift 2 2>/dev/null || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --out) out="$2"; shift 2 ;;
+            *) _err "Unknown files download option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$alias" ] || { _err "m365 files download requires ALIAS ITEM_ID [--out PATH]"; return 1; }
+    [ -n "$item" ] || { _err "m365 files download requires a drive-item id"; return 1; }
+    [ -n "$out" ] || { _err "m365 files download requires --out PATH"; return 1; }
+    _m365_require_enabled "$alias" files || return 1
+    base="$(_m365_graph_base "$alias")"
+    _m365_get "$alias" "${base}/me/drive/items/${item}/content" > "$out" || return 1
+    _say "Downloaded item ${item} -> ${out}"
+}
+
 _m365_dispatch() {
     case "${1:-}" in
         accounts) shift; _m365_accounts_list "$@" ;;
@@ -985,6 +1042,14 @@ _m365_dispatch() {
                 create-event) shift 2; _m365_calendar_create "$@" ;;
                 update-event) shift 2; _m365_calendar_update "$@" ;;
                 *) _err "Unknown m365 calendar command: ${2:-}"; return 1 ;;
+            esac
+            ;;
+        files)
+            case "${2:-}" in
+                search) shift 2; _m365_files_search "$@" ;;
+                meta) shift 2; _m365_files_meta "$@" ;;
+                download) shift 2; _m365_files_download "$@" ;;
+                *) _err "Unknown m365 files command: ${2:-}"; return 1 ;;
             esac
             ;;
         contacts)
