@@ -110,6 +110,10 @@ lifeos m365 contacts find ut "Name"
 lifeos m365 contacts sync ut --qa
 lifeos m365 contacts create ut --display-name "Name" --email name@example.com
 lifeos m365 contacts update ut --contact CONTACT_ID --company "Organization"
+lifeos m365 files search ut "Work Plan"
+lifeos m365 files resolve-link ut 'https://example.sharepoint.com/:w:/r/sites/team/document'
+lifeos m365 files meta ut ITEM_ID --drive DRIVE_ID
+lifeos m365 files download ut ITEM_ID --drive DRIVE_ID --out /tmp/document.docx
 lifeos open-austin-org path
 lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
@@ -131,13 +135,15 @@ lifeos m365 auth ut
 lifeos m365 profile ut
 ```
 
-The default `graph-powershell` provider asks for delegated `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`, stores its authenticated context in PowerShell's protected CurrentUser cache, and never exposes a raw token through the LifeOS CLI. In some managed tenants, Microsoft's shared client may already have a cumulative effective scope set broader than the scopes LifeOS requests. LifeOS does not expose a generic Graph request command: its mail surface remains read-only, calendar and contact writes remain dry-run-gated, and no delete commands exist.
+The default `graph-powershell` provider asks for delegated `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`, plus `Files.ReadWrite` when the alias enables files. It stores its authenticated context in PowerShell's protected CurrentUser cache and never exposes a raw token through the LifeOS CLI. The auth result reports the requested and effective scope names so tenant consent can be verified without exposing the cache. In some managed tenants, Microsoft's shared client may already have a cumulative effective scope set broader than the scopes LifeOS requests. LifeOS does not expose a generic Graph request command: its mail surface remains read-only, calendar and contact writes remain dry-run-gated, and no delete commands exist.
 
 The optional `msal` provider remains available when a dedicated public-client application ID is available. Set `"auth_provider": "msal"`, `client_id`, and `token_path` in the ignored account config. Do not create a client secret or add application permissions.
 
 Mail snapshots are read-only and bounded by the alias's days, count, and body limits. Calendar sync uses Graph calendar views over the normal LifeOS date window. Contact sync reads only the user's default Outlook Contacts folder and does not recurse through additional contact folders. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` snapshots go to ignored `lifeos-tools/qa/m365/`.
 
 Calendar and contact writes are dry-run by default and require `--execute`. There are no delete commands. Calendar writes are restricted to configured writable calendar IDs. Because Microsoft can send invitations or meeting updates for attendee-bearing events, those writes also require `--notify` as an explicit acknowledgement; unlike the Google API, Graph does not expose it here as a suppress-delivery switch. During contact updates, supplied email or phone values replace that complete field array. See the `lifeos-m365` skill for the full safety model.
+
+File access is disabled in the example account. Set `"files": {"enabled": true}` for an alias only after its tenant has approved `Files.ReadWrite`, then run `lifeos m365 auth ALIAS` again. `search` addresses the user's default drive unless `--drive DRIVE_ID` is supplied. `resolve-link` accepts an existing HTTPS OneDrive, SharePoint, or Teams sharing URL and returns the stable drive/item pair needed by `meta` and `download`. Downloads refuse to overwrite an existing local file unless `--force` is supplied. The CLI does not expose file deletion or a generic Graph request surface.
 
 
 ## Open Austin Org Snapshots

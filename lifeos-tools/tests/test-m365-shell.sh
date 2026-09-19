@@ -23,6 +23,10 @@ PAGES_OUT="${TMPDIR:-/tmp}/lifeos-m365-pages-test.json"
 CALENDAR_OUT="${TMPDIR:-/tmp}/lifeos-m365-calendar-find-test.txt"
 CONTACTS_OUT="${TMPDIR:-/tmp}/lifeos-m365-contacts-find-test.txt"
 REQUEST_OUT="${TMPDIR:-/tmp}/lifeos-m365-powershell-request-test.json"
+FILES_CONFIG="${TMPDIR:-/tmp}/lifeos-m365-files-config.json"
+FILES_SEARCH_OUT="${TMPDIR:-/tmp}/lifeos-m365-files-search-test.txt"
+FILES_META_OUT="${TMPDIR:-/tmp}/lifeos-m365-files-meta-test.txt"
+FILES_LINK_OUT="${TMPDIR:-/tmp}/lifeos-m365-files-link-test.txt"
 
 _m365_get() {
     case "$2" in
@@ -61,4 +65,23 @@ _m365_contacts_find ut "analytical" > "$CONTACTS_OUT"
 grep -F -- "Ada Lovelace" "$CONTACTS_OUT" >/dev/null
 grep -F -- "contact_id: contact-1" "$CONTACTS_OUT" >/dev/null
 
-printf 'm365 shell pagination and find fixtures passed\n'
+jq '(.accounts[] | select(.alias == "ut") | .files.enabled) = true' "${SECRETS_DIR}/m365-accounts.example.json" > "$FILES_CONFIG"
+M365_ACCOUNTS_PATH="$FILES_CONFIG"
+export M365_ACCOUNTS_PATH
+_m365_get() {
+    case "$2" in
+        *"/root/search("*) printf '%s\n' '{"value":[{"id":"item-1","name":"Team work plan.docx","size":1234,"lastModifiedDateTime":"2026-09-19T12:00:00Z","webUrl":"https://example.sharepoint.com/work-plan","file":{"mimeType":"application/vnd.openxmlformats-officedocument.wordprocessingml.document"},"parentReference":{"driveId":"drive-1","path":"/drives/drive-1/root:/General"}}]}' ;;
+        *"/shares/"*) printf '%s\n' '{"id":"item-1","name":"Team work plan.docx","size":1234,"lastModifiedDateTime":"2026-09-19T12:00:00Z","webUrl":"https://example.sharepoint.com/work-plan","file":{"mimeType":"application/vnd.openxmlformats-officedocument.wordprocessingml.document"},"parentReference":{"driveId":"drive-1","path":"/drives/drive-1/root:/General"}}' ;;
+        *"/drives/drive-1/items/item-1") printf '%s\n' '{"id":"item-1","name":"Team work plan.docx","size":1234,"lastModifiedDateTime":"2026-09-19T12:00:00Z","webUrl":"https://example.sharepoint.com/work-plan","file":{"mimeType":"application/vnd.openxmlformats-officedocument.wordprocessingml.document"},"parentReference":{"driveId":"drive-1","path":"/drives/drive-1/root:/General"}}' ;;
+        *) return 1 ;;
+    esac
+}
+_m365_files_search ut Team --drive drive-1 > "$FILES_SEARCH_OUT"
+grep -F -- "item_id: item-1" "$FILES_SEARCH_OUT" >/dev/null
+grep -F -- "drive_id: drive-1" "$FILES_SEARCH_OUT" >/dev/null
+_m365_files_meta ut item-1 --drive drive-1 > "$FILES_META_OUT"
+grep -F -- "path: /drives/drive-1/root:/General/Team work plan.docx" "$FILES_META_OUT" >/dev/null
+_m365_files_resolve_link ut 'https://example.sharepoint.com/:w:/r/sites/connect/work-plan' > "$FILES_LINK_OUT"
+grep -F -- "drive_id: drive-1" "$FILES_LINK_OUT" >/dev/null
+
+printf 'm365 shell pagination, find, and file fixtures passed\n'
