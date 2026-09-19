@@ -43,7 +43,7 @@ try {
             tenant_id           = $context.TenantId
             client_id           = $context.ClientId
             requested_scopes    = $scopes
-            effective_scope_count = @($context.Scopes).Count
+            effective_scopes    = @($context.Scopes | Sort-Object)
         } | ConvertTo-Json -Depth 4 -Compress
         exit 0
     }

@@ -73,7 +73,8 @@ _m365_accounts_list() {
       " | tenant: " + (.tenant // "organizations") +
       " | mail: " + (((.mail.enabled // false) == true) | tostring) +
       " | calendar: " + (((.calendar.enabled // false) == true) | tostring) +
-      " | contacts: " + (((.contacts.enabled // false) == true) | tostring)
+      " | contacts: " + (((.contacts.enabled // false) == true) | tostring) +
+      " | files: " + (((.files.enabled // false) == true) | tostring)
     ' "$(_m365_accounts_path)"
 }
 
@@ -967,50 +968,111 @@ _m365_contacts_update() {
     _say "Updated contact: $(printf '%s' "$updated" | jq -r '(.displayName // "Contact") + " | id: " + (.id // "")')"
 }
 
-##- Files (OneDrive / SharePoint via Graph). Read-side commands for now: search returns
-##- drive-item ids; meta/download take an id. Word docs have no rich edit API, so a future
-##- write path is download -> local edit (python-docx) -> PUT .../content (new version).
+##- Files (OneDrive / SharePoint via Graph). Read-side commands address items by both drive and item id; resolve-link turns an existing OneDrive, SharePoint, or Teams sharing URL into that stable pair.
+_m365_files_item_url() {
+    local alias="$1" item="$2" drive="$3" base encoded_item encoded_drive
+    base="$(_m365_graph_base "$alias")"
+    encoded_item="$(_m365_uri_encode "$item")" || return 1
+    if [ -n "$drive" ]; then
+        encoded_drive="$(_m365_uri_encode "$drive")" || return 1
+        printf '%s/drives/%s/items/%s\n' "$base" "$encoded_drive" "$encoded_item"
+    else
+        printf '%s/me/drive/items/%s\n' "$base" "$encoded_item"
+    fi
+}
+
+_m365_files_print_item() {
+    jq -r '"name: " + (.name // "?"),
+           "item_id: " + (.id // "?"),
+           "drive_id: " + (.parentReference.driveId // "?"),
+           "size: " + ((.size // 0) | tostring) + " bytes",
+           "modified: " + (.lastModifiedDateTime // "?"),
+           "mimeType: " + (.file.mimeType // "(folder or unknown)"),
+           "path: " + ((.parentReference.path // "") + "/" + (.name // "")),
+           "url: " + (.webUrl // "")'
+}
+
 _m365_files_search() {
-    local alias="$1" query="$2" base enc
+    local alias="$1" query="$2" drive="" json=0 base enc response encoded_drive
     [ -n "$alias" ] || { _err "m365 files search requires ALIAS QUERY"; return 1; }
     [ -n "$query" ] || { _err "m365 files search requires a QUERY"; return 1; }
+    shift 2 2>/dev/null || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --drive) [ -n "${2:-}" ] || { _err "--drive requires DRIVE_ID"; return 1; }; drive="$2"; shift 2 ;;
+            --json) json=1; shift ;;
+            *) _err "Unknown files search option: $1"; return 1 ;;
+        esac
+    done
     _m365_require_enabled "$alias" files || return 1
     base="$(_m365_graph_base "$alias")"
     enc="$(_m365_uri_encode "$query")"
-    _m365_get "$alias" "${base}/me/drive/root/search(q='${enc}')" \
+    if [ -n "$drive" ]; then
+        encoded_drive="$(_m365_uri_encode "$drive")" || return 1
+        base="${base}/drives/${encoded_drive}"
+    else
+        base="${base}/me/drive"
+    fi
+    response="$(_m365_get "$alias" "${base}/root/search(q='${enc}')" \
         --data-urlencode "\$select=id,name,size,lastModifiedDateTime,webUrl,file,parentReference" \
-        --data-urlencode "\$top=25" |
+        --data-urlencode "\$top=25")" || return 1
+    if [ "$json" -eq 1 ]; then printf '%s\n' "$response"; return 0; fi
+    printf '%s' "$response" |
         jq -r '(.value // [])[] |
             "- " + (.name // "?") +
-            "\n  id: " + (.id // "?") +
+            "\n  item_id: " + (.id // "?") +
+            "\n  drive_id: " + (.parentReference.driveId // "?") +
             "\n  type: " + (.file.mimeType // "(folder)") +
             "\n  modified: " + (.lastModifiedDateTime // "?") +
+            "\n  path: " + ((.parentReference.path // "") + "/" + (.name // "")) +
             "\n  url: " + (.webUrl // "")'
 }
 
 _m365_files_meta() {
-    local alias="$1" item="$2" base
+    local alias="$1" item="$2" drive="" json=0 url response
     [ -n "$alias" ] || { _err "m365 files meta requires ALIAS ITEM_ID"; return 1; }
     [ -n "$item" ] || { _err "m365 files meta requires a drive-item id (from 'files search')"; return 1; }
-    _m365_require_enabled "$alias" files || return 1
-    base="$(_m365_graph_base "$alias")"
-    _m365_get "$alias" "${base}/me/drive/items/${item}" \
-        --data-urlencode "\$select=id,name,size,lastModifiedDateTime,webUrl,file,parentReference" |
-        jq -r '"name: " + (.name // "?"),
-               "id: " + (.id // "?"),
-               "size: " + ((.size // 0) | tostring) + " bytes",
-               "modified: " + (.lastModifiedDateTime // "?"),
-               "mimeType: " + (.file.mimeType // "(folder or unknown)"),
-               "path: " + ((.parentReference.path // "") + "/" + (.name // "")),
-               "url: " + (.webUrl // "")'
-}
-
-_m365_files_download() {
-    local alias="$1" item="$2" out="" base
     shift 2 2>/dev/null || true
     while [ "$#" -gt 0 ]; do
         case "$1" in
-            --out) out="$2"; shift 2 ;;
+            --drive) [ -n "${2:-}" ] || { _err "--drive requires DRIVE_ID"; return 1; }; drive="$2"; shift 2 ;;
+            --json) json=1; shift ;;
+            *) _err "Unknown files meta option: $1"; return 1 ;;
+        esac
+    done
+    _m365_require_enabled "$alias" files || return 1
+    url="$(_m365_files_item_url "$alias" "$item" "$drive")" || return 1
+    response="$(_m365_get "$alias" "$url" --data-urlencode "\$select=id,name,size,lastModifiedDateTime,webUrl,file,parentReference")" || return 1
+    if [ "$json" -eq 1 ]; then printf '%s\n' "$response"; else printf '%s' "$response" | _m365_files_print_item; fi
+}
+
+_m365_files_resolve_link() {
+    local alias="$1" sharing_url="$2" json=0 base token response
+    [ -n "$alias" ] || { _err "m365 files resolve-link requires ALIAS URL"; return 1; }
+    [ -n "$sharing_url" ] || { _err "m365 files resolve-link requires a OneDrive, SharePoint, or Teams sharing URL"; return 1; }
+    shift 2 2>/dev/null || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --json) json=1; shift ;;
+            *) _err "Unknown files resolve-link option: $1"; return 1 ;;
+        esac
+    done
+    case "$sharing_url" in https://*) ;; *) _err "Sharing URL must use https://"; return 1 ;; esac
+    _m365_require_enabled "$alias" files || return 1
+    token="$("$LIFEOS_PY" -c 'import base64, sys; print("u!" + base64.urlsafe_b64encode(sys.argv[1].encode()).decode().rstrip("="))' "$sharing_url")" || return 1
+    base="$(_m365_graph_base "$alias")"
+    response="$(_m365_get "$alias" "${base}/shares/${token}/driveItem" --data-urlencode "\$select=id,name,size,lastModifiedDateTime,webUrl,file,parentReference")" || return 1
+    if [ "$json" -eq 1 ]; then printf '%s\n' "$response"; else printf '%s' "$response" | _m365_files_print_item; fi
+}
+
+_m365_files_download() {
+    local alias="$1" item="$2" out="" drive="" force=0 url
+    shift 2 2>/dev/null || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --out) [ -n "${2:-}" ] || { _err "--out requires PATH"; return 1; }; out="$2"; shift 2 ;;
+            --drive) [ -n "${2:-}" ] || { _err "--drive requires DRIVE_ID"; return 1; }; drive="$2"; shift 2 ;;
+            --force) force=1; shift ;;
             *) _err "Unknown files download option: $1"; return 1 ;;
         esac
     done
@@ -1018,8 +1080,10 @@ _m365_files_download() {
     [ -n "$item" ] || { _err "m365 files download requires a drive-item id"; return 1; }
     [ -n "$out" ] || { _err "m365 files download requires --out PATH"; return 1; }
     _m365_require_enabled "$alias" files || return 1
-    base="$(_m365_graph_base "$alias")"
-    _m365_get "$alias" "${base}/me/drive/items/${item}/content" > "$out" || return 1
+    [ "$force" -eq 1 ] || [ ! -e "$out" ] || { _err "Refusing to overwrite existing file: $out (use --force)"; return 1; }
+    [ -d "$(dirname "$out")" ] || { _err "Output directory does not exist: $(dirname "$out")"; return 1; }
+    url="$(_m365_files_item_url "$alias" "$item" "$drive")" || return 1
+    _m365_get "$alias" "${url}/content" > "$out" || { rm -f "$out"; return 1; }
     _say "Downloaded item ${item} -> ${out}"
 }
 
@@ -1047,6 +1111,7 @@ _m365_dispatch() {
         files)
             case "${2:-}" in
                 search) shift 2; _m365_files_search "$@" ;;
+                resolve-link) shift 2; _m365_files_resolve_link "$@" ;;
                 meta) shift 2; _m365_files_meta "$@" ;;
                 download) shift 2; _m365_files_download "$@" ;;
                 *) _err "Unknown m365 files command: ${2:-}"; return 1 ;;
