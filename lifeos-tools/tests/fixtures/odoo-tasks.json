@@ -1,0 +1,13 @@
+[
+  {
+    "id": 42,
+    "name": "Prepare the brief",
+    "project_id": [1, "Example Project"],
+    "stage_id": [10, "Backlog"],
+    "user_ids": [7, 9],
+    "date_deadline": "2026-09-30",
+    "description": "<p>Draft the brief.</p>",
+    "active": true,
+    "write_date": "2026-09-19 20:00:00"
+  }
+]

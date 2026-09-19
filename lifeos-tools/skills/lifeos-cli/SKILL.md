@@ -19,6 +19,7 @@ Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the 
 - **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import (creating a Doc).
 - **`lifeos-docs`** — editing a Google Doc that already exists: one exact replacement, dry-run by default, revision-guarded.
 - **`lifeos-m365`** — delegated Microsoft 365 mail reads plus gated calendar and Outlook contact reads/writes.
+- **`lifeos-odoo`** — bounded Odoo Project discovery and task reads through account aliases.
 - **`lifeos-open-austin`** — Open Austin GitHub snapshot refresh and routing to the public org repo for writes.
 
 ## Health Check
@@ -52,10 +53,21 @@ lifeos m365 profile ALIAS
 
 See `lifeos-m365` for the delegated permission boundary and write-safety model.
 
+## Odoo Account Setup
+Odoo uses an ignored `odoo-accounts.json` and API keys supplied through environment variables named by each alias. Copy the example, configure the database routing fields, set the corresponding key variable in the ignored environment file, then run:
+
+```sh
+lifeos odoo accounts
+lifeos doctor
+lifeos odoo projects list ALIAS
+```
+
+See `lifeos-odoo` for the plan/API boundary and supported read commands.
+
 ## Snapshot And QA Pattern
 Most `sync` commands write a snapshot into `$LIFEOS_VAULT_PATH/sources/`. Passing `--qa` instead writes a local copy under `~/configs/lifeos-tools/qa/` (gitignored) for inspection without touching the vault. After any write, re-run that service's `sync` to refresh the snapshot.
 
 ## Cross-Cutting Safety
-- Do not print or inspect `~/configs/lifeos-tools/secrets/.env`, Google or Microsoft token files, `google-accounts.json`, or `m365-accounts.json`.
+- Do not print or inspect `~/configs/lifeos-tools/secrets/.env`, Google or Microsoft token files, API keys, `google-accounts.json`, `m365-accounts.json`, or `odoo-accounts.json`.
 - Actions that touch real people or public state are gated per service — calendar `--notify` sends live invites, and Open Austin writes are handled through the public org repo. See the service skills.
 - Per-service safety notes live in each service skill.
