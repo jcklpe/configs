@@ -17,6 +17,7 @@ LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
 . "${LIB_DIR}/trello.sh"
 . "${LIB_DIR}/google.sh"
 . "${LIB_DIR}/m365.sh"
+. "${LIB_DIR}/odoo.sh"
 . "${LIB_DIR}/github.sh"
 . "${LIB_DIR}/resume.sh"
 
@@ -89,6 +90,12 @@ Usage:
   ./lifeos.sh m365 files resolve-link ALIAS URL [--json]
   ./lifeos.sh m365 files meta ALIAS ITEM_ID [--drive DRIVE_ID] [--json]
   ./lifeos.sh m365 files download ALIAS ITEM_ID --out PATH [--drive DRIVE_ID] [--force]
+  ./lifeos.sh odoo accounts
+  ./lifeos.sh odoo projects list ALIAS [--json]
+  ./lifeos.sh odoo stages list ALIAS --project PROJECT_ID [--json]
+  ./lifeos.sh odoo tasks list ALIAS --project PROJECT_ID [--stage STAGE_ID] [--limit COUNT] [--json]
+  ./lifeos.sh odoo tasks find ALIAS QUERY --project PROJECT_ID [--json]
+  ./lifeos.sh odoo tasks get ALIAS TASK_ID [--json]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh github list-repos
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
@@ -120,7 +127,7 @@ _doctor_file() {
 }
 
 _doctor() {
-    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_provider m365_token pwsh
+    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_provider m365_token pwsh odoo_accounts odoo_aliases odoo_alias odoo_key_env odoo_key_value
 
     if [ -f "$ENV_FILE" ]; then
         _say "OK: ${ENV_FILE}"
@@ -275,6 +282,38 @@ _doctor() {
     else
         _say "OPTIONAL: Microsoft 365 account alias config is not set up"
         _say "NEXT: cp ${SECRETS_DIR}/m365-accounts.example.json $m365_accounts"
+    fi
+
+    odoo_accounts="$(_odoo_accounts_path)"
+    if [ -f "$odoo_accounts" ]; then
+        if jq -e '.accounts | type == "array"' "$odoo_accounts" >/dev/null 2>&1; then
+            _say "OK: Odoo account alias config exists"
+            odoo_aliases="$(jq -r '(.accounts // [])[] | .alias' "$odoo_accounts")"
+            for odoo_alias in $odoo_aliases; do
+                odoo_key_env="$(_odoo_account_value "$odoo_alias" '.api_key_env')" || odoo_key_env=""
+                case "$odoo_key_env" in
+                    ''|*[!A-Za-z0-9_]*)
+                        _say "MISSING: valid Odoo api_key_env for alias '$odoo_alias'"
+                        issues=$((issues + 1))
+                        ;;
+                    *)
+                        eval "odoo_key_value=\${${odoo_key_env}:-}"
+                        if [ -n "$odoo_key_value" ]; then
+                            _say "OK: Odoo API key is set for alias '$odoo_alias' (redacted)"
+                        else
+                            _say "MISSING: $odoo_key_env for Odoo alias '$odoo_alias'"
+                            issues=$((issues + 1))
+                        fi
+                        ;;
+                esac
+            done
+        else
+            _say "MISSING: Odoo account alias config is not valid JSON shape"
+            issues=$((issues + 1))
+        fi
+    else
+        _say "OPTIONAL: Odoo account alias config is not set up"
+        _say "NEXT: cp ${SECRETS_DIR}/odoo-accounts.example.json $odoo_accounts"
     fi
 
     if [ "$issues" -eq 0 ]; then
@@ -479,6 +518,10 @@ case "${1:-help}" in
     m365)
         shift
         _m365_dispatch "$@"
+        ;;
+    odoo)
+        shift
+        _odoo_dispatch "$@"
         ;;
     resume)
         case "${2:-}" in

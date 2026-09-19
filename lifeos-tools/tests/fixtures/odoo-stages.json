@@ -1,0 +1,4 @@
+[
+  {"id": 10, "name": "Backlog", "sequence": 1, "fold": false},
+  {"id": 20, "name": "Done", "sequence": 99, "fold": true}
+]
