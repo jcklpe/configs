@@ -14,6 +14,7 @@ Odoo uses an ignored `odoo-accounts.json`, copied from `odoo-accounts.example.js
 
 ```sh
 cp lifeos-tools/secrets/odoo-accounts.example.json lifeos-tools/secrets/odoo-accounts.json
+# Add ODOO_API_KEY="..." to lifeos-tools/secrets/.env.
 lifeos odoo accounts
 lifeos doctor
 ```

@@ -54,7 +54,7 @@ lifeos m365 profile ALIAS
 See `lifeos-m365` for the delegated permission boundary and write-safety model.
 
 ## Odoo Account Setup
-Odoo uses an ignored `odoo-accounts.json` and API keys supplied through environment variables named by each alias. Copy the example, configure the database routing fields, set the corresponding key variable in the ignored environment file, then run:
+Odoo uses an ignored `odoo-accounts.json` and API keys supplied through environment variables named by each alias. Copy the example, configure the database routing fields, and set `ODOO_API_KEY` in the ignored `lifeos-tools/secrets/.env` file. Use a different variable name only when configuring multiple aliases with separate keys. Then run:
 
 ```sh
 lifeos odoo accounts
