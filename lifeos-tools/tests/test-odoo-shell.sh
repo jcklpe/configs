@@ -11,8 +11,8 @@ LIB_DIR="${TOOL_DIR}/lib"
 SECRETS_DIR="${TOOL_DIR}/secrets"
 ENV_FILE="${SECRETS_DIR}/.env"
 ODOO_ACCOUNTS_PATH="${SECRETS_DIR}/odoo-accounts.example.json"
-ODOO_EXAMPLE_API_KEY="synthetic-test-key"
-export ODOO_ACCOUNTS_PATH ODOO_EXAMPLE_API_KEY
+ODOO_API_KEY="synthetic-test-key"
+export ODOO_ACCOUNTS_PATH ODOO_API_KEY
 
 . "${LIB_DIR}/common.sh"
 . "${LIB_DIR}/odoo.sh"
