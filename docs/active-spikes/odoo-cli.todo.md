@@ -29,6 +29,7 @@
 - [x] Add conservative request behavior: one request per read, one mutation plus readback per executed write, no automatic retry or pagination, and a five-second cross-request cooldown.
 - [x] Add a bounded exact-task comment listing so comment writes can be verified against `mail.message` rather than inferred from the task record's unchanged `write_date`.
 - [x] Execute an approved plain-text comment on the existing test task and verify comment ID `373` contains the exact submitted body on 2026-09-19.
+- [x] Human QA confirmed on 2026-09-19 that the submitted comment is visible in the Odoo interface.
 
 ## Notes / Edge Cases
 - The runtime documentation being visible does not establish that API-key calls are enabled.
