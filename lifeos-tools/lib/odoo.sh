@@ -54,6 +54,40 @@ _odoo_api_key() {
     printf '%s' "$value"
 }
 
+_odoo_request_state_path() {
+    if _var_is_set ODOO_REQUEST_STATE_PATH; then
+        _path_value ODOO_REQUEST_STATE_PATH
+    else
+        printf '%s/cache/odoo-last-request\n' "$SECRETS_DIR"
+    fi
+}
+
+_odoo_wait_for_request_slot() {
+    local interval="${ODOO_MIN_REQUEST_INTERVAL_SECONDS:-5}" state now last elapsed wait_seconds state_dir
+    case "$interval" in ''|*[!0-9]*) _err "ODOO_MIN_REQUEST_INTERVAL_SECONDS must be a non-negative integer"; return 1 ;; esac
+    [ "$interval" -le 300 ] || { _err "ODOO_MIN_REQUEST_INTERVAL_SECONDS must not exceed 300"; return 1; }
+    [ "$interval" -gt 0 ] || return 0
+
+    state="$(_odoo_request_state_path)" || return 1
+    state_dir="${state%/*}"
+    [ "$state_dir" = "$state" ] || mkdir -p "$state_dir" || return 1
+    now="$(date +%s)" || return 1
+    if [ -f "$state" ]; then
+        IFS= read -r last < "$state" || last=""
+        case "$last" in
+            ''|*[!0-9]*) ;;
+            *)
+                elapsed=$((now - last))
+                if [ "$elapsed" -lt "$interval" ]; then
+                    wait_seconds=$((interval - elapsed))
+                    sleep "$wait_seconds" || return 1
+                fi
+                ;;
+        esac
+    fi
+    date +%s > "$state"
+}
+
 _odoo_http() {
     local alias="$1" path="$2" body="$3" base key database response http_code message
     _odoo_account_exists "$alias" || { _err "Unknown Odoo account alias: $alias"; return 1; }
@@ -80,6 +114,7 @@ _odoo_http() {
 
 _odoo_call() {
     local alias="$1" model="$2" method="$3" body="$4"
+    _odoo_wait_for_request_slot || return 1
     _odoo_http "$alias" "/json/2/${model}/${method}" "$body"
 }
 
@@ -186,6 +221,126 @@ _odoo_tasks_get() {
     if [ "$json" -eq 1 ]; then printf '%s\n' "$response"; else printf '%s' "$response" | _odoo_render_tasks; fi
 }
 
+_odoo_validate_date() {
+    jq -en --arg value "$1" '$value | test("^[0-9]{4}-[0-9]{2}-[0-9]{2}$")' >/dev/null || { _err "Date must use YYYY-MM-DD: $1"; return 1; }
+}
+
+_odoo_task_read_json() {
+    local alias="$1" task="$2" fields body
+    fields="$(_odoo_task_fields_json)"
+    body="$(jq -cn --argjson task "$task" --argjson fields "$fields" '{ids: [$task], fields: $fields}')" || return 1
+    _odoo_call "$alias" project.task read "$body"
+}
+
+_odoo_write_plan() {
+    local plan="$1" json="$2"
+    if [ "$json" -eq 1 ]; then
+        printf '%s\n' "$plan"
+    else
+        _say "DRY RUN: no Odoo changes made"
+        printf '%s\n' "$plan" | jq '.'
+        _say "NEXT: review the exact IDs and fields, then rerun with --execute"
+    fi
+}
+
+_odoo_tasks_create() {
+    local alias="${1:-}" project="" name="" description="" description_file="" stage="" deadline="" assignees='[]' execute=0 json=0 vals plan body response task readback
+    [ -n "$alias" ] || { _err "odoo tasks create requires ALIAS --project PROJECT_ID --name NAME"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --project) [ -n "${2:-}" ] || { _err "--project requires PROJECT_ID"; return 1; }; project="$2"; shift 2 ;;
+            --name) [ -n "${2:-}" ] || { _err "--name requires NAME"; return 1; }; name="$2"; shift 2 ;;
+            --description) [ -n "${2:-}" ] || { _err "--description requires TEXT"; return 1; }; description="$2"; shift 2 ;;
+            --description-file) [ -n "${2:-}" ] || { _err "--description-file requires FILE"; return 1; }; description_file="$2"; shift 2 ;;
+            --stage) [ -n "${2:-}" ] || { _err "--stage requires STAGE_ID"; return 1; }; stage="$2"; shift 2 ;;
+            --assignee) [ -n "${2:-}" ] || { _err "--assignee requires USER_ID"; return 1; }; case "$2" in *[!0-9]*) _err "--assignee requires a numeric USER_ID"; return 1 ;; esac; assignees="$(printf '%s' "$assignees" | jq -c --argjson id "$2" '. + [$id] | unique')" || return 1; shift 2 ;;
+            --deadline) [ -n "${2:-}" ] || { _err "--deadline requires YYYY-MM-DD"; return 1; }; deadline="$2"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            --json) json=1; shift ;;
+            *) _err "Unknown tasks create option: $1"; return 1 ;;
+        esac
+    done
+    case "$project" in ''|*[!0-9]*) _err "tasks create requires a numeric --project PROJECT_ID"; return 1 ;; esac
+    [ -n "$name" ] || { _err "tasks create requires --name NAME"; return 1; }
+    [ -z "$description_file" ] || [ -z "$description" ] || { _err "Use only one of --description or --description-file"; return 1; }
+    if [ -n "$description_file" ]; then [ -f "$description_file" ] || { _err "Description file does not exist: $description_file"; return 1; }; description="$(cat "$description_file")"; fi
+    case "$stage" in *[!0-9]*) _err "--stage requires a numeric STAGE_ID"; return 1 ;; esac
+    [ -z "$deadline" ] || _odoo_validate_date "$deadline" || return 1
+    vals="$(jq -cn --arg name "$name" --arg description "$description" --arg stage "$stage" --arg deadline "$deadline" --argjson project "$project" --argjson assignees "$assignees" '{name: $name, project_id: $project} + (if $description != "" then {description: $description} else {} end) + (if $stage != "" then {stage_id: ($stage | tonumber)} else {} end) + (if ($assignees | length) > 0 then {user_ids: [[6, 0, $assignees]]} else {} end) + (if $deadline != "" then {date_deadline: $deadline} else {} end)')" || return 1
+    plan="$(jq -cn --arg alias "$alias" --argjson vals "$vals" '{action: "create task", account: $alias, values: $vals}')" || return 1
+    if [ "$execute" -eq 0 ]; then _odoo_write_plan "$plan" "$json"; return; fi
+    body="$(jq -cn --argjson vals "$vals" '{vals_list: [$vals]}')" || return 1
+    response="$(_odoo_call "$alias" project.task create "$body")" || return 1
+    task="$(printf '%s' "$response" | jq -er 'if type == "array" and length == 1 and (.[0] | type == "number") then .[0] else error("unexpected create response") end')" || { _err "Odoo returned an unexpected task-create response"; return 1; }
+    readback="$(_odoo_task_read_json "$alias" "$task")" || return 1
+    [ "$(printf '%s' "$readback" | jq 'length')" -eq 1 ] || { _err "Created task could not be read back: $task"; return 1; }
+    if [ "$json" -eq 1 ]; then printf '%s\n' "$readback"; else printf '%s' "$readback" | _odoo_render_tasks; fi
+}
+
+_odoo_tasks_update() {
+    local alias="${1:-}" task="${2:-}" name="" description="" description_file="" stage="" deadline="" assignees='[]' set_name=0 set_description=0 set_stage=0 set_deadline=0 set_assignees=0 clear_assignees=0 execute=0 json=0 vals plan body response readback
+    [ -n "$alias" ] && [ -n "$task" ] || { _err "odoo tasks update requires ALIAS TASK_ID and at least one field"; return 1; }
+    shift 2 || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --name) [ -n "${2:-}" ] || { _err "--name requires NAME"; return 1; }; name="$2"; set_name=1; shift 2 ;;
+            --description) [ -n "${2:-}" ] || { _err "--description requires TEXT"; return 1; }; description="$2"; set_description=1; shift 2 ;;
+            --description-file) [ -n "${2:-}" ] || { _err "--description-file requires FILE"; return 1; }; description_file="$2"; set_description=1; shift 2 ;;
+            --stage) [ -n "${2:-}" ] || { _err "--stage requires STAGE_ID"; return 1; }; stage="$2"; set_stage=1; shift 2 ;;
+            --assignee) [ "$clear_assignees" -eq 0 ] || { _err "Use --assignee or --clear-assignees, not both"; return 1; }; [ -n "${2:-}" ] || { _err "--assignee requires USER_ID"; return 1; }; case "$2" in *[!0-9]*) _err "--assignee requires a numeric USER_ID"; return 1 ;; esac; assignees="$(printf '%s' "$assignees" | jq -c --argjson id "$2" '. + [$id] | unique')" || return 1; set_assignees=1; shift 2 ;;
+            --clear-assignees) [ "$set_assignees" -eq 0 ] || { _err "Use --assignee or --clear-assignees, not both"; return 1; }; assignees='[]'; set_assignees=1; clear_assignees=1; shift ;;
+            --deadline) [ "$set_deadline" -eq 0 ] || { _err "Use --deadline or --clear-deadline, not both"; return 1; }; [ -n "${2:-}" ] || { _err "--deadline requires YYYY-MM-DD"; return 1; }; deadline="$2"; set_deadline=1; shift 2 ;;
+            --clear-deadline) [ "$set_deadline" -eq 0 ] || { _err "Use --deadline or --clear-deadline, not both"; return 1; }; deadline=false; set_deadline=1; shift ;;
+            --execute) execute=1; shift ;;
+            --json) json=1; shift ;;
+            *) _err "Unknown tasks update option: $1"; return 1 ;;
+        esac
+    done
+    case "$task" in ''|*[!0-9]*) _err "TASK_ID must be numeric"; return 1 ;; esac
+    [ -z "$description_file" ] || [ -z "$description" ] || { _err "Use only one of --description or --description-file"; return 1; }
+    if [ -n "$description_file" ]; then [ -f "$description_file" ] || { _err "Description file does not exist: $description_file"; return 1; }; description="$(cat "$description_file")"; fi
+    if [ "$set_stage" -eq 1 ]; then case "$stage" in ''|*[!0-9]*) _err "--stage requires a numeric STAGE_ID"; return 1 ;; esac; fi
+    if [ "$set_deadline" -eq 1 ] && [ "$deadline" != false ]; then _odoo_validate_date "$deadline" || return 1; fi
+    [ $((set_name + set_description + set_stage + set_deadline + set_assignees)) -gt 0 ] || { _err "tasks update requires at least one changed field"; return 1; }
+    vals="$(jq -cn --arg name "$name" --arg description "$description" --arg stage "$stage" --arg deadline "$deadline" --argjson assignees "$assignees" --argjson set_name "$set_name" --argjson set_description "$set_description" --argjson set_stage "$set_stage" --argjson set_deadline "$set_deadline" --argjson set_assignees "$set_assignees" '(if $set_name == 1 then {name: $name} else {} end) + (if $set_description == 1 then {description: $description} else {} end) + (if $set_stage == 1 then {stage_id: ($stage | tonumber)} else {} end) + (if $set_assignees == 1 then {user_ids: [[6, 0, $assignees]]} else {} end) + (if $set_deadline == 1 then {date_deadline: (if $deadline == "false" then false else $deadline end)} else {} end)')" || return 1
+    plan="$(jq -cn --arg alias "$alias" --argjson task "$task" --argjson vals "$vals" '{action: "update task", account: $alias, task_id: $task, values: $vals}')" || return 1
+    if [ "$execute" -eq 0 ]; then _odoo_write_plan "$plan" "$json"; return; fi
+    body="$(jq -cn --argjson task "$task" --argjson vals "$vals" '{ids: [$task], vals: $vals}')" || return 1
+    response="$(_odoo_call "$alias" project.task write "$body")" || return 1
+    [ "$(printf '%s' "$response" | jq -r '.')" = true ] || { _err "Odoo did not confirm the task update"; return 1; }
+    readback="$(_odoo_task_read_json "$alias" "$task")" || return 1
+    [ "$(printf '%s' "$readback" | jq 'length')" -eq 1 ] || { _err "Updated task could not be read back: $task"; return 1; }
+    if [ "$json" -eq 1 ]; then printf '%s\n' "$readback"; else printf '%s' "$readback" | _odoo_render_tasks; fi
+}
+
+_odoo_tasks_comment() {
+    local alias="${1:-}" task="${2:-}" body_text="" body_file="" execute=0 json=0 plan body response readback
+    [ -n "$alias" ] && [ -n "$task" ] || { _err "odoo tasks comment requires ALIAS TASK_ID --body TEXT"; return 1; }
+    shift 2 || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --body) [ -n "${2:-}" ] || { _err "--body requires TEXT"; return 1; }; body_text="$2"; shift 2 ;;
+            --body-file) [ -n "${2:-}" ] || { _err "--body-file requires FILE"; return 1; }; body_file="$2"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            --json) json=1; shift ;;
+            *) _err "Unknown tasks comment option: $1"; return 1 ;;
+        esac
+    done
+    case "$task" in ''|*[!0-9]*) _err "TASK_ID must be numeric"; return 1 ;; esac
+    [ -z "$body_file" ] || [ -z "$body_text" ] || { _err "Use only one of --body or --body-file"; return 1; }
+    if [ -n "$body_file" ]; then [ -f "$body_file" ] || { _err "Body file does not exist: $body_file"; return 1; }; body_text="$(cat "$body_file")"; fi
+    [ -n "$body_text" ] || { _err "tasks comment requires --body TEXT or --body-file FILE"; return 1; }
+    plan="$(jq -cn --arg alias "$alias" --argjson task "$task" --arg body "$body_text" '{action: "comment on task", account: $alias, task_id: $task, body: $body}')" || return 1
+    if [ "$execute" -eq 0 ]; then _odoo_write_plan "$plan" "$json"; return; fi
+    body="$(jq -cn --argjson task "$task" --arg body "$body_text" '{ids: [$task], body: $body, body_is_html: false, message_type: "comment", subtype_xmlid: "mail.mt_comment"}')" || return 1
+    response="$(_odoo_call "$alias" project.task message_post "$body")" || return 1
+    printf '%s' "$response" | jq -e '.' >/dev/null || { _err "Odoo returned an unexpected comment response"; return 1; }
+    readback="$(_odoo_task_read_json "$alias" "$task")" || return 1
+    [ "$(printf '%s' "$readback" | jq 'length')" -eq 1 ] || { _err "Commented task could not be read back: $task"; return 1; }
+    if [ "$json" -eq 1 ]; then printf '%s\n' "$readback"; else printf '%s' "$readback" | _odoo_render_tasks; fi
+}
+
 _odoo_dispatch() {
     case "${1:-}" in
         accounts) shift; _odoo_accounts_list "$@" ;;
@@ -200,6 +355,9 @@ _odoo_dispatch() {
                 list) shift 2; _odoo_tasks_list "$@" ;;
                 find) shift 2; _odoo_tasks_find "$@" ;;
                 get) shift 2; _odoo_tasks_get "$@" ;;
+                create) shift 2; _odoo_tasks_create "$@" ;;
+                update) shift 2; _odoo_tasks_update "$@" ;;
+                comment) shift 2; _odoo_tasks_comment "$@" ;;
                 *) _err "Unknown odoo tasks command: ${2:-}"; return 1 ;;
             esac
             ;;

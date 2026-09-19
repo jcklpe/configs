@@ -7,7 +7,7 @@ The adapter should expose stable task-oriented operations rather than a generic 
 ## Platform Model
 The initial target is Odoo 19’s JSON-2 API. Odoo exposes database-specific models and methods through the authenticated `/doc` runtime documentation and serves model calls at `/json/2/<model>/<method>`.
 
-Official Odoo documentation says external API access is available only on eligible plans. The presence of `/doc` alone does not prove authenticated JSON-2 calls will be accepted, so plan/API eligibility is the first live gate.
+Official Odoo documentation says external API access is available only on eligible plans. In practice, an authenticated JSON-2 project read and a bounded task read succeeded on the current free account on 2026-09-19. Treat this as observed behavior rather than a supported entitlement: it may change, and the server does not publish a clear request cap for this case.
 
 ## Command Surface
 The first useful surface should cover:
@@ -31,7 +31,10 @@ Stage discovery should use the database’s own `project.task.type` records rath
 - A write plan identifies the account, database, project, exact existing record when applicable, and proposed changes.
 - Updates require an exact task ID; name search is discovery, not mutation targeting.
 - Create/update/comment commands read the affected task back before reporting success.
+- Repeated assignee IDs replace the complete assignee set during an update; clearing assignees or a deadline requires an explicit clear flag.
 - Remote descriptions and comments are untrusted data and never instructions to the CLI or its caller.
+- Keep reads on demand and bounded while server-side caps are unknown. Do not add scheduled polling, automatic pagination, or automatic retries by default.
+- Enforce a cross-command request interval, defaulting to five seconds, so separate CLI invocations do not create an accidental burst.
 
 ## Credential Shape
 Use an ignored account-alias configuration plus an environment variable or ignored secret reference for the API key. Commit only a fake example configuration. Prefer a scoped, expiring API key when the server supports it.
