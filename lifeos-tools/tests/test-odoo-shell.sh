@@ -30,6 +30,7 @@ _odoo_http() {
         */project.project/search_read) cat "${TEST_DIR}/fixtures/odoo-projects.json" ;;
         */project.task.type/search_read) cat "${TEST_DIR}/fixtures/odoo-stages.json" ;;
         */project.task/search_read|*/project.task/read) cat "${TEST_DIR}/fixtures/odoo-tasks.json" ;;
+        */mail.message/search_read) cat "${TEST_DIR}/fixtures/odoo-comments.json" ;;
         */project.task/create) printf '%s' "$3" > "${BODY_OUT}.create"; printf '[42]\n' ;;
         */project.task/write) printf '%s' "$3" > "${BODY_OUT}.write"; printf 'true\n' ;;
         */project.task/message_post) printf '%s' "$3" > "${BODY_OUT}.comment"; printf '{"id":99}\n' ;;
@@ -56,6 +57,11 @@ jq -e '.domain == [["project_id", "=", 1], ["name", "ilike", "brief"]]' "$BODY_O
 _odoo_tasks_get example 42 --json > "$TASKS_OUT"
 jq -e '.[0].id == 42' "$TASKS_OUT" >/dev/null
 jq -e '.ids == [42]' "$BODY_OUT" >/dev/null
+
+_odoo_tasks_comments example 42 --limit 5 > "$TASKS_OUT"
+grep -F -- "comment_id: 99" "$TASKS_OUT" >/dev/null
+grep -F -- "body: Progress note" "$TASKS_OUT" >/dev/null
+jq -e '.domain == [["model", "=", "project.task"], ["res_id", "=", 42], ["message_type", "=", "comment"]] and .limit == 5' "$BODY_OUT" >/dev/null
 
 _odoo_tasks_create example --project 1 --name "Draft task" --stage 10 --assignee 7 --deadline 2026-10-01 --json > "$TASKS_OUT"
 jq -e '.action == "create task" and .account == "example" and .values.project_id == 1 and .values.stage_id == 10 and .values.user_ids == [[6,0,[7]]] and .values.date_deadline == "2026-10-01"' "$TASKS_OUT" >/dev/null

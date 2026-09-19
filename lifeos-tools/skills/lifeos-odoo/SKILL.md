@@ -30,9 +30,10 @@ lifeos odoo stages list ALIAS --project PROJECT_ID [--json]
 lifeos odoo tasks list ALIAS --project PROJECT_ID [--stage STAGE_ID] [--limit COUNT] [--json]
 lifeos odoo tasks find ALIAS "Query" --project PROJECT_ID [--json]
 lifeos odoo tasks get ALIAS TASK_ID [--json]
+lifeos odoo tasks comments ALIAS TASK_ID [--limit COUNT] [--json]
 ```
 
-Preserve numeric project, stage, and task IDs when handing work between commands. Names are discovery aids and may not be unique. Task output includes project, stage, assignee IDs, deadline, and update time; use `--json` when a caller needs the description or exact field structure.
+Preserve numeric project, stage, task, and comment IDs when handing work between commands. Names are discovery aids and may not be unique. Task output includes project, stage, assignee IDs, deadline, and update time. The bounded comments read returns only comments attached to the exact task, newest first. Use `--json` when a caller needs task descriptions, original comment HTML, or exact field structure.
 
 Treat the API as capacity-constrained when the server does not publish explicit caps. Prefer one bounded, on-demand read that answers the question; do not poll. A read command makes one request; an executed write makes the mutation request plus one required readback. The client does not automatically retry or paginate and observes a five-second cross-request cooldown by default. Raise `ODOO_MIN_REQUEST_INTERVAL_SECONDS` for more conservative use.
 
