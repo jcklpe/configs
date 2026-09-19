@@ -152,7 +152,7 @@ Calendar and contact writes are dry-run by default and require `--execute`. Ther
 File access is disabled in the example account. Set `"files": {"enabled": true}` for an alias only after its tenant has approved `Files.ReadWrite`, then run `lifeos m365 auth ALIAS` again. `search` addresses the user's default drive unless `--drive DRIVE_ID` is supplied. `resolve-link` accepts an existing HTTPS OneDrive, SharePoint, or Teams sharing URL and returns the stable drive/item pair needed by `meta` and `download`. Downloads refuse to overwrite an existing local file unless `--force` is supplied. The CLI does not expose file deletion or a generic Graph request surface.
 
 ## Odoo
-Odoo Project reads use the Odoo 19 JSON-2 API. Copy `secrets/odoo-accounts.example.json` to the ignored `secrets/odoo-accounts.json`, set the configured API-key environment variable in the ignored environment file, and use `lifeos odoo accounts` plus `lifeos doctor` to verify setup without printing the key.
+Odoo Project reads use the Odoo 19 JSON-2 API. Copy `secrets/odoo-accounts.example.json` to the ignored `secrets/odoo-accounts.json`, set `ODOO_API_KEY` in the ignored `secrets/.env` file, and use `lifeos odoo accounts` plus `lifeos doctor` to verify setup without printing the key. An account may name a different variable in `api_key_env` when multiple aliases need separate keys.
 
 The current surface lists projects and project stages, lists or searches tasks within an exact project, and reads an exact task ID. Human-readable output is the default and `--json` preserves the API response for scripting. Odoo external API availability depends on subscription plan; an interactive login and the runtime `/doc` page do not by themselves establish that API-key calls are enabled.
 
