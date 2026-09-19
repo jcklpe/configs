@@ -154,9 +154,11 @@ File access is disabled in the example account. Set `"files": {"enabled": true}`
 ## Odoo
 Odoo Project reads use the Odoo 19 JSON-2 API. Copy `secrets/odoo-accounts.example.json` to the ignored `secrets/odoo-accounts.json`, set `ODOO_API_KEY` in the ignored `secrets/.env` file, and use `lifeos odoo accounts` plus `lifeos doctor` to verify setup without printing the key. An account may name a different variable in `api_key_env` when multiple aliases need separate keys.
 
-The current surface lists projects and project stages, lists or searches tasks within an exact project, and reads an exact task ID. Human-readable output is the default and `--json` preserves the API response for scripting. Odoo external API availability depends on subscription plan; an interactive login and the runtime `/doc` page do not by themselves establish that API-key calls are enabled.
+The current surface lists projects and project stages, lists or searches tasks within an exact project, and reads an exact task ID. It can also create a task, update an exact task ID, or add a plain-text task comment. Writes print an exact plan by default, require `--execute`, and read the affected task back after a successful request. Human-readable output is the default and `--json` preserves structured output for scripting. Odoo external API availability depends on subscription plan; an interactive login and the runtime `/doc` page do not by themselves establish that API-key calls are enabled.
 
-The adapter intentionally exposes no arbitrary model/method request and currently has no writes or deletes. See the `lifeos-odoo` skill for the command contract and credential boundary.
+Each read command makes one bounded API request. An executed write makes the mutation request and one required readback request. The client does not automatically retry or paginate, and it enforces a cross-request cooldown of five seconds by default because server-side caps may be undocumented. Keep reads on demand rather than polling. `ODOO_MIN_REQUEST_INTERVAL_SECONDS` may raise the cooldown; setting it lower should be reserved for controlled testing.
+
+The adapter intentionally exposes no arbitrary model/method request and has no delete or archive command. Task updates require a numeric task ID; project, stage, and assignee references are numeric IDs discovered through bounded reads rather than guessed names. See the `lifeos-odoo` skill for the command contract and credential boundary.
 
 
 ## Open Austin Org Snapshots
