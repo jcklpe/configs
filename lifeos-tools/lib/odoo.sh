@@ -132,6 +132,10 @@ _odoo_render_tasks() {
     jq -r "${_odoo_relation_label_filter} .[] | \"- \" + (.name // \"(unnamed)\") + \"\\n  task_id: \" + (.id | tostring) + \"\\n  project: \" + (.project_id | relation_label) + \"\\n  stage: \" + (.stage_id | relation_label) + \"\\n  assignees: \" + ((.user_ids // []) | map(tostring) | join(\", \")) + \"\\n  deadline: \" + (.date_deadline // \"\") + \"\\n  updated: \" + (.write_date // \"\")"
 }
 
+_odoo_render_comments() {
+    jq -r "${_odoo_relation_label_filter} .[] | \"- comment_id: \" + (.id | tostring) + \"\\n  author: \" + (.author_id | relation_label) + \"\\n  date: \" + (.date // \"\") + \"\\n  body: \" + ((.body // \"\") | gsub(\"<[^>]+>\"; \"\") | gsub(\"&nbsp;\"; \" \"))"
+}
+
 _odoo_projects_list() {
     local alias="${1:-}" json=0 response body
     [ -n "$alias" ] || { _err "odoo projects list requires ALIAS"; return 1; }
@@ -219,6 +223,25 @@ _odoo_tasks_get() {
     response="$(_odoo_call "$alias" project.task read "$body")" || return 1
     [ "$(printf '%s' "$response" | jq 'length')" -eq 1 ] || { _err "Odoo task not found: $task"; return 1; }
     if [ "$json" -eq 1 ]; then printf '%s\n' "$response"; else printf '%s' "$response" | _odoo_render_tasks; fi
+}
+
+_odoo_tasks_comments() {
+    local alias="${1:-}" task="${2:-}" limit=20 json=0 response body
+    [ -n "$alias" ] && [ -n "$task" ] || { _err "odoo tasks comments requires ALIAS TASK_ID"; return 1; }
+    shift 2 || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --limit) [ -n "${2:-}" ] || { _err "--limit requires COUNT"; return 1; }; limit="$2"; shift 2 ;;
+            --json) json=1; shift ;;
+            *) _err "Unknown tasks comments option: $1"; return 1 ;;
+        esac
+    done
+    case "$task" in ''|*[!0-9]*) _err "TASK_ID must be numeric"; return 1 ;; esac
+    case "$limit" in ''|*[!0-9]*) _err "--limit requires a positive integer"; return 1 ;; esac
+    [ "$limit" -gt 0 ] && [ "$limit" -le 100 ] || { _err "--limit must be between 1 and 100"; return 1; }
+    body="$(jq -cn --argjson task "$task" --argjson limit "$limit" '{domain: [["model", "=", "project.task"], ["res_id", "=", $task], ["message_type", "=", "comment"]], fields: ["id", "body", "author_id", "date", "subject"], limit: $limit, order: "date desc,id desc"}')" || return 1
+    response="$(_odoo_call "$alias" mail.message search_read "$body")" || return 1
+    if [ "$json" -eq 1 ]; then printf '%s\n' "$response"; else printf '%s' "$response" | _odoo_render_comments; fi
 }
 
 _odoo_validate_date() {
@@ -355,6 +378,7 @@ _odoo_dispatch() {
                 list) shift 2; _odoo_tasks_list "$@" ;;
                 find) shift 2; _odoo_tasks_find "$@" ;;
                 get) shift 2; _odoo_tasks_get "$@" ;;
+                comments) shift 2; _odoo_tasks_comments "$@" ;;
                 create) shift 2; _odoo_tasks_create "$@" ;;
                 update) shift 2; _odoo_tasks_update "$@" ;;
                 comment) shift 2; _odoo_tasks_comment "$@" ;;
