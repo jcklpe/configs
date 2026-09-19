@@ -96,6 +96,9 @@ Usage:
   ./lifeos.sh odoo tasks list ALIAS --project PROJECT_ID [--stage STAGE_ID] [--limit COUNT] [--json]
   ./lifeos.sh odoo tasks find ALIAS QUERY --project PROJECT_ID [--json]
   ./lifeos.sh odoo tasks get ALIAS TASK_ID [--json]
+  ./lifeos.sh odoo tasks create ALIAS --project PROJECT_ID --name NAME [--description TEXT | --description-file FILE] [--stage STAGE_ID] [--assignee USER_ID]... [--deadline YYYY-MM-DD] [--execute] [--json]
+  ./lifeos.sh odoo tasks update ALIAS TASK_ID [--name NAME] [--description TEXT | --description-file FILE] [--stage STAGE_ID] [--assignee USER_ID]... [--clear-assignees] [--deadline YYYY-MM-DD | --clear-deadline] [--execute] [--json]
+  ./lifeos.sh odoo tasks comment ALIAS TASK_ID [--body TEXT | --body-file FILE] [--execute] [--json]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh github list-repos
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
