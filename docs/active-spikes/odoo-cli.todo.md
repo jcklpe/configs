@@ -15,7 +15,7 @@
 - [ ] Run the full offline test suite and one live read/write/readback validation against an approved test record.
 
 ## Ready for Human QA
-- Review and execute one comment against the existing test task, then confirm the required task readback succeeds. The reviewed plan should identify the account alias and exact task ID without exposing the API key.
+- Preview and execute a create or update against an approved disposable test record, then confirm the required task readback reflects the requested fields.
 
 ## Done
 - [x] Inspect the supported Odoo 19 integration model. JSON-2 is the documented current API, `/doc` exposes database-specific models/methods, API keys use bearer authentication, access follows the authenticating user’s record rules, and external API availability depends on plan eligibility.
@@ -27,6 +27,8 @@
 - [x] Add and validate a tool-specific Odoo skill, durable CLI documentation, and installer symlinks for Codex and Claude.
 - [x] Create a scoped, expiring API key and verify authenticated JSON-2 reads against one project and one bounded task result on 2026-09-19.
 - [x] Add conservative request behavior: one request per read, one mutation plus readback per executed write, no automatic retry or pagination, and a five-second cross-request cooldown.
+- [x] Add a bounded exact-task comment listing so comment writes can be verified against `mail.message` rather than inferred from the task record's unchanged `write_date`.
+- [x] Execute an approved plain-text comment on the existing test task and verify comment ID `373` contains the exact submitted body on 2026-09-19.
 
 ## Notes / Edge Cases
 - The runtime documentation being visible does not establish that API-key calls are enabled.
