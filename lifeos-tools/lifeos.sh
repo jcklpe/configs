@@ -85,6 +85,10 @@ Usage:
   ./lifeos.sh m365 contacts sync ALIAS [--qa | --output FILE]
   ./lifeos.sh m365 contacts create ALIAS [--display-name TEXT] [--given-name TEXT] [--surname TEXT] [--email ADDRESS]... [--phone NUMBER]... [--mobile NUMBER] [--company TEXT] [--job-title TEXT] [--notes TEXT | --notes-file FILE] [--execute]
   ./lifeos.sh m365 contacts update ALIAS --contact ID [contact fields...] [--execute]
+  ./lifeos.sh m365 files search ALIAS QUERY [--drive DRIVE_ID] [--json]
+  ./lifeos.sh m365 files resolve-link ALIAS URL [--json]
+  ./lifeos.sh m365 files meta ALIAS ITEM_ID [--drive DRIVE_ID] [--json]
+  ./lifeos.sh m365 files download ALIAS ITEM_ID --out PATH [--drive DRIVE_ID] [--force]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh github list-repos
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]

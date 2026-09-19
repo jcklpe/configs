@@ -70,12 +70,17 @@ These commands operate on the signed-in user's default Outlook Contacts folder, 
 
 After any successful calendar or contact write, re-run the corresponding `sync` command to refresh the LifeOS snapshot.
 
-## Files (OneDrive / SharePoint) — implemented but gated
+## Files (OneDrive / SharePoint)
 ```sh
-lifeos m365 files search ALIAS "Work Plan"      # returns drive-item ids
-lifeos m365 files meta ALIAS ITEM_ID
-lifeos m365 files download ALIAS ITEM_ID --out PATH
+lifeos m365 files search ALIAS "Work Plan" [--drive DRIVE_ID] [--json]
+lifeos m365 files resolve-link ALIAS SHARING_URL [--json]
+lifeos m365 files meta ALIAS ITEM_ID [--drive DRIVE_ID] [--json]
+lifeos m365 files download ALIAS ITEM_ID --out PATH [--drive DRIVE_ID] [--force]
 ```
 These require the `Files.ReadWrite` delegated scope, enabled per account with `"files": {"enabled": true}` in `m365-accounts.json`.
 
-**⚠️ Gated on the UT tenant (verified 2026-09-14).** Enabling `files` for the `ut` account and re-consenting hits an **admin-approval wall**: the tenant requires a request-with-justification for the Files scope, so a student account cannot self-grant it. The `files` flag is therefore **disabled by default**; leaving it enabled drags `Files.ReadWrite` into every Graph call and breaks the already-consented mail/calendar/contacts scopes behind the same wall. The commands and scope plumbing are kept in place so this works immediately if UT admin approval is ever obtained. There is no rich Word-editing API (unlike Excel's workbook API), so any future edit path is download → local edit (e.g. python-docx) → `PUT .../content` (OneDrive keeps version history).
+`search` uses the signed-in user's default drive unless `--drive` identifies another OneDrive or SharePoint document library. Its output includes both `item_id` and `drive_id`; preserve both because item IDs are scoped to a drive. `resolve-link` is the preferred entry point for a known Teams, SharePoint, or OneDrive URL: it returns the exact drive/item pair without requiring broad site enumeration. `meta` and `download` use that pair. Downloads refuse to overwrite an existing local path unless `--force` is explicit.
+
+UT reported admin consent granted for Microsoft Graph PowerShell on 2026-09-18, after the earlier `Files.ReadWrite` request hit an admin-approval wall. The local `ut` alias still has files disabled until post-approval re-consent and a real read are verified. When enabling it, run `lifeos m365 auth ut` and confirm that `effective_scopes` includes `Files.ReadWrite`, then resolve or search for a known file before assuming SharePoint access works. Leave files disabled if re-consent causes the existing mail, calendar, or contacts surfaces to fail.
+
+The file surface is read-only and does not delete, upload, or replace remote content. There is no general rich Word-editing API. Any future Word edit path would require download, a local structured edit, an exact-target replacement upload, and readback verification; implement it only behind a dry-run-first plan and explicit execution gate.
