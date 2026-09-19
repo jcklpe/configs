@@ -79,6 +79,7 @@ create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-drive" "${HOME}/
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-docs" "${HOME}/.codex/skills/lifeos-docs"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-github" "${HOME}/.codex/skills/lifeos-github"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-m365" "${HOME}/.codex/skills/lifeos-m365"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-odoo" "${HOME}/.codex/skills/lifeos-odoo"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-open-austin" "${HOME}/.codex/skills/lifeos-open-austin"
 
 ##- Claude global skill symlinks
@@ -106,6 +107,7 @@ create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-drive" "${HOME}/
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-docs" "${HOME}/.claude/skills/lifeos-docs"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-github" "${HOME}/.claude/skills/lifeos-github"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-m365" "${HOME}/.claude/skills/lifeos-m365"
+create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-odoo" "${HOME}/.claude/skills/lifeos-odoo"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-open-austin" "${HOME}/.claude/skills/lifeos-open-austin"
 
 # WezTerm uses XDG on all platforms

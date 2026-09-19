@@ -114,6 +114,12 @@ lifeos m365 files search ut "Work Plan"
 lifeos m365 files resolve-link ut 'https://example.sharepoint.com/:w:/r/sites/team/document'
 lifeos m365 files meta ut ITEM_ID --drive DRIVE_ID
 lifeos m365 files download ut ITEM_ID --drive DRIVE_ID --out /tmp/document.docx
+lifeos odoo accounts
+lifeos odoo projects list example
+lifeos odoo stages list example --project 1
+lifeos odoo tasks list example --project 1
+lifeos odoo tasks find example "brief" --project 1
+lifeos odoo tasks get example 42
 lifeos open-austin-org path
 lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
@@ -144,6 +150,13 @@ Mail snapshots are read-only and bounded by the alias's days, count, and body li
 Calendar and contact writes are dry-run by default and require `--execute`. There are no delete commands. Calendar writes are restricted to configured writable calendar IDs. Because Microsoft can send invitations or meeting updates for attendee-bearing events, those writes also require `--notify` as an explicit acknowledgement; unlike the Google API, Graph does not expose it here as a suppress-delivery switch. During contact updates, supplied email or phone values replace that complete field array. See the `lifeos-m365` skill for the full safety model.
 
 File access is disabled in the example account. Set `"files": {"enabled": true}` for an alias only after its tenant has approved `Files.ReadWrite`, then run `lifeos m365 auth ALIAS` again. `search` addresses the user's default drive unless `--drive DRIVE_ID` is supplied. `resolve-link` accepts an existing HTTPS OneDrive, SharePoint, or Teams sharing URL and returns the stable drive/item pair needed by `meta` and `download`. Downloads refuse to overwrite an existing local file unless `--force` is supplied. The CLI does not expose file deletion or a generic Graph request surface.
+
+## Odoo
+Odoo Project reads use the Odoo 19 JSON-2 API. Copy `secrets/odoo-accounts.example.json` to the ignored `secrets/odoo-accounts.json`, set the configured API-key environment variable in the ignored environment file, and use `lifeos odoo accounts` plus `lifeos doctor` to verify setup without printing the key.
+
+The current surface lists projects and project stages, lists or searches tasks within an exact project, and reads an exact task ID. Human-readable output is the default and `--json` preserves the API response for scripting. Odoo external API availability depends on subscription plan; an interactive login and the runtime `/doc` page do not by themselves establish that API-key calls are enabled.
+
+The adapter intentionally exposes no arbitrary model/method request and currently has no writes or deletes. See the `lifeos-odoo` skill for the command contract and credential boundary.
 
 
 ## Open Austin Org Snapshots
