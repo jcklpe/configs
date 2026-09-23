@@ -19,6 +19,21 @@ _trim() {
     printf '%s' "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
+_LIFEOS_TEMP_FILES=()
+
+_register_temp_file() {
+    _LIFEOS_TEMP_FILES+=("$1")
+    trap '_cleanup_temp_files' EXIT HUP INT TERM
+}
+
+_cleanup_temp_files() {
+    local f
+    for f in "${_LIFEOS_TEMP_FILES[@]}"; do
+        [ -f "$f" ] && rm -f "$f" || true
+    done
+    return 0
+}
+
 _load_env() {
     local line key value is_set
 

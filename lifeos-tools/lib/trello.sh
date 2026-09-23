@@ -756,7 +756,8 @@ _trello_sync() {
         out="$(_sources_dir)/trello.md"
     fi
 
-    tmp_out="$(mktemp "${out}.XXXXXX")" || return 1
+    tmp_out="$(mktemp "$(dirname "$out")/.$(basename "$out").XXXXXX")" || return 1
+    _register_temp_file "$tmp_out"
     refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 
     {

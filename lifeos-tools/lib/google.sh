@@ -1373,7 +1373,8 @@ _calendar_sync() {
         out="$(_sources_dir)/calendar.md"
     fi
 
-    tmp_out="$(mktemp "${out}.XXXXXX")" || return 1
+    tmp_out="$(mktemp "$(dirname "$out")/.$(basename "$out").XXXXXX")" || return 1
+    _register_temp_file "$tmp_out"
     refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
     window="$(_calendar_window)" || return 1
     time_min="$(printf '%s\n' "$window" | sed -n '1p')"
