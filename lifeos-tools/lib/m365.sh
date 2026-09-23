@@ -433,7 +433,8 @@ _m365_mail_sync() {
         out="$(_m365_output "$alias" mail 0)"
     fi
     _ensure_parent_dir "$out" || return 1
-    tmp="$(mktemp "${out}.XXXXXX")" || return 1
+    tmp="$(mktemp "$(dirname "$out")/.$(basename "$out").XXXXXX")" || return 1
+    _register_temp_file "$tmp"
     json="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-mail.XXXXXX")" || return 1
     days="$(_m365_account_value "$alias" '.mail.days // 30')" || days=30
     max_results="$(_m365_account_value "$alias" '.mail.max_results // 150')" || max_results=150
@@ -565,7 +566,8 @@ _m365_calendar_sync() {
     _m365_require_enabled "$alias" calendar || return 1
     if [ -n "$custom_out" ]; then out="$custom_out"; elif [ "$qa" -eq 1 ]; then out="$(_m365_output "$alias" calendar 1)"; else _vault_ready || return 1; _ensure_sources_dir || return 1; out="$(_m365_output "$alias" calendar 0)"; fi
     _ensure_parent_dir "$out" || return 1
-    tmp="$(mktemp "${out}.XXXXXX")" || return 1
+    tmp="$(mktemp "$(dirname "$out")/.$(basename "$out").XXXXXX")" || return 1
+    _register_temp_file "$tmp"
     json="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-calendar-render.XXXXXX")" || return 1
     window="$(_m365_calendar_window)" || return 1
     from="$(printf '%s\n' "$window" | sed -n '1p')"
@@ -858,7 +860,8 @@ _m365_contacts_sync() {
     _m365_require_enabled "$alias" contacts || return 1
     if [ -n "$custom_out" ]; then out="$custom_out"; elif [ "$qa" -eq 1 ]; then out="$(_m365_output "$alias" contacts 1)"; else _vault_ready || return 1; _ensure_sources_dir || return 1; out="$(_m365_output "$alias" contacts 0)"; fi
     _ensure_parent_dir "$out" || return 1
-    tmp="$(mktemp "${out}.XXXXXX")" || return 1
+    tmp="$(mktemp "$(dirname "$out")/.$(basename "$out").XXXXXX")" || return 1
+    _register_temp_file "$tmp"
     data="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-contacts-render.XXXXXX")" || return 1
     _say "Syncing Outlook contacts: $alias" >&2
     _m365_contacts_fetch "$alias" "$data" || return 1
