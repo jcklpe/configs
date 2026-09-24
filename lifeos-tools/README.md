@@ -199,6 +199,8 @@ Drive read commands are on-demand. They search/list/inspect files and can read G
 
 `lifeos google auth ALIAS --docs-write` adds the Google Docs write scope to that account's normal LifeOS token. The OAuth helper requests incremental authorization, so an existing Gmail/Drive token keeps its previously granted scopes. This grants the token capability to edit existing native Google Docs; it does not itself edit a document or waive the approval rules of whichever bounded write tool is used. The command that consumes the scope is `lifeos docs replace-once`, documented in the `lifeos-drive` skill under "Editing an existing Doc". `lifeos drive` itself has no existing-Doc edit operation and is not where to look for one.
 
+`lifeos google auth ALIAS --docs-comment` adds the full Drive scope, which `lifeos docs comment` needs to comment on Docs that LifeOS did not create (`drive.file` cannot reach them). The full scope is broad, so grant it only on aliases that need to comment. Like `--docs-write`, it grants capability only; each comment is still dry-run first and posted with `--execute` after approval. `lifeos docs comments` lists existing comments with the normal read-only scope.
+
 `lifeos drive import-doc` is the only Drive write path. It imports a local `.html`, `.md`, `.txt`, `.rtf`, `.doc`, or `.docx` source file as a native Google Doc. It is **dry-run by default** and only writes with `--execute`. The target account must have `"drive": { "write_enabled": true }` in ignored `google-accounts.json`; after enabling that flag, re-run `lifeos google auth ALIAS` so the token receives the `drive.file` scope.
 
 Examples:

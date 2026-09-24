@@ -1,6 +1,6 @@
 ---
 name: lifeos-docs
-description: "Use when editing an existing native Google Doc through the lifeos CLI — updating a shared doc, fixing or replacing a line, adding a hyperlink to existing text, or reading a Doc's text and revision id. Covers lifeos docs read and replace-once: one exact uniquely-matched replacement, dry-run by default, revision-guarded. Creating a new Doc from a local file is lifeos-drive's import-doc instead."
+description: "Use when editing an existing native Google Doc through the lifeos CLI — updating a shared doc, fixing or replacing a line, adding a hyperlink to existing text, or reading a Doc's text and revision id. Covers lifeos docs read and replace-once (one exact uniquely-matched replacement, dry-run by default, revision-guarded) and docs comments/comment (list comments, or add one comment quoting uniquely occurring text). Creating a new Doc from a local file is lifeos-drive's import-doc instead."
 ---
 
 # LifeOS Docs
@@ -13,6 +13,8 @@ This is the surface for changing a Doc that **already exists**. Creating a new D
 ```sh
 lifeos docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
 lifeos docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
+lifeos docs comments ALIAS DOC_URL_OR_ID
+lifeos docs comment ALIAS DOC_URL_OR_ID [--quote TEXT] (--body TEXT | --body-file FILE) [--tab-id ID]... [--execute]
 ```
 
 `ALIAS` is a normal Google account alias (`lifeos google accounts`). This works on **any** Doc any alias can reach — it is not scoped to one project. If a read or write returns `403 PERMISSION_DENIED`, the usual cause is the wrong alias for that document's owner, not a missing capability.
@@ -44,6 +46,15 @@ It also cannot write into an **empty** document — there is no anchor to match.
 
 ## Links
 `--link "Visible text=https://…"` embeds a hyperlink on text inside the replacement. Repeatable. Each visible label must occur exactly once in the replacement text, for the same reason the match must be unique.
+
+## Comments
+`docs comments` lists a Doc's comments and works with the normal read-only Drive scope. `docs comment` adds one comment and is dry-run by default. It needs the full Drive scope, granted once with `lifeos google auth ALIAS --docs-comment`: the narrower `drive.file` scope only reaches files LifeOS itself created, so it cannot comment on someone else's Doc.
+
+`--quote` must match text that occurs exactly once, the same rule as `replace-once`, and is re-checked against the live Doc before posting. When a value repeats (the same date in two table cells), quote a unique neighbour such as the row label and name both rows in the comment body.
+
+**Google does not anchor API comments to text.** The quote is stored with the comment and shown in it, but the passage is not highlighted in the Doc the way a hand-made comment is. Put enough context in the quote or body that a reader can find the spot.
+
+A comment on a shared Doc is an outward-facing write like any other: show the dry-run plan and get approval for the specific comments before `--execute`.
 
 ## Boundaries
 - Do not use this to rewrite a document wholesale. It is for bounded, reviewable changes; a wholesale rewrite of a shared doc should be a conversation with its owner first.

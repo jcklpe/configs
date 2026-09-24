@@ -183,7 +183,7 @@ _google_oauth_helper() {
 }
 
 _google_auth() {
-    local alias="${1:-}" credentials_path token_path no_browser="" docs_write=""
+    local alias="${1:-}" credentials_path token_path no_browser="" docs_write="" docs_comment=""
     local scopes=() scope
 
     [ -n "$alias" ] || { _err "google auth requires ALIAS"; return 1; }
@@ -192,6 +192,7 @@ _google_auth() {
         case "$1" in
             --no-browser) no_browser="--no-browser"; shift ;;
             --docs-write) docs_write="1"; shift ;;
+            --docs-comment) docs_comment="1"; shift ;;
             *) _err "Unknown google auth option: $1"; return 1 ;;
         esac
     done
@@ -213,6 +214,10 @@ EOF
 
     if [ "$docs_write" = "1" ]; then
         scopes+=( "https://www.googleapis.com/auth/documents" )
+    fi
+    # Drive comments on files this app did not create need the full Drive scope; drive.file cannot reach them.
+    if [ "$docs_comment" = "1" ]; then
+        scopes+=( "https://www.googleapis.com/auth/drive" )
     fi
 
     if [ "${#scopes[@]}" -eq 0 ]; then
@@ -261,7 +266,7 @@ _docs_helper() {
 # Open Austin checkout (see docs/decisions/docs-editing-in-lifeos-tools.md).
 _docs_run() {
     local sub="${1:-}" alias="${2:-}" raw="${3:-}" doc_id token
-    [ -n "$sub" ] || { _err "docs requires a subcommand (read|replace-once|set-body)"; return 1; }
+    [ -n "$sub" ] || { _err "docs requires a subcommand (read|replace-once|set-body|comments|comment)"; return 1; }
     [ -n "$alias" ] || { _err "docs $sub requires ALIAS"; return 1; }
     [ -n "$raw" ] || { _err "docs $sub requires DOC_URL_OR_ID"; return 1; }
     shift 3
