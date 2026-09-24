@@ -58,7 +58,7 @@ Usage:
   ./lifeos.sh people list-aliases
   ./lifeos.sh people add-alias NAME EMAIL
   ./lifeos.sh google accounts
-  ./lifeos.sh google auth ALIAS [--docs-write] [--no-browser]
+  ./lifeos.sh google auth ALIAS [--docs-write] [--docs-comment] [--no-browser]
   ./lifeos.sh gmail sync ALIAS [--qa | --output FILE]
   ./lifeos.sh gmail sync --all [--qa]
   ./lifeos.sh drive accounts
@@ -72,6 +72,8 @@ Usage:
   ./lifeos.sh docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
   ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
   ./lifeos.sh docs set-body ALIAS DOC_URL_OR_ID (--file FILE | --new MARKDOWN) [--tab-id ID]... [--execute]   # rewrite the doc body in place from markdown (preserves id/history/links)
+  ./lifeos.sh docs comments ALIAS DOC_URL_OR_ID
+  ./lifeos.sh docs comment ALIAS DOC_URL_OR_ID [--quote TEXT] (--body TEXT | --body-file FILE) [--tab-id ID]... [--execute]   # add one comment; the quote must occur once
   ./lifeos.sh m365 accounts
   ./lifeos.sh m365 auth ALIAS [--no-browser]
   ./lifeos.sh m365 profile ALIAS [--json]
@@ -516,6 +518,8 @@ case "${1:-help}" in
             read) shift 2; _docs_run read "$@" ;;
             replace-once) shift 2; _docs_run replace-once "$@" ;;
             set-body) shift 2; _docs_run set-body "$@" ;;
+            comments) shift 2; _docs_run comments "$@" ;;
+            comment) shift 2; _docs_run comment "$@" ;;
             *) _err "Unknown Docs command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
