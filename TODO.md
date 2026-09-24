@@ -3,6 +3,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 - Odoo CLI: `docs/active-spikes/odoo-cli.md`, `docs/active-spikes/odoo-cli.todo.md`
+- Unified Calendar: `docs/active-spikes/unified-calendar.md`, `docs/active-spikes/unified-calendar.todo.md`
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
