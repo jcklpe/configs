@@ -35,6 +35,7 @@ Gmail and Drive share an account-alias system. (Google Calendar has its own auth
 lifeos google accounts        # list configured account aliases
 lifeos google auth ALIAS      # authorize an alias
 lifeos google auth ALIAS --docs-write  # additionally authorize bounded tools to edit existing native Google Docs
+lifeos google auth ALIAS --docs-comment  # additionally grant the full Drive scope so lifeos docs comment can comment on Docs
 ```
 
 Alias config lives in the gitignored `google-accounts.json` (copy `google-accounts.example.json`). Each alias carries its own Gmail/Drive settings and token file.

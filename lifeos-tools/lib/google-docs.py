@@ -562,6 +562,98 @@ def command_set_body(args):
     return 0
 
 
+# ---- comments: list and add Drive comments on a Doc ----
+
+DRIVE_FILES_API = "https://www.googleapis.com/drive/v3/files"
+COMMENT_FIELDS = "id,content,quotedFileContent,author(displayName),createdTime,resolved"
+
+
+def comment_scope_hint(message):
+    alias = os.environ.get("LIFEOS_DOCS_ALIAS", "").strip() or "ALIAS"
+    return f"{message}\nHINT: commenting needs the full Drive scope — run: lifeos google auth {alias} --docs-comment"
+
+
+def build_comment_payload(document, tab_ids, quote, body):
+    # Google Docs does not anchor API-created comments to a text range; the quote rides along as quotedFileContent and shows in the comment. Uniqueness is still required so the quote cannot point at the wrong passage.
+    if not body or not body.strip():
+        raise ValueError("Comment body must not be empty")
+    payload = {"content": body}
+    if quote is not None:
+        if not quote:
+            raise ValueError("Quote must not be empty; omit --quote for an unquoted comment")
+        matches = count_matches(document, tab_ids, quote)
+        if matches != 1:
+            raise ValueError(f"Quoted text must occur once in the selected scope; found {matches}. Lengthen the quote until it is unique, or check punctuation against `lifeos docs read`.")
+        payload["quotedFileContent"] = {"mimeType": "text/plain", "value": quote}
+    return payload
+
+
+def command_comments(args):
+    document_id = document_id_from(args)
+    token = access_token()
+    params = {"fields": f"comments({COMMENT_FIELDS}),nextPageToken", "pageSize": "100", "includeDeleted": "false"}
+    comments = []
+    while True:
+        url = f"{DRIVE_FILES_API}/{urllib.parse.quote(document_id)}/comments?{urllib.parse.urlencode(params)}"
+        try:
+            result = api_json("GET", url, token)
+        except RuntimeError as exc:
+            if "HTTP 403" in str(exc):
+                raise RuntimeError(comment_scope_hint(str(exc))) from exc
+            raise
+        comments.extend(result.get("comments", []))
+        if not result.get("nextPageToken"):
+            break
+        params["pageToken"] = result["nextPageToken"]
+    print(f"Document ID: {document_id}")
+    print(f"Comments: {len(comments)}")
+    for comment in comments:
+        state = "resolved" if comment.get("resolved") else "open"
+        author = comment.get("author", {}).get("displayName", "unknown")
+        print(f"\n- [{state}] {author} · {comment.get('createdTime', '')} · id {comment.get('id', '')}")
+        quoted = comment.get("quotedFileContent", {}).get("value")
+        if quoted:
+            print(f"  > {quoted}")
+        print(f"  {comment.get('content', '')}")
+    return 0
+
+
+def command_comment(args):
+    document_id = document_id_from(args)
+    body = text_argument(args.body, args.body_file, "Comment")
+    token = access_token()
+    document = get_document(document_id, token)
+    payload = build_comment_payload(document, args.tab_id, args.quote, body)
+    print("Google Docs comment plan:")
+    print(f"Document: {document.get('title', 'Untitled document')} ({document_id})")
+    print(f"Revision read: {document.get('revisionId', '<missing>')}")
+    print("--- quoted text ---")
+    print(args.quote if args.quote is not None else "<none: unquoted comment>")
+    print("--- comment ---")
+    print(body)
+    print("--- end plan ---")
+    print("NOTE: Google Docs shows API comments with the quote but does not highlight it in the text.")
+    if not args.execute:
+        print("DRY RUN: no comment was posted. Re-run with --execute after approval.")
+        return 0
+
+    if args.quote is not None:
+        live_document = get_document(document_id, token)
+        payload = build_comment_payload(live_document, args.tab_id, args.quote, body)
+    url = f"{DRIVE_FILES_API}/{urllib.parse.quote(document_id)}/comments?fields={urllib.parse.quote(COMMENT_FIELDS)}"
+    try:
+        result = api_json("POST", url, token, payload)
+    except RuntimeError as exc:
+        message = str(exc)
+        if "HTTP 403" in message or "PERMISSION_DENIED" in message or "insufficient" in message.lower():
+            raise RuntimeError(comment_scope_hint(message)) from exc
+        raise
+    if not result.get("id"):
+        raise RuntimeError("Google did not return a comment id; the comment may not have been posted")
+    print(f"Posted comment {result['id']} on document {document_id}")
+    return 0
+
+
 def build_parser():
     parser = argparse.ArgumentParser(description="Read Google Docs and perform one exact, revision-guarded replacement.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -598,6 +690,20 @@ def build_parser():
     setbody_parser.add_argument("--tab-id", action="append", default=[])
     setbody_parser.add_argument("--execute", action="store_true")
     setbody_parser.set_defaults(func=command_set_body)
+
+    comments_parser = subparsers.add_parser("comments", help="List the document's comments")
+    comments_parser.add_argument("--document-id")
+    comments_parser.set_defaults(func=command_comments)
+
+    comment_parser = subparsers.add_parser("comment", help="Add one comment, optionally quoting uniquely occurring text; dry-run by default")
+    comment_parser.add_argument("--document-id")
+    comment_parser.add_argument("--quote", help="Exact document text the comment refers to; must occur once")
+    comment_group = comment_parser.add_mutually_exclusive_group(required=True)
+    comment_group.add_argument("--body")
+    comment_group.add_argument("--body-file")
+    comment_parser.add_argument("--tab-id", action="append", default=[])
+    comment_parser.add_argument("--execute", action="store_true")
+    comment_parser.set_defaults(func=command_comment)
     return parser
 
 
