@@ -382,7 +382,7 @@ _m365_output() {
 }
 
 _m365_write_index() {
-    local dir="$1" refreshed alias service file
+    local dir="$1" refreshed="${2:-}" alias service file
     [ -d "$dir" ] || return 0
     {
         printf '# Microsoft 365\n\n'
