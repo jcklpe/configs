@@ -41,7 +41,7 @@ lifeos m365 calendar sync ALIAS --qa
 lifeos m365 calendar sync ALIAS
 ```
 
-`calendar sync` uses a bounded Graph calendar view so recurring instances and exceptions are expanded across the normal LifeOS date window. `calendar find` returns exact calendar and event IDs for later updates.
+Microsoft 365 calendar events already appear in the unified agenda written by `lifeos calendar sync` (see `lifeos-calendar`); that is the file to read for availability. `m365 calendar sync` separately writes a per-alias snapshot and is kept for debugging or Graph-specific detail; the combined sync no longer writes it. It uses a bounded Graph calendar view so recurring instances and exceptions are expanded across the normal LifeOS date window. `calendar find` returns exact calendar and event IDs for later updates.
 
 ## Calendar Writes
 ```sh
