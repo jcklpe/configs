@@ -1317,6 +1317,35 @@ _calendar_window() {
     _calendar_helper date-window "$LIFEOS_DAYS_BACK" "$LIFEOS_DAYS_AHEAD"
 }
 
+# _calendar_add_m365 ALIAS TIME_MIN TIME_MAX TARGET_TZ
+# Fetches the alias's enabled Microsoft 365 calendars in UTC, normalizes them into the Google event shape, and appends the file pairs to the caller's render_args. Prints one status line either way; returns non-zero on failure.
+_calendar_add_m365() {
+    local alias="$1" from="$2" to="$3" target_tz="$4" ids json outdir pairs path count=0
+    if [ -z "$target_tz" ]; then
+        printf -- '- %s: MISSING — the Google primary calendar time zone could not be read, so Microsoft 365 times could not be converted. This agenda does not include %s. Check `lifeos calendar list-calendars`.' "$alias" "$alias"
+        return 1
+    fi
+    ids="$(printf '%s\n' "$(_m365_calendar_ids "$alias")" | tr '\n' ' ')"
+    json="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-unified.XXXXXX")" || return 1
+    outdir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-unified-out.XXXXXX")" || return 1
+    if ! _m365_calendar_fetch "$alias" "$from" "$to" "$ids" "$json" "UTC" >/dev/null 2>&1; then
+        printf -- '- %s: MISSING — the Microsoft 365 fetch failed, so this agenda does not include %s. Try `lifeos m365 calendar sync %s` to see the error (often an expired sign-in: `lifeos m365 auth %s`).' "$alias" "$alias" "$alias" "$alias"
+        return 1
+    fi
+    if ! pairs="$(_m365_calendar_normalize_helper --input "$json" --timezone "$target_tz" --alias "$alias" --outdir "$outdir")"; then
+        printf -- '- %s: MISSING — Microsoft 365 events could not be normalized, so this agenda does not include %s.' "$alias" "$alias"
+        return 1
+    fi
+    while IFS= read -r path; do
+        [ -n "$path" ] || continue
+        render_args+=( "$path" )
+        count=$((count + 1))
+    done <<EOF_PAIRS
+$pairs
+EOF_PAIRS
+    printf -- '- %s: included (%s calendar(s), converted to %s).' "$alias" "$((count / 2))" "$target_tz"
+}
+
 _calendar_render_events() {
     _calendar_render_helper "$@"
 }
@@ -1350,6 +1379,7 @@ _calendar_write_metadata() {
 _calendar_sync() {
     local out tmp_out calendar_ids calendar_id encoded_id calendar_file events_file calendar_list_file
     local refreshed window time_min time_max today calendar_name custom_out=""
+    local m365_status m365_aliases m365_alias m365_line_file target_tz
     local render_args=()
 
     while [ "$#" -gt 0 ]; do
@@ -1418,10 +1448,31 @@ _calendar_sync() {
             --data-urlencode "timeMin=${time_min}" \
             --data-urlencode "timeMax=${time_max}" \
             --data-urlencode "maxResults=2500" \
-            --data-urlencode "fields=items(id,status,summary,description,location,htmlLink,hangoutLink,conferenceData(entryPoints(entryPointType,label,uri)),start,end)" > "$events_file" || return 1
+            --data-urlencode "fields=items(id,iCalUID,status,summary,description,location,htmlLink,hangoutLink,conferenceData(entryPoints(entryPointType,label,uri)),start,end)" > "$events_file" || return 1
 
         render_args+=( "$calendar_file" "$events_file" )
     done
+
+    # Microsoft 365 calendars join the same agenda. A failure is stated in the file, never silently dropped.
+    m365_status=""
+    if [ "${LIFEOS_CALENDAR_GOOGLE_ONLY:-0}" != "1" ]; then
+        m365_aliases="$(_m365_calendar_enabled_aliases 2>/dev/null || true)"
+        if [ -n "$m365_aliases" ]; then
+            m365_line_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-status.XXXXXX")" || return 1
+            target_tz="$(jq -r '(.items // [])[] | select(.primary == true) | .timeZone // empty' "$calendar_list_file" | head -n 1)"
+            while IFS= read -r m365_alias; do
+                [ -n "$m365_alias" ] || continue
+                # Called without command substitution so its additions to render_args stay in this shell.
+                _calendar_add_m365 "$m365_alias" "$time_min" "$time_max" "$target_tz" > "$m365_line_file" || true
+                m365_status="${m365_status}$(cat "$m365_line_file")"$'\n'
+            done <<EOF_M365
+$m365_aliases
+EOF_M365
+        fi
+    fi
+    if [ -n "$m365_status" ]; then
+        { printf 'Microsoft 365 calendars:\n\n'; printf '%s\n' "$m365_status"; } >> "$tmp_out"
+    fi
 
     if [ "${#render_args[@]}" -eq 0 ]; then
         _warn "No Google Calendar IDs were configured."

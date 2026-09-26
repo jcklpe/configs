@@ -25,6 +25,16 @@ Then split by **level of detail**, not by calendar:
 
 The long-horizon file's name is deliberately explicit, `calendar-long-horizon`, rather than `calendar-horizon`, so its role is clear from a directory listing. The spike was first drafted as "Calendar Long Horizon" and renamed "Unified Calendar" on 2026-09-24 once cross-provider merging joined its scope.
 
+## Decisions (settled 2026-09-26)
+- **One event shape, one renderer.** Microsoft 365 events are normalized into the Google event shape and rendered by `google-calendar-render.py`; no second renderer.
+- **Duplicates merge only on the shared iCalendar UID** (Google `iCalUID`, Graph `iCalUId`). Unmatched pairs render as two lines, because a false merge hides a real conflict.
+- **A failed Microsoft 365 fetch is stated in the file header** ("Microsoft 365 calendar missing — this agenda is Google-only"); it never silently yields a Google-only agenda that looks complete.
+- **Teams boilerplate is stripped** from Microsoft 365 descriptions; the join link is kept.
+- **The separate per-alias Microsoft 365 calendar snapshot is retired** from the combined sync, so the same events are not rendered twice at full detail. `lifeos m365 calendar sync` remains as an explicit debugging command.
+- **Window:** the unified file uses the existing Google window (`LIFEOS_DAYS_BACK` / `LIFEOS_DAYS_AHEAD`, default 14 back / 30 ahead) for both providers.
+- **Calendars:** every enabled Microsoft 365 calendar ID feeds the agenda. For the current account only the default calendar is enabled; its built-in holiday and birthday calendars stay off.
+- **Order:** unified agenda first, then the long-horizon snapshot.
+
 ## Command Surface
 Open for the to-do: either `lifeos calendar sync` writes both files in one run (one set of API calls if the fetch can span both windows), or a separate `lifeos calendar sync-long-horizon` exists. Writing both from one sync keeps them consistent with each other and is the current preference.
 

@@ -517,7 +517,8 @@ _m365_calendar_path() {
 _m365_calendar_fetch() {
     local alias="$1" from="$2" to="$3" calendar_ids="$4" out="$5" timezone calendar_id meta events item dir endpoint encoded
     local items=()
-    timezone="$(_m365_calendar_timezone "$alias")"
+    # Optional 6th argument overrides the response time zone; the unified agenda fetches in UTC and converts to the Google calendar's IANA zone.
+    timezone="${6:-$(_m365_calendar_timezone "$alias")}"
     dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-calendar.XXXXXX")" || return 1
     for calendar_id in $calendar_ids; do
         calendar_id="$(_trim "$calendar_id")"
@@ -539,7 +540,7 @@ _m365_calendar_fetch() {
             --data-urlencode "startDateTime=${from}" \
             --data-urlencode "endDateTime=${to}" \
             --data-urlencode "\$top=1000" \
-            --data-urlencode "\$select=id,subject,body,bodyPreview,start,end,isAllDay,isCancelled,isOnlineMeeting,location,organizer,attendees,webLink,type,seriesMasterId" \
+            --data-urlencode "\$select=id,iCalUId,subject,body,bodyPreview,start,end,isAllDay,isCancelled,isOnlineMeeting,onlineMeeting,location,organizer,attendees,webLink,type,seriesMasterId" \
             -H "Prefer: outlook.timezone=\"${timezone}\"" \
             -H 'Prefer: outlook.body-content-type="text"' || return 1
         jq -n --arg requested "$calendar_id" --slurpfile meta "$meta" --slurpfile events "$events" '{id: $requested, graphId: ($meta[0].id // ""), name: ($meta[0].name // $requested), events: ($events[0].value // [])}' > "$item" || return 1
@@ -550,6 +551,17 @@ _m365_calendar_fetch() {
     else
         jq -s '{calendars: .}' "${items[@]}" > "$out"
     fi
+}
+
+_m365_calendar_enabled_aliases() {
+    local accounts_path
+    accounts_path="$(_m365_accounts_path)"
+    [ -f "$accounts_path" ] || return 0
+    jq -r '(.accounts // [])[] | select((.calendar.enabled // false) == true) | .alias' "$accounts_path" 2>/dev/null
+}
+
+_m365_calendar_normalize_helper() {
+    "$LIFEOS_PY" "${LIB_DIR}/m365-calendar-normalize.py" "$@"
 }
 
 _m365_calendar_sync() {
