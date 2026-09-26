@@ -22,7 +22,7 @@ lifeos calendar sync
 
 `calendar sync` is read-only and writes to `$LIFEOS_VAULT_PATH/sources/calendar.md` (or `~/configs/lifeos-tools/qa/calendar-qa.md` with `--qa`). It uses comma-separated `GOOGLE_CALENDAR_IDS` from the `.env`, defaulting to `primary`; run `list-calendars` to inspect IDs before expanding the set.
 
-The snapshot is one date-grouped `## Combined Agenda` across all synced calendars. Every event line carries `calendar: <name>` and inline `location: ...`. Calendars listed in `LIFEOS_CALENDAR_NO_DESCRIPTION` have descriptions omitted as noise (case-insensitive summary match); an event also appearing on a non-listed calendar keeps its description. Multi-day all-day events appear under every blocked date with the covered range and the exclusive Google end date; timed events crossing midnight appear under every affected date.
+The snapshot is one date-grouped `## Combined Agenda` across all synced calendars, **including every enabled Microsoft 365 calendar** (labeled `<alias> (Microsoft 365): <name>`, times converted to the Google primary calendar's zone). A header block, `Microsoft 365 calendars:`, says per alias whether it was included or is `MISSING` and why; a MISSING line means the agenda is incomplete for that account, so do not answer availability from it without saying so. The same invitation delivered to both providers merges into one line with both calendar labels only when the iCalendar UIDs match; look-alike events stay as separate lines. `--google-only` skips Microsoft 365. Every event line carries `calendar: <name>` and inline `location: ...`. Calendars listed in `LIFEOS_CALENDAR_NO_DESCRIPTION` have descriptions omitted as noise (case-insensitive summary match); an event also appearing on a non-listed calendar keeps its description. Multi-day all-day events appear under every blocked date with the covered range and the exclusive Google end date; timed events crossing midnight appear under every affected date.
 
 ## Writes
 ```sh
@@ -61,5 +61,6 @@ Read `sources/calendar.md` in this order:
 2. Treat `My Schedule` as primary availability.
 3. Treat Lindsey's calendar as important planning context, not automatically a conflict.
 4. Treat Open Austin, work, and Partiful calendars as likely obligations unless context says otherwise.
+   Treat Microsoft 365 calendars (school or work accounts) the same way. If the `Microsoft 365 calendars:` header marks an alias `MISSING`, say that the agenda is incomplete for that account before answering.
 5. Treat Austin Design Hub as social/discovery context unless the event is also on `My Schedule` or the user says they plan to attend.
 6. If an event is ambiguous, say so rather than assuming it blocks the date.

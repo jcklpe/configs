@@ -7,7 +7,7 @@ import os
 import re
 import sys
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from html.parser import HTMLParser
 
 
@@ -309,6 +309,27 @@ def event_key(event):
     )
 
 
+def start_instant(event):
+    start = event.get("start") or {}
+    if start.get("date"):
+        return "date:" + start["date"]
+    value = start.get("dateTime") or ""
+    try:
+        return "at:" + datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc).isoformat()
+    except ValueError:
+        return "raw:" + value
+
+
+def ical_key(event):
+    # The same invitation delivered to two providers shares an iCalendar UID; recurring
+    # instances share it too, so the start instant is part of the key. Only this exact
+    # match merges across providers: a false merge would hide a real conflict.
+    uid = event.get("iCalUID") or ""
+    if not uid:
+        return None
+    return "ical|" + uid + "|" + start_instant(event)
+
+
 def merge_missing_event_data(target, source):
     for field in ("description", "location", "htmlLink", "hangoutLink"):
         if not target.get(field) and source.get(field):
@@ -335,15 +356,17 @@ def merged_events(calendar_events):
                 continue
             event = dict(event)
             event["_calendar_summaries"] = [name]
-            key = event_key(event)
-            if key and key in by_key:
-                existing = by_key[key]
+            keys = [k for k in (event_key(event), ical_key(event)) if k]
+            existing = next((by_key[k] for k in keys if k in by_key), None)
+            if existing is not None:
                 if name not in existing["_calendar_summaries"]:
                     existing["_calendar_summaries"].append(name)
                 merge_missing_event_data(existing, event)
+                for k in keys:
+                    by_key.setdefault(k, existing)
                 continue
-            if key:
-                by_key[key] = event
+            for k in keys:
+                by_key[k] = event
             merged.append(event)
 
     return merged

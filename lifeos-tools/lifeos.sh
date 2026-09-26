@@ -51,7 +51,7 @@ Usage:
   ./lifeos.sh calendar auth
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar find QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
-  ./lifeos.sh calendar sync [--google-only] [--qa | --output FILE]   # also syncs M365 calendars
+  ./lifeos.sh calendar sync [--google-only] [--qa | --output FILE]   # one agenda: Google calendars plus enabled Microsoft 365 calendars
   ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--notify] [--execute]
   ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--notify] [--execute]
   ./lifeos.sh people resolve NAME [--json]
@@ -382,27 +382,13 @@ _calendar_sync_combined() {
             *) passthrough+=("$arg") ;;
         esac
     done
-    _calendar_sync "${passthrough[@]}" || status=$?
-    if [ "$google_only" -eq 1 ] || [ "$scoped" -eq 1 ]; then
-        return "$status"
+    # Microsoft 365 calendars are merged into the one agenda inside _calendar_sync; the separate per-alias M365 calendar snapshot is no longer written here (`lifeos m365 calendar sync` still writes it on request).
+    if [ "$google_only" -eq 1 ]; then
+        LIFEOS_CALENDAR_GOOGLE_ONLY=1 _calendar_sync "${passthrough[@]}" || status=$?
+    else
+        _calendar_sync "${passthrough[@]}" || status=$?
     fi
-    _m365_calendar_sync_all || status=$?
-    return "$status"
-}
-
-_m365_calendar_sync_all() {
-    local status=0 accounts_path aliases alias
-    command -v jq >/dev/null 2>&1 || return 0
-    accounts_path="${LIB_DIR%/lib}/secrets/m365-accounts.json"
-    [ -f "$accounts_path" ] || return 0
-    aliases="$(jq -r '(.accounts // [])[] | select((.calendar.enabled // false) == true) | .alias' "$accounts_path" 2>/dev/null)" || return 0
-    [ -n "$aliases" ] || return 0
-    while IFS= read -r alias; do
-        [ -n "$alias" ] || continue
-        _m365_calendar_sync "$alias" || { _warn "M365 calendar sync failed for alias: ${alias}"; status=1; }
-    done <<EOF_ALIASES
-$aliases
-EOF_ALIASES
+    : "$scoped"
     return "$status"
 }
 
@@ -421,7 +407,6 @@ _sync() {
         _warn "Skipping Calendar sync: Google Calendar is not configured."
     fi
 
-    _m365_calendar_sync_all || status=$?
 
     return "$status"
 }
