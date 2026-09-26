@@ -18,7 +18,7 @@ See [the conceptual spike](unified-calendar.md).
 
 - **Done 2026-09-26 (unified agenda).** New `lib/m365-calendar-normalize.py` converts the Graph fetch into Google-shaped (calendar, events) pairs: fetched in UTC (`_m365_calendar_fetch` gained an optional time-zone override) and converted to the Google primary calendar's IANA zone, so no Windows-to-IANA zone mapping is guessed; all-day events keep their calendar date; `isCancelled` becomes `status: cancelled`; the Teams block after the underscore rule is stripped and the join link kept (from `onlineMeeting.joinUrl`, else the first Teams URL in the body); `iCalUId` carried as `iCalUID`. Graph `$select` gained `iCalUId` and `onlineMeeting`; the Google fetch gained `iCalUID`. `google-calendar-render.py` merges across providers on iCalendar UID plus start instant, in addition to its existing same-ID merge. `_calendar_sync` appends every enabled Microsoft 365 alias through `_calendar_add_m365` and writes a `Microsoft 365 calendars:` block stating each alias as included or `MISSING` with the reason and remedy (fetch failure, unreadable time zone, normalization failure). `lifeos calendar sync` and aggregate `lifeos sync` no longer write the per-alias M365 calendar snapshot (`_m365_calendar_sync_all` removed); `lifeos m365 calendar sync` still does on request. `--google-only` skips M365. Tests: `tests/test-calendar-unified.sh` (conversion, shared-UID merge, look-alike non-merge, Teams stripping, cancelled, all-day, both failure lines); existing render and tz tests still pass. Docs: `lifeos-calendar` and `lifeos-m365` skills, `calendar sync` usage line.
 - **Live run 2026-09-26:** one UT calendar included and converted to America/Chicago; UT Teams meetings render with join links and no boilerplate; the unified file was ~12.6k words versus ~14.9k for the two separate files it replaces. No cross-provider duplicates existed in the window, so the merge path is covered by the offline test only.
-- [ ] Human QA: Aslan reads the next real `sources/calendar.md` after a sync and confirms the UT events look right.
+- [x] Human QA: Aslan read the unified `sources/calendar.md` on 2026-09-26 and confirmed it looks good.
 - [x] Vault follow-through, in the private vault rather than here: the old per-alias UT calendar snapshot will stop updating and should be removed (with Aslan's approval), and guidance that tells agents to check two calendars separately should point to the one agenda.
 
 ### Long horizon
@@ -37,7 +37,7 @@ See [the conceptual spike](unified-calendar.md).
 - Vault follow-through done 2026-09-26: the per-alias `sources/m365/ut-calendar.md` was removed with Aslan's approval and the M365 sources index regenerated (which exposed and fixed a blank "Last refreshed" bug in `_m365_write_index`); vault policy guidance points to the one agenda.
 
 ## Ready for Human QA
-- [ ] Live run: is the long-horizon file readable and small enough, and does it show the far-off dates that matter?
+- [x] Live run: the long-horizon file was reviewed 2026-09-26; after the collapse, un-collapse, and restore sequence, Aslan kept series summaries and asked for moved occurrences to stay visible (done in 3eb793f). Spike archived 2026-09-26.
 
 ## Notes / Edge Cases
 - Multi-day all-day events that start in the near-term window and continue past its end: decide whether they appear only in the near-term file (where they start) or are clipped into both. No overlap is the rule, so pick one and test it.
