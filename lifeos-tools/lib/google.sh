@@ -1552,7 +1552,7 @@ _calendar_sync_long_horizon() {
         calendar_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-calendar-lh.XXXXXX")" || return 1
         events_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-events-lh.XXXXXX")" || return 1
         _calendar_write_metadata "$calendar_list_file" "$calendar_id" "$calendar_file"
-        _calendar_fetch_events "$encoded_id" "$boundary" "$far" "$events_file" "items(id,iCalUID,recurringEventId,status,summary,start,end),nextPageToken" || return 1
+        _calendar_fetch_events "$encoded_id" "$boundary" "$far" "$events_file" "items(id,iCalUID,status,summary,start,end),nextPageToken" || return 1
         render_args+=( "$calendar_file" "$events_file" )
     done
     if [ "${LIFEOS_CALENDAR_GOOGLE_ONLY:-0}" != "1" ]; then

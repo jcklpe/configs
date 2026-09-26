@@ -413,54 +413,15 @@ def compact_line(event):
     return first, "1" + time_part(start_value), f"- {time_part(start_value)}-{time_part(end_value)} - {summary}{through}{suffix}"
 
 
-SERIES_MIN = 3
-WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-
-
-def series_line(events):
-    first = events[0]
-    summary = inline_text(first.get("summary")) or "Untitled event"
-    label = calendar_label(first)
-    days = sorted({compact_line(e)[0] for e in events})
-    weekdays = sorted({parse_date(d).weekday() for d in days})
-    day_text = ", ".join(WEEKDAYS[w] for w in weekdays)
-    if first.get("start", {}).get("date"):
-        when = "all day"
-    else:
-        times = {f"{time_part(e['start'].get('dateTime', ''))}-{time_part(e['end'].get('dateTime', ''))}" for e in events}
-        when = times.pop() if len(times) == 1 else "times vary"
-    suffix = f" | calendar: {label}" if label else ""
-    return f"- {summary} — {day_text}, {when} — {len(events)} occurrences, {days[0]} to {days[-1]}{suffix}"
-
-
 def render_compact(calendar_events, boundary, zone):
+    # Every occurrence of a recurring event keeps its own dated line: single instances get moved, and conflicts only show per occurrence.
     by_day = defaultdict(list)
-    series = defaultdict(list)
-    singles = []
     for event in merged_events(calendar_events):
         if event.get("status") == "cancelled" or not starts_at_or_after(event, boundary, zone):
             continue
-        series_id = event.get("recurringEventId")
-        if series_id:
-            series[(calendar_label(event), series_id)].append(event)
-        else:
-            singles.append(event)
-    # A true recurring series (same recurrence ID) collapses to one summary line; short series stay as dated lines.
-    series_lines = []
-    for events in series.values():
-        if len(events) >= SERIES_MIN:
-            series_lines.append(series_line(sorted(events, key=lambda e: compact_line(e)[0])))
-        else:
-            singles.extend(events)
-    for event in singles:
         day, sort_key, line = compact_line(event)
         by_day[day].append((sort_key, line))
-    lines = []
-    if series_lines:
-        lines.extend(["## Recurring Series", "", f"Recurring events with {SERIES_MIN} or more occurrences in this window, one line each. Occurrences are not repeated below.", ""])
-        lines.extend(sorted(series_lines))
-        lines.append("")
-    lines.extend(["## Long-Horizon Agenda", ""])
+    lines = ["## Long-Horizon Agenda", ""]
     if not by_day:
         lines.append("_No events across synced calendars in this window._")
         return "\n".join(lines) + "\n"
