@@ -105,16 +105,31 @@ if grep -E 'location|Description|detail' "$LH" >/dev/null; then fail "long-horiz
 cat > "${WORK}/series-events.json" <<'EOF'
 {"items": [
   {"id": "r1", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-02T12:00:00-06:00"}, "end": {"dateTime": "2026-11-02T13:00:00-06:00"}},
-  {"id": "r2", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-04T12:00:00-06:00"}, "end": {"dateTime": "2026-11-04T13:00:00-06:00"}},
-  {"id": "r3", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-09T12:00:00-06:00"}, "end": {"dateTime": "2026-11-09T13:00:00-06:00"}},
+  {"id": "r2", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-09T12:00:00-06:00"}, "end": {"dateTime": "2026-11-09T13:00:00-06:00"}},
+  {"id": "r3", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-16T12:00:00-06:00"}, "end": {"dateTime": "2026-11-16T13:00:00-06:00"}},
   {"id": "s1", "summary": "Gym", "start": {"dateTime": "2026-11-05T18:00:00-06:00"}, "end": {"dateTime": "2026-11-05T19:00:00-06:00"}}
 ]}
 EOF
 SE="${WORK}/series.md"
 python3 "${TOOL_DIR}/lib/google-calendar-render.py" --compact --start-at 2026-10-26T04:49:00Z --tz America/Chicago "${WORK}/google-cal.json" "${WORK}/series-events.json" > "$SE"
-grep -Fx -- '- Gym — Mon, Wed, 12:00-13:00 — 3 occurrences, 2026-11-02 to 2026-11-09 | calendar: Personal' "$SE" >/dev/null || { cat "$SE"; fail "a recurring series should collapse to one summary line"; }
+grep -Fx -- '- Gym — Mon, 12:00-13:00 — 3 occurrences, 2026-11-02 to 2026-11-16 | calendar: Personal' "$SE" >/dev/null || { cat "$SE"; fail "a recurring series should collapse to one summary line"; }
 grep -Fx -- '- 18:00-19:00 - Gym | calendar: Personal' "$SE" >/dev/null || { cat "$SE"; fail "a same-titled one-off must stay as its own dated line"; }
 [ "$(grep -c -- '- 12:00-13:00 - Gym' "$SE")" -eq 0 ] || fail "series occurrences should not also appear as dated lines"
+
+##- Moved occurrences inside a summarized series keep their own dated line; a two-day pattern is not mistaken for moves.
+cat > "${WORK}/moved-events.json" <<'EOF'
+{"items": [
+  {"id": "m1", "recurringEventId": "gym", "summary": "Gym", "start": {"dateTime": "2026-11-02T12:00:00-06:00"}, "end": {"dateTime": "2026-11-02T13:00:00-06:00"}},
+  {"id": "m2", "recurringEventId": "gym", "summary": "Gym", "start": {"dateTime": "2026-11-04T12:00:00-06:00"}, "end": {"dateTime": "2026-11-04T13:00:00-06:00"}},
+  {"id": "m3", "recurringEventId": "gym", "summary": "Gym", "start": {"dateTime": "2026-11-09T12:00:00-06:00"}, "end": {"dateTime": "2026-11-09T13:00:00-06:00"}},
+  {"id": "m4", "recurringEventId": "gym", "summary": "Gym", "start": {"dateTime": "2026-11-11T12:00:00-06:00"}, "end": {"dateTime": "2026-11-11T13:00:00-06:00"}},
+  {"id": "m5", "recurringEventId": "gym", "summary": "Gym", "start": {"dateTime": "2026-11-17T15:00:00-06:00"}, "end": {"dateTime": "2026-11-17T16:00:00-06:00"}}
+]}
+EOF
+MV="${WORK}/moved.md"
+python3 "${TOOL_DIR}/lib/google-calendar-render.py" --compact --start-at 2026-10-26T04:49:00Z --tz America/Chicago "${WORK}/google-cal.json" "${WORK}/moved-events.json" > "$MV"
+grep -Fx -- '- Gym — Mon, Wed, 12:00-13:00 — 4 occurrences, 2026-11-02 to 2026-11-11 (plus 1 moved, listed by date below) | calendar: Personal' "$MV" >/dev/null || { cat "$MV"; fail "Mon/Wed series should summarize its 4 regular occurrences and note 1 moved"; }
+grep -A1 '^### 2026-11-17' "$MV" | grep -Fx -- '- 15:00-16:00 - Gym (moved; this series is usually Mon 12:00-13:00; Wed 12:00-13:00) | calendar: Personal' >/dev/null || { cat "$MV"; fail "the moved occurrence should be listed on its date with the usual slots"; }
 
 ##- Paging: every page is fetched and merged.
 _calendar_get() {
