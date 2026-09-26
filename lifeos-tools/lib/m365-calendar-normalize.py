@@ -65,8 +65,6 @@ def normalize_event(event, zone):
     }
     if event.get("iCalUId"):
         out["iCalUID"] = event["iCalUId"]
-    if event.get("seriesMasterId"):
-        out["recurringEventId"] = "m365:" + event["seriesMasterId"]
     if event.get("isCancelled"):
         out["status"] = "cancelled"
     if event.get("isAllDay"):
