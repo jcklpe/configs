@@ -1441,14 +1441,8 @@ _calendar_sync() {
         calendar_name="$(jq -r '.summary // .id // "Calendar"' "$calendar_file")"
         _say "Syncing calendar: ${calendar_name}" >&2
 
-        _calendar_get "/calendars/${encoded_id}/events" \
-            --data-urlencode "singleEvents=true" \
-            --data-urlencode "orderBy=startTime" \
-            --data-urlencode "showDeleted=false" \
-            --data-urlencode "timeMin=${time_min}" \
-            --data-urlencode "timeMax=${time_max}" \
-            --data-urlencode "maxResults=2500" \
-            --data-urlencode "fields=items(id,iCalUID,status,summary,description,location,htmlLink,hangoutLink,conferenceData(entryPoints(entryPointType,label,uri)),start,end)" > "$events_file" || return 1
+        _calendar_fetch_events "$encoded_id" "$time_min" "$time_max" "$events_file" \
+            "items(id,iCalUID,status,summary,description,location,htmlLink,hangoutLink,conferenceData(entryPoints(entryPointType,label,uri)),start,end),nextPageToken" || return 1
 
         render_args+=( "$calendar_file" "$events_file" )
     done
@@ -1480,6 +1474,106 @@ EOF_M365
         _calendar_render_events "${render_args[@]}" >> "$tmp_out" || return 1
     fi
 
+    mv "$tmp_out" "$out"
+    _say "Updated $out"
+
+    _calendar_sync_long_horizon "$out" "$time_max" "$calendar_list_file" "$calendar_ids" || return 1
+}
+
+# _calendar_fetch_events ENCODED_CALENDAR_ID TIME_MIN TIME_MAX OUT FIELDS
+# Fetches every page of expanded events into one {"items": [...]} file. A cap on pages turns a runaway window into a loud error rather than a silently truncated agenda.
+_calendar_fetch_events() {
+    local encoded_id="$1" from="$2" to="$3" out="$4" fields="$5" page_token="" page=0 dir page_file
+    local max_pages="${LIFEOS_CALENDAR_MAX_PAGES:-40}"
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-events-pages.XXXXXX")" || return 1
+    while :; do
+        page=$((page + 1))
+        if [ "$page" -gt "$max_pages" ]; then
+            _err "Calendar fetch exceeded ${max_pages} pages for one calendar; refusing to write a truncated agenda. Narrow the window or raise LIFEOS_CALENDAR_MAX_PAGES."
+            return 1
+        fi
+        page_file="${dir}/page-${page}.json"
+        if [ -n "$page_token" ]; then
+            _calendar_get "/calendars/${encoded_id}/events" \
+                --data-urlencode "singleEvents=true" --data-urlencode "orderBy=startTime" --data-urlencode "showDeleted=false" \
+                --data-urlencode "timeMin=${from}" --data-urlencode "timeMax=${to}" --data-urlencode "maxResults=2500" \
+                --data-urlencode "fields=${fields}" --data-urlencode "pageToken=${page_token}" > "$page_file" || return 1
+        else
+            _calendar_get "/calendars/${encoded_id}/events" \
+                --data-urlencode "singleEvents=true" --data-urlencode "orderBy=startTime" --data-urlencode "showDeleted=false" \
+                --data-urlencode "timeMin=${from}" --data-urlencode "timeMax=${to}" --data-urlencode "maxResults=2500" \
+                --data-urlencode "fields=${fields}" > "$page_file" || return 1
+        fi
+        page_token="$(jq -r '.nextPageToken // empty' "$page_file")"
+        [ -n "$page_token" ] || break
+    done
+    jq -s '{items: (map(.items // []) | add)}' "$dir"/page-*.json > "$out"
+}
+
+# _calendar_long_horizon_path NEAR_OUT
+_calendar_long_horizon_path() {
+    local near="$1"
+    case "$near" in
+        */calendar.md) printf '%s/calendar-long-horizon.md\n' "$(dirname "$near")" ;;
+        *.md) printf '%s-long-horizon.md\n' "${near%.md}" ;;
+        *) printf '%s-long-horizon.md\n' "$near" ;;
+    esac
+}
+
+# _calendar_sync_long_horizon NEAR_OUT BOUNDARY CALENDAR_LIST_FILE CALENDAR_IDS
+# Writes a compact one-line-per-event agenda starting where the near-term window ends (BOUNDARY) and running LIFEOS_LONG_HORIZON_DAYS from today. Same calendars as the near-term file, no overlap with it.
+_calendar_sync_long_horizon() {
+    local near="$1" boundary="$2" calendar_list_file="$3" calendar_ids="$4"
+    local out tmp_out window far refreshed target_tz calendar_id encoded_id calendar_file events_file m365_aliases m365_alias m365_line_file m365_status=""
+    local render_args=()
+    out="$(_calendar_long_horizon_path "$near")"
+    tmp_out="$(mktemp "$(dirname "$out")/.$(basename "$out").XXXXXX")" || return 1
+    _register_temp_file "$tmp_out"
+    window="$(_calendar_helper date-window 0 "$LIFEOS_LONG_HORIZON_DAYS")" || return 1
+    far="$(printf '%s\n' "$window" | sed -n '2p')"
+    refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+    target_tz="$(jq -r '(.items // [])[] | select(.primary == true) | .timeZone // empty' "$calendar_list_file" | head -n 1)"
+    {
+        printf '# Google Calendar — Long Horizon\n\n'
+        printf 'Last refreshed: %s\n\n' "$refreshed"
+        printf 'Window: %s to %s\n\n' "$boundary" "$far"
+        printf 'One line per event, no descriptions. Events before %s are in [%s](%s), which has full detail; nothing appears in both files.\n\n' "$boundary" "$(basename "$near")" "$(basename "$near")"
+    } > "$tmp_out"
+    if [ -z "$target_tz" ]; then
+        printf 'MISSING: the Google primary calendar time zone could not be read, so this file was not built. Check `lifeos calendar list-calendars`.\n' >> "$tmp_out"
+        mv "$tmp_out" "$out"
+        _warn "Long-horizon agenda not built: primary calendar time zone unknown."
+        return 1
+    fi
+    for calendar_id in $calendar_ids; do
+        calendar_id="$(_trim "$calendar_id")"
+        [ -n "$calendar_id" ] || continue
+        encoded_id="$(_urlencode "$calendar_id")" || return 1
+        calendar_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-calendar-lh.XXXXXX")" || return 1
+        events_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-events-lh.XXXXXX")" || return 1
+        _calendar_write_metadata "$calendar_list_file" "$calendar_id" "$calendar_file"
+        _calendar_fetch_events "$encoded_id" "$boundary" "$far" "$events_file" "items(id,iCalUID,recurringEventId,status,summary,start,end),nextPageToken" || return 1
+        render_args+=( "$calendar_file" "$events_file" )
+    done
+    if [ "${LIFEOS_CALENDAR_GOOGLE_ONLY:-0}" != "1" ]; then
+        m365_aliases="$(_m365_calendar_enabled_aliases 2>/dev/null || true)"
+        if [ -n "$m365_aliases" ]; then
+            m365_line_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-status.XXXXXX")" || return 1
+            while IFS= read -r m365_alias; do
+                [ -n "$m365_alias" ] || continue
+                _calendar_add_m365 "$m365_alias" "$boundary" "$far" "$target_tz" > "$m365_line_file" || true
+                m365_status="${m365_status}$(cat "$m365_line_file")"$'\n'
+            done <<EOF_M365_LH
+$m365_aliases
+EOF_M365_LH
+        fi
+    fi
+    if [ -n "$m365_status" ]; then
+        { printf 'Microsoft 365 calendars:\n\n'; printf '%s\n' "$m365_status"; } >> "$tmp_out"
+    fi
+    if [ "${#render_args[@]}" -gt 0 ]; then
+        _calendar_render_events --compact --start-at "$boundary" --tz "$target_tz" "${render_args[@]}" >> "$tmp_out" || return 1
+    fi
     mv "$tmp_out" "$out"
     _say "Updated $out"
 }
