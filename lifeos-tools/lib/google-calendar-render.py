@@ -9,6 +9,7 @@ import sys
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from html.parser import HTMLParser
+from zoneinfo import ZoneInfo
 
 
 DESCRIPTION_LIMIT = 800
@@ -382,6 +383,95 @@ def add_events(events, occurrences):
             expand_timed(event, occurrences)
 
 
+def starts_at_or_after(event, boundary, zone):
+    """True if the event begins at or after the boundary instant (all-day: its date is after the boundary's local date)."""
+    start = event.get("start") or {}
+    if start.get("date"):
+        return parse_date(start["date"]) > boundary.astimezone(zone).date()
+    value = start.get("dateTime") or ""
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")) >= boundary
+    except ValueError:
+        return False
+
+
+def compact_line(event):
+    summary = inline_text(event.get("summary")) or "Untitled event"
+    label = calendar_label(event)
+    suffix = f" | calendar: {label}" if label else ""
+    start = event.get("start") or {}
+    end = event.get("end") or {}
+    if start.get("date"):
+        first = parse_date(start["date"])
+        last = parse_date(end.get("date") or start["date"]) - timedelta(days=1)
+        through = f" (through {last.isoformat()})" if last > first else ""
+        return first.isoformat(), "0", f"- all day - {summary}{through}{suffix}"
+    start_value = start.get("dateTime") or ""
+    end_value = end.get("dateTime") or start_value
+    first = date_part(start_value)
+    through = f" (through {date_part(end_value)})" if date_part(end_value) > first and time_part(end_value) != "00:00" else ""
+    return first, "1" + time_part(start_value), f"- {time_part(start_value)}-{time_part(end_value)} - {summary}{through}{suffix}"
+
+
+SERIES_MIN = 3
+WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+
+def series_line(events):
+    first = events[0]
+    summary = inline_text(first.get("summary")) or "Untitled event"
+    label = calendar_label(first)
+    days = sorted({compact_line(e)[0] for e in events})
+    weekdays = sorted({parse_date(d).weekday() for d in days})
+    day_text = ", ".join(WEEKDAYS[w] for w in weekdays)
+    if first.get("start", {}).get("date"):
+        when = "all day"
+    else:
+        times = {f"{time_part(e['start'].get('dateTime', ''))}-{time_part(e['end'].get('dateTime', ''))}" for e in events}
+        when = times.pop() if len(times) == 1 else "times vary"
+    suffix = f" | calendar: {label}" if label else ""
+    return f"- {summary} — {day_text}, {when} — {len(events)} occurrences, {days[0]} to {days[-1]}{suffix}"
+
+
+def render_compact(calendar_events, boundary, zone):
+    by_day = defaultdict(list)
+    series = defaultdict(list)
+    singles = []
+    for event in merged_events(calendar_events):
+        if event.get("status") == "cancelled" or not starts_at_or_after(event, boundary, zone):
+            continue
+        series_id = event.get("recurringEventId")
+        if series_id:
+            series[(calendar_label(event), series_id)].append(event)
+        else:
+            singles.append(event)
+    # A true recurring series (same recurrence ID) collapses to one summary line; short series stay as dated lines.
+    series_lines = []
+    for events in series.values():
+        if len(events) >= SERIES_MIN:
+            series_lines.append(series_line(sorted(events, key=lambda e: compact_line(e)[0])))
+        else:
+            singles.extend(events)
+    for event in singles:
+        day, sort_key, line = compact_line(event)
+        by_day[day].append((sort_key, line))
+    lines = []
+    if series_lines:
+        lines.extend(["## Recurring Series", "", f"Recurring events with {SERIES_MIN} or more occurrences in this window, one line each. Occurrences are not repeated below.", ""])
+        lines.extend(sorted(series_lines))
+        lines.append("")
+    lines.extend(["## Long-Horizon Agenda", ""])
+    if not by_day:
+        lines.append("_No events across synced calendars in this window._")
+        return "\n".join(lines) + "\n"
+    for day in sorted(by_day):
+        lines.append(f"### {day}")
+        for _, line in sorted(set(by_day[day])):
+            lines.append(line)
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def render_combined(calendar_events):
     occurrences = defaultdict(list)
     add_events(merged_events(calendar_events), occurrences)
@@ -419,12 +509,30 @@ def main(argv):
         if name.strip()
     }
 
-    if len(argv) < 3 or len(argv[1:]) % 2 != 0:
-        print("Usage: google-calendar-render.py CALENDAR_JSON EVENTS_JSON [CALENDAR_JSON EVENTS_JSON ...]", file=sys.stderr)
+    args = argv[1:]
+    compact = False
+    boundary = None
+    zone = None
+    while args and args[0].startswith("--"):
+        flag = args.pop(0)
+        if flag == "--compact":
+            compact = True
+        elif flag == "--start-at" and args:
+            boundary = datetime.fromisoformat(args.pop(0).replace("Z", "+00:00"))
+        elif flag == "--tz" and args:
+            zone = ZoneInfo(args.pop(0))
+        else:
+            print(f"Unknown or incomplete option: {flag}", file=sys.stderr)
+            return 1
+    if compact and (boundary is None or zone is None):
+        print("--compact requires --start-at INSTANT and --tz ZONE", file=sys.stderr)
+        return 1
+
+    if len(args) < 2 or len(args) % 2 != 0:
+        print("Usage: google-calendar-render.py [--compact --start-at INSTANT --tz ZONE] CALENDAR_JSON EVENTS_JSON [CALENDAR_JSON EVENTS_JSON ...]", file=sys.stderr)
         return 1
 
     calendar_events = []
-    args = argv[1:]
     for index in range(0, len(args), 2):
         with open(args[index], "r", encoding="utf-8") as handle:
             calendar = json.load(handle)
@@ -432,7 +540,10 @@ def main(argv):
             events = json.load(handle)
         calendar_events.append((calendar, events))
 
-    print(render_combined(calendar_events), end="")
+    if compact:
+        print(render_compact(calendar_events, boundary, zone), end="")
+    else:
+        print(render_combined(calendar_events), end="")
     return 0
 
 

@@ -81,4 +81,51 @@ case "$line" in *"school: MISSING"*"does not include school"*) ;; *) fail "fetch
 if line="$(_calendar_add_m365 school 2026-10-01T00:00:00Z 2026-11-01T00:00:00Z "")"; then fail "missing time zone should return non-zero"; fi
 case "$line" in *"school: MISSING"*"time zone"*) ;; *) fail "missing time zone line was: $line" ;; esac
 
+##- Long horizon: compact lines, and the boundary rule that keeps it disjoint from the near-term file.
+cat > "${WORK}/lh-events.json" <<'EOF'
+{"items": [
+  {"id": "b1", "summary": "Before boundary", "location": "Somewhere", "description": "detail",
+   "start": {"dateTime": "2026-10-25T20:00:00-05:00"}, "end": {"dateTime": "2026-10-25T21:00:00-05:00"}},
+  {"id": "b2", "summary": "After boundary",  "location": "Somewhere", "description": "detail",
+   "start": {"dateTime": "2026-10-26T09:00:00-05:00"}, "end": {"dateTime": "2026-10-26T10:00:00-05:00"}},
+  {"id": "b3", "summary": "All-day on boundary local day", "start": {"date": "2026-10-25"}, "end": {"date": "2026-10-26"}},
+  {"id": "b4", "summary": "All-day after", "start": {"date": "2026-10-26"}, "end": {"date": "2026-10-29"}}
+]}
+EOF
+LH="${WORK}/lh.md"
+# Boundary 2026-10-26T04:49Z is 2026-10-25 23:49 Central: the near-term file owns 10/25.
+python3 "${TOOL_DIR}/lib/google-calendar-render.py" --compact --start-at 2026-10-26T04:49:00Z --tz America/Chicago "${WORK}/google-cal.json" "${WORK}/lh-events.json" > "$LH"
+grep -Fx -- '- 09:00-10:00 - After boundary | calendar: Personal' "$LH" >/dev/null || { cat "$LH"; fail "compact timed line wrong or carries extra detail"; }
+grep -Fx -- '- all day - All-day after (through 2026-10-28) | calendar: Personal' "$LH" >/dev/null || { cat "$LH"; fail "multi-day all-day should be one line with its last date"; }
+if grep -F 'Before boundary' "$LH" >/dev/null; then fail "events before the boundary belong to the near-term file"; fi
+if grep -F 'All-day on boundary local day' "$LH" >/dev/null; then fail "an all-day event on the boundary's local day belongs to the near-term file"; fi
+if grep -E 'location|Description|detail' "$LH" >/dev/null; then fail "long-horizon lines must not carry location or descriptions"; fi
+
+##- Recurring series collapse by recurrence ID only; a same-titled one-off stays dated.
+cat > "${WORK}/series-events.json" <<'EOF'
+{"items": [
+  {"id": "r1", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-02T12:00:00-06:00"}, "end": {"dateTime": "2026-11-02T13:00:00-06:00"}},
+  {"id": "r2", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-04T12:00:00-06:00"}, "end": {"dateTime": "2026-11-04T13:00:00-06:00"}},
+  {"id": "r3", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-09T12:00:00-06:00"}, "end": {"dateTime": "2026-11-09T13:00:00-06:00"}},
+  {"id": "s1", "summary": "Gym", "start": {"dateTime": "2026-11-05T18:00:00-06:00"}, "end": {"dateTime": "2026-11-05T19:00:00-06:00"}}
+]}
+EOF
+SE="${WORK}/series.md"
+python3 "${TOOL_DIR}/lib/google-calendar-render.py" --compact --start-at 2026-10-26T04:49:00Z --tz America/Chicago "${WORK}/google-cal.json" "${WORK}/series-events.json" > "$SE"
+grep -Fx -- '- Gym — Mon, Wed, 12:00-13:00 — 3 occurrences, 2026-11-02 to 2026-11-09 | calendar: Personal' "$SE" >/dev/null || { cat "$SE"; fail "a recurring series should collapse to one summary line"; }
+grep -Fx -- '- 18:00-19:00 - Gym | calendar: Personal' "$SE" >/dev/null || { cat "$SE"; fail "a same-titled one-off must stay as its own dated line"; }
+[ "$(grep -c -- '- 12:00-13:00 - Gym' "$SE")" -eq 0 ] || fail "series occurrences should not also appear as dated lines"
+
+##- Paging: every page is fetched and merged.
+_calendar_get() {
+    case "$*" in
+        *pageToken=p2*) printf '{"items": [{"id": "e3"}]}' ;;
+        *) printf '{"items": [{"id": "e1"}, {"id": "e2"}], "nextPageToken": "p2"}' ;;
+    esac
+}
+_calendar_fetch_events cal 2026-10-01T00:00:00Z 2026-12-01T00:00:00Z "${WORK}/paged.json" "items(id),nextPageToken" || fail "paged fetch failed"
+[ "$(jq '.items | length' "${WORK}/paged.json")" -eq 3 ] || fail "paging should merge all 3 items across 2 pages"
+_calendar_get() { printf '{"items": [], "nextPageToken": "again"}'; }
+if LIFEOS_CALENDAR_MAX_PAGES=3 _calendar_fetch_events cal a b "${WORK}/runaway.json" "items(id),nextPageToken" 2>/dev/null; then fail "a runaway fetch must fail loudly, not truncate"; fi
+
 printf 'unified calendar tests passed\n'

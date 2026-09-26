@@ -11,6 +11,7 @@ QA_DIR="${SCRIPT_DIR}/qa"
 
 LIFEOS_DAYS_BACK="${LIFEOS_DAYS_BACK:-14}"
 LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
+LIFEOS_LONG_HORIZON_DAYS="${LIFEOS_LONG_HORIZON_DAYS:-180}"
 
 # Shared helpers live in lib/. common.sh must load first — the feature modules use its functions.
 . "${LIB_DIR}/common.sh"
