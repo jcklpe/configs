@@ -417,7 +417,37 @@ SERIES_MIN = 3
 WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
-def series_line(events):
+def slot(event):
+    """(weekday, time range) of one occurrence; all-day occurrences use the weekday alone."""
+    day = compact_line(event)[0]
+    start = event.get("start") or {}
+    if start.get("date"):
+        return (parse_date(day).weekday(), "all day")
+    end = event.get("end") or {}
+    return (parse_date(day).weekday(), f"{time_part(start.get('dateTime', ''))}-{time_part(end.get('dateTime', ''))}")
+
+
+def usual_text(slots):
+    return "; ".join(f"{WEEKDAYS[w]} {when}" for w, when in sorted(slots))
+
+
+def split_series(events):
+    """Separate a series' regular occurrences from moved ones.
+
+    A weekday-and-time slot that recurs at least twice is part of the series' pattern, so a
+    Mon/Wed series is not mistaken for moves. An occurrence alone in its slot is treated as
+    moved and listed by date, so a rescheduled instance months out stays visible.
+    """
+    counts = defaultdict(int)
+    for event in events:
+        counts[slot(event)] += 1
+    usual = {s for s, n in counts.items() if n >= 2}
+    regular = [e for e in events if slot(e) in usual]
+    moved = [e for e in events if slot(e) not in usual]
+    return regular, moved, usual
+
+
+def series_line(events, moved_count=0):
     first = events[0]
     summary = inline_text(first.get("summary")) or "Untitled event"
     label = calendar_label(first)
@@ -430,7 +460,8 @@ def series_line(events):
         times = {f"{time_part(e['start'].get('dateTime', ''))}-{time_part(e['end'].get('dateTime', ''))}" for e in events}
         when = times.pop() if len(times) == 1 else "times vary"
     suffix = f" | calendar: {label}" if label else ""
-    return f"- {summary} — {day_text}, {when} — {len(events)} occurrences, {days[0]} to {days[-1]}{suffix}"
+    moved_note = f" (plus {moved_count} moved, listed by date below)" if moved_count else ""
+    return f"- {summary} — {day_text}, {when} — {len(events)} occurrences, {days[0]} to {days[-1]}{moved_note}{suffix}"
 
 
 def render_compact(calendar_events, boundary, zone):
@@ -445,15 +476,23 @@ def render_compact(calendar_events, boundary, zone):
             series[(calendar_label(event), series_id)].append(event)
         else:
             singles.append(event)
-    # A true recurring series (same recurrence ID) collapses to one summary line; short series stay as dated lines.
+    # A true recurring series (same recurrence ID) collapses to one summary line; its moved occurrences and short series stay as dated lines.
     series_lines = []
+    moved_notes = {}
     for events in series.values():
-        if len(events) >= SERIES_MIN:
-            series_lines.append(series_line(sorted(events, key=lambda e: compact_line(e)[0])))
+        regular, moved, usual = split_series(events) if len(events) >= SERIES_MIN else ([], events, set())
+        if len(regular) >= SERIES_MIN:
+            series_lines.append(series_line(sorted(regular, key=lambda e: compact_line(e)[0]), len(moved)))
+            for event in moved:
+                moved_notes[id(event)] = f" (moved; this series is usually {usual_text(usual)})"
+            singles.extend(moved)
         else:
             singles.extend(events)
     for event in singles:
         day, sort_key, line = compact_line(event)
+        note = moved_notes.get(id(event), "")
+        if note:
+            line = line.replace(" | calendar:", note + " | calendar:", 1) if " | calendar:" in line else line + note
         by_day[day].append((sort_key, line))
     lines = []
     if series_lines:
