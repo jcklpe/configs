@@ -101,18 +101,20 @@ if grep -F 'Before boundary' "$LH" >/dev/null; then fail "events before the boun
 if grep -F 'All-day on boundary local day' "$LH" >/dev/null; then fail "an all-day event on the boundary's local day belongs to the near-term file"; fi
 if grep -E 'location|Description|detail' "$LH" >/dev/null; then fail "long-horizon lines must not carry location or descriptions"; fi
 
-##- Recurring events keep every occurrence as its own dated line (moved instances and conflicts must stay visible).
+##- Recurring series collapse by recurrence ID only; a same-titled one-off stays dated.
 cat > "${WORK}/series-events.json" <<'EOF'
 {"items": [
   {"id": "r1", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-02T12:00:00-06:00"}, "end": {"dateTime": "2026-11-02T13:00:00-06:00"}},
-  {"id": "r2", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-04T15:00:00-06:00"}, "end": {"dateTime": "2026-11-04T16:00:00-06:00"}},
-  {"id": "r3", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-09T12:00:00-06:00"}, "end": {"dateTime": "2026-11-09T13:00:00-06:00"}}
+  {"id": "r2", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-04T12:00:00-06:00"}, "end": {"dateTime": "2026-11-04T13:00:00-06:00"}},
+  {"id": "r3", "recurringEventId": "gym-series", "summary": "Gym", "start": {"dateTime": "2026-11-09T12:00:00-06:00"}, "end": {"dateTime": "2026-11-09T13:00:00-06:00"}},
+  {"id": "s1", "summary": "Gym", "start": {"dateTime": "2026-11-05T18:00:00-06:00"}, "end": {"dateTime": "2026-11-05T19:00:00-06:00"}}
 ]}
 EOF
 SE="${WORK}/series.md"
 python3 "${TOOL_DIR}/lib/google-calendar-render.py" --compact --start-at 2026-10-26T04:49:00Z --tz America/Chicago "${WORK}/google-cal.json" "${WORK}/series-events.json" > "$SE"
-[ "$(grep -c -- '- 12:00-13:00 - Gym' "$SE")" -eq 2 ] || { cat "$SE"; fail "each recurring occurrence should have its own line"; }
-grep -A1 '^### 2026-11-04' "$SE" | grep -Fx -- '- 15:00-16:00 - Gym | calendar: Personal' >/dev/null || { cat "$SE"; fail "a moved occurrence should show at its moved time"; }
+grep -Fx -- '- Gym — Mon, Wed, 12:00-13:00 — 3 occurrences, 2026-11-02 to 2026-11-09 | calendar: Personal' "$SE" >/dev/null || { cat "$SE"; fail "a recurring series should collapse to one summary line"; }
+grep -Fx -- '- 18:00-19:00 - Gym | calendar: Personal' "$SE" >/dev/null || { cat "$SE"; fail "a same-titled one-off must stay as its own dated line"; }
+[ "$(grep -c -- '- 12:00-13:00 - Gym' "$SE")" -eq 0 ] || fail "series occurrences should not also appear as dated lines"
 
 ##- Paging: every page is fetched and merged.
 _calendar_get() {
