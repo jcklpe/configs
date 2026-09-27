@@ -141,6 +141,12 @@ calls.clear()
 code, out = run(["lists", "update", "work", "F1", "Rec1", "--field", "Status=Not Started"])
 check(code == 0 and "DRY RUN" in out and "slackLists.items.update" not in methods(), "lists update dry run must not write")
 
+# Records show select choice labels, not option IDs.
+out = io.StringIO()
+with redirect_stdout(out):
+    slack.print_record({"id": "Rec2", "fields": [{"column_id": "Col2", "key": "status", "value": "done", "select": ["done"]}]}, SCHEMA)
+check("Status: Done" in out.getvalue(), "select values should render as their labels")
+
 # URL parsing.
 check(slack.parse_message_url("https://x.slack.com/archives/C1/p1700000000000100?thread_ts=1699999999.000200&cid=C1") == ("C1", "1699999999.000200"), "thread_ts from URL")
 
