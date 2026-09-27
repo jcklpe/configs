@@ -20,7 +20,7 @@ Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the 
 - **`lifeos-docs`** — editing a Google Doc that already exists: one exact replacement, dry-run by default, revision-guarded.
 - **`lifeos-m365`** — delegated Microsoft 365 mail reads plus gated calendar and Outlook contact reads/writes.
 - **`lifeos-odoo`** — bounded Odoo Project discovery and task reads through account aliases.
-- **`lifeos-slack`** — act in Slack as the user's own account (user OAuth token): post, reply, direct message, read threads, and read or write Slack Lists items, all dry-run first with identity check and readback.
+- **`lifeos-slack`** — act in Slack as the user's own account (user OAuth token): post, reply, direct message, read threads, and read or write Slack Lists items, all dry-run first with identity check and readback; `lifeos slack sync` snapshots configured Lists into `sources/slack/`.
 - **`lifeos-open-austin`** — Open Austin GitHub snapshot refresh and routing to the public org repo for writes.
 
 ## Health Check
