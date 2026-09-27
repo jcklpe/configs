@@ -49,7 +49,7 @@ def fake_call(acct, method, params=None, json_body=False):
     if method == "conversations.open":
         return {"ok": True, "channel": {"id": "D1"}}
     if method == "slackLists.items.list":
-        return {"ok": True, "items": [], "list": {"list_metadata": {"schema": SCHEMA}}}
+        return {"ok": True, "items": state.get("items", []), "list": {"title": "Test List", "permalink": "https://example.slack.com/lists/T1/F1", "list_metadata": {"schema": SCHEMA}}}
     if method == "slackLists.items.create":
         return {"ok": True, "item": {"id": "Rec1"}}
     if method == "slackLists.items.update":
@@ -150,6 +150,35 @@ out = io.StringIO()
 with redirect_stdout(out):
     slack.print_record({"id": "Rec3", "fields": [{"column_id": "Col5", "key": "ref", "value": "{\"originalUrl\":\"https:\\/\\/example.com\\/1\",\"displayName\":\"Issue 1\"}"}]}, SCHEMA)
 check("Source: Issue 1 (https://example.com/1)" in out.getvalue(), "link cells should render as label (url): " + out.getvalue())
+
+# Sync writes a Markdown snapshot grouped by status, with rich text rendered as Markdown.
+state["items"] = [
+    {"id": "Rec5", "updated_timestamp": "1700000000", "fields": [
+        {"column_id": "Col1", "key": "name", "text": "Plan the meetup"},
+        {"column_id": "Col2", "key": "status", "select": ["done"]},
+        {"column_id": "Col3", "key": "owner", "user": ["U5"]},
+        {"column_id": "Col5", "key": "ref", "link": [{"original_url": "https://example.com/epic", "display_name": "Epic"}]},
+        {"column_id": "Col7", "key": "desc", "rich_text": [{"type": "rich_text", "elements": [
+            {"type": "rich_text_section", "elements": [{"type": "text", "text": "Steps", "style": {"bold": True}}]},
+            {"type": "rich_text_list", "style": "bullet", "elements": [{"type": "rich_text_section", "elements": [{"type": "link", "url": "https://example.com/1", "text": "Issue 1"}]}]},
+            {"type": "rich_text_section", "elements": [{"type": "text", "text": "After the list"}]}]}]}]},
+    {"id": "Rec6", "fields": [{"column_id": "Col1", "key": "name", "text": "Loose end"}]},
+]
+SCHEMA.append({"id": "Col7", "key": "desc", "name": "Description", "type": "text"})
+with open(config, "w") as handle:
+    json.dump({"accounts": [{"alias": "work", "team_id": "T1", "user_id": "U1", "token_env": "SLACK_TOKEN_TEST", "lists": [{"id": "F1", "name": "ops"}]}]}, handle)
+code, out = run(["sync", "work", "--output", work])
+snapshot = open(os.path.join(work, "work", "list-ops.md")).read()
+check(code == 0 and "# Slack List — Test List" in snapshot and "**Count:** 2 items" in snapshot, "sync should write a titled snapshot: " + snapshot[:200])
+check(snapshot.index("## Done") < snapshot.index("## No status"), "status groups follow the schema's choice order")
+check("[Plan the meetup](https://example.slack.com/lists/T1/F1?record_id=Rec5)" in snapshot, "items link to their records")
+check("**Owner:** Pat Example" in snapshot and "**Source:** Epic (https://example.com/epic)" in snapshot, "users and links render readably")
+check("**Steps**\n\n- [Issue 1](https://example.com/1)\n\nAfter the list" in snapshot, "rich text keeps bold, list, and link: " + snapshot)
+with open(config, "w") as handle:
+    json.dump({"accounts": [{"alias": "work", "team_id": "T1", "user_id": "U1", "token_env": "SLACK_TOKEN_TEST"}]}, handle)
+code, _ = run(["sync", "work", "--output", work])
+check(code == 1, "sync of an alias with no lists configured should fail")
+state["items"] = []
 
 # URL parsing.
 check(slack.parse_message_url("https://x.slack.com/archives/C1/p1700000000000100?thread_ts=1699999999.000200&cid=C1") == ("C1", "1699999999.000200"), "thread_ts from URL")

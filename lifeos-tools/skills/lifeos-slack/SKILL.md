@@ -8,7 +8,7 @@ description: "Act in Slack as the user's own account through the lifeos CLI: ver
 If the current repo already has `lifeos-tools/skills/lifeos-slack/SKILL.md`, read and follow the repo-local skill first. Treat this as fallback seed material.
 
 ## What It Is
-`lifeos slack` uses a **user OAuth token**, so messages appear under the user's own name and avatar, not a bot. It is bounded: no delete commands, no workspace syncing, no search.
+`lifeos slack` uses a **user OAuth token**, so messages appear under the user's own name and avatar, not a bot. It is bounded: no delete commands, no message or channel syncing, no search. The one sync is a read-only snapshot of configured Slack Lists.
 
 ## Setup (once per workspace)
 1. At https://api.slack.com/apps, choose **Create New App → From an app manifest**, pick the workspace, and paste:
@@ -56,6 +56,7 @@ lifeos slack thread ALIAS MESSAGE_URL          # or --channel ID --ts TS
 lifeos slack post ALIAS --channel ID --text "..." [--thread-ts TS] [--execute]
 lifeos slack post ALIAS --url MESSAGE_URL --text "..." [--execute]   # reply in that message's thread
 lifeos slack dm ALIAS --user U... --text "..." [--execute]
+lifeos slack sync [ALIAS] [--qa | --output DIR]  # snapshot configured Lists to sources/slack/<alias>/list-<name>.md
 lifeos slack lists schema ALIAS LIST_ID
 lifeos slack lists items ALIAS LIST_ID [--limit N] [--archived]
 lifeos slack lists get ALIAS LIST_ID ITEM_ID
@@ -64,6 +65,9 @@ lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--execute
 ```
 
 `--text-file FILE` may replace `--text` anywhere. List IDs (`F...`) and item IDs (`Rec...`) appear in List item URLs.
+
+## List Snapshot
+`lifeos slack sync` writes each List named under an account's `"lists"` (`[{"id": "F...", "name": "ops"}]`) to `sources/slack/<alias>/list-<name>.md`: items grouped by Status in the List's own choice order, each linked to its record, with assignees by name, other fields, and the description rendered as Markdown with its links. It is a generated snapshot: read it for orientation, re-read the live item (`lists get`) before any write, and never edit the snapshot by hand.
 
 ## Write Safety
 - **Dry-run by default.** Without `--execute`, a command prints the plan (account, acting user, resolved target, exact text or field values) and sends nothing. Show that plan to the user and get approval for that specific message or write before re-running with `--execute`.

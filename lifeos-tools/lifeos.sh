@@ -111,6 +111,7 @@ Usage:
   ./lifeos.sh slack thread ALIAS (MESSAGE_URL | --channel ID --ts TS)
   ./lifeos.sh slack post ALIAS (--channel ID [--thread-ts TS] | --url MESSAGE_URL) (--text TEXT | --text-file FILE) [--execute]   # as the user; dry-run by default
   ./lifeos.sh slack dm ALIAS --user USER_ID (--text TEXT | --text-file FILE) [--execute]
+  ./lifeos.sh slack sync [ALIAS] [--qa | --output DIR]   # snapshot configured Lists into sources/slack/<alias>/list-<name>.md
   ./lifeos.sh slack lists schema ALIAS LIST_ID
   ./lifeos.sh slack lists items ALIAS LIST_ID [--limit N] [--archived]
   ./lifeos.sh slack lists get ALIAS LIST_ID ITEM_ID
@@ -407,6 +408,7 @@ For Open Austin GitHub/org work, also read:
 $vault/open-austin/repo.md
 $vault/sources/github/open-austin-org/issues.md
 $vault/sources/github/open-austin-org/board-org-kanban.md
+$vault/sources/slack/open-austin/list-org.md
 
 Then add the relevant focus-thread file, such as:
 

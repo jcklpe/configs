@@ -117,6 +117,7 @@ lifeos m365 files download ut ITEM_ID --drive DRIVE_ID --out /tmp/document.docx
 lifeos slack whoami example
 lifeos slack post example --channel C0000000000 --text "Hello"
 lifeos slack lists items example F0000000000 --limit 20
+lifeos slack sync example   # snapshot configured Lists into sources/slack/
 lifeos odoo accounts
 lifeos odoo projects list example
 lifeos odoo stages list example --project 1
