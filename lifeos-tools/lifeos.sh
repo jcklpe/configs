@@ -147,7 +147,7 @@ _doctor_file() {
 }
 
 _doctor() {
-    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_provider m365_token pwsh odoo_accounts odoo_aliases odoo_alias odoo_key_env odoo_key_value
+    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_provider m365_token pwsh odoo_accounts odoo_aliases odoo_alias odoo_key_env odoo_key_value slack_accounts slack_alias slack_token_env slack_token_value
 
     if [ -f "$ENV_FILE" ]; then
         _say "OK: ${ENV_FILE}"
@@ -334,6 +334,39 @@ _doctor() {
     else
         _say "OPTIONAL: Odoo account alias config is not set up"
         _say "NEXT: cp ${SECRETS_DIR}/odoo-accounts.example.json $odoo_accounts"
+    fi
+
+    slack_accounts="${SLACK_ACCOUNTS_PATH:-${SECRETS_DIR}/slack-accounts.json}"
+    if [ -f "$slack_accounts" ]; then
+        if jq -e '.accounts | type == "array"' "$slack_accounts" >/dev/null 2>&1; then
+            _say "OK: Slack account alias config exists"
+            while IFS=$'\t' read -r slack_alias slack_token_env; do
+                [ -n "$slack_alias" ] || continue
+                case "$slack_token_env" in
+                    ''|*[!A-Za-z0-9_]*)
+                        _say "MISSING: valid Slack token_env for alias '$slack_alias'"
+                        issues=$((issues + 1))
+                        ;;
+                    *)
+                        eval "slack_token_value=\${${slack_token_env}:-}"
+                        if [ -n "$slack_token_value" ]; then
+                            _say "OK: Slack token is set for alias '$slack_alias' (redacted; run 'lifeos slack whoami $slack_alias' to verify identity)"
+                        else
+                            _say "MISSING: $slack_token_env for Slack alias '$slack_alias'"
+                            issues=$((issues + 1))
+                        fi
+                        ;;
+                esac
+            done <<EOF_SLACK
+$(jq -r '(.accounts // [])[] | [(.alias // ""), (.token_env // "")] | @tsv' "$slack_accounts")
+EOF_SLACK
+        else
+            _say "MISSING: Slack account alias config is not valid JSON shape"
+            issues=$((issues + 1))
+        fi
+    else
+        _say "OPTIONAL: Slack account alias config is not set up"
+        _say "NEXT: cp ${SECRETS_DIR}/slack-accounts.example.json $slack_accounts"
     fi
 
     if [ "$issues" -eq 0 ]; then
