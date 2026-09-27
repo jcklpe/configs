@@ -304,11 +304,16 @@ def render_value(field):
 
 
 def print_record(record, schema):
-    names = {c.get("key"): c.get("name") for c in schema}
-    names.update({c.get("id"): c.get("name") for c in schema})
+    columns = {c.get("key"): c for c in schema}
+    columns.update({c.get("id"): c for c in schema})
     print(f"- item {record.get('id')}" + (" (archived)" if record.get("archived") else ""))
     for field in record.get("fields") or []:
-        label = names.get(field.get("column_id")) or names.get(field.get("key")) or field.get("key") or field.get("column_id")
+        column = columns.get(field.get("column_id")) or columns.get(field.get("key")) or {}
+        label = column.get("name") or field.get("key") or field.get("column_id")
+        choices = {str(c.get("value")): c.get("label") for c in ((column.get("options") or {}).get("choices")) or []}
+        if choices and field.get("select"):
+            # Show choice labels, not Slack's internal option IDs.
+            field = dict(field, select=[choices.get(str(v), v) for v in field["select"]], value=None, text=None)
         value = render_value(field)
         if value:
             print(f"  {label}: {value}")
