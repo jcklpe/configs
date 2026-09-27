@@ -19,6 +19,7 @@ LIFEOS_LONG_HORIZON_DAYS="${LIFEOS_LONG_HORIZON_DAYS:-180}"
 . "${LIB_DIR}/google.sh"
 . "${LIB_DIR}/m365.sh"
 . "${LIB_DIR}/odoo.sh"
+. "${LIB_DIR}/slack.sh"
 . "${LIB_DIR}/github.sh"
 . "${LIB_DIR}/resume.sh"
 
@@ -103,6 +104,18 @@ Usage:
   ./lifeos.sh odoo tasks create ALIAS --project PROJECT_ID --name NAME [--description TEXT | --description-file FILE] [--stage STAGE_ID] [--assignee USER_ID]... [--deadline YYYY-MM-DD] [--execute] [--json]
   ./lifeos.sh odoo tasks update ALIAS TASK_ID [--name NAME] [--description TEXT | --description-file FILE] [--stage STAGE_ID] [--assignee USER_ID]... [--clear-assignees] [--deadline YYYY-MM-DD | --clear-deadline] [--execute] [--json]
   ./lifeos.sh odoo tasks comment ALIAS TASK_ID [--body TEXT | --body-file FILE] [--execute] [--json]
+  ./lifeos.sh slack accounts
+  ./lifeos.sh slack whoami ALIAS
+  ./lifeos.sh slack channels ALIAS [QUERY]
+  ./lifeos.sh slack users ALIAS [QUERY]
+  ./lifeos.sh slack thread ALIAS (MESSAGE_URL | --channel ID --ts TS)
+  ./lifeos.sh slack post ALIAS (--channel ID [--thread-ts TS] | --url MESSAGE_URL) (--text TEXT | --text-file FILE) [--execute]   # as the user; dry-run by default
+  ./lifeos.sh slack dm ALIAS --user USER_ID (--text TEXT | --text-file FILE) [--execute]
+  ./lifeos.sh slack lists schema ALIAS LIST_ID
+  ./lifeos.sh slack lists items ALIAS LIST_ID [--limit N] [--archived]
+  ./lifeos.sh slack lists get ALIAS LIST_ID ITEM_ID
+  ./lifeos.sh slack lists create ALIAS LIST_ID --field NAME=VALUE... [--parent ITEM_ID] [--execute]
+  ./lifeos.sh slack lists update ALIAS LIST_ID ITEM_ID --field NAME=VALUE... [--execute]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
   ./lifeos.sh github list-repos
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
@@ -516,6 +529,10 @@ case "${1:-help}" in
     odoo)
         shift
         _odoo_dispatch "$@"
+        ;;
+    slack)
+        shift
+        _slack_dispatch "$@"
         ;;
     resume)
         case "${2:-}" in
