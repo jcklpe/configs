@@ -3,7 +3,6 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 - Odoo CLI: `docs/active-spikes/odoo-cli.md`, `docs/active-spikes/odoo-cli.todo.md`
-- Slack Integration (design only, not being built yet): `docs/active-spikes/slack-integration.md`, `docs/active-spikes/slack-integration.todo.md`
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
@@ -14,6 +13,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - `run` dispatcher notes: `docs/scratch/run-command.md`, `docs/scratch/run-command.todo.md`
 
 ## Recently Shipped
+- Slack Integration: `lifeos slack` acts as the user's own Slack account through a user OAuth token: post, threaded reply, DM, thread reads, and Slack Lists schema / items / get / create / update, all dry-run by default with an identity check (refusing bot tokens and mismatched accounts) and readback. `lifeos slack sync` snapshots configured Lists into `sources/slack/`. Live QA passed 2026-09-26; `lifeos-slack` (and the previously unlinked `lifeos-odoo`) added to the installer's skill links 2026-09-27. See `docs/archive/slack-integration.md`.
 - Unified Calendar: `lifeos calendar sync` renders enabled Microsoft 365 calendars into the one Google agenda (UTC fetch converted to the primary calendar's IANA zone; Teams boilerplate stripped; cross-provider merge only on iCalendar UID; a MISSING header line instead of a silently Google-only file), and writes a compact `calendar-long-horizon.md` to about 180 days out with recurring series summarized and moved occurrences kept visible. Google fetches now page fully and fail past a page cap instead of truncating. The separate per-alias M365 calendar snapshot is retired from the combined sync. See `docs/archive/unified-calendar.md`.
 - LifeOS GitHub Sync: `lifeos github` — sync (issues, PRs, full Discussion threads, Projects v2 boards) for any configured repo into `sources/github/`, plus `create-issue` and `move-card`, both dry-run by default. Replaced the Open-Austin-only adapter, which shelled out to a sibling checkout and failed without one; auth is now just `gh`. Discussions needed GraphQL — REST cannot see them, which is why the HAI project's architecture decisions were invisible to the vault. Two reversals recorded in the archive: board writes (argued against on a factual error) and discussion depth. History in `docs/archive/lifeos-github-sync.md` and `docs/archive/lifeos-github-sync.todo.md`.
 - LifeOS Docs Skill: `lifeos docs` shipped without a skill of its own, so an agent scanning skill names on 2026-09-06 inferred the capability did not exist and proposed rebuilding it. Skill written and wired into both host symlink blocks; `lifeos-drive`'s Doc-editing section trimmed to a pointer and `lifeos-cli` now distinguishes creating a Doc from editing one. Installer QA waived 2026-09-07 — the two symlink lines match their six siblings exactly, so confirm on the next real install. History in `docs/archive/lifeos-docs-skill.md` and `docs/archive/lifeos-docs-skill.todo.md`.
