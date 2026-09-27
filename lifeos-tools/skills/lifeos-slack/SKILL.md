@@ -82,7 +82,7 @@ lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--execute
 | link | `https://...` or `https://...\|label` |
 | checkbox, completed | `true` or `false` |
 
-Other column types are refused rather than guessed. Text and select writes have been verified against a real List through another client; user, date, link, and checkbox encodings follow Slack's documented examples but should be confirmed with a readback the first time they are used on a real List.
+Other column types are refused rather than guessed. Every type in the table above was verified against a real List on 2026-09-26, including the to-do variants (`todo_assignee`, `todo_due_date`, `todo_completed`), a subtask created with `--parent`, and updates of text, link, select, date, and checkbox cells, each confirmed by readback.
 
 ## Errors
 Slack errors are reported with a hint: `missing_scope` names the needed scope (add it under User Token Scopes and reinstall), `not_in_channel` means the user must join first, `invalid_auth` or `token_revoked` means reinstall and paste the new token, and rate limits report the retry delay. Reads that page past the cap fail rather than returning partial results.
