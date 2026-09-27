@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded Slack client that acts as the user's own account (user OAuth token).
 
-Reads: accounts, whoami, channels, users, thread, lists schema / items / get.
+Reads: accounts, whoami, channels, users, thread, lists schema / items / get, and sync (a Markdown snapshot of configured Lists).
 Writes (dry-run unless --execute): post (optionally in a thread), dm, lists create / update.
 Every write checks that the token belongs to the configured team and user, then reads back
 what it wrote. There are no delete commands.
@@ -12,6 +12,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -317,10 +318,10 @@ def render_value(field):
     return ""
 
 
-def print_record(record, schema):
+def record_fields(record, schema):
+    """Yield (column, label, field) for each cell, with select values shown as their choice labels."""
     columns = {c.get("key"): c for c in schema}
     columns.update({c.get("id"): c for c in schema})
-    print(f"- item {record.get('id')}" + (" (archived)" if record.get("archived") else ""))
     for field in record.get("fields") or []:
         column = columns.get(field.get("column_id")) or columns.get(field.get("key")) or {}
         label = column.get("name") or field.get("key") or field.get("column_id")
@@ -328,9 +329,158 @@ def print_record(record, schema):
         if choices and field.get("select"):
             # Show choice labels, not Slack's internal option IDs.
             field = dict(field, select=[choices.get(str(v), v) for v in field["select"]], value=None, text=None)
+        yield column, label, field
+
+
+def print_record(record, schema):
+    print(f"- item {record.get('id')}" + (" (archived)" if record.get("archived") else ""))
+    for _column, label, field in record_fields(record, schema):
         value = render_value(field)
         if value:
             print(f"  {label}: {value}")
+
+
+# ---- snapshot ----
+
+def inline_markdown(element, users):
+    kind = element.get("type")
+    if kind == "text":
+        text = element.get("text", "")
+        style = element.get("style") or {}
+        if text.strip() and style.get("code"):
+            text = f"`{text}`"
+        if text.strip() and style.get("bold"):
+            text = f"**{text}**"
+        if text.strip() and style.get("italic"):
+            text = f"*{text}*"
+        return text
+    if kind == "link":
+        url = element.get("url", "")
+        return f"[{element.get('text') or url}]({url})"
+    if kind == "user":
+        return "@" + users(element.get("user_id", ""))
+    if kind == "channel":
+        return f"#{element.get('channel_id', '')}"
+    if kind == "emoji":
+        return f":{element.get('name', '')}:"
+    return element.get("text", "")
+
+
+def rich_text_markdown(blocks, users):
+    """Render Slack rich_text blocks as Markdown, keeping links, lists, and quotes."""
+    lines = []
+    for block in blocks or []:
+        previous = None
+        for part in block.get("elements") or []:
+            kind = part.get("type")
+            if kind == "rich_text_list":
+                # Blank lines around a list so the Markdown does not fold it into the next paragraph.
+                if lines and lines[-1] and previous != "rich_text_list":
+                    lines.append("")
+                indent = "  " * int(part.get("indent") or 0)
+                for number, item in enumerate(part.get("elements") or [], 1):
+                    marker = f"{number}." if part.get("style") == "ordered" else "-"
+                    lines.append(f"{indent}{marker} " + "".join(inline_markdown(e, users) for e in item.get("elements") or []).strip())
+            elif kind == "rich_text_preformatted":
+                lines.extend(["```", "".join(e.get("text", "") for e in part.get("elements") or []), "```"])
+            else:
+                text = "".join(inline_markdown(e, users) for e in part.get("elements") or [])
+                prefix = "> " if kind == "rich_text_quote" else ""
+                if lines and lines[-1] and previous == "rich_text_list":
+                    lines.append("")
+                lines.extend(prefix + line if line.strip() else "" for line in text.split("\n"))
+            previous = kind
+    return "\n".join(lines).strip()
+
+
+def list_markdown(acct, list_id, now):
+    meta = call(acct, "slackLists.items.list", {"list_id": list_id, "limit": 1, "include_list": "true"}).get("list") or {}
+    schema = ((meta.get("list_metadata") or {}).get("schema")) or []
+    if not schema:
+        raise SlackError(f"List {list_id} returned no column schema")
+    records = paged(acct, "slackLists.items.list", {"list_id": list_id, "limit": 100}, "items")
+    names = {}
+
+    def users(user_id):
+        if user_id not in names:
+            label = user_label(acct, user_id)
+            names[user_id] = label.rsplit(" (", 1)[0] if label != user_id else user_id
+        return names[user_id]
+
+    base = meta.get("permalink") or ""
+    status_col = next((c for c in schema if c.get("type") == "select" and str(c.get("name", "")).lower() == "status"), None)
+    order = [c.get("label") for c in ((status_col or {}).get("options") or {}).get("choices") or []]
+    groups = {}
+    for record in records:
+        cells = {}
+        for column, label, field in record_fields(record, schema):
+            cells[label] = (column, field)
+        status = render_value(cells["Status"][1]) if "Status" in cells else ""
+        groups.setdefault(status or "No status", []).append((record, cells))
+
+    title = meta.get("title") or meta.get("name") or list_id
+    out = [f"# Slack List — {title}", "", f"**Generated:** {now}", "", f"**Source:** {base or list_id}", "", f"**Count:** {len(records)} items", ""]
+    ordered = [g for g in order if g in groups] + sorted(g for g in groups if g not in order)
+    out += ["**By status:** " + " · ".join(f"{g} {len(groups[g])}" for g in ordered), "", "---", ""]
+    for group in ordered:
+        out += [f"## {group}", ""]
+        items = sorted(groups[group], key=lambda rc: int(rc[0].get("updated_timestamp") or rc[0].get("date_created") or 0), reverse=True)
+        for record, cells in items:
+            name = render_value(cells["Name"][1]) if "Name" in cells else record.get("id")
+            url = f"{base}?record_id={record.get('id')}" if base else record.get("id")
+            out += [f"### [{name}]({url})", ""]
+            meta_line = []
+            description = ""
+            for label, (column, field) in cells.items():
+                ctype = column.get("type")
+                if label in ("Name", "Status"):
+                    continue
+                if ctype in ("text", "rich_text"):
+                    description = rich_text_markdown(field.get("rich_text"), users) or render_value(field)
+                    continue
+                if ctype in ("user", "assignee", "todo_assignee"):
+                    value = ", ".join(users(u) for u in field.get("user") or [])
+                elif ctype in ("checkbox", "completed", "todo_completed"):
+                    value = "yes" if field.get("checkbox") else ""
+                else:
+                    value = render_value(field)
+                if value:
+                    meta_line.append(f"**{label}:** {value}")
+            updated = record.get("updated_timestamp") or record.get("date_created")
+            if updated:
+                meta_line.append("**Updated:** " + time.strftime("%Y-%m-%d", time.gmtime(int(updated))))
+            if record.get("parent_record_id"):
+                meta_line.append(f"**Subtask of:** {record['parent_record_id']}")
+            out += [" | ".join(meta_line), ""]
+            if description:
+                out += [description, ""]
+            out += [f"`{record.get('id')}`", "", "---", ""]
+    return "\n".join(out).rstrip() + "\n"
+
+
+def cmd_sync(args):
+    now = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
+    chosen = [account(args.alias)] if args.alias else load_accounts()
+    written = 0
+    for acct in chosen:
+        lists = acct.get("lists") or []
+        if args.alias and not lists:
+            raise SlackError(f"Slack alias '{acct.get('alias')}' has no \"lists\" configured to sync")
+        for entry in lists:
+            if not re.fullmatch(r"[A-Za-z0-9_-]+", str(entry.get("name", ""))) or not entry.get("id"):
+                raise SlackError(f"Slack alias '{acct.get('alias')}': each list needs an id and a simple name")
+            dest = os.path.join(args.output, acct["alias"])
+            os.makedirs(dest, exist_ok=True)
+            path = os.path.join(dest, f"list-{entry['name']}.md")
+            text = list_markdown(acct, entry["id"], now)
+            with open(path + ".tmp", "w") as handle:
+                handle.write(text)
+            os.replace(path + ".tmp", path)
+            print(f"  {acct['alias']}/list-{entry['name']}: {text.count(chr(10) + '### ')} items -> {path}")
+            written += 1
+    if not written:
+        raise SlackError("no Slack Lists are configured to sync; add \"lists\": [{\"id\": \"F...\", \"name\": \"...\"}] to an account")
+    return 0
 
 
 # ---- commands ----
@@ -518,6 +668,7 @@ def build_parser():
         p = sub.add_parser(name); p.add_argument("alias"); p.add_argument("--channel"); p.add_argument("--thread-ts"); p.add_argument("--url", help="message URL; replies in its thread")
         p.add_argument("--text"); p.add_argument("--text-file"); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_post)
     p = sub.add_parser("dm"); p.add_argument("alias"); p.add_argument("--user", required=True); p.add_argument("--text"); p.add_argument("--text-file"); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_dm)
+    p = sub.add_parser("sync"); p.add_argument("alias", nargs="?"); p.add_argument("--output", required=True, help="directory; writes <alias>/list-<name>.md"); p.set_defaults(func=cmd_sync)
     lists = sub.add_parser("lists").add_subparsers(dest="lists_command", required=True)
     p = lists.add_parser("schema"); p.add_argument("alias"); p.add_argument("list_id"); p.set_defaults(func=cmd_lists_schema)
     p = lists.add_parser("items"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("--limit", type=int); p.add_argument("--archived", action="store_true"); p.set_defaults(func=cmd_lists_items)
