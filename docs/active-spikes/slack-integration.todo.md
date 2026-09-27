@@ -10,7 +10,7 @@ See [the conceptual spike](slack-integration.md). Opened 2026-09-26; first build
 - [x] Re-verify current Slack docs: user-token OAuth flow, "post as the authorizing user" behavior, and the scope names for each planned command.
 - [x] Decide app setup: one private app per workspace or one app installed in several; document whether workspace admin approval is needed.
 - [x] Add the ignored account file and alias loader, following the Google / Microsoft 365 / Odoo alias pattern.
-- [ ] Add a `lifeos doctor` check that reports whether each alias's token variable is set, never its value.
+- [x] Add a `lifeos doctor` check that reports whether each alias's token variable is set, never its value.
 - [x] Implement `accounts` and `whoami` (team and user IDs must match the configured ones).
 
 ### Messaging
@@ -25,7 +25,7 @@ See [the conceptual spike](slack-integration.md). Opened 2026-09-26; first build
 - [ ] Test the unverified field types (assignee, due date, link, reference) against a throwaway List before relying on them.
 
 ### Quality
-- [x] Offline tests with invented fixtures: plan rendering, identity mismatch refusal, missing-scope and revoked-token errors, readback parsing.
+- [x] Offline tests with invented fixtures: plan rendering and dry-run not sending, identity-mismatch and bot-token refusal, misattributed-post failure, thread replies by URL, DM, typed List fields and their refusals, create with readback, and runaway paging. Slack-side error hints (`missing_scope`, `token_revoked`) are mapped in code but only exercised live.
 - [x] Tool skill `lifeos-tools/skills/lifeos-slack/SKILL.md` (with the app manifest and setup steps), README examples, and a `lifeos-cli` pointer. The installer's skill symlinks need a rerun to expose `lifeos-slack` to agents globally.
 - [ ] Human QA: a real post and a real List write, confirmed to appear under the user's own account.
 
