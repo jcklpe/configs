@@ -233,8 +233,60 @@ def find_column(schema, name):
     raise SlackError(f"No column named '{name}'. Columns: {names}")
 
 
+INLINE = re.compile(r"\[([^\]]+)\]\((https?://[^)\s]+)\)|\*\*(.+?)\*\*|`([^`]+)`")
+LIST_ITEM = re.compile(r"^(\s*)(?:[-*]|(\d+)\.)\s+(.*)$")
+
+
+def inline_elements(text):
+    """Markdown inline -> rich_text elements: [label](url), **bold**, `code`; everything else is plain text."""
+    elements, pos = [], 0
+    for match in INLINE.finditer(text):
+        if match.start() > pos:
+            elements.append({"type": "text", "text": text[pos:match.start()]})
+        if match.group(1):
+            elements.append({"type": "link", "text": match.group(1), "url": match.group(2)})
+        elif match.group(3):
+            elements.append({"type": "text", "text": match.group(3), "style": {"bold": True}})
+        else:
+            elements.append({"type": "text", "text": match.group(4), "style": {"code": True}})
+        pos = match.end()
+    if pos < len(text):
+        elements.append({"type": "text", "text": text[pos:]})
+    return elements
+
+
 def rich_text(value):
-    return [{"type": "rich_text", "elements": [{"type": "rich_text_section", "elements": [{"type": "text", "text": value}]}]}]
+    """Markdown -> Slack rich_text: paragraphs (blank-line separated), bullet and numbered lists, and inline links, bold, and code. Plain text passes through as one section."""
+    parts = []  # ("para", text) or ("list", style, indent, [items])
+    for line in value.strip("\n").split("\n"):
+        item = LIST_ITEM.match(line)
+        if item:
+            style = "ordered" if item.group(2) else "bullet"
+            indent = len(item.group(1).replace("\t", "  ")) // 2
+            if parts and parts[-1][0] == "list" and parts[-1][1] == style and parts[-1][2] == indent:
+                parts[-1][3].append(item.group(3))
+            else:
+                parts.append(("list", style, indent, [item.group(3)]))
+        elif parts and parts[-1][0] == "para":
+            parts[-1] = ("para", parts[-1][1] + "\n" + line)
+        else:
+            parts.append(("para", line))
+    elements = []
+    for index, part in enumerate(parts):
+        if part[0] == "list":
+            elements.append({"type": "rich_text_list", "style": part[1], "indent": part[2],
+                             "elements": [{"type": "rich_text_section", "elements": inline_elements(t)} for t in part[3]]})
+            continue
+        text = re.sub(r"\n{3,}", "\n\n", part[1]).strip("\n")
+        if not text:
+            continue
+        # Slack separates a paragraph that follows a list with a leading newline.
+        if index and parts[index - 1][0] == "list":
+            text = "\n" + text
+        elements.append({"type": "rich_text_section", "elements": inline_elements(text)})
+    if not elements:
+        elements = [{"type": "rich_text_section", "elements": [{"type": "text", "text": value}]}]
+    return [{"type": "rich_text", "elements": elements}]
 
 
 def encode_field(column, raw):
@@ -245,7 +297,9 @@ def encode_field(column, raw):
         cell["rich_text"] = rich_text(raw)
     elif ctype in ("select", "multi_select"):
         choices = ((column.get("options") or {}).get("choices")) or []
-        wanted = [part.strip() for part in raw.split(",")] if ctype == "multi_select" else [raw.strip()]
+        # Slack marks a multi-select as type "select" with options.format "multi_select".
+        multi = ctype == "multi_select" or (column.get("options") or {}).get("format") == "multi_select"
+        wanted = [part.strip() for part in raw.split(",")] if multi else [raw.strip()]
         values = []
         for label in wanted:
             match = next((c for c in choices if label.lower() in (str(c.get("label", "")).lower(), str(c.get("value", "")).lower())), None)
@@ -279,7 +333,7 @@ def encode_field(column, raw):
     return cell
 
 
-def parse_fields(schema, specs):
+def parse_fields(schema, specs, file_specs=None):
     cells = []
     for spec in specs or []:
         name, sep, value = spec.partition("=")
@@ -287,6 +341,29 @@ def parse_fields(schema, specs):
             raise SlackError(f"--field must be NAME=VALUE, got: {spec}")
         column = find_column(schema, name)
         cells.append((column, encode_field(column, value)))
+    for spec in file_specs or []:
+        name, sep, path = spec.partition("=")
+        if not sep or not name.strip():
+            raise SlackError(f"--field-file must be NAME=PATH, got: {spec}")
+        column = find_column(schema, name)
+        if column.get("type") not in ("text", "rich_text"):
+            raise SlackError(f"--field-file only fills text columns; '{column.get('name')}' is {column.get('type')}")
+        try:
+            with open(path) as handle:
+                content = handle.read()
+        except OSError as exc:
+            raise SlackError(f"cannot read {path}: {exc}")
+        if path.endswith(".json"):
+            # Exact rich_text blocks, for edits that must preserve an item's existing formatting.
+            try:
+                blocks = json.loads(content)
+            except ValueError as exc:
+                raise SlackError(f"{path} is not valid JSON: {exc}")
+            if not isinstance(blocks, list) or not all(isinstance(b, dict) and b.get("type") == "rich_text" for b in blocks):
+                raise SlackError(f"{path} must hold a JSON list of rich_text blocks")
+            cells.append((column, {"column_id": column["id"], "rich_text": blocks}))
+        else:
+            cells.append((column, encode_field(column, content)))
     return cells
 
 
@@ -611,6 +688,12 @@ def print_list_plan(action, acct, list_id, item_id, cells):
     print(f"Account: {acct['alias']} (team {acct['team_id']}, acting as user {acct['user_id']})")
     print(f"List: {list_id}" + (f", item {item_id}" if item_id else ""))
     for column, cell in cells:
+        if cell.get("rich_text"):
+            # Show text as the Markdown it will render as, so the plan can be read and approved.
+            rendered = rich_text_markdown(cell["rich_text"], lambda user_id: user_id)
+            print(f"- {column.get('name')} ({column.get('type')}):")
+            print("\n".join("    " + line for line in rendered.split("\n")))
+            continue
         value = {k: v for k, v in cell.items() if k != "column_id"}
         print(f"- {column.get('name')} ({column.get('type')}): {json.dumps(value, ensure_ascii=False)}")
 
@@ -618,9 +701,9 @@ def print_list_plan(action, acct, list_id, item_id, cells):
 def cmd_lists_create(args):
     acct = account(args.alias)
     schema = list_schema(acct, args.list_id)
-    cells = parse_fields(schema, args.field)
+    cells = parse_fields(schema, args.field, args.field_file)
     if not cells:
-        raise SlackError("lists create needs at least one --field NAME=VALUE")
+        raise SlackError("lists create needs at least one --field NAME=VALUE or --field-file NAME=PATH")
     print_list_plan("create", acct, args.list_id, None, cells)
     if args.parent:
         print(f"Parent item: {args.parent}")
@@ -641,9 +724,9 @@ def cmd_lists_create(args):
 def cmd_lists_update(args):
     acct = account(args.alias)
     schema = list_schema(acct, args.list_id)
-    cells = parse_fields(schema, args.field)
+    cells = parse_fields(schema, args.field, args.field_file)
     if not cells:
-        raise SlackError("lists update needs at least one --field NAME=VALUE")
+        raise SlackError("lists update needs at least one --field NAME=VALUE or --field-file NAME=PATH")
     print_list_plan("update", acct, args.list_id, args.item_id, cells)
     if not args.execute:
         print("DRY RUN: nothing was written. Re-run with --execute after approval.")
@@ -673,8 +756,8 @@ def build_parser():
     p = lists.add_parser("schema"); p.add_argument("alias"); p.add_argument("list_id"); p.set_defaults(func=cmd_lists_schema)
     p = lists.add_parser("items"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("--limit", type=int); p.add_argument("--archived", action="store_true"); p.set_defaults(func=cmd_lists_items)
     p = lists.add_parser("get"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.set_defaults(func=cmd_lists_get)
-    p = lists.add_parser("create"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("--field", action="append", default=[]); p.add_argument("--parent"); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_lists_create)
-    p = lists.add_parser("update"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.add_argument("--field", action="append", default=[]); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_lists_update)
+    p = lists.add_parser("create"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("--field", action="append", default=[]); p.add_argument("--field-file", action="append", default=[], help="NAME=PATH: Markdown file, or .json rich_text blocks"); p.add_argument("--parent"); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_lists_create)
+    p = lists.add_parser("update"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.add_argument("--field", action="append", default=[]); p.add_argument("--field-file", action="append", default=[], help="NAME=PATH: Markdown file, or .json rich_text blocks"); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_lists_update)
     return parser
 
 

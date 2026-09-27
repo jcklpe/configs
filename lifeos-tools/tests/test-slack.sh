@@ -29,6 +29,7 @@ SCHEMA = [
     {"id": "Col4", "key": "due", "name": "Due", "type": "date"},
     {"id": "Col5", "key": "ref", "name": "Source", "type": "link"},
     {"id": "Col6", "key": "votes", "name": "Votes", "type": "vote"},
+    {"id": "Col8", "key": "teams", "name": "Teams", "type": "select", "options": {"format": "multi_select", "choices": [{"value": "a", "label": "Alpha"}, {"value": "b", "label": "Beta"}]}},
 ]
 
 calls = []
@@ -140,6 +141,38 @@ for bad, why in [("Status=Maybe", "unknown choice"), ("Owner=Pat", "user needs a
 calls.clear()
 code, out = run(["lists", "update", "work", "F1", "Rec1", "--field", "Status=Not Started"])
 check(code == 0 and "DRY RUN" in out and "slackLists.items.update" not in methods(), "lists update dry run must not write")
+
+# A select with format multi_select takes comma-separated labels; a plain select does not.
+check(slack.encode_field(SCHEMA[-1], "Alpha, Beta")["select"] == ["a", "b"], "multi-select format takes several choices")
+try:
+    slack.encode_field(SCHEMA[1], "Done,Not Started"); raise SystemExit("FAIL: single select should refuse two values")
+except slack.SlackError:
+    pass
+
+# Markdown text becomes native rich text: paragraphs, lists, links, bold.
+blocks = slack.rich_text("Intro with [a link](https://example.com/a).\n\n**Steps**\n1. First\n2. Second\n\nAfter")
+elements = blocks[0]["elements"]
+check([e["type"] for e in elements] == ["rich_text_section", "rich_text_list", "rich_text_section"], "markdown block structure: " + json.dumps(elements))
+check({"type": "link", "text": "a link", "url": "https://example.com/a"} in elements[0]["elements"], "inline link")
+check({"type": "text", "text": "Steps", "style": {"bold": True}} in elements[0]["elements"], "bold text")
+check(elements[1]["style"] == "ordered" and len(elements[1]["elements"]) == 2, "ordered list")
+check(elements[2]["elements"][0]["text"] == "\nAfter", "a paragraph after a list starts with a newline, as Slack writes it")
+
+# --field-file takes Markdown, or exact rich_text JSON; the dry-run plan shows readable Markdown.
+md_path = os.path.join(work, "desc.md"); json_path = os.path.join(work, "desc.json")
+with open(md_path, "w") as handle:
+    handle.write("Body with [link](https://example.com/b)\n- one\n")
+with open(json_path, "w") as handle:
+    json.dump(slack.rich_text("exact"), handle)
+calls.clear()
+code, out = run(["lists", "update", "work", "F1", "Rec1", "--field-file", f"Name={md_path}"])
+check(code == 0 and "Body with [link](https://example.com/b)" in out and "- one" in out and "slackLists.items.update" not in methods(), "field-file dry run shows Markdown: " + out)
+calls.clear()
+code, _ = run(["lists", "update", "work", "F1", "Rec1", "--field-file", f"Name={json_path}", "--execute"])
+sent = [p for m, p in calls if m == "slackLists.items.update"][0]["cells"][0]
+check(code == 0 and sent["rich_text"] == slack.rich_text("exact") and sent["row_id"] == "Rec1", "JSON field-file is sent unchanged")
+code, _ = run(["lists", "update", "work", "F1", "Rec1", "--field-file", f"Status={md_path}"])
+check(code == 1, "field-file on a non-text column should fail")
 
 # Records show select choice labels, not option IDs.
 out = io.StringIO()
