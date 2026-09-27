@@ -11,6 +11,8 @@ m365-accounts.json
 m365-accounts.local.json
 odoo-accounts.json
 odoo-accounts.local.json
+slack-accounts.json
+slack-accounts.local.json
 people-aliases.json
 !people-aliases.example.json
 cache/
