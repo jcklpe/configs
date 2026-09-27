@@ -22,12 +22,12 @@ See [the conceptual spike](slack-integration.md). Opened 2026-09-26; first build
 ### Slack Lists
 - [x] `lists schema`, `lists items` (paged), and `lists get` reads.
 - [x] `lists create` and `lists update` with dry-run, `--execute`, and readback via `slackLists.items.info`.
-- [ ] Test the unverified field types (assignee, due date, link, reference) against a throwaway List before relying on them.
+- [x] Test the field types against a real List (2026-09-26, with the user's approval, on a clearly labeled test item the user deletes afterwards): create with text, select, link, to-do assignee, and to-do due date; update of select, to-do completed (checkbox), date, text, and link; subtask via `--parent`. All confirmed by readback. `reference` columns remain unsupported (refused).
 
 ### Quality
 - [x] Offline tests with invented fixtures: plan rendering and dry-run not sending, identity-mismatch and bot-token refusal, misattributed-post failure, thread replies by URL, DM, typed List fields and their refusals, create with readback, and runaway paging. Slack-side error hints (`missing_scope`, `token_revoked`) are mapped in code but only exercised live.
 - [x] Tool skill `lifeos-tools/skills/lifeos-slack/SKILL.md` (with the app manifest and setup steps), README examples, and a `lifeos-cli` pointer. The installer's skill symlinks need a rerun to expose `lifeos-slack` to agents globally.
-- [ ] Human QA: a real post and a real List write, confirmed to appear under the user's own account.
+- [x] Human QA (2026-09-26): `whoami` confirmed a user token for the configured user; a self-DM, a threaded reply by message URL, and thread reads all appeared under the user's own account, with permalinks returned; List reads, creates, and updates as above. Live use surfaced two display fixes (select cells showed option IDs; link cells showed raw JSON), both fixed with tests.
 
 ## Decisions and findings (2026-09-26)
 - Docs checked: `chat.postMessage` with a user token posts as that user; `slackLists.items.list`/`info` accept user tokens with `lists:read`, `items.create`/`update` with `lists:write`; Lists need a paid plan; List schema is at `list.list_metadata.schema` (column `id`, `key`, `name`, `type`, `options.choices[].value/label`); `items.update` takes `cells` with `row_id` and `column_id`.
