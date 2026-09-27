@@ -146,6 +146,10 @@ out = io.StringIO()
 with redirect_stdout(out):
     slack.print_record({"id": "Rec2", "fields": [{"column_id": "Col2", "key": "status", "value": "done", "select": ["done"]}]}, SCHEMA)
 check("Status: Done" in out.getvalue(), "select values should render as their labels")
+out = io.StringIO()
+with redirect_stdout(out):
+    slack.print_record({"id": "Rec3", "fields": [{"column_id": "Col5", "key": "ref", "value": "{\"originalUrl\":\"https:\\/\\/example.com\\/1\",\"displayName\":\"Issue 1\"}"}]}, SCHEMA)
+check("Source: Issue 1 (https://example.com/1)" in out.getvalue(), "link cells should render as label (url): " + out.getvalue())
 
 # URL parsing.
 check(slack.parse_message_url("https://x.slack.com/archives/C1/p1700000000000100?thread_ts=1699999999.000200&cid=C1") == ("C1", "1699999999.000200"), "thread_ts from URL")

@@ -289,7 +289,23 @@ def parse_fields(schema, specs):
     return cells
 
 
+def render_link(link):
+    url = link.get("original_url") or link.get("originalUrl") or ""
+    name = link.get("display_name") or link.get("displayName") or ""
+    return f"{name} ({url})" if name and url else url or name
+
+
 def render_value(field):
+    if field.get("link"):
+        links = field["link"] if isinstance(field["link"], list) else [field["link"]]
+        return ", ".join(render_link(l) for l in links if isinstance(l, dict))
+    raw = field.get("value")
+    if isinstance(raw, str) and raw.startswith("{") and "riginal" in raw:
+        # Link cells can arrive as a JSON string in `value`.
+        try:
+            return render_link(json.loads(raw))
+        except ValueError:
+            pass
     for key in ("text", "value"):
         if field.get(key) not in (None, "", []):
             value = field[key]
@@ -298,8 +314,6 @@ def render_value(field):
         if field.get(key) not in (None, []):
             value = field[key]
             return ", ".join(map(str, value)) if isinstance(value, list) else str(value)
-    if field.get("link"):
-        return ", ".join(l.get("original_url", "") for l in field["link"])
     return ""
 
 
