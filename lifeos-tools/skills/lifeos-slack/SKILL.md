@@ -60,8 +60,8 @@ lifeos slack sync [ALIAS] [--qa | --output DIR]  # snapshot configured Lists to 
 lifeos slack lists schema ALIAS LIST_ID
 lifeos slack lists items ALIAS LIST_ID [--limit N] [--archived]
 lifeos slack lists get ALIAS LIST_ID ITEM_ID
-lifeos slack lists create ALIAS LIST_ID --field "Name=..." --field "Status=Done" [--parent ITEM_ID] [--execute]
-lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--execute]
+lifeos slack lists create ALIAS LIST_ID --field "Name=..." --field "Status=Done" [--field-file "Description=desc.md"] [--parent ITEM_ID] [--execute]
+lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--field-file "Description=desc.json"] [--execute]
 ```
 
 `--text-file FILE` may replace `--text` anywhere. List IDs (`F...`) and item IDs (`Rec...`) appear in List item URLs.
@@ -79,12 +79,14 @@ lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--execute
 
 | Type | Value |
 |---|---|
-| text, rich_text | plain text |
-| select, multi_select | choice label or value; comma-separated for multi |
+| text, rich_text | Markdown: paragraphs, `-` and `1.` lists (indent two spaces to nest), `[label](url)`, `**bold**`, `` `code` ``; plain text passes through |
+| select, multi_select | choice label or value; comma-separated when the column is multi-select (Slack may report it as `select` with `options.format` `multi_select`) |
 | user, assignee | Slack user IDs (`U...`), comma-separated |
 | date, due_date | `YYYY-MM-DD` |
 | link | `https://...` or `https://...\|label` |
 | checkbox, completed | `true` or `false` |
+
+`--field-file NAME=PATH` fills a text column from a file: Markdown (converted as above) or a `.json` list of raw `rich_text` blocks. Use JSON for edits that must keep an item's existing formatting exactly: read the item, change only the blocks you mean to change, and send the whole description back, because an update replaces the cell. The dry-run plan shows text cells as the Markdown they will render as.
 
 Other column types are refused rather than guessed. Every type in the table above was verified against a real List on 2026-09-26, including the to-do variants (`todo_assignee`, `todo_due_date`, `todo_completed`), a subtask created with `--parent`, and updates of text, link, select, date, and checkbox cells, each confirmed by readback.
 
