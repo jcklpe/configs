@@ -1,4 +1,6 @@
 # Odoo CLI — To Do
+Done and archived 2026-09-27: the adapter met its definition of done in live use on 2026-09-19 and the user confirmed afterwards that it works well.
+
 ## Current State
 - Odoo 19 JSON-2 and `/doc` are the intended protocol and discovery surfaces.
 - The target server identifies itself as Odoo Online `saas~19.4+e` and exposes `/doc`.
@@ -7,15 +9,15 @@
 - Each read command makes one request; an executed write makes one mutation request and one required readback. There are no automatic retries or pagination. A five-second cross-request cooldown reduces accidental bursts; normal use should remain on demand rather than polling.
 
 ## To Do
-- [ ] Add a current-user/profile read if live method discovery identifies a stable bounded call.
+- [ ] *(Deferred at archive, not needed so far.)* Add a current-user/profile read if live method discovery identifies a stable bounded call.
 - [x] Implement bounded task create/update/comment plans that are dry-run by default and require `--execute`.
 - [x] Require exact numeric project/task/stage/assignee identities for writes and read each changed task back after execution.
 - [x] Add synthetic write tests for request construction, dry-run behavior, explicit clear/conflict handling, and readback.
-- [ ] Document setup, supported commands, permission/plan requirements, and known limitations.
-- [ ] Run the full offline test suite and one live read/write/readback validation against an approved test record.
+- [x] Document setup, supported commands, permission/plan requirements, and known limitations (the `lifeos-odoo` skill and CLI docs).
+- [x] Run the full offline test suite and one live read/write/readback validation against an approved test record (live comment write and readback, 2026-09-19).
 
 ## Ready for Human QA
-- Preview and execute a create or update against an approved disposable test record, then confirm the required task readback reflects the requested fields.
+- Passed: the user confirmed the comment in the Odoo interface on 2026-09-19 and, on 2026-09-26, that the integration is up and working well. The skill links for Codex and Claude, missing until then, were created on 2026-09-27.
 
 ## Done
 - [x] Inspect the supported Odoo 19 integration model. JSON-2 is the documented current API, `/doc` exposes database-specific models/methods, API keys use bearer authentication, access follows the authenticating user’s record rules, and external API availability depends on plan eligibility.
