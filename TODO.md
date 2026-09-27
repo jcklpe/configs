@@ -3,6 +3,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Active Spikes
 - Odoo CLI: `docs/active-spikes/odoo-cli.md`, `docs/active-spikes/odoo-cli.todo.md`
+- Slack Integration (design only, not being built yet): `docs/active-spikes/slack-integration.md`, `docs/active-spikes/slack-integration.todo.md`
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
