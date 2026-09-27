@@ -399,7 +399,10 @@ def parse_inline(text):
             start = len(plain); plain += label; end = len(plain)
             spans.append({"start": start, "end": end, "link": url})
         elif match.group(3) is not None:
-            seg = match.group(3); start = len(plain); plain += seg; end = len(plain)
+            # Bold may wrap a link, as in **[label](url)**: parse the inside too and shift its spans.
+            inner_plain, inner_spans = parse_inline(match.group(3))
+            start = len(plain); plain += inner_plain; end = len(plain)
+            spans.extend(dict(span, start=span["start"] + start, end=span["end"] + start) for span in inner_spans)
             spans.append({"start": start, "end": end, "bold": True})
         elif match.group(4) is not None:
             seg = match.group(4); start = len(plain); plain += seg; end = len(plain)
