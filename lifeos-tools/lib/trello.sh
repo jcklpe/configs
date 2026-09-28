@@ -711,6 +711,7 @@ _trello_render_cards() {
            elif list_name(.idList) == "Snoozed" then " | start: MISSING (snoozed card will never wake)"
            else "" end) +
           (if (.due // "") != "" then " | due: " + .due else "" end) +
+          (if (.dateLastActivity // "") != "" then " | last activity: " + .dateLastActivity else "" end) +
           (if (labels | length) > 0 then " | labels: " + labels else "" end) +
           (if (checklist_progress | length) > 0 then " | checklists: " + checklist_progress else "" end) +
           description +
@@ -790,7 +791,7 @@ _trello_sync() {
         # Cards without nested actions: the nested comment expansion (actions=commentCard on
         # /cards/open) returns 403 on large boards, so comments are fetched flat below and merged in.
         _trello_get "/boards/${board_id}/cards/open" \
-            --data-urlencode "fields=name,idList,start,due,url,labels,desc" \
+            --data-urlencode "fields=name,idList,start,due,url,labels,desc,dateLastActivity" \
             --data-urlencode "checklists=all" > "$cards_file" || return 1
 
         # Fetch comment actions at the board level (a flat query, no nested expansion), paginating

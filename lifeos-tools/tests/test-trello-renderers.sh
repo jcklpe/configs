@@ -74,5 +74,18 @@ case "$got" in
     *) fail "start must render immediately before due; got: ${got}" ;;
 esac
 
+##- Last activity renders after due, so a retrospective can find cards that moved in its window.
+got="$(line_for 'Card with both start and due')"
+case "$got" in
+    *"| due: 2026-09-15T20:46:00.000Z | last activity: 2026-09-20T10:00:00.000Z"*) : ;;
+    *) fail "last activity must render immediately after due; got: ${got}" ;;
+esac
+
+##- A card without the field renders no last-activity clause.
+got="$(line_for 'Plain card, no dates')"
+case "$got" in
+    *"last activity"*) fail "a card with no dateLastActivity must render no last-activity clause; got: ${got}" ;;
+esac
+
 rm -f "$OUT"
 printf 'ok: trello card renderer\n'
