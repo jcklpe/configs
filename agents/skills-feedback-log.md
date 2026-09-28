@@ -32,19 +32,6 @@ Candidate change: add a compact experimental-work handoff section to run-project
 
 Scope: global reusable, with concrete project-local evidence.
 
-### 2026-07-22 - Weekly Review Needs An Explicit Evidence Window And Source Discipline
-Skill or area: LifeOS `weekly-review` workflow and any reusable weekly-review seed derived from it.
-
-Observed behavior: the vault-local skill correctly requires archiving the outgoing review and processing wins, movement, stalls, open loops, sources, decisions, and accomplishments, but it does not define the relationship between the `Week of` date and a late drafting date, identify the minimum sources to refresh, or warn against treating calendar entries as proof of attendance. In the 2026-07-22 review, work from July 20–22 could easily have been credited to the July 13–19 review window, and a calendar-only event could have been described as attended.
-
-Expected better behavior: a review should define its evidence window from the `Week of` date, record the actual drafting date separately, and use late developments only to update current state or open loops. Before drafting, it should refresh or inspect the prior live review, current Trello and Calendar snapshots, `now.md`, relevant focus notes, and accomplishment ledger. Calendar entries should be treated as scheduled commitments unless another source confirms attendance or outcome.
-
-Context/evidence: LifeOS weekly review drafted 2026-07-22 for the week of 2026-07-13. The user explicitly rejected “reconstructing” the review and asked the agent to follow the established skill. The source pass showed meaningful July 20–22 follow-through—financial-aid appeal submission, Parking Perks purchase, INF 391F outreach, resume migration—that belonged in current-state notes but not as accomplishments inside the July 13–19 window. The prior review already contained a correction about calendar-versus-attendance, but that safeguard had not been promoted into the skill.
-
-Candidate change: add a compact “Evidence window and sources” section to the LifeOS weekly-review skill. Define `Week of` versus `Drafted`, list the minimum source pass, state that stale cards and scheduled events are not proof of completion, and link the existing weekly-review template so the procedure and output shape cannot drift apart. Preserve the current archive-first and accomplishment-harvest rules.
-
-Scope: project-local first, potentially global reusable after the LifeOS version proves stable.
-
 ### 2026-07-19 - Future-Idea Skill Confused Vault Infrastructure With Domain Ideas
 Skill or area: `log-future-idea` and possible general LifeOS idea-capture routing.
 
