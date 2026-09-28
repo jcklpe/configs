@@ -36,6 +36,8 @@ Guidance:
 - Don't modify the surrounding text. Insert markup only.
 - **Comments are the default.** Use `++`, `--`, and `~~` only for short, obvious fixes. Anything that warrants explanation goes in a comment.
 - Use `==` sparingly, only when you can't form a useful comment. A bare suggestion or highlight without rationale is noise.
+- To point a comment at an exact span, put a highlight **directly** before it: `{==the span==}{author="Codex">>why<<}`, with nothing between them but spaces. The panel folds the pair into a single card that quotes the span, so the anchoring costs the user no extra review entry. Any gap, such as prose or a newline, splits them back into two cards.
+- To give a suggestion its rationale, put the comment **directly** after it: `{author="Codex"~~old~>new~~}{author="Codex">>why<<}`. The panel shows the comment inside the suggestion's card, and accepting or rejecting the suggestion **deletes the comment with it**. So don't put anything the user must keep there; anything meant to outlive the decision goes in a separate comment after some prose or on its own line.
 
 ### AI-Added Text (`{=+ ... +=}`) Is Not A Review Mark
 A sixth mark, `{author="Codex"=+inserted text+=}`, flags prose **you inserted** into the document. It renders as a subtle rainbow highlight, has no review card, and is never accepted or rejected; the user edits it in or strips it at publish.
@@ -72,18 +74,21 @@ The prefix sits **outside** the payload delimiters, so accept, reject, and final
 ## Replies And Threads
 Effective author resolves: `author="..."` -> host's configured local-author name -> `You`.
 
-Adjacent `{>>...<<}` blocks with no blank line between them, in the same paragraph, form one thread. The prefix lives outside the `>>` and `<<` delimiters, so it doesn't affect threading.
+Adjacent `{>>...<<}` blocks with no blank line between them, in the same paragraph, form one thread. The prefix lives outside the `>>` and `<<` delimiters, so it doesn't affect threading. A `{==...==}` highlight or a `++`, `--`, or `~~` suggestion directly before the root is the thread's **anchor**, not a thread member; replies still attach after the last comment.
 
 **The user's replies are written by the plugin**, which stamps the date and, if the user configured a name, their `author="..."`. Treat any reply with **no `author=`**, or one carrying the user's configured name, as the **user's**, not yours. Never stamp the user's name or invent dates yourself.
 
-When asked to "process replies" or "address my comments", make a pass and act only on threads the user has actually replied to. A comment with no reply is still waiting on them; leave it alone.
+When asked to "process replies" or "address my comments", make a pass and act only on threads the user has actually replied to. A comment with no reply is still waiting on them; leave it alone. A thread on a suggestion the user replied to counts like any other.
 
 - `{>>ignore<<}` / `{>>won't fix<<}` -> leave the thread in place; it documents the decision.
 - `{>>done<<}` -> verify the surrounding text actually addresses your comment. If yes, delete the whole thread. If not, push back with a new `{author="Codex">>follow-up<<}` adjacent to the thread.
 - `{>>expand<<}` or any question -> add an adjacent `{author="Codex">>answer<<}`.
-- Counter-argument -> engage: concede by deleting the thread or push back with a new adjacent comment.
+- Counter-argument -> engage: concede by deleting the thread or push back with a new adjacent comment. If you concede on a thread anchored on your suggestion, withdraw the suggestion too: restore `old` for `~~old~>new~~` or `x` for `--x--`, and drop `++x++`.
 
 Aim to converge toward only the resolved-but-kept (`ignore`) threads remaining.
+
+## Human-Authored Marks
+The host plugin lets the user create any of the five reviewable marks themselves, straight from the editor, in the same `{author="..." date="...">>...<<}` shapes you produce. **Don't assume every non-comment mark is yours.** Check `author=` before treating a mark as your own proposal to revisit; a mark with no `author=`, or with the user's configured name, is the user's, exactly like a reply with no author.
 
 ## What Good Reviewer Output Looks Like
 - Quote or refer to the specific passage.
@@ -93,3 +98,5 @@ Aim to converge toward only the resolved-but-kept (`ignore`) threads remaining.
 
 ## Source Note
 This skill adapts the CriticMarkup reviewer workflow from the MIT-licensed Obsidian Track Changes project: https://github.com/philphilphil/obsidian-track-changes/blob/main/docs/SKILL.md
+
+Last synced with upstream commit `9d7a799` (2026-09-23, plugin 2.2.0).
