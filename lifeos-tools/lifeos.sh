@@ -122,7 +122,7 @@ Usage:
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
   ./lifeos.sh github create-issue --repo ALIAS_OR_OWNER/REPO --title TITLE [--body TEXT | --body-file FILE] [--label NAME]... [--assignee LOGIN]... [--assign-me] [--execute]
   ./lifeos.sh github move-card --repo ALIAS --issue NUMBER --status COLUMN [--execute]
-  ./lifeos.sh sync
+  ./lifeos.sh sync      # Trello, Calendar, GitHub, and Slack Lists; each skipped with a warning when not configured
 
 Real config lives in .env, copied from .env.example.
 EOF
@@ -456,6 +456,17 @@ _sync() {
         _warn "Skipping Calendar sync: Google Calendar is not configured."
     fi
 
+    if [ -f "$(_github_repos_config)" ]; then
+        _github_sync || status=$?
+    else
+        _warn "Skipping GitHub sync: no $(_github_repos_config)."
+    fi
+
+    if [ -f "${SLACK_ACCOUNTS_PATH:-${SECRETS_DIR}/slack-accounts.json}" ] && jq -e '[.accounts[]?.lists[]?] | length > 0' "${SLACK_ACCOUNTS_PATH:-${SECRETS_DIR}/slack-accounts.json}" >/dev/null 2>&1; then
+        _slack_sync || status=$?
+    else
+        _warn "Skipping Slack Lists sync: no Slack account names any lists."
+    fi
 
     return "$status"
 }

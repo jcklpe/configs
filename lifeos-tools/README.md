@@ -127,7 +127,7 @@ lifeos odoo tasks get example 42
 lifeos open-austin-org path
 lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
-lifeos sync
+lifeos sync   # Trello, Calendar, GitHub, and Slack Lists; unconfigured sources are skipped with a warning
 ```
 
 Agent-facing usage notes live in the `lifeos-cli` skill (`lifeos-tools/skills/lifeos-cli/SKILL.md`), co-located with the tool and symlinked into `~/.claude/skills/` and `~/.codex/skills/` by the installer, so local agents get it globally.
