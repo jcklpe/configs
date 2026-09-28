@@ -19,6 +19,8 @@ lifeos trello sync
 
 `lifeos trello sync` writes the current snapshot to `$LIFEOS_VAULT_PATH/sources/trello.md` (or, with `--qa`, to `~/configs/lifeos-tools/qa/trello-qa.md` for local inspection).
 
+Each card line carries `| last activity: <iso>`: Trello's `dateLastActivity`, the last time anything on the card changed, including a move between lists. Use it to find cards that moved into `Done` during a time window. It is a proxy for the move date, not the move date itself: a later comment or edit also advances it.
+
 The snapshot groups cards by board heading. If multiple boards are configured, `list-lists` without an argument uses the first configured board; use `lifeos trello list-lists BOARD_ID` for a specific one, and pass `--board BOARD_ID` on writes to a non-default board. Run `list-lists` before using list names if the board taxonomy may have changed. Prefer card URLs or IDs for card operations.
 
 ## Writes
