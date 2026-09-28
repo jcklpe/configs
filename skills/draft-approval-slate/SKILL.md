@@ -23,6 +23,12 @@ Present every proposed change with:
 - **The delta** for edits: current title/state → proposed, so the change is visible.
 - **Sequencing** when items depend on each other (e.g. new issues must be created before edits that link them), and a note on any item held for a second review.
 
+## Present it in full, in the conversation
+- **The whole slate goes in the reply.** Show every item in full: the final copy, the current → proposed delta, exact paths or targets, and enough explanation to judge it. A summary of the intended effort is not a slate.
+- **Never cite an item by its label unless the item is visible in the same reply.** "Approve D3?" is only answerable when D3 is on the screen.
+- **Do not write slates to files.** No intermediate slate documents and no "see the file for details." The approval record is the commit message, or the changed record itself.
+- **Keep a slate small.** It should be reviewable in about ten minutes. If the work is bigger, split it into successive slates and present the first one; do not let one slate span sessions.
+
 ## Numbering convention
 Number changes by **domain prefix** so a reference is unambiguous and easy to say aloud, rather than bare `1, 2, 3` (which reads as a count — "approve 2" is ambiguous):
 - `G#` for GitHub changes (`G1`, `G2`, …)
@@ -40,4 +46,5 @@ The user then approves precisely: "approve G2, hold G5." Avoid decorative glyphs
 ## What not to do
 - Do not execute a whole slate off one vague "looks good" when individual items were still in flux — confirm the ones that changed.
 - Do not paraphrase copy in the slate and then ship different words.
+- Do not point the user at a slate file, or at an item label, in place of showing the item.
 - Do not crystallize this into a rigid template. A slate is however much structure makes the batch reviewable.
