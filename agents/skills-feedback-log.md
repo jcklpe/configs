@@ -6,6 +6,32 @@ Use this log for evidence-backed observations about skills, not ordinary project
 Do not automatically rewrite a skill from a single note. Log the observation, keep the evidence, and triage later.
 
 ## Open Feedback
+### 2026-09-24 - Commit-Work Needs An Explicit Off-Ramp For Work Without A Spike
+Skill or area: `commit-work`, and its coupling to `run-project-spike`.
+
+Observed behavior: an agent added `lifeos docs comment` / `comments` to `lifeos-tools` on the fly, in a LifeOS meeting-prep session, to post date-correction comments on a shared Google Doc. No spike existed for it. When the user asked for commits via `commit-work`, the skill's model of scope, trailers, and completion boundaries is written almost entirely around a spike; the no-spike case is a single bullet ("draft the message, show it, commit on a conversational yes... do not write a `Spike:` trailer"). The user had to tell the agent to treat it as a standalone patch, and there is no named convention for how such a commit identifies itself or where, if anywhere, it gets recorded.
+
+Expected better behavior: `commit-work` names the no-spike path as a first-class case rather than an exception. It should say how to scope a standalone patch (the files the unplanned change touched, including its tests and docs), whether the commit carries any marker in place of `Spike:`, whether anything outside git needs a note (a TODO line, a decision, nothing), and that the conversational "yes" can be the user's request to commit.
+
+Context/evidence: 2026-09-24, `lifeos-tools` Drive comment support (`lib/google-docs.py`, `lib/google.sh`, `lifeos.sh`, `tests/test-docs-comment.sh`, README and the `lifeos-docs` / `lifeos-cli` skills), committed without a spike at the user's direction.
+
+Candidate change: add a short "Work without a spike" section to `commit-work` covering scope, message and trailer (for example no trailer, or an agreed `Patch:` marker if the user wants one queryable), and the confirmation rule. Decide whether ad hoc capability additions should at least leave a line in the repo's `TODO.md` or a decision record.
+
+Scope: global reusable.
+
+### 2026-09-23 - Prototype Evidence Needs An Explicit Integration Boundary
+Skill or area: `run-project-spike`, diagnostic prototyping, and cross-agent handoff.
+
+Observed behavior: a production-only website animation defect led to frozen-artifact previews and injected rendering experiments. This preserved useful controlled comparisons, but the successful shader prototype acquired fixture-specific image loading, Canvas2D interception, and redraw scheduling outside application ownership. A later application port failed repeatedly; its final rewrite replaced the exact prototype fragment with invalid GLSL. A motion commit also bundled inherited dirty code with newer edits, obscuring provenance. A subsequent user report exposed a likely continued-hover redraw gap in the prototype itself.
+
+Expected better behavior: retain frozen controls and treat prototype divergences as potential optimization or architecture evidence. The user corrected the initial audit’s blanket preference for source-backed candidates: direct static-artifact manipulation may itself be a useful workflow, and its value remains open for later discussion. Validate a minimal real-application path before claiming integration, without making that a prohibition on independent experimentation. Distinguish experimental success, application verification and user acceptance. Neither a commit title nor a prior agent's diagnosis establishes correctness or authorship of inherited working-tree content.
+
+Context/evidence: my-website interaction-polish and performance-optimization spikes, Sep 23 audit. Initial port fragment at 13d4330 is byte-identical to S55; f4dad59 changes its return type and removes essential shader stages. Preserved S56/S57 snapshots show prefetch changes already dirty before 28193d7. S55 redraw scheduling watches pointer entry/exit for 400ms but not pointer movement or parallax style changes; click wakes it again. Hover-zone behavior and its connection to click jitter remain hypotheses pending reproduction.
+
+Candidate change: add a compact experimental-work handoff section to run-project-spike: record baseline revision plus dirty patch, exact served artifact, controlled variable, temporary adapters, evidence limits and next integration boundary. Record intentional divergences and compare source-backed, direct-artifact and hybrid approaches on measured behavior and reproducibility; do not impose a blanket preference. Separate build tooling, runtime rendering ownership and static delivery when discussing architectural lessons. Share the core implementation where useful or verify transfer identity and explain intentional changes. Validate sustained interaction, handoff, static delivery and fallback in the actual app before claiming integration. Preserve this as feedback for skill review, not an automatic new mandatory process.
+
+Scope: global reusable, with concrete project-local evidence.
+
 ### 2026-07-22 - Weekly Review Needs An Explicit Evidence Window And Source Discipline
 Skill or area: LifeOS `weekly-review` workflow and any reusable weekly-review seed derived from it.
 
