@@ -95,6 +95,7 @@ Usage:
   ./lifeos.sh m365 mail unarchive ALIAS (--message ID | --ids-file FILE)... [--execute]   # Archive -> Inbox
   ./lifeos.sh m365 mail move ALIAS --folder NAME_PATH_OR_ID (--message ID | --ids-file FILE)... [--execute]
   ./lifeos.sh m365 mail create-folder ALIAS --name NAME [--parent NAME_PATH_OR_ID] [--execute]
+  ./lifeos.sh m365 mail attachments ALIAS --message ID [--save DIR] [--force]   # list, or save file attachments (read-only)
   ./lifeos.sh m365 mail junk ALIAS [--limit N] [--json]   # list Junk Email; never synced
   ./lifeos.sh m365 mail not-junk ALIAS (--message ID | --ids-file FILE)... [--execute]   # Junk -> Inbox
   ./lifeos.sh m365 calendar list-calendars ALIAS
