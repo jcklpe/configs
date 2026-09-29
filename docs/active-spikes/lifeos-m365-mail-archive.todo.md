@@ -21,6 +21,8 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 
 - [x] Spam and junk review (Aslan, 2026-09-29): `gmail spam` / `not-spam` and `m365 mail junk` / `not-junk`. Rescue runs only out of Spam or Junk, and there is no report-spam. Live listings and a not-spam dry run with refusals were verified on personal and UT. No live not-spam was executed, because the CLI cannot re-spam a message. Offline tests added; 0007 addendum.
 
+- [x] UT Gmail decision (Aslan, 2026-09-29): stays Drive-only, with Gmail off as decided under 0004. There is no spam-review exception. UT Drive search and a QA sync were verified working the same day.
+
 ### Phase 3 — Docs
 - [x] `lifeos-m365`, `lifeos-gmail`, and `lifeos-cli` skills; README commands and prose; `lifeos help`.
 - [x] Skills tell vault skills relying on Inbox-only snapshots to record that in `assumes:`.
@@ -35,7 +37,6 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 - [ ] Human QA by Aslan: spot-check Outlook and Gmail after a real triage pass.
 
 ## Open Questions
-- UT Gmail: the `ut` Google alias is Drive-only, and Gmail is off by design (0004: UTmail forwards into M365). Gmail does not forward spam, though, so UT spam is the one part of UT mail that M365 cannot see. Enabling `ut` Gmail for spam review only would need a way to keep it out of `gmail sync --all`, plus a `ut` re-auth. Waiting on Aslan.
 - Should `mail sync` gain an Archive-folder view, so the vault can still see what was archived? The audit log covers "what did the agent move" for now.
 - Is the per-call cap right at 50?
 - The vault-side triage skill and its approval model are LifeOS work, tracked in the vault's `docs/TODO.md`, not here. The vault's policy on agents surfacing rather than triaging (vault policy 0003) will need revisiting there.
