@@ -143,6 +143,7 @@ _google_accounts_list() {
       "- " + (.alias // "missing-alias") +
       " | email: " + (.email // "") +
       " | gmail: " + (((.gmail.enabled // false) == true) | tostring) +
+      " | gmail labels: " + (((.gmail.write_enabled // false) == true) | tostring) +
       " | drive: " + (((.drive.enabled // false) == true) | tostring)
     ' "$(_google_accounts_path)"
 }
@@ -164,7 +165,10 @@ _google_account_scopes() {
       (.accounts[]? | select(.alias == $alias)) as $account |
       [
         (if (($account.gmail.enabled // false) == true) then
-          "https://www.googleapis.com/auth/gmail.readonly"
+          "https://www.googleapis.com/auth/gmail.readonly",
+          (if (($account.gmail.write_enabled // false) == true) then
+            "https://www.googleapis.com/auth/gmail.modify"
+          else empty end)
         else empty end),
         (if (($account.drive.enabled // false) == true) then
           "https://www.googleapis.com/auth/drive.metadata.readonly",
@@ -415,6 +419,358 @@ _gmail_sync() {
         out="$(_gmail_output_for_alias "$alias" 0)"
     fi
     _gmail_sync_alias "$alias" "$out"
+}
+
+##- Gmail labels and archiving. Reads (labels, list) use the read-only scope; executed changes also need gmail.write_enabled, which adds gmail.modify at the next 'lifeos google auth ALIAS'.
+##- The only label changes are removing or restoring INBOX (archive and unarchive) and adding or removing user labels. There is no trash, delete, spam, send, or mark-read command, and messages already in Trash or Spam are refused.
+_GMAIL_API='https://gmail.googleapis.com/gmail/v1/users/me'
+
+_gmail_require_enabled() {
+    local alias="$1"
+    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
+    if ! _google_account_value "$alias" '(.gmail.enabled // false) == true' 2>/dev/null | grep -qx true; then
+        _err "Gmail is not enabled for alias '$alias'"
+        return 1
+    fi
+}
+
+_gmail_require_write() {
+    local alias="$1"
+    if ! _google_account_value "$alias" '(.gmail.write_enabled // false) == true' 2>/dev/null | grep -qx true; then
+        _err "Gmail label changes are not enabled for alias '$alias'"
+        _say "NEXT: set gmail.write_enabled to true for '$alias' in $(_google_accounts_path), then run 'lifeos google auth $alias' to grant gmail.modify" >&2
+        return 1
+    fi
+}
+
+_gmail_change_cap() {
+    _google_account_value "$1" '.gmail.max_changes_per_call // 50' 2>/dev/null || printf '50'
+}
+
+# _gmail_send METHOD ALIAS URL BODY: a Gmail write that surfaces Google's error message instead of curl's bare status.
+_gmail_send() {
+    local method="$1" alias="$2" url="$3" body="$4" token response http_code message
+    token="$(_google_access_token "$alias")" || return 1
+    response="$(mktemp "${TMPDIR:-/tmp}/lifeos-gmail-response.XXXXXX")" || return 1
+    http_code="$(curl -sS -o "$response" -w '%{http_code}' -X "$method" "$url" \
+        -H "Authorization: Bearer ${token}" \
+        -H "Content-Type: application/json; charset=utf-8" \
+        --data-binary "$body")" || { _err "Gmail request failed before receiving a response"; return 1; }
+    case "$http_code" in
+        2??) cat "$response" ;;
+        *)
+            message="$(jq -r '.error.message // empty' "$response" 2>/dev/null)"
+            _err "Gmail returned HTTP ${http_code}: ${message:-request failed}"
+            if [ "$http_code" = "403" ]; then
+                _say "NEXT: if the token predates gmail.write_enabled, run 'lifeos google auth $alias' to grant gmail.modify" >&2
+            fi
+            return 1
+            ;;
+    esac
+}
+
+_gmail_labels_fetch() {
+    _google_get_url "$1" "${_GMAIL_API}/labels"
+}
+
+_gmail_labels() {
+    local alias="${1:-}" json_mode=0 labels
+    [ -n "$alias" ] || { _err "gmail labels requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --json) json_mode=1; shift ;;
+            *) _err "Unknown gmail labels option: $1"; return 1 ;;
+        esac
+    done
+    _gmail_require_enabled "$alias" || return 1
+    labels="$(_gmail_labels_fetch "$alias")" || return 1
+    if [ "$json_mode" -eq 1 ]; then
+        printf '%s\n' "$labels"
+    else
+        printf '%s' "$labels" | jq -r '(.labels // []) | sort_by([.type != "user", (.name | ascii_downcase)]) | .[] | "- " + .name + " | id: " + .id + " | type: " + .type'
+    fi
+}
+
+# Resolve SPEC (an exact label ID or a case-insensitive label name) to a user label and print it as JSON. System labels are refused; INBOX is changed only by archive and unarchive.
+_gmail_resolve_user_label() {
+    local labels="$1" spec="$2" match
+    match="$(printf '%s' "$labels" | jq -c --arg s "$spec" '[(.labels // [])[] | select(.id == $s or ((.name | ascii_downcase) == ($s | ascii_downcase)))] | first // empty')"
+    if [ -z "$match" ]; then
+        _err "No Gmail label matches '$spec'. Run 'lifeos gmail labels ALIAS' to see labels, or 'lifeos gmail create-label' to make one."
+        return 1
+    fi
+    if [ "$(printf '%s' "$match" | jq -r '.type')" != "user" ]; then
+        _err "'$spec' is a Gmail system label; only user labels can be applied or removed (use gmail archive or unarchive for INBOX)"
+        return 1
+    fi
+    printf '%s\n' "$match"
+}
+
+_gmail_list() {
+    local alias="${1:-}" label_spec="" query="" limit=25 json_mode=0 labels label list dir id n=0 args=()
+    [ -n "$alias" ] || { _err "gmail list requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --label) [ -n "${2:-}" ] || { _err "--label requires NAME or ID"; return 1; }; label_spec="$2"; shift 2 ;;
+            --query) [ -n "${2:-}" ] || { _err "--query requires a Gmail search"; return 1; }; query="$2"; shift 2 ;;
+            --limit) [ -n "${2:-}" ] || { _err "--limit requires N"; return 1; }; limit="$2"; shift 2 ;;
+            --json) json_mode=1; shift ;;
+            *) _err "Unknown gmail list option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$label_spec" ] || [ -n "$query" ] || { _err "gmail list requires --label or --query"; return 1; }
+    case "$limit" in ''|*[!0-9]*) _err "--limit must be a positive integer"; return 1 ;; esac
+    [ "$limit" -ge 1 ] && [ "$limit" -le 100 ] || { _err "--limit must be between 1 and 100"; return 1; }
+    _gmail_require_enabled "$alias" || return 1
+    args=(--data-urlencode "maxResults=${limit}")
+    if [ -n "$label_spec" ]; then
+        labels="$(_gmail_labels_fetch "$alias")" || return 1
+        label="$(printf '%s' "$labels" | jq -c --arg s "$label_spec" '[(.labels // [])[] | select(.id == $s or ((.name | ascii_downcase) == ($s | ascii_downcase)))] | first // empty')"
+        [ -n "$label" ] || { _err "No Gmail label matches '$label_spec'. Run 'lifeos gmail labels $alias'."; return 1; }
+        args+=(--data-urlencode "labelIds=$(printf '%s' "$label" | jq -r '.id')")
+    fi
+    [ -n "$query" ] && args+=(--data-urlencode "q=${query}")
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-gmail-list.XXXXXX")" || return 1
+    list="$(_google_get_url "$alias" "${_GMAIL_API}/messages" "${args[@]}")" || return 1
+    for id in $(printf '%s' "$list" | jq -r '.messages[]?.id'); do
+        _google_get_url "$alias" "${_GMAIL_API}/messages/${id}" \
+            --data-urlencode "format=metadata" \
+            --data-urlencode "metadataHeaders=From" \
+            --data-urlencode "metadataHeaders=Subject" \
+            --data-urlencode "metadataHeaders=Date" > "${dir}/$(printf '%04d' "$n").json" || return 1
+        n=$((n + 1))
+    done
+    if [ "$n" -eq 0 ]; then printf '[]\n' > "${dir}/all.json"; else jq -s '.' "${dir}"/0*.json > "${dir}/all.json"; fi
+    if [ "$json_mode" -eq 1 ]; then
+        cat "${dir}/all.json"
+    elif [ "$n" -eq 0 ]; then
+        _say "No matching Gmail messages."
+    else
+        jq -r '.[] |
+          ((.payload.headers // []) | map({key: (.name | ascii_downcase), value: .value}) | from_entries) as $h |
+          "- " + ($h.date // "") + " | from: " + ($h.from // "") + " | " + ($h.subject // "(no subject)") +
+          " | labels: " + ((.labelIds // []) | join(",")) +
+          "\n  message_id: " + .id + " | thread_id: " + .threadId
+        ' "${dir}/all.json"
+    fi
+}
+
+# Shared engine for archive, unarchive, label, and unlabel. ADD and REMOVE are JSON arrays of label IDs. PRECONDITION is "in-inbox", "not-in-inbox", or empty.
+_gmail_change_run() {
+    local alias="$1" action="$2" add="$3" remove="$4" precondition="$5" execute="$6" describe="$7" ids_file="$8"
+    local dir cap count kind id n=0 ts failures
+    _gmail_require_enabled "$alias" || return 1
+    count="$(jq 'length' "$ids_file")"
+    [ "$count" -gt 0 ] || { _err "gmail $action requires at least one --message ID, --thread ID, or --ids-file"; return 1; }
+    cap="$(_gmail_change_cap "$alias")"
+    [ "$count" -le "$cap" ] || { _err "gmail $action accepts at most $cap targets per call (got $count); split the list"; return 1; }
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-gmail-change.XXXXXX")" || return 1
+    # Fetch each target so missing IDs fail up front and the plan can show what will change.
+    while IFS=$'\t' read -r kind id; do
+        if [ "$kind" = "thread" ]; then
+            _google_get_url "$alias" "${_GMAIL_API}/threads/${id}" --data-urlencode "format=metadata" --data-urlencode "metadataHeaders=From" --data-urlencode "metadataHeaders=Subject" > "${dir}/t-${n}.json" \
+                || printf '{"missing": true}\n' > "${dir}/t-${n}.json"
+        else
+            _google_get_url "$alias" "${_GMAIL_API}/messages/${id}" --data-urlencode "format=metadata" --data-urlencode "metadataHeaders=From" --data-urlencode "metadataHeaders=Subject" > "${dir}/t-${n}.json" \
+                || printf '{"missing": true}\n' > "${dir}/t-${n}.json"
+        fi
+        jq -c --arg kind "$kind" --arg id "$id" '
+          (if $kind == "thread" then (.messages // []) else [.] end) as $msgs |
+          ($msgs[0] // {}) as $first |
+          ((($first.payload.headers // []) | map({key: (.name | ascii_downcase), value: .value}) | from_entries)) as $h |
+          {kind: $kind, id: $id, missing: (.missing // false),
+           messageIds: [$msgs[] | .id | select(. != null)],
+           labels: ([$msgs[] | (.labelIds // [])[]] | unique),
+           subject: ($h.subject // "(no subject)"), from: ($h.from // ""), count: ($msgs | length)}
+        ' "${dir}/t-${n}.json" >> "${dir}/targets.jsonl"
+        n=$((n + 1))
+    done < <(jq -r '.[] | [.kind, .id] | @tsv' "$ids_file")
+    jq -s '.' "${dir}/targets.jsonl" > "${dir}/targets.json"
+    if jq -e 'any(.[]; .missing)' "${dir}/targets.json" >/dev/null; then
+        _err "These Gmail IDs were not found; nothing was changed:"
+        jq -r '.[] | select(.missing) | "  - " + .kind + " " + .id' "${dir}/targets.json" >&2
+        return 1
+    fi
+    if jq -e 'any(.[]; (.labels | index("TRASH")) or (.labels | index("SPAM")))' "${dir}/targets.json" >/dev/null; then
+        _err "Some targets are in Trash or Spam, which these commands never touch; nothing was changed:"
+        jq -r '.[] | select((.labels | index("TRASH")) or (.labels | index("SPAM"))) | "  - " + .subject + " | " + .kind + " " + .id' "${dir}/targets.json" >&2
+        return 1
+    fi
+    case "$precondition" in
+        in-inbox)
+            if jq -e 'any(.[]; (.labels | index("INBOX")) | not)' "${dir}/targets.json" >/dev/null; then
+                _err "gmail $action only changes mail that is currently in the Inbox; nothing was changed. Not in Inbox:"
+                jq -r '.[] | select((.labels | index("INBOX")) | not) | "  - " + .subject + " | " + .kind + " " + .id' "${dir}/targets.json" >&2
+                return 1
+            fi
+            ;;
+        not-in-inbox)
+            if jq -e 'any(.[]; .labels | index("INBOX"))' "${dir}/targets.json" >/dev/null; then
+                _err "gmail $action only restores mail that is not in the Inbox; nothing was changed. Already in Inbox:"
+                jq -r '.[] | select(.labels | index("INBOX")) | "  - " + .subject + " | " + .kind + " " + .id' "${dir}/targets.json" >&2
+                return 1
+            fi
+            ;;
+    esac
+    _say "Gmail $action plan:"
+    _say "Account: $alias"
+    _say "Change: $describe"
+    _say "Targets: $count"
+    jq -r '.[] | "- " + .kind + (if .kind == "thread" then " (" + (.count | tostring) + " messages)" else "" end) + " | " + .from + " | " + .subject' "${dir}/targets.json"
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: nothing was changed. Re-run with --execute to apply."; return 0; fi
+    _gmail_require_write "$alias" || return 1
+    jq -c --argjson add "$add" --argjson remove "$remove" '{ids: [.[] | select(.kind == "message") | .id], addLabelIds: $add, removeLabelIds: $remove}' "${dir}/targets.json" > "${dir}/batch.json"
+    if jq -e '.ids | length > 0' "${dir}/batch.json" >/dev/null; then
+        _gmail_send POST "$alias" "${_GMAIL_API}/messages/batchModify" "$(cat "${dir}/batch.json")" >/dev/null || return 1
+    fi
+    for id in $(jq -r '.[] | select(.kind == "thread") | .id' "${dir}/targets.json"); do
+        _gmail_send POST "$alias" "${_GMAIL_API}/threads/${id}/modify" "$(jq -cn --argjson add "$add" --argjson remove "$remove" '{addLabelIds: $add, removeLabelIds: $remove}')" >/dev/null || return 1
+    done
+    # Read back every affected message and confirm the added labels are present and the removed ones gone.
+    : > "${dir}/readback.jsonl"
+    for id in $(jq -r '.[].messageIds[]' "${dir}/targets.json"); do
+        _google_get_url "$alias" "${_GMAIL_API}/messages/${id}" --data-urlencode "format=minimal" | jq -c '{id, labelIds: (.labelIds // [])}' >> "${dir}/readback.jsonl" || return 1
+    done
+    ts="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    jq -s --slurpfile t "${dir}/targets.json" --argjson add "$add" --argjson remove "$remove" '
+      (map({key: .id, value: .labelIds}) | from_entries) as $now |
+      [$t[0][] | . as $target |
+        {kind, id, subject, from,
+         verified: all(.messageIds[]; ($now[.] // null) as $l | $l != null and all($add[]; . as $a | $l | index($a)) and all($remove[]; . as $r | ($l | index($r)) | not))}]
+    ' "${dir}/readback.jsonl" > "${dir}/results.json" || return 1
+    jq -c --arg ts "$ts" --arg alias "$alias" --arg action "$action" --argjson add "$add" --argjson remove "$remove" '.[] | {ts: $ts, service: "gmail", alias: $alias, action: $action, target_kind: .kind, target_id: .id, add_labels: $add, remove_labels: $remove, sender: .from, subject: .subject, verified: .verified}' "${dir}/results.json" | _mail_audit_append || _warn "Could not append to the mail audit log: $(_mail_audit_log_path)"
+    jq -r '.[] | (if .verified then "- done: " else "- NOT CONFIRMED: " end) + .subject + " | " + .kind + " " + .id' "${dir}/results.json"
+    failures="$(jq '[.[] | select(.verified | not)] | length' "${dir}/results.json")"
+    if [ "$failures" -gt 0 ]; then
+        _err "$failures of $count targets were not confirmed by readback"
+        return 1
+    fi
+    _say "Applied to $count targets (confirmed by readback)."
+}
+
+# Parses shared target options into a JSON array file of {kind, id} at _GMAIL_TARGETS_FILE, plus _GMAIL_LABEL, _GMAIL_SKIP_INBOX, and _GMAIL_EXECUTE.
+_gmail_change_args() {
+    local command="$1" line
+    shift
+    _GMAIL_TARGETS_FILE="$(mktemp "${TMPDIR:-/tmp}/lifeos-gmail-targets.XXXXXX")" || return 1
+    _GMAIL_LABEL=""
+    _GMAIL_SKIP_INBOX=0
+    _GMAIL_EXECUTE=0
+    : > "${_GMAIL_TARGETS_FILE}.tsv"
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --message) [ -n "${2:-}" ] || { _err "--message requires ID"; return 1; }; printf 'message\t%s\n' "$2" >> "${_GMAIL_TARGETS_FILE}.tsv"; shift 2 ;;
+            --thread) [ -n "${2:-}" ] || { _err "--thread requires ID"; return 1; }; printf 'thread\t%s\n' "$2" >> "${_GMAIL_TARGETS_FILE}.tsv"; shift 2 ;;
+            --ids-file)
+                [ -n "${2:-}" ] || { _err "--ids-file requires FILE"; return 1; }
+                _read_ids_file "$2" > /dev/null || return 1
+                while IFS= read -r line; do
+                    case "$line" in
+                        message:*) printf 'message\t%s\n' "${line#message:}" ;;
+                        thread:*) printf 'thread\t%s\n' "${line#thread:}" ;;
+                        *) _err "Each --ids-file line must be message:ID or thread:ID (got '$line')"; return 1 ;;
+                    esac
+                done >> "${_GMAIL_TARGETS_FILE}.tsv" <<EOF
+$(_read_ids_file "$2")
+EOF
+                shift 2
+                ;;
+            --label)
+                case "$command" in label|unlabel) ;; *) _err "gmail $command does not take --label"; return 1 ;; esac
+                [ -n "${2:-}" ] || { _err "--label requires NAME or ID"; return 1; }
+                _GMAIL_LABEL="$2"; shift 2
+                ;;
+            --skip-inbox)
+                [ "$command" = "label" ] || { _err "gmail $command does not take --skip-inbox"; return 1; }
+                _GMAIL_SKIP_INBOX=1; shift
+                ;;
+            --execute) _GMAIL_EXECUTE=1; shift ;;
+            --dry-run) _GMAIL_EXECUTE=0; shift ;;
+            *) _err "Unknown gmail $command option: $1"; return 1 ;;
+        esac
+    done
+    jq -R -s 'split("\n") | map(select(length > 0) | split("\t") | {kind: .[0], id: .[1]}) | unique_by([.kind, .id])' "${_GMAIL_TARGETS_FILE}.tsv" > "$_GMAIL_TARGETS_FILE"
+}
+
+_gmail_archive() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "gmail archive requires ALIAS"; return 1; }
+    shift || true
+    _gmail_change_args archive "$@" || return 1
+    _gmail_change_run "$alias" archive '[]' '["INBOX"]' in-inbox "$_GMAIL_EXECUTE" "remove from Inbox (archive)" "$_GMAIL_TARGETS_FILE"
+}
+
+_gmail_unarchive() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "gmail unarchive requires ALIAS"; return 1; }
+    shift || true
+    _gmail_change_args unarchive "$@" || return 1
+    _gmail_change_run "$alias" unarchive '["INBOX"]' '[]' not-in-inbox "$_GMAIL_EXECUTE" "return to Inbox" "$_GMAIL_TARGETS_FILE"
+}
+
+_gmail_label() {
+    local alias="${1:-}" labels label label_id label_name remove='[]' describe precondition=""
+    [ -n "$alias" ] || { _err "gmail label requires ALIAS"; return 1; }
+    shift || true
+    _gmail_change_args label "$@" || return 1
+    [ -n "$_GMAIL_LABEL" ] || { _err "gmail label requires --label"; return 1; }
+    _gmail_require_enabled "$alias" || return 1
+    labels="$(_gmail_labels_fetch "$alias")" || return 1
+    label="$(_gmail_resolve_user_label "$labels" "$_GMAIL_LABEL")" || return 1
+    label_id="$(printf '%s' "$label" | jq -r '.id')"
+    label_name="$(printf '%s' "$label" | jq -r '.name')"
+    describe="add label '$label_name'"
+    if [ "$_GMAIL_SKIP_INBOX" -eq 1 ]; then
+        remove='["INBOX"]'
+        describe="$describe and remove from Inbox"
+    fi
+    _gmail_change_run "$alias" label "$(jq -cn --arg id "$label_id" '[$id]')" "$remove" "$precondition" "$_GMAIL_EXECUTE" "$describe" "$_GMAIL_TARGETS_FILE"
+}
+
+_gmail_unlabel() {
+    local alias="${1:-}" labels label label_id label_name
+    [ -n "$alias" ] || { _err "gmail unlabel requires ALIAS"; return 1; }
+    shift || true
+    _gmail_change_args unlabel "$@" || return 1
+    [ -n "$_GMAIL_LABEL" ] || { _err "gmail unlabel requires --label"; return 1; }
+    _gmail_require_enabled "$alias" || return 1
+    labels="$(_gmail_labels_fetch "$alias")" || return 1
+    label="$(_gmail_resolve_user_label "$labels" "$_GMAIL_LABEL")" || return 1
+    label_id="$(printf '%s' "$label" | jq -r '.id')"
+    label_name="$(printf '%s' "$label" | jq -r '.name')"
+    _gmail_change_run "$alias" unlabel '[]' "$(jq -cn --arg id "$label_id" '[$id]')" "" "$_GMAIL_EXECUTE" "remove label '$label_name'" "$_GMAIL_TARGETS_FILE"
+}
+
+_gmail_create_label() {
+    local alias="${1:-}" name="" execute=0 labels created ts
+    [ -n "$alias" ] || { _err "gmail create-label requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --name) [ -n "${2:-}" ] || { _err "--name requires TEXT"; return 1; }; name="$2"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown gmail create-label option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$name" ] || { _err "gmail create-label requires --name (use Parent/Child to nest)"; return 1; }
+    _gmail_require_enabled "$alias" || return 1
+    labels="$(_gmail_labels_fetch "$alias")" || return 1
+    if printf '%s' "$labels" | jq -e --arg n "$name" 'any((.labels // [])[]; (.name | ascii_downcase) == ($n | ascii_downcase))' >/dev/null; then
+        _err "A Gmail label named '$name' already exists"
+        return 1
+    fi
+    _say "Gmail label create plan:"
+    _say "Account: $alias"
+    _say "New label: $name"
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: no label was created. Re-run with --execute to create it."; return 0; fi
+    _gmail_require_write "$alias" || return 1
+    created="$(_gmail_send POST "$alias" "${_GMAIL_API}/labels" "$(jq -cn --arg name "$name" '{name: $name, labelListVisibility: "labelShow", messageListVisibility: "show"}')")" || return 1
+    ts="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    printf '%s' "$created" | jq -c --arg ts "$ts" --arg alias "$alias" '{ts: $ts, service: "gmail", alias: $alias, action: "create-label", label_id: .id, label: .name}' | _mail_audit_append || _warn "Could not append to the mail audit log: $(_mail_audit_log_path)"
+    _say "Created label: $(printf '%s' "$created" | jq -r '.name + " | id: " + .id')"
 }
 
 _drive_accounts() {
