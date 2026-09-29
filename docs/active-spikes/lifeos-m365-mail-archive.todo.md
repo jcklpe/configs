@@ -19,6 +19,8 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 - [x] Opt-in flags `mail.write_enabled` / `gmail.write_enabled` in the ignored account configs (examples default to false). Enabled locally for `ut` (M365) and `personal`, `professional`, `open-austin` (Gmail); Gmail `ut` stays disabled, as before.
 - [x] Offline tests: `lifeos-tools/tests/test-mail-triage.sh` (synthetic mailbox; mutation-checked against the refused-target list, `--skip-inbox`, and readback). Full suite green.
 
+- [x] Spam and junk review (Aslan, 2026-09-29): `gmail spam` / `not-spam` and `m365 mail junk` / `not-junk`. Rescue runs only out of Spam or Junk, and there is no report-spam. Live listings and a not-spam dry run with refusals were verified on personal and UT. No live not-spam was executed, because the CLI cannot re-spam a message. Offline tests added; 0007 addendum.
+
 ### Phase 3 — Docs
 - [x] `lifeos-m365`, `lifeos-gmail`, and `lifeos-cli` skills; README commands and prose; `lifeos help`.
 - [x] Skills tell vault skills relying on Inbox-only snapshots to record that in `assumes:`.
@@ -27,10 +29,13 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 - [x] M365 live round trip, 2026-09-29: one UT Inbox mailchimp message archived (confirmed by readback), then unarchived back to the Inbox under its new ID. Folder refusals and source rules exercised live.
 - [x] Aslan re-consented `personal` for `gmail.modify` (2026-09-29).
 - [x] Gmail live round trip on `personal`, 2026-09-29: one Bandcamp thread archived, unarchived, labeled `Events` with `--skip-inbox`, unlabeled, and unarchived. Each step was confirmed by readback, and the thread ended with its original labels (UNREAD kept).
-- [ ] Aslan re-consents `professional` (`lifeos google auth professional`) and `open-austin` (`lifeos google auth open-austin --docs-comment`). Same code path as `personal`, so a live round trip there is optional.
+- [x] `open-austin` re-consented; its token verified as the intended account with `gmail.modify` (2026-09-29).
+- [x] Auth mix-up check, 2026-09-29: Aslan ran `lifeos google auth personal` while signing into other accounts (including UT Gmail) before the correct run. Each run overwrites `google-personal-token.json`, so only the last one counts. Every token was verified against the Gmail profile API: personal, professional, and open-austin each match their configured address. The stray consents only granted this OAuth client access on those accounts, which is harmless.
+- [ ] `professional` still has only `gmail.readonly`: its run was left waiting at the browser step and wrote no token. Rerun `lifeos google auth professional` and finish the consent.
 - [ ] Human QA by Aslan: spot-check Outlook and Gmail after a real triage pass.
 
 ## Open Questions
+- UT Gmail: the `ut` Google alias is Drive-only, and Gmail is off by design (0004: UTmail forwards into M365). Gmail does not forward spam, though, so UT spam is the one part of UT mail that M365 cannot see. Enabling `ut` Gmail for spam review only would need a way to keep it out of `gmail sync --all`, plus a `ut` re-auth. Waiting on Aslan.
 - Should `mail sync` gain an Archive-folder view, so the vault can still see what was archived? The audit log covers "what did the agent move" for now.
 - Is the per-call cap right at 50?
 - The vault-side triage skill and its approval model are LifeOS work, tracked in the vault's `docs/TODO.md`, not here. The vault's policy on agents surfacing rather than triaging (vault policy 0003) will need revisiting there.
