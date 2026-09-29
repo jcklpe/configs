@@ -3,7 +3,7 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 
 ## Current State
 - Implemented 2026-09-29: M365 folders, list, archive, unarchive, move, create-folder; Gmail labels, list, archive, unarchive, label (`--skip-inbox`), unlabel, create-label. Decision 0007 written, 0004 amended, skills and README updated, offline tests added.
-- M365 is live-verified on the UT mailbox, and Gmail on `personal`. `professional` and `open-austin` still need re-consent for `gmail.modify`.
+- M365 is live-verified on the UT mailbox, and Gmail on `personal` and `professional`. `open-austin` is re-consented and its token verified. All three Gmail accounts can write.
 
 ## To Do
 ### Phase 0 — Feasibility
@@ -31,7 +31,7 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 - [x] Gmail live round trip on `personal`, 2026-09-29: one Bandcamp thread archived, unarchived, labeled `Events` with `--skip-inbox`, unlabeled, and unarchived. Each step was confirmed by readback, and the thread ended with its original labels (UNREAD kept).
 - [x] `open-austin` re-consented; its token verified as the intended account with `gmail.modify` (2026-09-29).
 - [x] Auth mix-up check, 2026-09-29: Aslan ran `lifeos google auth personal` while signing into other accounts (including UT Gmail) before the correct run. Each run overwrites `google-personal-token.json`, so only the last one counts. Every token was verified against the Gmail profile API: personal, professional, and open-austin each match their configured address. The stray consents only granted this OAuth client access on those accounts, which is harmless.
-- [ ] `professional` still has only `gmail.readonly`: its run was left waiting at the browser step and wrote no token. Rerun `lifeos google auth professional` and finish the consent.
+- [x] `professional` re-consented at 11:17 CDT on 2026-09-29, after one run timed out at the browser step. A fresh token carries `gmail.modify`. Live archive-then-unarchive of one promotions thread was confirmed by readback, and the thread ended with its original labels.
 - [ ] Human QA by Aslan: spot-check Outlook and Gmail after a real triage pass.
 
 ## Open Questions
