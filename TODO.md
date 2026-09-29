@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- LifeOS Microsoft 365 Mail Archive: let an agent move UT Inbox mail to Archive and back, dry-run first, by exact message ID, amending decision 0004's read-only rule for this one reversible action. First gate: whether `Mail.ReadWrite` is obtainable in UT's tenant. `docs/active-spikes/lifeos-m365-mail-archive.md`, `docs/active-spikes/lifeos-m365-mail-archive.todo.md`
+- LifeOS Mail Archive And Labels (slug `lifeos-m365-mail-archive`): agents can archive, unarchive, and file mail by exact ID, dry-run first, with no delete. Microsoft 365 gets folder listing and moves; every Gmail account gets archive plus user labels that can skip the Inbox. Decision 0007 amends 0004. M365 is live-verified; Gmail is waiting on Aslan's re-consent for `gmail.modify`, then human QA. `docs/active-spikes/lifeos-m365-mail-archive.md`, `docs/active-spikes/lifeos-m365-mail-archive.todo.md`
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
