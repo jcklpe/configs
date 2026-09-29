@@ -21,7 +21,8 @@ Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the 
 - **`lifeos-m365`** — delegated Microsoft 365 mail reads plus gated calendar and Outlook contact reads/writes.
 - **`lifeos-odoo`** — bounded Odoo Project discovery and task reads through account aliases.
 - **`lifeos-slack`** — act in Slack as the user's own account (user OAuth token): post, reply, direct message, read threads, and read or write Slack Lists items, all dry-run first with identity check and readback; `lifeos slack sync` snapshots configured Lists into `sources/slack/`.
-- **`lifeos-open-austin`** — Open Austin GitHub snapshot refresh and routing to the public org repo for writes.
+- **`lifeos-github`** — snapshots of configured repos (issues, PRs, Discussions, Projects v2 boards) into `sources/github/`, plus gated `create-issue` and board `move-card` writes.
+- **`lifeos-resume`** — render a Markdown resume to a themed PDF.
 
 ## Health Check
 ```sh
@@ -73,3 +74,6 @@ Most `sync` commands write a snapshot into `$LIFEOS_VAULT_PATH/sources/`. Passin
 - Do not print or inspect `~/configs/lifeos-tools/secrets/.env`, Google or Microsoft token files, API keys, `google-accounts.json`, `m365-accounts.json`, or `odoo-accounts.json`.
 - Actions that touch real people or public state are gated per service — calendar `--notify` sends live invites, and Open Austin writes are handled through the public org repo. See the service skills.
 - Per-service safety notes live in each service skill.
+
+## Changing A Command's Behavior
+Vault skills that rely on a specific `lifeos` behavior list it in an `assumes:` frontmatter field (for example `- lifeos trello sync writes sources/trello.md`). When a command's output, path, or capabilities change, search the vault's skills for `assumes:` lines and body text that mention the command, and flag any that describe the old behavior so they can be updated in the vault.
