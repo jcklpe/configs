@@ -1418,6 +1418,22 @@ _m365_mail_unarchive() {
     _m365_mail_move_run "$alias" unarchive inbox archive "$_MOVE_EXECUTE" ${_MOVE_IDS[@]+"${_MOVE_IDS[@]}"}
 }
 
+# Junk review: list Junk Email and rescue false positives to the Inbox. Junk is never part of mail sync, and Junk stays refused as a move destination.
+_m365_mail_junk() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "m365 mail junk requires ALIAS"; return 1; }
+    shift || true
+    _m365_mail_list "$alias" --folder junkemail "$@"
+}
+
+_m365_mail_not_junk() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "m365 mail not-junk requires ALIAS"; return 1; }
+    shift || true
+    _m365_mail_move_args not-junk "$@" || return 1
+    _m365_mail_move_run "$alias" not-junk inbox junkemail "$_MOVE_EXECUTE" ${_MOVE_IDS[@]+"${_MOVE_IDS[@]}"}
+}
+
 _m365_mail_create_folder() {
     local alias="${1:-}" name="" parent_spec="" execute=0 tree parent parent_id parent_path url created new_path ts
     [ -n "$alias" ] || { _err "m365 mail create-folder requires ALIAS"; return 1; }
@@ -1481,6 +1497,8 @@ _m365_dispatch() {
                 archive) shift 2; _m365_mail_archive "$@" ;;
                 unarchive) shift 2; _m365_mail_unarchive "$@" ;;
                 create-folder) shift 2; _m365_mail_create_folder "$@" ;;
+                junk) shift 2; _m365_mail_junk "$@" ;;
+                not-junk) shift 2; _m365_mail_not_junk "$@" ;;
                 *) _err "Unknown m365 mail command: ${2:-}"; return 1 ;;
             esac
             ;;

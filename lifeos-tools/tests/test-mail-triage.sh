@@ -42,7 +42,8 @@ _m365_get_paginated() {
           {"id":"f-inbox","displayName":"Inbox","parentFolderId":"root","childFolderCount":1,"totalItemCount":2,"unreadItemCount":1},
           {"id":"f-archive","displayName":"Archive","parentFolderId":"root","childFolderCount":1,"totalItemCount":1,"unreadItemCount":0},
           {"id":"f-deleted","displayName":"Deleted Items","parentFolderId":"root","childFolderCount":1,"totalItemCount":0,"unreadItemCount":0},
-          {"id":"f-sent","displayName":"Sent Items","parentFolderId":"root","childFolderCount":0,"totalItemCount":0,"unreadItemCount":0}]}' > "$3" ;;
+          {"id":"f-sent","displayName":"Sent Items","parentFolderId":"root","childFolderCount":0,"totalItemCount":0,"unreadItemCount":0},
+          {"id":"f-junk","displayName":"Junk Email","parentFolderId":"root","childFolderCount":0,"totalItemCount":0,"unreadItemCount":0}]}' > "$3" ;;
         *) return 1 ;;
     esac
 }
@@ -58,6 +59,7 @@ _m365_write() {
       elif (.url | test("^/me/mailFolders/archive[?]")) then {status: 200, body: {id: "f-archive"}}
       elif (.url | test("^/me/mailFolders/deleteditems[?]")) then {status: 200, body: {id: "f-deleted"}}
       elif (.url | test("^/me/mailFolders/sentitems[?]")) then {status: 200, body: {id: "f-sent"}}
+      elif (.url | test("^/me/mailFolders/junkemail[?]")) then {status: 200, body: {id: "f-junk"}}
       elif (.url | test("^/me/mailFolders/")) then {status: 404, body: {error: {code: "ErrorFolderNotFound"}}}
       elif (.url | test("^/me/messages/msg-inbox[?]")) then {status: 200, body: {id: "msg-inbox", subject: "Newsletter", from: {emailAddress: {address: "news@example.com"}}, receivedDateTime: "2026-09-01T00:00:00Z", parentFolderId: "f-inbox"}}
       elif (.url | test("^/me/messages/msg-archived[?]")) then {status: 200, body: {id: "msg-archived", subject: "Old notice", from: {emailAddress: {address: "notice@example.com"}}, receivedDateTime: "2026-08-01T00:00:00Z", parentFolderId: "f-archive"}}
@@ -68,7 +70,7 @@ _m365_write() {
 
 TREE="${WORK}/tree.json"
 _m365_mail_folder_tree ut "$TREE"
-jq -e 'map(.path) == ["Archive", "Archive/Old", "Deleted Items", "Deleted Items/Old", "Inbox", "Inbox/Receipts", "Sent Items"]' "$TREE" >/dev/null || fail "folder tree paths"
+jq -e 'map(.path) == ["Archive", "Archive/Old", "Deleted Items", "Deleted Items/Old", "Inbox", "Inbox/Receipts", "Junk Email", "Sent Items"]' "$TREE" >/dev/null || fail "folder tree paths"
 jq -e 'map({key: .path, value: .moveTarget}) | from_entries | .["Deleted Items"] == false and .["Deleted Items/Old"] == false and .["Sent Items"] == false and .["Inbox/Receipts"] == true and .Archive == true' "$TREE" >/dev/null || fail "blocked move targets"
 jq -e '.[] | select(.path == "Archive") | .wellKnown == "archive"' "$TREE" >/dev/null || fail "well-known annotation"
 
@@ -121,6 +123,9 @@ grep -F "already exists at 'Inbox/Receipts'" "${WORK}/err.txt" >/dev/null || fai
 _m365_mail_create_folder ut --name Newsletters --parent inbox > "${WORK}/create.txt"
 grep -F "New folder: Inbox/Newsletters" "${WORK}/create.txt" >/dev/null && grep -F "DRY RUN" "${WORK}/create.txt" >/dev/null || fail "create-folder dry run"
 expect_fail _m365_mail_create_folder ut --name Stash --parent "Deleted Items"
+
+expect_fail _m365_mail_not_junk ut --message msg-inbox
+grep -F "currently in 'Junk Email'" "${WORK}/err.txt" >/dev/null || fail "not-junk requires a Junk source"
 
 ##- Gmail
 jq '(.accounts[] | select(.alias == "personal") | .gmail.write_enabled) = false' "${SECRETS_DIR}/google-accounts.example.json" > "${WORK}/google-read.json"
@@ -189,6 +194,13 @@ _gmail_unlabel personal --label Receipts --message m-inbox --execute > /dev/null
 jq -e '.["m-inbox"] == ["UNREAD"]' "${WORK}/gmail-state.json" >/dev/null || fail "archive then unlabel leaves only UNREAD"
 jq -e -s '[.[] | select(.service == "gmail")] | length == 4 and all(.verified)' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null || fail "gmail changes are written to the audit log"
 grep -E 'trash|delete' "${WORK}/gmail-calls.log" >/dev/null && fail "no Gmail call may trash or delete"
+
+expect_fail _gmail_not_spam personal --message m-inbox
+grep -F "currently in Spam" "${WORK}/err.txt" >/dev/null || fail "not-spam requires Spam mail"
+_gmail_not_spam personal --message m-spam --execute > "${WORK}/g-notspam.txt"
+jq -e '.["m-spam"] == ["INBOX"]' "${WORK}/gmail-state.json" >/dev/null || fail "not-spam removes SPAM and adds INBOX"
+grep -F "confirmed by readback" "${WORK}/g-notspam.txt" >/dev/null || fail "not-spam is confirmed by readback"
+jq -e -s '[.[] | select(.service == "gmail")] | length == 5 and .[-1].action == "not-spam"' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null || fail "not-spam is written to the audit log"
 
 expect_fail _gmail_create_label personal --name receipts
 grep -F "already exists" "${WORK}/err.txt" >/dev/null || fail "duplicate label fails"
