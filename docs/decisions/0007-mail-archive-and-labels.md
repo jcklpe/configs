@@ -18,6 +18,9 @@ All writes follow the existing write discipline: dry-run by default with `--exec
 
 This repo supplies the capability only. What counts as noise, and whether an agent may archive without asking, is policy for the calling vault's skills.
 
+### Addendum 2026-09-29: Spam And Junk Rescue
+Aslan asked the same day for a way to review spam and mark messages as not spam, off by default but checked regularly. Spam and Junk are never synced, so a misfiled real message is otherwise invisible. Added: `gmail spam` and `gmail not-spam` (remove `SPAM`, add `INBOX`; source must be in Spam, never Trash), and `m365 mail junk` and `mail not-junk` (a Junk-to-Inbox move; source must be Junk). This is the one exception to "system labels cannot be changed", and it runs only *out of* Spam. Reporting spam, and moves into Junk, remain refused, because a false positive there hides real mail. That is also why a mistaken rescue is undone in the mail UI, not the CLI. How often to review Spam and whether a rescue needs approval are vault policy.
+
 ## Rejected Alternatives
 - **Full read-write mail** (send, reply, forward, delete, mark-read): not asked for, and each is either irreversible or visible to other people.
 - **Search-based bulk commands** ("archive everything from X"): a query that matches more than intended fails silently at scale. The caller resolves a search to exact IDs first, using `mail list` or `gmail list`, and the dry-run plan shows every target.
