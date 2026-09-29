@@ -70,6 +70,8 @@ Usage:
   ./lifeos.sh gmail label ALIAS --label NAME_OR_ID (--message ID | --thread ID | --ids-file FILE)... [--skip-inbox] [--execute]   # user labels only
   ./lifeos.sh gmail unlabel ALIAS --label NAME_OR_ID (--message ID | --thread ID | --ids-file FILE)... [--execute]
   ./lifeos.sh gmail create-label ALIAS --name NAME [--execute]
+  ./lifeos.sh gmail spam ALIAS [--limit N] [--json]   # list mail Gmail filed as spam; never synced
+  ./lifeos.sh gmail not-spam ALIAS (--message ID | --thread ID | --ids-file FILE)... [--execute]   # Spam -> Inbox
   ./lifeos.sh drive accounts
   ./lifeos.sh drive search ALIAS QUERY [--json]
   ./lifeos.sh drive list ALIAS FOLDER_ID [--json]
@@ -93,6 +95,8 @@ Usage:
   ./lifeos.sh m365 mail unarchive ALIAS (--message ID | --ids-file FILE)... [--execute]   # Archive -> Inbox
   ./lifeos.sh m365 mail move ALIAS --folder NAME_PATH_OR_ID (--message ID | --ids-file FILE)... [--execute]
   ./lifeos.sh m365 mail create-folder ALIAS --name NAME [--parent NAME_PATH_OR_ID] [--execute]
+  ./lifeos.sh m365 mail junk ALIAS [--limit N] [--json]   # list Junk Email; never synced
+  ./lifeos.sh m365 mail not-junk ALIAS (--message ID | --ids-file FILE)... [--execute]   # Junk -> Inbox
   ./lifeos.sh m365 calendar list-calendars ALIAS
   ./lifeos.sh m365 calendar find ALIAS QUERY [--calendar ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
   ./lifeos.sh m365 calendar sync ALIAS [--qa | --output FILE]
@@ -562,6 +566,8 @@ case "${1:-help}" in
             label) shift 2; _gmail_label "$@" ;;
             unlabel) shift 2; _gmail_unlabel "$@" ;;
             create-label) shift 2; _gmail_create_label "$@" ;;
+            spam) shift 2; _gmail_spam "$@" ;;
+            not-spam) shift 2; _gmail_not_spam "$@" ;;
             *) _err "Unknown Gmail command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;

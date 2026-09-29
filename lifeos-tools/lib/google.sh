@@ -422,7 +422,7 @@ _gmail_sync() {
 }
 
 ##- Gmail labels and archiving. Reads (labels, list) use the read-only scope; executed changes also need gmail.write_enabled, which adds gmail.modify at the next 'lifeos google auth ALIAS'.
-##- The only label changes are removing or restoring INBOX (archive and unarchive) and adding or removing user labels. There is no trash, delete, spam, send, or mark-read command, and messages already in Trash or Spam are refused.
+##- The only label changes are removing or restoring INBOX (archive and unarchive), adding or removing user labels, and moving mail out of Spam (not-spam). There is no trash, delete, report-spam, send, or mark-read command, and messages in Trash, or in Spam outside not-spam, are refused.
 _GMAIL_API='https://gmail.googleapis.com/gmail/v1/users/me'
 
 _gmail_require_enabled() {
@@ -593,8 +593,15 @@ _gmail_change_run() {
         jq -r '.[] | select(.missing) | "  - " + .kind + " " + .id' "${dir}/targets.json" >&2
         return 1
     fi
-    if jq -e 'any(.[]; (.labels | index("TRASH")) or (.labels | index("SPAM")))' "${dir}/targets.json" >/dev/null; then
-        _err "Some targets are in Trash or Spam, which these commands never touch; nothing was changed:"
+    # Spam is off limits except to not-spam, whose whole job is to rescue it; Trash is always off limits.
+    if [ "$precondition" = "in-spam" ]; then
+        if jq -e 'any(.[]; (.labels | index("TRASH")) or ((.labels | index("SPAM")) | not))' "${dir}/targets.json" >/dev/null; then
+            _err "gmail $action only rescues mail that is currently in Spam (and not in Trash); nothing was changed. Out of place:"
+            jq -r '.[] | select((.labels | index("TRASH")) or ((.labels | index("SPAM")) | not)) | "  - " + .subject + " | " + .kind + " " + .id' "${dir}/targets.json" >&2
+            return 1
+        fi
+    elif jq -e 'any(.[]; (.labels | index("TRASH")) or (.labels | index("SPAM")))' "${dir}/targets.json" >/dev/null; then
+        _err "Some targets are in Trash or Spam, which these commands never touch (use gmail not-spam to rescue Spam); nothing was changed:"
         jq -r '.[] | select((.labels | index("TRASH")) or (.labels | index("SPAM"))) | "  - " + .subject + " | " + .kind + " " + .id' "${dir}/targets.json" >&2
         return 1
     fi
@@ -741,6 +748,22 @@ _gmail_unlabel() {
     label_id="$(printf '%s' "$label" | jq -r '.id')"
     label_name="$(printf '%s' "$label" | jq -r '.name')"
     _gmail_change_run "$alias" unlabel '[]' "$(jq -cn --arg id "$label_id" '[$id]')" "" "$_GMAIL_EXECUTE" "remove label '$label_name'" "$_GMAIL_TARGETS_FILE"
+}
+
+# Spam review: list what Gmail filed as spam, and rescue false positives back to the Inbox. Spam is never part of gmail sync; these are for a deliberate periodic check.
+_gmail_spam() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "gmail spam requires ALIAS"; return 1; }
+    shift || true
+    _gmail_list "$alias" --label SPAM "$@"
+}
+
+_gmail_not_spam() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "gmail not-spam requires ALIAS"; return 1; }
+    shift || true
+    _gmail_change_args not-spam "$@" || return 1
+    _gmail_change_run "$alias" not-spam '["INBOX"]' '["SPAM"]' in-spam "$_GMAIL_EXECUTE" "remove from Spam and return to Inbox (not spam)" "$_GMAIL_TARGETS_FILE"
 }
 
 _gmail_create_label() {
