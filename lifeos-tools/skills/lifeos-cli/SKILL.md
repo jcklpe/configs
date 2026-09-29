@@ -15,10 +15,10 @@ Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the 
 ## Service Skills
 - **`lifeos-trello`** — Trello reads, writes, and task-chain links.
 - **`lifeos-calendar`** — Google Calendar reads/writes, attendee resolution, availability reading.
-- **`lifeos-gmail`** — bounded read-only Gmail snapshots.
+- **`lifeos-gmail`** — bounded Gmail snapshots, plus dry-run-gated archive, unarchive, and user-label changes (no delete or send).
 - **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import (creating a Doc).
 - **`lifeos-docs`** — editing a Google Doc that already exists: one exact replacement, dry-run by default, revision-guarded.
-- **`lifeos-m365`** — delegated Microsoft 365 mail reads plus gated calendar and Outlook contact reads/writes.
+- **`lifeos-m365`** — delegated Microsoft 365 mail reads, folder listing, and dry-run-gated archive and folder moves (no delete or send), plus gated calendar and Outlook contact reads/writes.
 - **`lifeos-odoo`** — bounded Odoo Project discovery and task reads through account aliases.
 - **`lifeos-slack`** — act in Slack as the user's own account (user OAuth token): post, reply, direct message, read threads, and read or write Slack Lists items, all dry-run first with identity check and readback; `lifeos slack sync` snapshots configured Lists into `sources/slack/`.
 - **`lifeos-github`** — snapshots of configured repos (issues, PRs, Discussions, Projects v2 boards) into `sources/github/`, plus gated `create-issue` and board `move-card` writes.

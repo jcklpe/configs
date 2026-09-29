@@ -89,6 +89,11 @@ lifeos google auth personal
 lifeos google auth personal --docs-write
 lifeos gmail sync personal --qa
 lifeos gmail sync --all
+lifeos gmail labels personal
+lifeos gmail list personal --label Receipts
+lifeos gmail archive personal --thread THREAD_ID --execute
+lifeos gmail label personal --label Receipts --thread THREAD_ID --skip-inbox --execute
+lifeos gmail create-label personal --name "Triage/Newsletters"
 lifeos drive accounts
 lifeos drive search open-austin "landlord mapper"
 lifeos drive meta open-austin https://docs.google.com/document/d/abc123/edit
@@ -100,6 +105,12 @@ lifeos m365 accounts
 lifeos m365 auth ut
 lifeos m365 profile ut
 lifeos m365 mail sync ut --qa
+lifeos m365 mail folders ut
+lifeos m365 mail list ut --folder archive --limit 10
+lifeos m365 mail archive ut --message MESSAGE_ID --execute
+lifeos m365 mail unarchive ut --message NEW_MESSAGE_ID --execute
+lifeos m365 mail move ut --folder "Inbox/Receipts" --message MESSAGE_ID
+lifeos m365 mail create-folder ut --name Receipts --parent inbox
 lifeos m365 calendar list-calendars ut
 lifeos m365 calendar find ut "Orientation"
 lifeos m365 calendar sync ut --qa
@@ -133,7 +144,7 @@ lifeos sync   # Trello, Calendar, GitHub, and Slack Lists; unconfigured sources 
 Agent-facing usage notes live in the `lifeos-cli` skill (`lifeos-tools/skills/lifeos-cli/SKILL.md`), co-located with the tool and symlinked into `~/.claude/skills/` and `~/.codex/skills/` by the installer, so local agents get it globally.
 
 ## Microsoft 365
-Microsoft 365 is a separate delegated Graph integration for bounded Inbox reads, calendar reads and gated event create/update writes, and Outlook contact reads and gated contact create/update writes. It does not send or mutate mail, expose delete commands, read the UT organization directory, or request application-wide access.
+Microsoft 365 is a separate delegated Graph integration for bounded Inbox reads, calendar reads and gated event create/update writes, and Outlook contact reads and gated contact create/update writes. Its only mail writes are opt-in, dry-run-gated moves between folders (archive, unarchive, move) and folder creation; it does not send mail, expose delete commands, read the UT organization directory, or request application-wide access.
 
 Copy the ignored account configuration and authenticate through Microsoft's Graph PowerShell client:
 
@@ -149,7 +160,7 @@ The default `graph-powershell` provider asks for delegated `User.Read`, `Mail.Re
 
 The optional `msal` provider remains available when a dedicated public-client application ID is available. Set `"auth_provider": "msal"`, `client_id`, and `token_path` in the ignored account config. Do not create a client secret or add application permissions.
 
-Mail snapshots are read-only and bounded by the alias's days, count, and body limits. Calendar sync uses Graph calendar views over the normal LifeOS date window. Contact sync reads only the user's default Outlook Contacts folder and does not recurse through additional contact folders. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` snapshots go to ignored `lifeos-tools/qa/m365/`.
+Mail snapshots are bounded by the alias's days, count, and body limits. `mail folders` and `mail list` read the folder tree and a folder's messages. Moves need `mail.write_enabled` in the alias config (which requests `Mail.ReadWrite`), never target Deleted Items, Junk, Drafts, Sent, or Outbox, and give each moved message a new ID; see the `lifeos-m365` skill. Calendar sync uses Graph calendar views over the normal LifeOS date window. Contact sync reads only the user's default Outlook Contacts folder and does not recurse through additional contact folders. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` snapshots go to ignored `lifeos-tools/qa/m365/`.
 
 Calendar and contact writes are dry-run by default and require `--execute`. There are no delete commands. Calendar writes are restricted to configured writable calendar IDs. Because Microsoft can send invitations or meeting updates for attendee-bearing events, those writes also require `--notify` as an explicit acknowledgement; unlike the Google API, Graph does not expose it here as a suppress-delivery switch. During contact updates, supplied email or phone values replace that complete field array. See the `lifeos-m365` skill for the full safety model.
 
@@ -197,7 +208,9 @@ Descriptions for noisy calendars can be omitted via `LIFEOS_CALENDAR_NO_DESCRIPT
 
 Google Gmail/Drive alias config lives in ignored `google-accounts.json`, copied from tracked `google-accounts.example.json`. Each alias has its own ignored token file, such as `google-personal-token.json`.
 
-Gmail sync is read-only and writes bounded Markdown snapshots to `$LIFEOS_VAULT_PATH/sources/gmail/`, or to ignored `lifeos-tools/gmail-qa/` when using `--qa`. The default per-account query (`in:inbox newer_than:30d -label:Newsletters`) syncs only current inbox mail from the last 30 days and excludes anything labeled `Newsletters`; archived mail is not synced.
+Gmail sync writes bounded Markdown snapshots to `$LIFEOS_VAULT_PATH/sources/gmail/`, or to ignored `lifeos-tools/gmail-qa/` when using `--qa`. The default per-account query (`in:inbox newer_than:30d -label:Newsletters`) syncs only current inbox mail from the last 30 days and excludes anything labeled `Newsletters`; archived mail is not synced.
+
+Gmail archive, unarchive, label, and unlabel change only `INBOX` and user labels, are dry-run by default, and need `gmail.write_enabled` on the alias plus a fresh `lifeos google auth ALIAS` for the `gmail.modify` scope. There is no trash, delete, send, or mark-read command. See the `lifeos-gmail` skill.
 
 Drive read commands are on-demand. They search/list/inspect files and can read Google Docs as text or Google Sheets as a bounded table preview. They do not clone Drive into LifeOS.
 
