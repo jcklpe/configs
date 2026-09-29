@@ -1418,6 +1418,51 @@ _m365_mail_unarchive() {
     _m365_mail_move_run "$alias" unarchive inbox archive "$_MOVE_EXECUTE" ${_MOVE_IDS[@]+"${_MOVE_IDS[@]}"}
 }
 
+# List a message's attachments, or save its file attachments into an existing directory. Read-only (Mail.Read); refuses to overwrite unless --force.
+_m365_mail_attachments() {
+    local alias="${1:-}" message_id="" save_dir="" force=0 base list dir id name out
+    [ -n "$alias" ] || { _err "m365 mail attachments requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --message) [ -n "${2:-}" ] || { _err "--message requires ID"; return 1; }; message_id="$2"; shift 2 ;;
+            --save) [ -n "${2:-}" ] || { _err "--save requires DIR"; return 1; }; save_dir="$2"; shift 2 ;;
+            --force) force=1; shift ;;
+            *) _err "Unknown m365 mail attachments option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$message_id" ] || { _err "m365 mail attachments requires --message ID"; return 1; }
+    _m365_require_enabled "$alias" mail || return 1
+    base="$(_m365_graph_base "$alias")/me/messages/$(_m365_uri_encode "$message_id")/attachments"
+    list="$(_m365_get "$alias" "$base" --data-urlencode "\$select=id,name,contentType,size,isInline")" || return 1
+    if [ -z "$save_dir" ]; then
+        printf '%s' "$list" | jq -r '(.value // [])[] | "- " + .name + " | " + (.contentType // "") + " | " + ((.size // 0) | tostring) + " bytes" + (if .isInline then " | inline" else "" end) + " | type: " + ((."@odata.type" // "") | sub("#microsoft.graph."; ""))'
+        return 0
+    fi
+    [ -d "$save_dir" ] || { _err "Save directory does not exist: $save_dir"; return 1; }
+    if printf '%s' "$list" | jq -e '(.value // []) | map(.name) | (length != (unique | length))' >/dev/null; then
+        _err "Two attachments share a file name; refusing to guess which to keep"; return 1
+    fi
+    # Check every destination before writing any, so a collision stops the whole save.
+    while IFS= read -r name; do
+        [ -n "$name" ] || continue
+        case "$name" in */*|..*) _err "Refusing unsafe attachment file name: $name"; return 1 ;; esac
+        [ "$force" -eq 1 ] || [ ! -e "${save_dir}/${name}" ] || { _err "Refusing to overwrite existing file: ${save_dir}/${name} (use --force)"; return 1; }
+    done <<EOF2
+$(printf '%s' "$list" | jq -r '(.value // [])[] | select((."@odata.type" // "") == "#microsoft.graph.fileAttachment" and (.isInline | not)) | .name')
+EOF2
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-attachments.XXXXXX")" || return 1
+    for id in $(printf '%s' "$list" | jq -r '(.value // [])[] | select((."@odata.type" // "") == "#microsoft.graph.fileAttachment" and (.isInline | not)) | .id'); do
+        _m365_get "$alias" "${base}/$(_m365_uri_encode "$id")" > "${dir}/att.json" || return 1
+        name="$(jq -r '.name' "${dir}/att.json")"
+        out="${save_dir}/${name}"
+        jq -r '.contentBytes' "${dir}/att.json" | "$LIFEOS_PY" -c 'import base64, sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.read()))' > "$out" || { rm -f "$out"; return 1; }
+        _say "Saved: $out ($(wc -c < "$out" | tr -d ' ') bytes)"
+    done
+    rm -rf "$dir"
+    printf '%s' "$list" | jq -r '(.value // [])[] | select((."@odata.type" // "") != "#microsoft.graph.fileAttachment" or .isInline) | "Skipped (inline or not a file): " + .name'
+}
+
 # Junk review: list Junk Email and rescue false positives to the Inbox. Junk is never part of mail sync, and Junk stays refused as a move destination.
 _m365_mail_junk() {
     local alias="${1:-}"
@@ -1498,6 +1543,7 @@ _m365_dispatch() {
                 unarchive) shift 2; _m365_mail_unarchive "$@" ;;
                 create-folder) shift 2; _m365_mail_create_folder "$@" ;;
                 junk) shift 2; _m365_mail_junk "$@" ;;
+                attachments) shift 2; _m365_mail_attachments "$@" ;;
                 not-junk) shift 2; _m365_mail_not_junk "$@" ;;
                 *) _err "Unknown m365 mail command: ${2:-}"; return 1 ;;
             esac

@@ -31,6 +31,14 @@ lifeos m365 mail sync ALIAS
 
 The bounded snapshot covers the configured recent Inbox window and count/body caps, and prints each message's `Message ID`. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` goes to ignored `lifeos-tools/qa/m365/`. The snapshot is Inbox-only, so archived or moved mail drops out of it. Vault skills that rely on that should say so in their `assumes:`.
 
+### Attachments
+```sh
+lifeos m365 mail attachments ALIAS --message ID
+lifeos m365 mail attachments ALIAS --message ID --save DIR [--force]
+```
+
+Lists a message's attachments, or saves its file attachments into an existing directory under their own names. It is read-only (`Mail.Read`). Inline images and non-file attachments are skipped and named. It refuses to overwrite an existing file unless `--force`, and it refuses unsafe or duplicate names, checking every destination before writing any.
+
 ### Folders
 ```sh
 lifeos m365 mail folders ALIAS [--json]
