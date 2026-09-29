@@ -3,7 +3,7 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 
 ## Current State
 - Implemented 2026-09-29: M365 folders, list, archive, unarchive, move, create-folder; Gmail labels, list, archive, unarchive, label (`--skip-inbox`), unlabel, create-label. Decision 0007 written, 0004 amended, skills and README updated, offline tests added.
-- M365 is live-verified on the UT mailbox. Gmail is verified live for reads, dry runs, and refusals; executed Gmail changes wait on Aslan re-consenting each account for `gmail.modify`.
+- M365 is live-verified on the UT mailbox, and Gmail on `personal`. `professional` and `open-austin` still need re-consent for `gmail.modify`.
 
 ## To Do
 ### Phase 0 — Feasibility
@@ -25,8 +25,9 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 
 ### Phase 4 — QA
 - [x] M365 live round trip, 2026-09-29: one UT Inbox mailchimp message archived (confirmed by readback), then unarchived back to the Inbox under its new ID. Folder refusals and source rules exercised live.
-- [ ] Aslan re-consents Gmail: `lifeos google auth personal --docs-write --docs-comment`, `lifeos google auth professional`, `lifeos google auth open-austin --docs-comment`.
-- [ ] Gmail live round trip on one low-value thread per account: archive, unarchive; label with `--skip-inbox`, unlabel, unarchive.
+- [x] Aslan re-consented `personal` for `gmail.modify` (2026-09-29).
+- [x] Gmail live round trip on `personal`, 2026-09-29: one Bandcamp thread archived, unarchived, labeled `Events` with `--skip-inbox`, unlabeled, and unarchived. Each step was confirmed by readback, and the thread ended with its original labels (UNREAD kept).
+- [ ] Aslan re-consents `professional` (`lifeos google auth professional`) and `open-austin` (`lifeos google auth open-austin --docs-comment`). Same code path as `personal`, so a live round trip there is optional.
 - [ ] Human QA by Aslan: spot-check Outlook and Gmail after a real triage pass.
 
 ## Open Questions
@@ -35,7 +36,7 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 - The vault-side triage skill and its approval model are LifeOS work, tracked in the vault's `docs/TODO.md`, not here. The vault's policy on agents surfacing rather than triaging (vault policy 0003) will need revisiting there.
 
 ## Ready For Human QA
-- M365 mail folders and moves (live-verified by the agent).
+- M365 mail folders and moves, and Gmail archive and labels (both live-verified by the agent).
 
 ## Done
 - [x] Spike sketched and promoted to active (2026-09-29).
