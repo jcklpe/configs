@@ -1,6 +1,6 @@
 ---
 name: lifeos-cli
-description: "Use when starting to operate the lifeos CLI, running lifeos doctor, or setting up Google or Microsoft account auth — the entry point and cross-cutting rules for the LifeOS source-sync and write tooling. Points to the per-service skills for Trello, Google Calendar/Gmail/Drive, Microsoft 365, Open Austin, and other implemented services."
+description: "Use when starting to operate the lifeos CLI, running lifeos doctor, or setting up Google or Microsoft account auth — the entry point and cross-cutting rules for the LifeOS source-sync and write tooling. Points to the per-service skills for Trello, Google Calendar/Gmail/Drive/Docs, Microsoft 365, GitHub, Slack, Odoo, and other implemented services."
 ---
 
 # LifeOS CLI
