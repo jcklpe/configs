@@ -106,6 +106,7 @@ lifeos m365 auth ut
 lifeos m365 profile ut
 lifeos m365 mail sync ut --qa
 lifeos m365 mail folders ut
+lifeos m365 mail attachments ut --message MESSAGE_ID --save ~/Downloads
 lifeos m365 mail list ut --folder archive --limit 10
 lifeos m365 mail archive ut --message MESSAGE_ID --execute
 lifeos m365 mail unarchive ut --message NEW_MESSAGE_ID --execute
