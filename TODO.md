@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- LifeOS Mail Archive And Labels (slug `lifeos-m365-mail-archive`): agents can archive, unarchive, and file mail by exact ID, dry-run first, with no delete. Microsoft 365 gets folder listing and moves; every Gmail account gets archive plus user labels that can skip the Inbox. Decision 0007 amends 0004. M365 and Gmail `personal` are live-verified; `professional` and `open-austin` still need re-consent for `gmail.modify`; then human QA. `docs/active-spikes/lifeos-m365-mail-archive.md`, `docs/active-spikes/lifeos-m365-mail-archive.todo.md`
+- LifeOS Mail Archive And Labels (slug `lifeos-m365-mail-archive`): agents can archive, unarchive, and file mail by exact ID, dry-run first, with no delete. Microsoft 365 gets folder listing and moves; every Gmail account gets archive plus user labels that can skip the Inbox. Decision 0007 amends 0004. M365 and all three Gmail accounts can write (live round trips on UT, personal, professional). Next: human QA, and Aslan's call on UT Gmail for spam review. `docs/active-spikes/lifeos-m365-mail-archive.md`, `docs/active-spikes/lifeos-m365-mail-archive.todo.md`
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
