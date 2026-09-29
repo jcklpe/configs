@@ -169,3 +169,28 @@ _lifeos_python() {
 }
 LIFEOS_PY="$(_lifeos_python)"
 
+
+##- Mail write support shared by the Gmail and Microsoft 365 triage commands: target-ID collection and a local audit log of executed moves and label changes.
+##- The log holds senders and subjects, so it lives under the ignored secrets/ folder and never enters the repo.
+_mail_audit_log_path() {
+    printf '%s\n' "${LIFEOS_MAIL_AUDIT_LOG:-${SECRETS_DIR}/logs/mail-writes.jsonl}"
+}
+
+# Append JSON Lines records (one compact object per input line) to the mail audit log.
+_mail_audit_append() {
+    local log
+    log="$(_mail_audit_log_path)"
+    _ensure_parent_dir "$log" || return 1
+    jq -c '.' >> "$log"
+}
+
+# Read one ID per line from FILE, ignoring blank lines and lines starting with '#'.
+_read_ids_file() {
+    local file="$1" line
+    [ -f "$file" ] || { _err "IDs file does not exist: $file"; return 1; }
+    while IFS= read -r line || [ -n "$line" ]; do
+        line="$(_trim "$line")"
+        case "$line" in ''|\#*) continue ;; esac
+        printf '%s\n' "$line"
+    done < "$file"
+}

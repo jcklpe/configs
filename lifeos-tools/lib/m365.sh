@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-##- LifeOS Microsoft 365: delegated auth plus bounded mail, calendar, and Outlook contact reads and gated writes.
+##- LifeOS Microsoft 365: delegated auth plus bounded mail, calendar, and Outlook contact reads and gated writes, including opt-in mail moves between folders (never delete).
 ##- Sourced by lifeos.sh after common.sh and google.sh; uses the shared people alias map for deterministic attendee resolution.
 
 _m365_accounts_path() {
@@ -72,6 +72,7 @@ _m365_accounts_list() {
       " | auth: " + (.auth_provider // "msal") +
       " | tenant: " + (.tenant // "organizations") +
       " | mail: " + (((.mail.enabled // false) == true) | tostring) +
+      " | mail moves: " + (((.mail.write_enabled // false) == true) | tostring) +
       " | calendar: " + (((.calendar.enabled // false) == true) | tostring) +
       " | contacts: " + (((.contacts.enabled // false) == true) | tostring) +
       " | files: " + (((.files.enabled // false) == true) | tostring)
@@ -82,7 +83,10 @@ _m365_scopes() {
     local alias="$1"
     _m365_account_exists "$alias" || return 1
     printf 'User.Read\n'
-    _m365_account_value "$alias" '(.mail.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Mail.Read\n'
+    # Mail.ReadWrite replaces Mail.Read only when the alias opts into mail moves; there is still no send or delete command.
+    if _m365_account_value "$alias" '(.mail.enabled // false) == true' 2>/dev/null | grep -qx true; then
+        if _m365_account_value "$alias" '(.mail.write_enabled // false) == true' 2>/dev/null | grep -qx true; then printf 'Mail.ReadWrite\n'; else printf 'Mail.Read\n'; fi
+    fi
     _m365_account_value "$alias" '(.calendar.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Calendars.ReadWrite\n'
     _m365_account_value "$alias" '(.contacts.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Contacts.ReadWrite\n'
     _m365_account_value "$alias" '(.files.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Files.ReadWrite\n'
@@ -1102,6 +1106,367 @@ _m365_files_download() {
     _say "Downloaded item ${item} -> ${out}"
 }
 
+##- Mail folders and moves. Reads (folders, list) need only mail.enabled; executed moves and folder creation also need mail.write_enabled, which switches the scope to Mail.ReadWrite.
+##- Moves target exact Graph message IDs, go through Graph JSON batching (20 requests per call, because every PowerShell-transport call costs about two seconds), and are read back afterwards. There is no delete, and folders that amount to deletion or sending (Deleted Items, Junk, Drafts, Sent, Outbox, and anything under them) are never move targets.
+_M365_MAIL_WELL_KNOWN='["inbox","archive","deleteditems","junkemail","drafts","sentitems","outbox","conversationhistory","recoverableitemsdeletions"]'
+_M365_MAIL_BLOCKED_TARGETS='["deleteditems","junkemail","drafts","sentitems","outbox","recoverableitemsdeletions"]'
+_M365_MAIL_FOLDER_SELECT='id,displayName,parentFolderId,childFolderCount,totalItemCount,unreadItemCount'
+
+_m365_mail_require_write() {
+    local alias="$1"
+    if ! _m365_account_value "$alias" '(.mail.write_enabled // false) == true' 2>/dev/null | grep -qx true; then
+        _err "Microsoft 365 mail moves are not enabled for alias '$alias'"
+        _say "NEXT: set mail.write_enabled to true for '$alias' in $(_m365_accounts_path), then run 'lifeos m365 auth $alias' so the session requests Mail.ReadWrite" >&2
+        return 1
+    fi
+}
+
+_m365_mail_move_cap() {
+    _m365_account_value "$1" '.mail.max_moves_per_call // 50' 2>/dev/null || printf '50'
+}
+
+# _m365_batch ALIAS REQUESTS_FILE OUT_FILE: REQUESTS_FILE holds a JSON array of {method, url, body?} with URLs relative to the Graph version root. OUT_FILE receives the responses as an array in request order.
+_m365_batch() {
+    local alias="$1" requests="$2" out="$3" dir total start=0 n=0 chunk
+    local files=()
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-batch.XXXXXX")" || return 1
+    total="$(jq 'length' "$requests")" || return 1
+    while [ "$start" -lt "$total" ]; do
+        chunk="$(jq -c --argjson s "$start" '{requests: [.[$s:($s + 20)] | to_entries[] | {id: (($s + .key) | tostring)} + .value + (if .value.body then {headers: {"Content-Type": "application/json"}} else {} end)]}' "$requests")" || return 1
+        _m365_write POST "$alias" "$(_m365_graph_base "$alias")/\$batch" "$chunk" > "${dir}/${n}.json" || return 1
+        files+=("${dir}/${n}.json")
+        n=$((n + 1))
+        start=$((start + 20))
+    done
+    if [ "${#files[@]}" -eq 0 ]; then
+        printf '[]\n' > "$out"
+    else
+        jq -s '[.[].responses[]?] | sort_by(.id | tonumber)' "${files[@]}" > "$out"
+    fi
+}
+
+# Write the mailbox's folder tree to OUT as a JSON array of folders, each carrying path, depth, wellKnown (or null), and moveTarget.
+_m365_mail_folder_tree() {
+    local alias="$1" out="$2" dir depth=0
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-folders.XXXXXX")" || return 1
+    _m365_get_paginated "$alias" 1000 "${dir}/top.json" "$(_m365_graph_base "$alias")/me/mailFolders" \
+        --data-urlencode "\$top=250" \
+        --data-urlencode "\$select=${_M365_MAIL_FOLDER_SELECT}" || return 1
+    jq '[(.value // [])[] | . + {path: .displayName, depth: 0}]' "${dir}/top.json" > "${dir}/all.json" || return 1
+    cp "${dir}/all.json" "${dir}/level.json"
+    while jq -e 'any(.[]; (.childFolderCount // 0) > 0)' "${dir}/level.json" >/dev/null; do
+        depth=$((depth + 1))
+        [ "$depth" -le 10 ] || { _err "Mail folder tree is deeper than 10 levels; refusing to continue"; return 1; }
+        jq '[.[] | select((.childFolderCount // 0) > 0)]' "${dir}/level.json" > "${dir}/parents.json" || return 1
+        jq --arg select "$_M365_MAIL_FOLDER_SELECT" '[.[] | {method: "GET", url: ("/me/mailFolders/" + (.id | @uri) + "/childFolders?$top=250&$select=" + $select)}]' "${dir}/parents.json" > "${dir}/requests.json" || return 1
+        _m365_batch "$alias" "${dir}/requests.json" "${dir}/responses.json" || return 1
+        jq -n --slurpfile p "${dir}/parents.json" --slurpfile r "${dir}/responses.json" '
+          [range(0; ($p[0] | length)) as $i |
+            ($r[0][$i]) as $resp |
+            if ($resp.status // 0) != 200 then
+              error("Could not list child folders of " + $p[0][$i].path + ": " + (($resp.body.error.message // "HTTP " + (($resp.status // 0) | tostring))))
+            else
+              ($resp.body.value // [])[] | . + {path: ($p[0][$i].path + "/" + .displayName), depth: ($p[0][$i].depth + 1)}
+            end]
+        ' > "${dir}/level.json" || return 1
+        jq -s '.[0] + .[1]' "${dir}/all.json" "${dir}/level.json" > "${dir}/merged.json" && mv "${dir}/merged.json" "${dir}/all.json"
+    done
+    jq -n --argjson names "$_M365_MAIL_WELL_KNOWN" '[$names[] | {method: "GET", url: ("/me/mailFolders/" + . + "?$select=id")}]' > "${dir}/wk-requests.json"
+    _m365_batch "$alias" "${dir}/wk-requests.json" "${dir}/wk-responses.json" || return 1
+    jq --argjson names "$_M365_MAIL_WELL_KNOWN" --argjson blocked "$_M365_MAIL_BLOCKED_TARGETS" --slurpfile wk "${dir}/wk-responses.json" '
+      ([range(0; ($names | length)) as $i | select(($wk[0][$i].status // 0) == 200) | {key: $wk[0][$i].body.id, value: $names[$i]}] | from_entries) as $map |
+      (sort_by(.depth) | reduce .[] as $f ({out: [], blocked: {}};
+        ($map[$f.id] // null) as $name |
+        ((($name != null) and (($blocked | index($name)) != null)) or (.blocked[$f.parentFolderId // ""] // false)) as $isBlocked |
+        .out += [$f + {wellKnown: $name, moveTarget: ($isBlocked | not)}] |
+        if $isBlocked then .blocked[$f.id] = true else . end)) |
+      .out | sort_by(.path | ascii_downcase)
+    ' "${dir}/all.json" > "$out"
+}
+
+# Resolve SPEC against TREE_FILE and print the matching folder as JSON. SPEC may be a well-known name (inbox, archive, ...), an exact folder ID, a full path such as "Inbox/Receipts", or a unique display name. Ambiguity and absence both fail.
+_m365_mail_resolve_folder() {
+    local tree="$1" spec="$2" result
+    result="$(jq --arg s "$spec" '
+      ($s | ascii_downcase) as $l |
+      ([.[] | select(.wellKnown == $l)]) as $wk |
+      ([.[] | select(.id == $s)]) as $byId |
+      ([.[] | select((.path | ascii_downcase) == $l)]) as $byPath |
+      ([.[] | select((.displayName | ascii_downcase) == $l)]) as $byName |
+      if ($wk | length) == 1 then {match: $wk[0]}
+      elif ($byId | length) == 1 then {match: $byId[0]}
+      elif ($byPath | length) == 1 then {match: $byPath[0]}
+      elif ($byName | length) == 1 then {match: $byName[0]}
+      elif ($byName | length) > 1 then {ambiguous: [$byName[] | .path]}
+      else {missing: true} end
+    ' "$tree")" || return 1
+    if printf '%s' "$result" | jq -e '.match' >/dev/null; then
+        printf '%s' "$result" | jq -c '.match'
+    elif printf '%s' "$result" | jq -e '.ambiguous' >/dev/null; then
+        _err "Mail folder '$spec' matches more than one folder: $(printf '%s' "$result" | jq -r '.ambiguous | join(", ")'). Pass the full path or the folder ID."
+        return 1
+    else
+        _err "No mail folder matches '$spec'. Run 'lifeos m365 mail folders ALIAS' to see folders, or 'lifeos m365 mail create-folder' to make one."
+        return 1
+    fi
+}
+
+_m365_mail_folders() {
+    local alias="${1:-}" json_mode=0 tree
+    [ -n "$alias" ] || { _err "m365 mail folders requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --json) json_mode=1; shift ;;
+            *) _err "Unknown m365 mail folders option: $1"; return 1 ;;
+        esac
+    done
+    _m365_require_enabled "$alias" mail || return 1
+    tree="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-folder-tree.XXXXXX")" || return 1
+    _m365_mail_folder_tree "$alias" "$tree" || return 1
+    if [ "$json_mode" -eq 1 ]; then
+        cat "$tree"
+    else
+        jq -r '.[] |
+          ("  " * .depth) + "- " + .displayName +
+          " | path: " + .path +
+          " | id: " + .id +
+          " | total: " + ((.totalItemCount // 0) | tostring) +
+          " | unread: " + ((.unreadItemCount // 0) | tostring) +
+          (if .wellKnown then " | well-known: " + .wellKnown else "" end) +
+          (if .moveTarget then "" else " | move target: no" end)
+        ' "$tree"
+    fi
+}
+
+_m365_mail_list() {
+    local alias="${1:-}" folder_spec="" limit=25 json_mode=0 tree folder folder_id data
+    [ -n "$alias" ] || { _err "m365 mail list requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --folder) [ -n "${2:-}" ] || { _err "--folder requires NAME, PATH, or ID"; return 1; }; folder_spec="$2"; shift 2 ;;
+            --limit) [ -n "${2:-}" ] || { _err "--limit requires N"; return 1; }; limit="$2"; shift 2 ;;
+            --json) json_mode=1; shift ;;
+            *) _err "Unknown m365 mail list option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$folder_spec" ] || { _err "m365 mail list requires --folder"; return 1; }
+    case "$limit" in ''|*[!0-9]*) _err "--limit must be a positive integer"; return 1 ;; esac
+    [ "$limit" -ge 1 ] && [ "$limit" -le 200 ] || { _err "--limit must be between 1 and 200"; return 1; }
+    _m365_require_enabled "$alias" mail || return 1
+    tree="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-folder-tree.XXXXXX")" || return 1
+    _m365_mail_folder_tree "$alias" "$tree" || return 1
+    folder="$(_m365_mail_resolve_folder "$tree" "$folder_spec")" || return 1
+    folder_id="$(printf '%s' "$folder" | jq -r '.id')"
+    data="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-folder-messages.XXXXXX")" || return 1
+    _m365_get_paginated "$alias" "$limit" "$data" "$(_m365_graph_base "$alias")/me/mailFolders/$(_m365_uri_encode "$folder_id")/messages" \
+        --data-urlencode "\$top=${limit}" \
+        --data-urlencode "\$orderby=receivedDateTime desc" \
+        --data-urlencode "\$select=id,conversationId,subject,from,receivedDateTime,isRead,hasAttachments" || return 1
+    if [ "$json_mode" -eq 1 ]; then
+        jq --argjson folder "$folder" '{folder: $folder, value: (.value // [])}' "$data"
+    else
+        _say "Folder: $(printf '%s' "$folder" | jq -r '.path') ($(printf '%s' "$folder" | jq -r '.totalItemCount // 0') total)"
+        jq -r '(.value // [])[] |
+          "- " + (.receivedDateTime // "") +
+          " | from: " + (.from.emailAddress.name // .from.emailAddress.address // "") +
+          " <" + (.from.emailAddress.address // "") + ">" +
+          " | " + (.subject // "(no subject)") +
+          (if .isRead then "" else " | unread" end) +
+          "\n  message_id: " + (.id // "")
+        ' "$data"
+    fi
+}
+
+# Shared engine for move, archive, and unarchive. REQUIRED_SOURCE is a folder spec every message must currently sit in, or empty for no source rule.
+_m365_mail_move_run() {
+    local alias="$1" action="$2" dest_spec="$3" required_source="$4" execute="$5"
+    shift 5
+    local ids=() id cap tree dir dest dest_id dest_path source source_id count failures ts
+    for id in "$@"; do
+        case " ${ids[*]:-} " in *" $id "*) continue ;; esac
+        ids+=("$id")
+    done
+    [ "${#ids[@]}" -gt 0 ] || { _err "m365 mail $action requires at least one --message ID or --ids-file"; return 1; }
+    cap="$(_m365_mail_move_cap "$alias")"
+    [ "${#ids[@]}" -le "$cap" ] || { _err "m365 mail $action accepts at most $cap messages per call (got ${#ids[@]}); split the list"; return 1; }
+    _m365_require_enabled "$alias" mail || return 1
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-move.XXXXXX")" || return 1
+    tree="${dir}/tree.json"
+    _m365_mail_folder_tree "$alias" "$tree" || return 1
+    dest="$(_m365_mail_resolve_folder "$tree" "$dest_spec")" || return 1
+    dest_id="$(printf '%s' "$dest" | jq -r '.id')"
+    dest_path="$(printf '%s' "$dest" | jq -r '.path')"
+    if ! printf '%s' "$dest" | jq -e '.moveTarget' >/dev/null; then
+        _err "Refusing to move mail into '$dest_path': Deleted Items, Junk, Drafts, Sent, Outbox, and their subfolders are never move targets"
+        return 1
+    fi
+    source_id=""
+    if [ -n "$required_source" ]; then
+        source="$(_m365_mail_resolve_folder "$tree" "$required_source")" || return 1
+        source_id="$(printf '%s' "$source" | jq -r '.id')"
+    fi
+    printf '%s\n' "${ids[@]}" | jq -R . | jq -s '[.[] | {method: "GET", url: ("/me/messages/" + (. | @uri) + "?$select=id,subject,from,receivedDateTime,parentFolderId")}]' > "${dir}/get-requests.json"
+    _m365_batch "$alias" "${dir}/get-requests.json" "${dir}/get-responses.json" || return 1
+    printf '%s\n' "${ids[@]}" | jq -R . | jq -s --slurpfile r "${dir}/get-responses.json" --slurpfile tree "$tree" '
+      ($tree[0] | map({key: .id, value: .path}) | from_entries) as $paths |
+      [range(0; length) as $i | {requested: .[$i], status: ($r[0][$i].status // 0), message: $r[0][$i].body} |
+        . + {folderPath: ($paths[.message.parentFolderId // ""] // "(folder not listed)")}]
+    ' > "${dir}/targets.json" || return 1
+    if jq -e 'any(.[]; .status != 200)' "${dir}/targets.json" >/dev/null; then
+        _err "These message IDs were not found; nothing was moved:"
+        jq -r '.[] | select(.status != 200) | "  - " + .requested + " (" + (.message.error.code // ("HTTP " + (.status | tostring))) + ")"' "${dir}/targets.json" >&2
+        return 1
+    fi
+    if [ -n "$source_id" ] && jq -e --arg src "$source_id" 'any(.[]; .message.parentFolderId != $src)' "${dir}/targets.json" >/dev/null; then
+        _err "m365 mail $action only moves messages that are currently in '$(printf '%s' "$source" | jq -r '.path')'; nothing was moved. Out of place:"
+        jq -r --arg src "$source_id" '.[] | select(.message.parentFolderId != $src) | "  - " + (.message.subject // "(no subject)") + " | in: " + .folderPath + " | " + .requested' "${dir}/targets.json" >&2
+        return 1
+    fi
+    if jq -e --arg dest "$dest_id" 'any(.[]; .message.parentFolderId == $dest)' "${dir}/targets.json" >/dev/null; then
+        _err "Some messages are already in '$dest_path'; nothing was moved. Remove them from the list:"
+        jq -r --arg dest "$dest_id" '.[] | select(.message.parentFolderId == $dest) | "  - " + (.message.subject // "(no subject)") + " | " + .requested' "${dir}/targets.json" >&2
+        return 1
+    fi
+    count="${#ids[@]}"
+    _say "Microsoft 365 mail $action plan:"
+    _say "Account: $alias"
+    _say "Destination: $dest_path"
+    _say "Messages: $count"
+    jq -r '.[] | "- " + (.message.receivedDateTime // "") + " | " + (.message.from.emailAddress.address // "") + " | " + (.message.subject // "(no subject)") + " | from folder: " + .folderPath' "${dir}/targets.json"
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: nothing was moved. Re-run with --execute to move these messages."; return 0; fi
+    _m365_mail_require_write "$alias" || return 1
+    jq --arg dest "$dest_id" '[.[] | {method: "POST", url: ("/me/messages/" + (.requested | @uri) + "/move"), body: {destinationId: $dest}}]' "${dir}/targets.json" > "${dir}/move-requests.json"
+    _m365_batch "$alias" "${dir}/move-requests.json" "${dir}/move-responses.json" || return 1
+    # Read back each moved message under its new ID, since a Graph move returns the message with a different ID.
+    jq '[.[] | select((.status // 0) == 201 or (.status // 0) == 200) | {method: "GET", url: ("/me/messages/" + (.body.id | @uri) + "?$select=id,parentFolderId")}]' "${dir}/move-responses.json" > "${dir}/readback-requests.json"
+    _m365_batch "$alias" "${dir}/readback-requests.json" "${dir}/readback-responses.json" || return 1
+    ts="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    jq -n --slurpfile t "${dir}/targets.json" --slurpfile m "${dir}/move-responses.json" --slurpfile rb "${dir}/readback-responses.json" --arg dest "$dest_id" '
+      ([$rb[0][] | select((.status // 0) == 200) | {key: .body.id, value: .body.parentFolderId}] | from_entries) as $now |
+      [range(0; ($t[0] | length)) as $i | $t[0][$i] as $target | $m[0][$i] as $resp |
+        (($resp.status // 0) == 201 or ($resp.status // 0) == 200) as $moved |
+        {requested: $target.requested, subject: ($target.message.subject // ""), from: ($target.message.from.emailAddress.address // ""), fromFolder: $target.folderPath,
+         newId: (if $moved then $resp.body.id else null end),
+         verified: ($moved and ($now[$resp.body.id] // "") == $dest),
+         error: (if $moved then null else ($resp.body.error.message // ("HTTP " + (($resp.status // 0) | tostring))) end)}]
+    ' > "${dir}/results.json" || return 1
+    jq -c --arg ts "$ts" --arg alias "$alias" --arg action "$action" --arg dest "$dest_path" '.[] | {ts: $ts, service: "m365", alias: $alias, action: $action, message_id: .requested, new_message_id: .newId, destination: $dest, from_folder: .fromFolder, sender: .from, subject: .subject, verified: .verified, error: .error}' "${dir}/results.json" | _mail_audit_append || _warn "Could not append to the mail audit log: $(_mail_audit_log_path)"
+    jq -r '.[] | if .verified then "- moved: " + .subject + "\n  new message_id: " + .newId elif .newId then "- MOVED BUT NOT CONFIRMED in destination: " + .subject + "\n  new message_id: " + .newId else "- FAILED: " + .subject + " | " + .error + "\n  message_id: " + .requested end' "${dir}/results.json"
+    failures="$(jq '[.[] | select(.verified | not)] | length' "${dir}/results.json")"
+    if [ "$failures" -gt 0 ]; then
+        _err "$failures of $count messages were not confirmed in '$dest_path'"
+        return 1
+    fi
+    _say "Moved $count messages to $dest_path (confirmed by readback). Moved messages have new IDs, shown above."
+}
+
+_m365_mail_move_args() {
+    # Parses the shared move options into _MOVE_IDS, _MOVE_FOLDER, and _MOVE_EXECUTE.
+    local command="$1"
+    shift
+    _MOVE_IDS=()
+    _MOVE_FOLDER=""
+    _MOVE_EXECUTE=0
+    local line
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --message) [ -n "${2:-}" ] || { _err "--message requires ID"; return 1; }; _MOVE_IDS+=("$2"); shift 2 ;;
+            --ids-file)
+                [ -n "${2:-}" ] || { _err "--ids-file requires FILE"; return 1; }
+                _read_ids_file "$2" > /dev/null || return 1
+                while IFS= read -r line; do [ -n "$line" ] && _MOVE_IDS+=("$line"); done <<EOF
+$(_read_ids_file "$2")
+EOF
+                shift 2
+                ;;
+            --folder)
+                [ "$command" = "move" ] || { _err "m365 mail $command does not take --folder"; return 1; }
+                [ -n "${2:-}" ] || { _err "--folder requires NAME, PATH, or ID"; return 1; }
+                _MOVE_FOLDER="$2"; shift 2
+                ;;
+            --execute) _MOVE_EXECUTE=1; shift ;;
+            --dry-run) _MOVE_EXECUTE=0; shift ;;
+            *) _err "Unknown m365 mail $command option: $1"; return 1 ;;
+        esac
+    done
+}
+
+_m365_mail_move() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "m365 mail move requires ALIAS"; return 1; }
+    shift || true
+    _m365_mail_move_args move "$@" || return 1
+    [ -n "$_MOVE_FOLDER" ] || { _err "m365 mail move requires --folder"; return 1; }
+    _m365_mail_move_run "$alias" move "$_MOVE_FOLDER" "" "$_MOVE_EXECUTE" ${_MOVE_IDS[@]+"${_MOVE_IDS[@]}"}
+}
+
+_m365_mail_archive() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "m365 mail archive requires ALIAS"; return 1; }
+    shift || true
+    _m365_mail_move_args archive "$@" || return 1
+    _m365_mail_move_run "$alias" archive archive inbox "$_MOVE_EXECUTE" ${_MOVE_IDS[@]+"${_MOVE_IDS[@]}"}
+}
+
+_m365_mail_unarchive() {
+    local alias="${1:-}"
+    [ -n "$alias" ] || { _err "m365 mail unarchive requires ALIAS"; return 1; }
+    shift || true
+    _m365_mail_move_args unarchive "$@" || return 1
+    _m365_mail_move_run "$alias" unarchive inbox archive "$_MOVE_EXECUTE" ${_MOVE_IDS[@]+"${_MOVE_IDS[@]}"}
+}
+
+_m365_mail_create_folder() {
+    local alias="${1:-}" name="" parent_spec="" execute=0 tree parent parent_id parent_path url created new_path ts
+    [ -n "$alias" ] || { _err "m365 mail create-folder requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --name) [ -n "${2:-}" ] || { _err "--name requires TEXT"; return 1; }; name="$2"; shift 2 ;;
+            --parent) [ -n "${2:-}" ] || { _err "--parent requires NAME, PATH, or ID"; return 1; }; parent_spec="$2"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown m365 mail create-folder option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$name" ] || { _err "m365 mail create-folder requires --name"; return 1; }
+    case "$name" in */*) _err "Folder names may not contain '/'; use --parent to nest"; return 1 ;; esac
+    _m365_require_enabled "$alias" mail || return 1
+    tree="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-folder-tree.XXXXXX")" || return 1
+    _m365_mail_folder_tree "$alias" "$tree" || return 1
+    parent_id=""
+    parent_path=""
+    if [ -n "$parent_spec" ]; then
+        parent="$(_m365_mail_resolve_folder "$tree" "$parent_spec")" || return 1
+        parent_id="$(printf '%s' "$parent" | jq -r '.id')"
+        parent_path="$(printf '%s' "$parent" | jq -r '.path')"
+        printf '%s' "$parent" | jq -e '.moveTarget' >/dev/null || { _err "Refusing to create a folder under '$parent_path'"; return 1; }
+        new_path="${parent_path}/${name}"
+    else
+        new_path="$name"
+    fi
+    if jq -e --arg p "$new_path" 'any(.[]; (.path | ascii_downcase) == ($p | ascii_downcase))' "$tree" >/dev/null; then
+        _err "A mail folder already exists at '$new_path'"
+        return 1
+    fi
+    _say "Microsoft 365 mail folder create plan:"
+    _say "Account: $alias"
+    _say "New folder: $new_path"
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: no folder was created. Re-run with --execute to create it."; return 0; fi
+    _m365_mail_require_write "$alias" || return 1
+    if [ -n "$parent_id" ]; then
+        url="$(_m365_graph_base "$alias")/me/mailFolders/$(_m365_uri_encode "$parent_id")/childFolders"
+    else
+        url="$(_m365_graph_base "$alias")/me/mailFolders"
+    fi
+    created="$(_m365_write POST "$alias" "$url" "$(jq -cn --arg name "$name" '{displayName: $name}')")" || return 1
+    ts="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    printf '%s' "$created" | jq -c --arg ts "$ts" --arg alias "$alias" --arg path "$new_path" '{ts: $ts, service: "m365", alias: $alias, action: "create-folder", folder_id: .id, folder: $path}' | _mail_audit_append || _warn "Could not append to the mail audit log: $(_mail_audit_log_path)"
+    _say "Created folder: $new_path | id: $(printf '%s' "$created" | jq -r '.id // "(unknown)"')"
+}
+
 _m365_dispatch() {
     case "${1:-}" in
         accounts) shift; _m365_accounts_list "$@" ;;
@@ -1110,6 +1475,12 @@ _m365_dispatch() {
         mail)
             case "${2:-}" in
                 sync) shift 2; _m365_mail_sync "$@" ;;
+                folders) shift 2; _m365_mail_folders "$@" ;;
+                list) shift 2; _m365_mail_list "$@" ;;
+                move) shift 2; _m365_mail_move "$@" ;;
+                archive) shift 2; _m365_mail_archive "$@" ;;
+                unarchive) shift 2; _m365_mail_unarchive "$@" ;;
+                create-folder) shift 2; _m365_mail_create_folder "$@" ;;
                 *) _err "Unknown m365 mail command: ${2:-}"; return 1 ;;
             esac
             ;;

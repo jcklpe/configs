@@ -63,6 +63,13 @@ Usage:
   ./lifeos.sh google auth ALIAS [--docs-write] [--docs-comment] [--no-browser]
   ./lifeos.sh gmail sync ALIAS [--qa | --output FILE]
   ./lifeos.sh gmail sync --all [--qa]
+  ./lifeos.sh gmail labels ALIAS [--json]
+  ./lifeos.sh gmail list ALIAS (--label NAME_OR_ID | --query GMAIL_SEARCH) [--limit N] [--json]
+  ./lifeos.sh gmail archive ALIAS (--message ID | --thread ID | --ids-file FILE)... [--execute]   # remove from Inbox; Inbox mail only
+  ./lifeos.sh gmail unarchive ALIAS (--message ID | --thread ID | --ids-file FILE)... [--execute]
+  ./lifeos.sh gmail label ALIAS --label NAME_OR_ID (--message ID | --thread ID | --ids-file FILE)... [--skip-inbox] [--execute]   # user labels only
+  ./lifeos.sh gmail unlabel ALIAS --label NAME_OR_ID (--message ID | --thread ID | --ids-file FILE)... [--execute]
+  ./lifeos.sh gmail create-label ALIAS --name NAME [--execute]
   ./lifeos.sh drive accounts
   ./lifeos.sh drive search ALIAS QUERY [--json]
   ./lifeos.sh drive list ALIAS FOLDER_ID [--json]
@@ -80,6 +87,12 @@ Usage:
   ./lifeos.sh m365 auth ALIAS [--no-browser]
   ./lifeos.sh m365 profile ALIAS [--json]
   ./lifeos.sh m365 mail sync ALIAS [--qa | --output FILE]
+  ./lifeos.sh m365 mail folders ALIAS [--json]
+  ./lifeos.sh m365 mail list ALIAS --folder NAME_PATH_OR_ID [--limit N] [--json]
+  ./lifeos.sh m365 mail archive ALIAS (--message ID | --ids-file FILE)... [--execute]   # Inbox -> Archive
+  ./lifeos.sh m365 mail unarchive ALIAS (--message ID | --ids-file FILE)... [--execute]   # Archive -> Inbox
+  ./lifeos.sh m365 mail move ALIAS --folder NAME_PATH_OR_ID (--message ID | --ids-file FILE)... [--execute]
+  ./lifeos.sh m365 mail create-folder ALIAS --name NAME [--parent NAME_PATH_OR_ID] [--execute]
   ./lifeos.sh m365 calendar list-calendars ALIAS
   ./lifeos.sh m365 calendar find ALIAS QUERY [--calendar ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
   ./lifeos.sh m365 calendar sync ALIAS [--qa | --output FILE]
@@ -542,6 +555,13 @@ case "${1:-help}" in
     gmail)
         case "${2:-}" in
             sync) shift 2; _gmail_sync "$@" ;;
+            labels) shift 2; _gmail_labels "$@" ;;
+            list) shift 2; _gmail_list "$@" ;;
+            archive) shift 2; _gmail_archive "$@" ;;
+            unarchive) shift 2; _gmail_unarchive "$@" ;;
+            label) shift 2; _gmail_label "$@" ;;
+            unlabel) shift 2; _gmail_unlabel "$@" ;;
+            create-label) shift 2; _gmail_create_label "$@" ;;
             *) _err "Unknown Gmail command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
