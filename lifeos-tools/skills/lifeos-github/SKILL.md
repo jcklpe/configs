@@ -1,6 +1,6 @@
 ---
 name: lifeos-github
-description: "Use when syncing GitHub context into LifeOS through the lifeos CLI: refreshing issues, pull requests, Discussions, and Projects v2 board state for any configured repo into sources/github/. Read-only snapshots — this does not write to GitHub."
+description: "Use when syncing GitHub context into LifeOS through the lifeos CLI: refreshing issues, pull requests, Discussions, and Projects v2 board state for any configured repo into sources/github/. Also covers the two gated writes: create-issue and Projects v2 board move-card."
 ---
 
 # LifeOS GitHub
@@ -30,7 +30,7 @@ lifeos github create-issue --repo open-austin/org --title "..." --body "..." --a
 ## The Write Boundary
 **`sync` never writes.** Snapshots are context, not a control surface — editing one changes nothing on GitHub.
 
-**`create-issue` is the only write, and it is gated.** Dry-run by default; `--execute` is required. Everything else — labeling an existing issue, closing, commenting, editing — goes through `gh` directly, subject to whatever approval rules that repo's own `AGENTS.md` sets. Open Austin's, for instance, requires explicit approval for all of those.
+**The tool has two writes, `create-issue` and `move-card`, and both are gated.** Dry-run by default; `--execute` is required. Everything else — labeling an existing issue, closing, commenting, editing — goes through `gh` directly, subject to whatever approval rules that repo's own `AGENTS.md` sets. Open Austin's, for instance, requires explicit approval for all of those.
 
 ### Board Moves Are Supported, With A Latency Caveat
 ```sh
