@@ -312,15 +312,50 @@ _gmail_render_helper() {
     "$LIFEOS_PY" "${LIB_DIR}/google-gmail-render.py" "$@"
 }
 
+# GET a Gmail API URL, surfacing Google's error message and backing off on rate limits. Gmail enforces a per-user query-cost quota per minute, and a full-format sync of a busy inbox can exceed it.
+_gmail_get() {
+    local alias="$1" url="$2" token response http_code reason message attempt=0 delay=2
+    shift 2
+    response="$(mktemp "${TMPDIR:-/tmp}/lifeos-gmail-get.XXXXXX")" || return 1
+    while :; do
+        token="$(_google_access_token "$alias")" || { rm -f "$response"; return 1; }
+        http_code="$(curl -sS -o "$response" -w '%{http_code}' --get "$url" -H "Authorization: Bearer ${token}" "$@")" || { rm -f "$response"; _err "Gmail request failed before receiving a response"; return 1; }
+        case "$http_code" in
+            2??) cat "$response"; rm -f "$response"; return 0 ;;
+        esac
+        reason="$(jq -r '.error.errors[0].reason // .error.status // empty' "$response" 2>/dev/null)"
+        message="$(jq -r '.error.message // empty' "$response" 2>/dev/null)"
+        case "$http_code:$reason" in
+            429:*|403:rateLimitExceeded|403:userRateLimitExceeded)
+                attempt=$((attempt + 1))
+                if [ "$attempt" -le "${LIFEOS_GMAIL_MAX_RETRIES:-5}" ]; then
+                    _warn "Gmail rate limit for '$alias' (HTTP $http_code); retrying in ${delay}s (attempt $attempt)"
+                    sleep "$delay"
+                    delay=$((delay * 2))
+                    continue
+                fi
+                ;;
+        esac
+        rm -f "$response"
+        _err "Gmail returned HTTP ${http_code} for '$alias'${reason:+ ($reason)}: ${message:-request failed}"
+        case "$reason" in
+            rateLimitExceeded|userRateLimitExceeded) _say "NEXT: wait a minute and retry, or narrow the sync with --query or --max-results" >&2 ;;
+            insufficientPermissions|ACCESS_TOKEN_SCOPE_INSUFFICIENT) _say "NEXT: run 'lifeos google auth $alias' to refresh the granted scopes" >&2 ;;
+        esac
+        return 1
+    done
+}
+
 _gmail_sync_alias() {
     local alias="$1"
     local out="$2"
+    local query_override="${3:-}" max_override="${4:-}"
     local query max_results body_limit email_address refreshed
     local list_file msg_dir messages_file message_id message_file count
 
     _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
-    query="$(_gmail_query "$alias")"
-    max_results="$(_gmail_max_results "$alias")"
+    query="${query_override:-$(_gmail_query "$alias")}"
+    max_results="${max_override:-$(_gmail_max_results "$alias")}"
     body_limit="$(_gmail_body_limit "$alias")"
     email_address="$(_google_account_email "$alias")"
     refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
@@ -331,14 +366,14 @@ _gmail_sync_alias() {
     messages_file="$(mktemp "${TMPDIR:-/tmp}/lifeos-gmail-render.XXXXXX")" || return 1
 
     _say "Syncing Gmail: ${alias}" >&2
-    _google_get_url "$alias" "https://gmail.googleapis.com/gmail/v1/users/me/messages" \
+    _gmail_get "$alias" "https://gmail.googleapis.com/gmail/v1/users/me/messages" \
         --data-urlencode "q=${query}" \
         --data-urlencode "maxResults=${max_results}" > "$list_file" || return 1
 
     count=0
     for message_id in $(jq -r '.messages[]?.id' "$list_file"); do
-        message_file="${msg_dir}/${count}.json"
-        _google_get_url "$alias" "https://gmail.googleapis.com/gmail/v1/users/me/messages/${message_id}" \
+        message_file="${msg_dir}/$(printf '%05d' "$count").json"
+        _gmail_get "$alias" "https://gmail.googleapis.com/gmail/v1/users/me/messages/${message_id}" \
             --data-urlencode "format=full" > "$message_file" || return 1
         count=$((count + 1))
     done
@@ -368,7 +403,7 @@ _gmail_write_index() {
 }
 
 _gmail_sync() {
-    local all=0 qa=0 custom_out="" alias aliases="" out dir refreshed
+    local all=0 qa=0 custom_out="" alias aliases="" out dir refreshed query_override="" max_override="" failed="" synced=""
 
     case "${1:-}" in
         --all) all=1; shift ;;
@@ -384,12 +419,27 @@ _gmail_sync() {
                 custom_out="$2"
                 shift 2
                 ;;
+            --query)
+                [ -n "${2:-}" ] || { _err "--query requires a Gmail search"; return 1; }
+                query_override="$2"
+                shift 2
+                ;;
+            --max-results)
+                case "${2:-}" in ''|*[!0-9]*) _err "--max-results requires a positive integer"; return 1 ;; esac
+                max_override="$2"
+                shift 2
+                ;;
             *) _err "Unknown gmail sync option: $1"; return 1 ;;
         esac
     done
 
     if [ "$all" -eq 1 ]; then
         [ -z "$custom_out" ] || { _err "gmail sync --all does not support --output"; return 1; }
+        # The vault snapshots record the configured query; overrides are for one-off runs into --output or --qa files.
+        if [ "$qa" -ne 1 ] && { [ -n "$query_override" ] || [ -n "$max_override" ]; }; then
+            _err "gmail sync --all only accepts --query or --max-results together with --qa"
+            return 1
+        fi
         aliases="$(_google_enabled_aliases gmail)" || return 1
         [ -n "$aliases" ] || { _err "No Gmail-enabled Google aliases configured"; return 1; }
         if [ "$qa" -eq 1 ]; then
@@ -400,12 +450,21 @@ _gmail_sync() {
             dir="$(_gmail_sources_dir)"
         fi
         [ -d "$dir" ] || mkdir -p "$dir"
+        # One failing account must not hide the others: sync each, then report every failure.
         for alias in $aliases; do
-            _gmail_sync_alias "$alias" "${dir}/${alias}.md" || return 1
+            if _gmail_sync_alias "$alias" "${dir}/${alias}.md" "$query_override" "$max_override"; then
+                synced="$synced $alias"
+            else
+                failed="$failed $alias"
+            fi
         done
         refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
         _gmail_write_index "$dir" "$refreshed" $aliases
         _say "Updated ${dir}/index.md"
+        if [ -n "$failed" ]; then
+            _err "Gmail sync failed for:${failed} (their snapshots were left unchanged)${synced:+; synced:${synced}}"
+            return 1
+        fi
         return 0
     fi
 
@@ -414,11 +473,15 @@ _gmail_sync() {
     elif [ "$qa" -eq 1 ]; then
         out="$(_gmail_output_for_alias "$alias" 1)"
     else
+        if [ -n "$query_override" ] || [ -n "$max_override" ]; then
+            _err "--query and --max-results are for one-off runs; combine them with --output FILE or --qa so the vault snapshot keeps its configured query"
+            return 1
+        fi
         _vault_ready || return 1
         _ensure_sources_dir || return 1
         out="$(_gmail_output_for_alias "$alias" 0)"
     fi
-    _gmail_sync_alias "$alias" "$out"
+    _gmail_sync_alias "$alias" "$out" "$query_override" "$max_override"
 }
 
 ##- Gmail labels and archiving. Reads (labels, list) use the read-only scope; executed changes also need gmail.write_enabled, which adds gmail.modify at the next 'lifeos google auth ALIAS'.

@@ -17,7 +17,18 @@ lifeos gmail sync --all
 
 Writes bounded read-only snapshots into `$LIFEOS_VAULT_PATH/sources/gmail/`, or, with `--qa`, into `~/configs/lifeos-tools/qa/gmail-qa/` (gitignored) for local inspection.
 
-Sync is inbox-only and bounded: the default per-account query is `in:inbox newer_than:30d -label:Newsletters`. Archived mail, mail older than 30 days, and anything labeled `Newsletters` are excluded by design. Per-account queries live in the gitignored `google-accounts.json`. Each snapshot entry prints the `Thread ID` and `Message ID` that the label commands take.
+Sync is inbox-only and bounded: the default per-account query is `in:inbox newer_than:30d -label:Newsletters`. Archived mail, mail older than 30 days, and anything labeled `Newsletters` are excluded by design. Per-account queries live in the gitignored `google-accounts.json`. Each snapshot entry prints the `Thread ID` and `Message ID` that the label commands take, a `Link` that opens the thread in Gmail for that account, and, when the sender provides one, an `Unsubscribe` line with the `List-Unsubscribe` targets (marked "one-click supported" when the sender offers RFC 8058). The CLI never unsubscribes; a person clicks the link. HTML-only messages are rendered as text, with stylesheets and scripts dropped.
+
+For a one-off wider view (a triage pass, for example), override the query or count and write somewhere other than the vault snapshot:
+
+```sh
+lifeos gmail sync ALIAS --query "in:inbox" --max-results 500 --output /tmp/ALIAS-inbox.md
+lifeos gmail sync --all --qa --query "in:inbox"
+```
+
+The overrides are refused without `--output` or `--qa`, so the vault snapshot always reflects the configured query.
+
+Gmail enforces a per-user, per-minute query-cost quota, and a full sync of a busy inbox can hit it. The sync backs off and retries on rate limits, prints Google's own error message when it gives up, and `--all` continues past a failing account, then reports which accounts failed (their snapshots are left unchanged).
 
 Archiving or labeling with `--skip-inbox` removes mail from the next snapshot. Vault skills that rely on the snapshot showing everything still in the Inbox should say so in their `assumes:`.
 

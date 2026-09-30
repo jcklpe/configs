@@ -89,6 +89,7 @@ lifeos google auth personal
 lifeos google auth personal --docs-write
 lifeos gmail sync personal --qa
 lifeos gmail sync --all
+lifeos gmail sync personal --query "in:inbox" --max-results 500 --output /tmp/personal-inbox.md
 lifeos gmail labels personal
 lifeos gmail list personal --label Receipts
 lifeos gmail archive personal --thread THREAD_ID --execute
