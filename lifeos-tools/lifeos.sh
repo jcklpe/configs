@@ -61,8 +61,8 @@ Usage:
   ./lifeos.sh people add-alias NAME EMAIL
   ./lifeos.sh google accounts
   ./lifeos.sh google auth ALIAS [--docs-write] [--docs-comment] [--no-browser]
-  ./lifeos.sh gmail sync ALIAS [--qa | --output FILE]
-  ./lifeos.sh gmail sync --all [--qa]
+  ./lifeos.sh gmail sync ALIAS [--qa | --output FILE] [--query GMAIL_SEARCH] [--max-results N]   # overrides need --qa or --output
+  ./lifeos.sh gmail sync --all [--qa [--query GMAIL_SEARCH] [--max-results N]]   # continues past a failing account, then reports it
   ./lifeos.sh gmail labels ALIAS [--json]
   ./lifeos.sh gmail list ALIAS (--label NAME_OR_ID | --query GMAIL_SEARCH) [--limit N] [--json]
   ./lifeos.sh gmail archive ALIAS (--message ID | --thread ID | --ids-file FILE)... [--execute]   # remove from Inbox; Inbox mail only

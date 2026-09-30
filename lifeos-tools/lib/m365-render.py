@@ -11,11 +11,14 @@ from html.parser import HTMLParser
 
 class HtmlCleaner(HTMLParser):
     block_tags = {"br", "div", "li", "p", "tr", "table", "ul", "ol", "blockquote", "h1", "h2", "h3", "h4"}
+    # Content inside these tags is never message text.
+    skip_tags = {"style", "script", "head", "title"}
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.parts = []
         self.links = []
+        self.skip_depth = 0
 
     def newline(self):
         if self.parts and not self.parts[-1].endswith("\n"):
@@ -24,6 +27,9 @@ class HtmlCleaner(HTMLParser):
     def handle_starttag(self, tag, attrs):
         tag = tag.lower()
         values = dict(attrs)
+        if tag in self.skip_tags:
+            self.skip_depth += 1
+            return
         if tag in self.block_tags:
             self.newline()
         if tag == "li":
@@ -33,6 +39,9 @@ class HtmlCleaner(HTMLParser):
 
     def handle_endtag(self, tag):
         tag = tag.lower()
+        if tag in self.skip_tags:
+            self.skip_depth = max(0, self.skip_depth - 1)
+            return
         if tag == "a" and self.links:
             href, start = self.links.pop()
             text = "".join(self.parts[start:]).strip()
@@ -42,6 +51,8 @@ class HtmlCleaner(HTMLParser):
             self.newline()
 
     def handle_data(self, data):
+        if self.skip_depth:
+            return
         self.parts.append(data)
 
     def text(self):
@@ -95,6 +106,15 @@ def address(item):
     return email or name
 
 
+def unsubscribe_line(message):
+    headers = {(item.get("name") or "").lower(): item.get("value") or "" for item in message.get("internetMessageHeaders") or []}
+    value = " ".join(headers.get("list-unsubscribe", "").split())
+    if not value:
+        return ""
+    one_click = "one-click" in headers.get("list-unsubscribe-post", "").lower()
+    return value + (" (one-click supported)" if one_click else "")
+
+
 def render_mail(args, data):
     lines = [
         f"# Microsoft 365 Mail - {args.alias}",
@@ -136,6 +156,9 @@ def render_mail(args, data):
         )
         if message.get("webLink"):
             lines.append(f"- Outlook: {message['webLink']}")
+        unsubscribe = unsubscribe_line(message)
+        if unsubscribe:
+            lines.append(f"- Unsubscribe: {unsubscribe}")
         if content:
             lines.extend(["- Body:", "", quote(content), ""])
         else:

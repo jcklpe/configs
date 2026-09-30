@@ -13,11 +13,14 @@ from html.parser import HTMLParser
 
 class HtmlCleaner(HTMLParser):
     block_tags = {"br", "div", "li", "p", "tr", "table", "ul", "ol", "blockquote", "h1", "h2", "h3", "h4"}
+    # Content inside these tags is never message text; marketing mail puts whole stylesheets in <style>.
+    skip_tags = {"style", "script", "head", "title"}
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.parts = []
         self.links = []
+        self.skip_depth = 0
 
     def newline(self):
         if self.parts and not self.parts[-1].endswith("\n"):
@@ -26,6 +29,9 @@ class HtmlCleaner(HTMLParser):
     def handle_starttag(self, tag, attrs):
         tag = tag.lower()
         attrs = dict(attrs)
+        if tag in self.skip_tags:
+            self.skip_depth += 1
+            return
         if tag in self.block_tags:
             self.newline()
         if tag == "li":
@@ -35,6 +41,9 @@ class HtmlCleaner(HTMLParser):
 
     def handle_endtag(self, tag):
         tag = tag.lower()
+        if tag in self.skip_tags:
+            self.skip_depth = max(0, self.skip_depth - 1)
+            return
         if tag == "a" and self.links:
             href, start = self.links.pop()
             text = "".join(self.parts[start:]).strip()
@@ -44,6 +53,8 @@ class HtmlCleaner(HTMLParser):
             self.newline()
 
     def handle_data(self, data):
+        if self.skip_depth:
+            return
         self.parts.append(data)
 
     def text(self):
@@ -95,14 +106,40 @@ def message_body(message):
         elif mime_type == "text/html":
             html_parts.append(decode_data(data))
 
-    if plain:
+    # Some senders put an HTML document in the text/plain part; treat that as HTML.
+    if plain and not looks_like_html("\n".join(plain)):
         return "\n".join(plain)
-    if html_parts:
-        cleaner = HtmlCleaner()
-        cleaner.feed("\n".join(html_parts))
-        cleaner.close()
-        return cleaner.text()
+    if html_parts or plain:
+        return html_to_text("\n".join(html_parts or plain))
     return message.get("snippet") or ""
+
+
+def looks_like_html(text):
+    head = (text or "").lstrip()[:500].lower()
+    return head.startswith("<!doctype html") or head.startswith("<html") or "<body" in head or "<head" in head
+
+
+def html_to_text(markup):
+    cleaner = HtmlCleaner()
+    cleaner.feed(markup)
+    cleaner.close()
+    return cleaner.text()
+
+
+def web_link(email_address, thread_id):
+    if not thread_id:
+        return ""
+    if email_address:
+        return f"https://mail.google.com/mail/u/?authuser={email_address}#all/{thread_id}"
+    return f"https://mail.google.com/mail/u/0/#all/{thread_id}"
+
+
+def unsubscribe_line(message):
+    value = " ".join(header(message, "List-Unsubscribe").split())
+    if not value:
+        return ""
+    one_click = "one-click" in header(message, "List-Unsubscribe-Post").lower()
+    return value + (" (one-click supported)" if one_click else "")
 
 
 def clean_text(text):
@@ -192,9 +229,13 @@ def render(alias, email_address, query, max_results, body_limit, refreshed, data
                 f"- Labels: {labels}",
                 f"- Thread ID: `{message.get('threadId') or ''}`",
                 f"- Message ID: `{message.get('id') or ''}`",
+                f"- Link: {web_link(email_address, message.get('threadId'))}",
                 f"- Attachments: {'yes' if attachment_present(message) else 'no'}",
             ]
         )
+        unsubscribe = unsubscribe_line(message)
+        if unsubscribe:
+            lines.append(f"- Unsubscribe: {unsubscribe}")
         if body:
             lines.extend(["- Body:", "", quote(body), ""])
         else:

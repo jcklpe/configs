@@ -449,7 +449,7 @@ _m365_mail_sync() {
         --data-urlencode "\$top=${max_results}" \
         --data-urlencode "\$filter=receivedDateTime ge ${after}" \
         --data-urlencode "\$orderby=receivedDateTime desc" \
-        --data-urlencode "\$select=id,conversationId,subject,from,toRecipients,ccRecipients,receivedDateTime,body,bodyPreview,hasAttachments,isRead,importance,webLink" \
+        --data-urlencode "\$select=id,conversationId,subject,from,toRecipients,ccRecipients,receivedDateTime,body,bodyPreview,hasAttachments,isRead,importance,webLink,internetMessageHeaders" \
         -H 'Prefer: outlook.body-content-type="text"' || return 1
     profile_email="$(_m365_profile_email "$alias")" || return 1
     refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
