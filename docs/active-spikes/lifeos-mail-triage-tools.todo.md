@@ -3,7 +3,7 @@ Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 
 ## Current State
 - Implemented 2026-09-30: sync reliability, web links, unsubscribe headers, HTML-to-text, and the query override. Live-verified on one Gmail account and one Microsoft 365 account: every message has a link, 8 of each inbox carried unsubscribe headers, and no stylesheet text leaked into bodies. Full offline suite green.
-- Waiting on decisions: Microsoft 365 junk training (`reportMessage`) and Outlook categories.
+- Decisions settled the same day: no junk report to Microsoft, and Outlook categories added.
 
 ## To Do
 - [x] Gmail sync reliability: `_gmail_get` surfaces Google's error reason and message, backs off (2 s, doubling) and retries on 429 and 403 `rateLimitExceeded`/`userRateLimitExceeded` up to `LIFEOS_GMAIL_MAX_RETRIES` (default 5), and names a remedy. `--all` continues past a failing account, reports every failure, exits non-zero, and leaves failed snapshots unchanged.
@@ -13,13 +13,14 @@ Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 - [x] HTML-to-text: both renderers drop `<style>`, `<script>`, `<head>`, and `<title>` content, and Gmail treats an HTML document inside a `text/plain` part as HTML.
 - [x] `--query` and `--max-results` overrides on `gmail sync`, refused unless combined with `--output` or `--qa`, so the vault snapshot keeps its configured query.
 - [x] Offline tests: `tests/test-mail-sync-triage.sh`, mutation-checked against style skipping, HTML-in-plain detection, rate-limit retry, and `--all` continuation.
-- [x] Microsoft 365 junk: checked. Graph's `markAsNotJunk` was beta-only and was retired on 2025-12-30. The replacement, `reportMessage`, reports to Microsoft (outward-facing). `not-junk` stays a folder move; the limit is documented in the `lifeos-m365` skill.
+- [x] Microsoft 365 junk: checked. Graph's `markAsNotJunk` was beta-only and was retired on 2025-12-30. The replacement, `reportMessage`, reports to Microsoft (outward-facing). `not-junk` keeps moving rescued mail into the Inbox; the no-filter-training limit is documented in the `lifeos-m365` skill.
 - [x] Docs: `lifeos-gmail` and `lifeos-m365` skills, README, and `lifeos help`.
-- [ ] Decision needed: should `not-junk` also call `reportMessage` (a report to Microsoft), behind an opt-in? It would need its own decision record.
-- [ ] Deferred until asked: Outlook categories.
+- [x] `not-junk` decision (Aslan, 2026-09-30): rescued mail goes into the Inbox and is triaged like any other item, which is current behavior. No report to Microsoft.
+- [x] Outlook categories (Aslan asked 2026-09-30): `m365 mail categorize` / `uncategorize`, categories shown in `mail list` and the snapshot, offline tests, a live add-then-remove round trip on one UT message, and a 0007 addendum.
+- [x] UT full-inbox view: no change (Aslan, 2026-09-30: not broken, don't fix). Older UT mail is listed with `mail list`, metadata only.
 
 ## Ready For Human QA
-- Read a synced snapshot for one Gmail account and the Microsoft 365 account: do the `Link` lines open the right thread, and do the `Unsubscribe` lines look right?
+- None. Aslan confirmed on 2026-09-30 that the `Link` lines open the right threads.
 
 ## Done
 - [x] Spike opened (2026-09-30).

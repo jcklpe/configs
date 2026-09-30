@@ -449,7 +449,7 @@ _m365_mail_sync() {
         --data-urlencode "\$top=${max_results}" \
         --data-urlencode "\$filter=receivedDateTime ge ${after}" \
         --data-urlencode "\$orderby=receivedDateTime desc" \
-        --data-urlencode "\$select=id,conversationId,subject,from,toRecipients,ccRecipients,receivedDateTime,body,bodyPreview,hasAttachments,isRead,importance,webLink,internetMessageHeaders" \
+        --data-urlencode "\$select=id,conversationId,subject,from,toRecipients,ccRecipients,receivedDateTime,body,bodyPreview,hasAttachments,isRead,importance,webLink,internetMessageHeaders,categories" \
         -H 'Prefer: outlook.body-content-type="text"' || return 1
     profile_email="$(_m365_profile_email "$alias")" || return 1
     refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
@@ -1263,7 +1263,7 @@ _m365_mail_list() {
     _m365_get_paginated "$alias" "$limit" "$data" "$(_m365_graph_base "$alias")/me/mailFolders/$(_m365_uri_encode "$folder_id")/messages" \
         --data-urlencode "\$top=${limit}" \
         --data-urlencode "\$orderby=receivedDateTime desc" \
-        --data-urlencode "\$select=id,conversationId,subject,from,receivedDateTime,isRead,hasAttachments" || return 1
+        --data-urlencode "\$select=id,conversationId,subject,from,receivedDateTime,isRead,hasAttachments,categories" || return 1
     if [ "$json_mode" -eq 1 ]; then
         jq --argjson folder "$folder" '{folder: $folder, value: (.value // [])}' "$data"
     else
@@ -1274,6 +1274,7 @@ _m365_mail_list() {
           " <" + (.from.emailAddress.address // "") + ">" +
           " | " + (.subject // "(no subject)") +
           (if .isRead then "" else " | unread" end) +
+          (if ((.categories // []) | length) > 0 then " | categories: " + (.categories | join(", ")) else "" end) +
           "\n  message_id: " + (.id // "")
         ' "$data"
     fi
@@ -1463,6 +1464,99 @@ EOF2
     printf '%s' "$list" | jq -r '(.value // [])[] | select((."@odata.type" // "") != "#microsoft.graph.fileAttachment" or .isInline) | "Skipped (inline or not a file): " + .name'
 }
 
+##- Outlook categories: the Microsoft 365 counterpart of Gmail's user labels, used for subject-matter tags during triage. A category name is free text on the message; it does not need to exist in the mailbox's master category list (it then shows without a color). Same gates as moves: dry run by default, mail.write_enabled to execute, exact IDs, per-call cap, batched, read back, and audit-logged.
+_m365_mail_category_run() {
+    local alias="$1" action="$2" category="$3" execute="$4"
+    shift 4
+    local ids=() id cap dir count failures ts
+    for id in "$@"; do
+        case " ${ids[*]:-} " in *" $id "*) continue ;; esac
+        ids+=("$id")
+    done
+    [ -n "$category" ] || { _err "m365 mail $action requires --category NAME"; return 1; }
+    case "$category" in *,*) _err "Category names may not contain commas"; return 1 ;; esac
+    [ "${#ids[@]}" -gt 0 ] || { _err "m365 mail $action requires at least one --message ID or --ids-file"; return 1; }
+    cap="$(_m365_mail_move_cap "$alias")"
+    [ "${#ids[@]}" -le "$cap" ] || { _err "m365 mail $action accepts at most $cap messages per call (got ${#ids[@]}); split the list"; return 1; }
+    _m365_require_enabled "$alias" mail || return 1
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-category.XXXXXX")" || return 1
+    printf '%s\n' "${ids[@]}" | jq -R . | jq -s '[.[] | {method: "GET", url: ("/me/messages/" + (. | @uri) + "?$select=id,subject,from,receivedDateTime,categories")}]' > "${dir}/get-requests.json"
+    _m365_batch "$alias" "${dir}/get-requests.json" "${dir}/get-responses.json" || return 1
+    printf '%s\n' "${ids[@]}" | jq -R . | jq -s --slurpfile r "${dir}/get-responses.json" '[range(0; length) as $i | {requested: .[$i], status: ($r[0][$i].status // 0), message: $r[0][$i].body}]' > "${dir}/targets.json" || return 1
+    if jq -e 'any(.[]; .status != 200)' "${dir}/targets.json" >/dev/null; then
+        _err "These message IDs were not found; nothing was changed:"
+        jq -r '.[] | select(.status != 200) | "  - " + .requested + " (" + (.message.error.code // ("HTTP " + (.status | tostring))) + ")"' "${dir}/targets.json" >&2
+        return 1
+    fi
+    # Compute each message's new category list; categories are compared case-insensitively, as Outlook does.
+    jq --arg c "$category" --arg action "$action" '[.[] |
+        (.message.categories // []) as $now |
+        (($now | map(ascii_downcase)) | index($c | ascii_downcase)) as $has |
+        . + {current: $now,
+             wanted: (if $action == "categorize" then (if $has then $now else $now + [$c] end) else [$now[] | select(ascii_downcase != ($c | ascii_downcase))] end),
+             noop: (if $action == "categorize" then ($has != null) else ($has == null) end)}]' "${dir}/targets.json" > "${dir}/plan.json" || return 1
+    if jq -e 'any(.[]; .noop)' "${dir}/plan.json" >/dev/null; then
+        _err "Some messages already $( [ "$action" = categorize ] && echo have || echo lack ) category '$category'; nothing was changed. Remove them from the list:"
+        jq -r '.[] | select(.noop) | "  - " + (.message.subject // "(no subject)") + " | " + .requested' "${dir}/plan.json" >&2
+        return 1
+    fi
+    count="${#ids[@]}"
+    _say "Microsoft 365 mail $action plan:"
+    _say "Account: $alias"
+    _say "Category: $category ($( [ "$action" = categorize ] && echo add || echo remove ))"
+    _say "Messages: $count"
+    jq -r '.[] | "- " + (.message.receivedDateTime // "") + " | " + (.message.from.emailAddress.address // "") + " | " + (.message.subject // "(no subject)") + " | categories now: " + ((.current | join(", ")) // "") ' "${dir}/plan.json"
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: nothing was changed. Re-run with --execute to apply."; return 0; fi
+    _m365_mail_require_write "$alias" || return 1
+    jq '[.[] | {method: "PATCH", url: ("/me/messages/" + (.requested | @uri)), body: {categories: .wanted}}]' "${dir}/plan.json" > "${dir}/patch-requests.json"
+    _m365_batch "$alias" "${dir}/patch-requests.json" "${dir}/patch-responses.json" || return 1
+    jq '[.[] | {method: "GET", url: ("/me/messages/" + (.requested | @uri) + "?$select=id,categories")}]' "${dir}/plan.json" > "${dir}/readback-requests.json"
+    _m365_batch "$alias" "${dir}/readback-requests.json" "${dir}/readback-responses.json" || return 1
+    ts="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    jq -n --slurpfile p "${dir}/plan.json" --slurpfile w "${dir}/patch-responses.json" --slurpfile rb "${dir}/readback-responses.json" '
+      [range(0; ($p[0] | length)) as $i | $p[0][$i] as $t |
+        ((($w[0][$i].status // 0) / 100 | floor) == 2) as $patched |
+        ($rb[0][$i].body.categories // null) as $after |
+        {requested: $t.requested, subject: ($t.message.subject // ""), from: ($t.message.from.emailAddress.address // ""),
+         verified: ($patched and $after != null and (($after | map(ascii_downcase) | sort) == ($t.wanted | map(ascii_downcase) | sort))),
+         error: (if $patched then null else ($w[0][$i].body.error.message // ("HTTP " + (($w[0][$i].status // 0) | tostring))) end)}]
+    ' > "${dir}/results.json" || return 1
+    jq -c --arg ts "$ts" --arg alias "$alias" --arg action "$action" --arg category "$category" '.[] | {ts: $ts, service: "m365", alias: $alias, action: $action, category: $category, message_id: .requested, sender: .from, subject: .subject, verified: .verified, error: .error}' "${dir}/results.json" | _mail_audit_append || _warn "Could not append to the mail audit log: $(_mail_audit_log_path)"
+    jq -r '.[] | (if .verified then "- done: " else "- NOT CONFIRMED: " end) + .subject + (if .error then " | " + .error else "" end)' "${dir}/results.json"
+    failures="$(jq '[.[] | select(.verified | not)] | length' "${dir}/results.json")"
+    if [ "$failures" -gt 0 ]; then
+        _err "$failures of $count messages were not confirmed by readback"
+        return 1
+    fi
+    _say "Applied to $count messages (confirmed by readback). Message IDs are unchanged."
+}
+
+_m365_mail_category_cmd() {
+    local action="$1" alias="${2:-}" category="" line
+    local ids=()
+    [ -n "$alias" ] || { _err "m365 mail $action requires ALIAS"; return 1; }
+    shift 2 || true
+    local execute=0
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --category) [ -n "${2:-}" ] || { _err "--category requires NAME"; return 1; }; category="$2"; shift 2 ;;
+            --message) [ -n "${2:-}" ] || { _err "--message requires ID"; return 1; }; ids+=("$2"); shift 2 ;;
+            --ids-file)
+                [ -n "${2:-}" ] || { _err "--ids-file requires FILE"; return 1; }
+                _read_ids_file "$2" > /dev/null || return 1
+                while IFS= read -r line; do [ -n "$line" ] && ids+=("$line"); done <<EOF
+$(_read_ids_file "$2")
+EOF
+                shift 2
+                ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown m365 mail $action option: $1"; return 1 ;;
+        esac
+    done
+    _m365_mail_category_run "$alias" "$action" "$category" "$execute" ${ids[@]+"${ids[@]}"}
+}
+
 # Junk review: list Junk Email and rescue false positives to the Inbox. Junk is never part of mail sync, and Junk stays refused as a move destination.
 _m365_mail_junk() {
     local alias="${1:-}"
@@ -1544,6 +1638,8 @@ _m365_dispatch() {
                 create-folder) shift 2; _m365_mail_create_folder "$@" ;;
                 junk) shift 2; _m365_mail_junk "$@" ;;
                 attachments) shift 2; _m365_mail_attachments "$@" ;;
+                categorize) shift 2; _m365_mail_category_cmd categorize "$@" ;;
+                uncategorize) shift 2; _m365_mail_category_cmd uncategorize "$@" ;;
                 not-junk) shift 2; _m365_mail_not_junk "$@" ;;
                 *) _err "Unknown m365 mail command: ${2:-}"; return 1 ;;
             esac
