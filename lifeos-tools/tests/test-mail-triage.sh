@@ -127,6 +127,42 @@ expect_fail _m365_mail_create_folder ut --name Stash --parent "Deleted Items"
 expect_fail _m365_mail_not_junk ut --message msg-inbox
 grep -F "currently in 'Junk Email'" "${WORK}/err.txt" >/dev/null || fail "not-junk requires a Junk source"
 
+##- Microsoft 365 categories
+printf '{"msg-a": ["Existing"], "msg-b": []}\n' > "${WORK}/cats.json"
+_m365_write() {
+    printf '%s\n' "$4" >> "${WORK}/cat-bodies.log"
+    local body="$4"
+    printf '%s' "$body" | jq -c --slurpfile st "${WORK}/cats.json" '{responses: [.requests[] | {id: .id} + (
+      (.url | capture("^/me/messages/(?<m>[^?]+)").m) as $m |
+      if ($st[0] | has($m)) | not then {status: 404, body: {error: {code: "ErrorItemNotFound"}}}
+      elif .method == "GET" then {status: 200, body: {id: $m, subject: ("Subject " + $m), from: {emailAddress: {address: "x@example.com"}}, receivedDateTime: "2026-09-30T00:00:00Z", categories: $st[0][$m]}}
+      else {status: 200, body: {id: $m}} end)]}'
+    # Apply PATCHes to the state file so readback sees them.
+    printf '%s' "$body" | jq -c '[.requests[] | select(.method == "PATCH") | {m: (.url | capture("^/me/messages/(?<m>[^?]+)").m), c: .body.categories}]' > "${WORK}/patches.json"
+    jq --slurpfile p "${WORK}/patches.json" 'reduce $p[0][] as $x (.; .[$x.m] = $x.c)' "${WORK}/cats.json" > "${WORK}/cats.next" && mv "${WORK}/cats.next" "${WORK}/cats.json"
+}
+M365_ACCOUNTS_PATH="${WORK}/m365-read.json"
+: > "${WORK}/cat-bodies.log"
+_m365_mail_category_cmd categorize ut --category hai --message msg-a --message msg-b > "${WORK}/cat-plan.txt"
+grep -F "DRY RUN" "${WORK}/cat-plan.txt" >/dev/null || fail "categorize defaults to dry run"
+grep -F '"PATCH"' "${WORK}/cat-bodies.log" >/dev/null && fail "dry run must not PATCH"
+expect_fail _m365_mail_category_cmd categorize ut --category hai --message msg-a --execute
+grep -F "not enabled for alias 'ut'" "${WORK}/err.txt" >/dev/null || fail "categorize execute requires mail.write_enabled"
+expect_fail _m365_mail_category_cmd categorize ut --category existing --message msg-a
+grep -F "already have" "${WORK}/err.txt" >/dev/null || fail "adding a category the message has (case-insensitive) is refused"
+expect_fail _m365_mail_category_cmd categorize ut --category hai --message msg-missing
+grep -F "were not found" "${WORK}/err.txt" >/dev/null || fail "unknown IDs fail"
+expect_fail _m365_mail_category_cmd categorize ut --category "a,b" --message msg-a
+M365_ACCOUNTS_PATH="${WORK}/m365-write.json"
+_m365_mail_category_cmd categorize ut --category hai --message msg-a --message msg-b --execute > "${WORK}/cat-exec.txt"
+grep -F "confirmed by readback" "${WORK}/cat-exec.txt" >/dev/null || fail "categorize confirmed by readback"
+jq -e '.["msg-a"] == ["Existing", "hai"] and .["msg-b"] == ["hai"]' "${WORK}/cats.json" >/dev/null || fail "categorize keeps existing categories and adds the new one"
+_m365_mail_category_cmd uncategorize ut --category HAI --message msg-a --execute > /dev/null
+jq -e '.["msg-a"] == ["Existing"]' "${WORK}/cats.json" >/dev/null || fail "uncategorize removes only that category, case-insensitively"
+expect_fail _m365_mail_category_cmd uncategorize ut --category hai --message msg-a
+grep -F "already lack" "${WORK}/err.txt" >/dev/null || fail "removing an absent category is refused"
+jq -e -s '[.[] | select(.action == "categorize" or .action == "uncategorize")] | length == 3 and all(.verified)' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null || fail "category changes are audit-logged"
+
 ##- Gmail
 jq '(.accounts[] | select(.alias == "personal") | .gmail.write_enabled) = false' "${SECRETS_DIR}/google-accounts.example.json" > "${WORK}/google-read.json"
 jq '(.accounts[] | select(.alias == "personal") | .gmail.write_enabled) = true' "${SECRETS_DIR}/google-accounts.example.json" > "${WORK}/google-write.json"
