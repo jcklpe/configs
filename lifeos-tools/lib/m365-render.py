@@ -150,6 +150,7 @@ def render_mail(args, data):
                 f"- Importance: {message.get('importance') or 'normal'}",
                 f"- Read: {'yes' if message.get('isRead') else 'no'}",
                 f"- Attachments: {'yes' if message.get('hasAttachments') else 'no'}",
+                f"- Categories: {', '.join(message.get('categories') or [])}",
                 f"- Conversation ID: `{message.get('conversationId') or ''}`",
                 f"- Message ID: `{message.get('id') or ''}`",
             ]

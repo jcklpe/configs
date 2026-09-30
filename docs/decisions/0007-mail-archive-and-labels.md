@@ -21,6 +21,11 @@ This repo supplies the capability only. What counts as noise, and whether an age
 ### Addendum 2026-09-29: Spam And Junk Rescue
 Aslan asked the same day for a way to review spam and mark messages as not spam, off by default but checked regularly. Spam and Junk are never synced, so a misfiled real message is otherwise invisible. Added: `gmail spam` and `gmail not-spam` (remove `SPAM`, add `INBOX`; source must be in Spam, never Trash), and `m365 mail junk` and `mail not-junk` (a Junk-to-Inbox move; source must be Junk). This is the one exception to "system labels cannot be changed", and it runs only *out of* Spam. Reporting spam, and moves into Junk, remain refused, because a false positive there hides real mail. That is also why a mistaken rescue is undone in the mail UI, not the CLI. How often to review Spam and whether a rescue needs approval are vault policy.
 
+### Addendum 2026-09-30: Outlook Categories
+Aslan asked for the email-triage tag vocabulary to apply to Microsoft 365 mail too. Added `m365 mail categorize` / `uncategorize`: set or remove one Outlook category on exact messages. Categories are metadata like Gmail user labels, so they fall under this record's "labels" allowance. Same gates as moves. Creating or editing the mailbox's master category list (colors) is not included; it would need the `MailboxSettings` scope.
+
+On Junk, Aslan confirmed on 2026-09-30 that rescued mail belongs in the Inbox to be triaged like any other item, which is what `not-junk` does. Reporting to Microsoft (`reportMessage`) was not wanted.
+
 ## Rejected Alternatives
 - **Full read-write mail** (send, reply, forward, delete, mark-read): not asked for, and each is either irreversible or visible to other people.
 - **Search-based bulk commands** ("archive everything from X"): a query that matches more than intended fails silently at scale. The caller resolves a search to exact IDs first, using `mail list` or `gmail list`, and the dry-run plan shows every target.
