@@ -102,6 +102,7 @@ lifeos drive read open-austin https://docs.google.com/spreadsheets/d/abc123/edit
 lifeos drive import-doc open-austin /tmp/brief.html --title "Workshop brief" --folder FOLDER_ID --execute
 lifeos docs read ut https://docs.google.com/document/d/abc123/edit
 lifeos docs replace-once ut https://docs.google.com/document/d/abc123/edit --old-file /tmp/old.txt --new-file /tmp/new.txt --execute
+lifeos docs replace-once ut https://docs.google.com/document/d/abc123/edit --old-file /tmp/anchor.txt --new-file /tmp/section.md --markdown   # insert a formatted section in place
 lifeos m365 accounts
 lifeos m365 auth ut
 lifeos m365 profile ut
@@ -217,7 +218,7 @@ Gmail archive, unarchive, label, and unlabel change only `INBOX` and user labels
 
 Drive read commands are on-demand. They search/list/inspect files and can read Google Docs as text or Google Sheets as a bounded table preview. They do not clone Drive into LifeOS.
 
-`lifeos google auth ALIAS --docs-write` adds the Google Docs write scope to that account's normal LifeOS token. The OAuth helper requests incremental authorization, so an existing Gmail/Drive token keeps its previously granted scopes. This grants the token capability to edit existing native Google Docs; it does not itself edit a document or waive the approval rules of whichever bounded write tool is used. The command that consumes the scope is `lifeos docs replace-once`, documented in the `lifeos-drive` skill under "Editing an existing Doc". `lifeos drive` itself has no existing-Doc edit operation and is not where to look for one.
+`lifeos google auth ALIAS --docs-write` adds the Google Docs write scope to that account's normal LifeOS token. The OAuth helper requests incremental authorization, so an existing Gmail/Drive token keeps its previously granted scopes. This grants the token capability to edit existing native Google Docs; it does not itself edit a document or waive the approval rules of whichever bounded write tool is used. The commands that consume the scope are `lifeos docs replace-once` and `lifeos docs set-body`, documented in the `lifeos-docs` skill. `lifeos drive` itself has no existing-Doc edit operation and is not where to look for one.
 
 `lifeos google auth ALIAS --docs-comment` adds the full Drive scope, which `lifeos docs comment` needs to comment on Docs that LifeOS did not create (`drive.file` cannot reach them). The full scope is broad, so grant it only on aliases that need to comment. Like `--docs-write`, it grants capability only; each comment is still dry-run first and posted with `--execute` after approval. `lifeos docs comments` lists existing comments with the normal read-only scope.
 

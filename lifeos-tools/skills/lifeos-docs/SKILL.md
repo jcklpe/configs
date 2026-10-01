@@ -1,6 +1,6 @@
 ---
 name: lifeos-docs
-description: "Use when editing an existing native Google Doc through the lifeos CLI — updating a shared doc, fixing or replacing a line, adding a hyperlink to existing text, or reading a Doc's text and revision id. Covers lifeos docs read and replace-once (one exact uniquely-matched replacement, dry-run by default, revision-guarded) and docs comments/comment (list comments, or add one comment quoting uniquely occurring text). Creating a new Doc from a local file is lifeos-drive's import-doc instead."
+description: "Use when editing an existing native Google Doc through the lifeos CLI — updating a shared doc, fixing or replacing a line, adding a hyperlink to existing text, or reading a Doc's text and revision id. Covers lifeos docs read, replace-once (one exact uniquely-matched replacement, dry-run by default, revision-guarded; --markdown inserts formatted headings, bullets, bold, and links at that spot), set-body (rewrite a whole tab from Markdown), and docs comments/comment (list comments, or add one comment quoting uniquely occurring text). Creating a new Doc from a local file is lifeos-drive's import-doc instead."
 ---
 
 # LifeOS Docs
@@ -10,9 +10,12 @@ If the current repo already has `lifeos-tools/skills/lifeos-docs/SKILL.md`, read
 This is the surface for changing a Doc that **already exists**. Creating a new Doc from a local file is `lifeos drive import-doc` — see `lifeos-drive`. Searching, listing, or reading non-Doc files is also `lifeos-drive`.
 
 ## Commands
+**This list can fall behind the CLI.** Before telling anyone what `lifeos docs` can or cannot do, run `lifeos help | grep 'docs '` and, if a capability is in question, read `lib/google-docs.py`. Never conclude a capability is missing from this skill's silence.
+
 ```sh
 lifeos docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
-lifeos docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
+lifeos docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--markdown] [--execute]
+lifeos docs set-body ALIAS DOC_URL_OR_ID (--file FILE | --new MARKDOWN) [--tab-id ID]... [--execute]
 lifeos docs comments ALIAS DOC_URL_OR_ID
 lifeos docs comment ALIAS DOC_URL_OR_ID [--quote TEXT] (--body TEXT | --body-file FILE) [--tab-id ID]... [--execute]
 ```
@@ -43,6 +46,16 @@ lifeos docs replace-once ut "$DOC_URL" --old-file /tmp/old.txt --new-file /tmp/n
 ```
 
 It also cannot write into an **empty** document — there is no anchor to match. Create content with `lifeos drive import-doc`, then edit it here.
+
+## Formatting
+The CLI writes real Doc formatting from Markdown: `#`–`######` headings, `-` bullets, nested bullets (two spaces per level, created as real Google list nesting levels), `**bold**`, `*italic*`, and `[text](url)` links. Two commands use it:
+
+- **`replace-once --markdown`** formats the replacement in place. The matched text is deleted, the Markdown is inserted at that spot, and the inserted paragraphs are reset to normal text first, so they don't inherit the matched paragraph's bullet or heading. Everything else in the Doc is untouched, including people and date chips. This is the right tool for adding a formatted section to a shared Doc: match an anchor line and put that line back as the first line of the Markdown (with `- ` if it was a bullet). `--link` cannot be combined with it; write links in the Markdown. The old text may span several paragraphs (to rewrite a whole section at once), but must not start or end with a newline; a file from `grep` or `printf` ends in one, so strip it. The tool refuses otherwise, because deleting that paragraph break would merge the insert into the neighbouring paragraph. Nested bullets only nest when they are created together with their parent, so rewrite a parent and its children in one call rather than one paragraph at a time.
+- **`set-body`** clears a whole tab and rewrites it from Markdown. It keeps the Doc's id, history, and comments, but **it destroys native chips** (people, dates, rich links) and any formatting the Markdown cannot express. Use it on Docs LifeOS generated, not on shared Docs other people or tools have enriched.
+
+Plain `replace-once` (without `--markdown`) uses Google's text replacement, which keeps the surrounding paragraph's style and cannot add headings or bullets.
+
+To see a Doc's existing heading levels and bullets before matching them, read its structure with the Docs API rather than `docs read`, which flattens styles.
 
 ## Links
 `--link "Visible text=https://…"` embeds a hyperlink on text inside the replacement. Repeatable. Each visible label must occur exactly once in the replacement text, for the same reason the match must be unique.
