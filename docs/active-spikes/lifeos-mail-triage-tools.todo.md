@@ -19,6 +19,10 @@ Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 - [x] Outlook categories (Aslan asked 2026-09-30): `m365 mail categorize` / `uncategorize`, categories shown in `mail list` and the snapshot, offline tests, a live add-then-remove round trip on one UT message, and a 0007 addendum.
 - [x] UT full-inbox view: no change (Aslan, 2026-09-30: not broken, don't fix). Older UT mail is listed with `mail list`, metadata only.
 
+## Found in use (2026-09-30)
+- [ ] `gmail list`, `gmail spam`, `gmail labels`, and the label commands still fetch with `_google_get_url` (`curl -f`). On Gmail's per-minute rate limit they print a bare `curl: (56) ... 403` with no retry. Route them through `_gmail_get` like the sync. This hit right after a wide `--query` sync on 2026-09-30.
+- [ ] One-click (RFC 8058) unsubscribe URLs from Google and Spotify return a 405 when opened in a browser. Consider marking them in the sync output so the triage workflow links to the email instead.
+
 ## Ready For Human QA
 - None. Aslan confirmed on 2026-09-30 that the `Link` lines open the right threads.
 
