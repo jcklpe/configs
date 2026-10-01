@@ -294,9 +294,18 @@ def command_replace_once(args):
     matches = count_matches(document, args.tab_id, old_text)
     if matches != 1:
         raise ValueError(f"Exact old text must occur once in the selected scope; found {matches}")
-    links = parse_link_specs(args.link, new_text)
+    if args.markdown and (old_text.endswith("\n") or old_text.startswith("\n")):
+        raise ValueError("--markdown old text must not start or end with a newline (a file from grep or printf ends in one); deleting a paragraph break would merge the inserted text into the neighbouring paragraph")
+    if args.markdown and args.link:
+        raise ValueError("--markdown takes links as [text](url) in the Markdown; do not combine it with --link")
+    links = [] if args.markdown else parse_link_specs(args.link, new_text)
     old_range = exact_text_range(document, args.tab_id, old_text)
+    blocks = parse_markdown_blocks(new_text) if args.markdown else None
+    if args.markdown and not blocks:
+        raise ValueError("New Markdown is empty")
     print_replacement_plan(document, document_id, args.tab_id, old_text, new_text, links)
+    if args.markdown:
+        print(f"Formatting: Markdown ({len(blocks)} block(s): headings, bullets, nested bullets, bold, italic, links); the rest of the Doc is untouched.")
     if not args.execute:
         print("DRY RUN: no Google Doc was changed. Re-run with --execute after approval.")
         return 0
@@ -311,6 +320,21 @@ def command_replace_once(args):
     live_old_range = exact_text_range(live_document, args.tab_id, old_text)
     if live_old_range != old_range:
         raise ValueError("Document changed before execution; exact text moved to a different range")
+    if args.markdown:
+        requests, _ = build_markdown_replace_requests(live_old_range["tab_id"], live_old_range, blocks)
+        payload = {"requests": requests, "writeControl": {"requiredRevisionId": revision_id}}
+        url = f"{DOCS_API}/{urllib.parse.quote(document_id)}:batchUpdate"
+        try:
+            result = api_json("POST", url, token, payload)
+        except RuntimeError as exc:
+            message = str(exc)
+            if "HTTP 403" in message or "PERMISSION_DENIED" in message or "insufficient" in message.lower():
+                alias = os.environ.get("LIFEOS_DOCS_ALIAS", "").strip()
+                hint = f"run: lifeos google auth {alias} --docs-write" if alias else "authorize the Docs write scope: lifeos google auth ALIAS --docs-write"
+                raise RuntimeError(f"{message}\nHINT: editing needs the Google Docs write scope — {hint}") from exc
+            raise
+        print(f"Updated document at revision {result.get('writeControl', {}).get('requiredRevisionId', revision_id)}; replaced 1 match with {len(blocks)} formatted block(s)")
+        return 0
     replace_request = {
         "replaceText": new_text,
         "containsText": {"text": old_text, "matchCase": True, "searchByRegex": False},
@@ -456,22 +480,27 @@ def _location(tab_id, index):
 
 
 def build_setbody_requests(tab_id, insert_start, blocks):
+    # Nested bullets get leading tabs: createParagraphBullets turns each leading tab into one nesting level and removes it. Bullet requests therefore run last, in reverse document order, so removing tabs never shifts an index another request still needs.
     final = ""
     metas = []
     for i, block in enumerate(blocks):
+        cp_para = len(final)
+        if block["bullet"]:
+            final += "\t" * block["level"]
         cp_start = len(final)
         final += block["text"]
         cp_text_end = len(final)
         if i != len(blocks) - 1:
             final += "\n"
-        metas.append((cp_start, cp_text_end, block))
+        metas.append((cp_para, cp_start, cp_text_end, block))
 
     def abs_idx(cp):
         return insert_start + utf16_length(final[:cp])
 
     requests = [{"insertText": {"location": _location(tab_id, insert_start), "text": final}}]
-    for cp_start, cp_text_end, block in metas:
-        a = abs_idx(cp_start)
+    runs = []
+    for cp_para, cp_start, cp_text_end, block in metas:
+        a = abs_idx(cp_para)
         z = abs_idx(cp_text_end)
         para_end = z if z > a else a + 1
         if block["style"].startswith("HEADING_"):
@@ -480,17 +509,12 @@ def build_setbody_requests(tab_id, insert_start, blocks):
                 "paragraphStyle": {"namedStyleType": block["style"]},
                 "fields": "namedStyleType"}})
         if block["bullet"]:
-            requests.append({"createParagraphBullets": {
-                "range": _range(tab_id, a, para_end),
-                "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"}})
-            if block["level"] > 0:
-                indent_pt = 18 * (block["level"] + 1)
-                requests.append({"updateParagraphStyle": {
-                    "range": _range(tab_id, a, para_end),
-                    "paragraphStyle": {
-                        "indentStart": {"magnitude": indent_pt, "unit": "PT"},
-                        "indentFirstLine": {"magnitude": indent_pt, "unit": "PT"}},
-                    "fields": "indentStart,indentFirstLine"}})
+            if runs and runs[-1]["open"]:
+                runs[-1]["end"] = para_end
+            else:
+                runs.append({"start": a, "end": para_end, "open": True})
+        elif runs:
+            runs[-1]["open"] = False
         for span in block["spans"]:
             s = abs_idx(cp_start + span["start"])
             e = abs_idx(cp_start + span["end"])
@@ -512,6 +536,33 @@ def build_setbody_requests(tab_id, insert_start, blocks):
                     "range": _range(tab_id, s, e),
                     "textStyle": style,
                     "fields": ",".join(fields)}})
+    for run in reversed(runs):
+        requests.append({"createParagraphBullets": {
+            "range": _range(tab_id, run["start"], run["end"]),
+            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"}})
+    return requests, final
+
+
+def build_markdown_replace_requests(tab_id, old_range, blocks):
+    """Delete the matched text and insert formatted blocks in its place, leaving the rest of the Doc (chips, links, other paragraphs) untouched."""
+    start, end = old_range["start_index"], old_range["end_index"]
+    body_requests, final = build_setbody_requests(tab_id, start, blocks)
+    inserted_end = start + utf16_length(final)
+    requests = [{"deleteContentRange": {"range": _range(tab_id, start, end)}}, body_requests[0]]
+    # Inserted paragraphs inherit the matched paragraph's style (often a bullet); reset them so only the Markdown decides the formatting.
+    if inserted_end > start:
+        requests.append({"deleteParagraphBullets": {"range": _range(tab_id, start, inserted_end)}})
+        requests.append({"updateParagraphStyle": {
+            "range": _range(tab_id, start, inserted_end),
+            "paragraphStyle": {"namedStyleType": "NORMAL_TEXT",
+                               "indentStart": {"magnitude": 0, "unit": "PT"},
+                               "indentFirstLine": {"magnitude": 0, "unit": "PT"}},
+            "fields": "namedStyleType,indentStart,indentFirstLine"}})
+        requests.append({"updateTextStyle": {
+            "range": _range(tab_id, start, inserted_end),
+            "textStyle": {},
+            "fields": "bold,italic,link"}})
+    requests.extend(body_requests[1:])
     return requests, final
 
 
@@ -681,6 +732,11 @@ def build_parser():
         default=[],
         metavar="TEXT=URL",
         help="Embed a link on uniquely occurring visible text in the replacement; repeatable",
+    )
+    replace_parser.add_argument(
+        "--markdown",
+        action="store_true",
+        help="Treat the replacement as Markdown (headings, bullets, nested bullets, bold, italic, links) and format it in place",
     )
     replace_parser.add_argument("--execute", action="store_true")
     replace_parser.set_defaults(func=command_replace_once)
