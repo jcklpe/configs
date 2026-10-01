@@ -81,7 +81,7 @@ Usage:
   ./lifeos.sh drive sync ALIAS [--folders N] [--recent N] [--recent-days N] [--qa | --output FILE]
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
   ./lifeos.sh docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
-  ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--execute]
+  ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--markdown] [--execute]   # --markdown formats the replacement (headings, bullets, bold, links) in place
   ./lifeos.sh docs set-body ALIAS DOC_URL_OR_ID (--file FILE | --new MARKDOWN) [--tab-id ID]... [--execute]   # rewrite the doc body in place from markdown (preserves id/history/links)
   ./lifeos.sh docs comments ALIAS DOC_URL_OR_ID
   ./lifeos.sh docs comment ALIAS DOC_URL_OR_ID [--quote TEXT] (--body TEXT | --body-file FILE) [--tab-id ID]... [--execute]   # add one comment; the quote must occur once
