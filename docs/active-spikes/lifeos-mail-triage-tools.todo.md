@@ -23,7 +23,7 @@ Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 - [x] Gmail filters: `gmail filters`, `create-filter` (from/to/subject/query; one user label and/or skip Inbox), `delete-filter`; dry run previews recent matches. Needs `gmail.filters_enabled` (adds `gmail.settings.basic`).
 - [x] Microsoft 365 Inbox rules: `m365 mail rules`, `create-rule` (from/sender-contains/subject-contains; category, allowed-folder move, stop), `delete-rule`. Needs `mail.rules_enabled` (adds `MailboxSettings.ReadWrite`).
 - [x] Offline tests: `tests/test-mail-filters.sh`. Live reads verified on all three Gmail accounts and UT (2026-10-02). All three Gmail accounts and UT re-authorized with the new scopes the same day.
-- [ ] First live filter and rule creates, each approved by Aslan.
+- [ ] First live filter and rule creates, each approved by Aslan. 2026-10-02: one Microsoft 365 Inbox rule that assigns a category to mail from two named senders was created on one configured account and confirmed by readback. Two more category rules are approved, waiting on the category name.
 
 ## Found in use (2026-09-30)
 - [ ] `gmail list`, `gmail spam`, `gmail labels`, and the label commands still fetch with `_google_get_url` (`curl -f`). On Gmail's per-minute rate limit they print a bare `curl: (56) ... 403` with no retry. Route them through `_gmail_get` like the sync. This hit right after a wide `--query` sync on 2026-09-30.
