@@ -2,6 +2,7 @@
 Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 
 ## Current State
+- 2026-10-02: scope widened to standing Gmail filters and Microsoft 365 Inbox rules; commands built, tested offline, read-verified live, and all four accounts re-authorized. No filter or rule has been created yet.
 - Implemented 2026-09-30: sync reliability, web links, unsubscribe headers, HTML-to-text, and the query override. Live-verified on one Gmail account and one Microsoft 365 account: every message has a link, 8 of each inbox carried unsubscribe headers, and no stylesheet text leaked into bodies. Full offline suite green.
 - Decisions settled the same day: no junk report to Microsoft, and Outlook categories added.
 
@@ -18,6 +19,11 @@ Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 - [x] `not-junk` decision (Aslan, 2026-09-30): rescued mail goes into the Inbox and is triaged like any other item, which is current behavior. No report to Microsoft.
 - [x] Outlook categories (Aslan asked 2026-09-30): `m365 mail categorize` / `uncategorize`, categories shown in `mail list` and the snapshot, offline tests, a live add-then-remove round trip on one UT message, and a 0007 addendum.
 - [x] UT full-inbox view: no change (Aslan, 2026-09-30: not broken, don't fix). Older UT mail is listed with `mail list`, metadata only.
+- [x] Scope widened to standing filters and rules (Aslan, 2026-10-02), recorded in [0009](../decisions/0009-mail-filters-and-rules.md) with a 0007 amendment.
+- [x] Gmail filters: `gmail filters`, `create-filter` (from/to/subject/query; one user label and/or skip Inbox), `delete-filter`; dry run previews recent matches. Needs `gmail.filters_enabled` (adds `gmail.settings.basic`).
+- [x] Microsoft 365 Inbox rules: `m365 mail rules`, `create-rule` (from/sender-contains/subject-contains; category, allowed-folder move, stop), `delete-rule`. Needs `mail.rules_enabled` (adds `MailboxSettings.ReadWrite`).
+- [x] Offline tests: `tests/test-mail-filters.sh`. Live reads verified on all three Gmail accounts and UT (2026-10-02). All three Gmail accounts and UT re-authorized with the new scopes the same day.
+- [ ] First live filter and rule creates, each approved by Aslan.
 
 ## Found in use (2026-09-30)
 - [ ] `gmail list`, `gmail spam`, `gmail labels`, and the label commands still fetch with `_google_get_url` (`curl -f`). On Gmail's per-minute rate limit they print a bare `curl: (56) ... 403` with no retry. Route them through `_gmail_get` like the sync. This hit right after a wide `--query` sync on 2026-09-30.
