@@ -40,6 +40,9 @@ On Junk, Aslan confirmed on 2026-09-30 that rescued mail belongs in the Inbox to
 - Microsoft moves change message IDs. The CLI prints and logs the new ID, and unarchive needs it.
 - Enabling Gmail writes needs a browser re-consent per account. Until then, executed changes fail with a 403 and a pointer to `lifeos google auth ALIAS`.
 
+## Amendments
+- 2026-10-02: [0009](0009-mail-filters-and-rules.md) adds Gmail filters and Microsoft 365 Inbox rules, limited to labeling, categorizing, skipping the Inbox, and moving.
+
 ## Links
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md), amended by this record for mail.
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
