@@ -58,7 +58,8 @@ A spike knows its own file scope, roughly: the files its work touches and its ow
 
 - **Inside that scope**: split and commit silently. No confirmation. These are checkpoints, they are unpushed, and they are trivially undone.
 - **Outside that scope**: stop and ask. "There is an unrelated change in `movement/movement.sh` — commit it separately, or leave it dirty?" This prompt fires only when there is genuinely stray work, so it is rare, and it is exactly where a scope misjudgment would matter.
-- **No spike context at all**: draft the message, show it, commit on a conversational yes. Do not open an editor. Do not write a `Spike:` trailer.
+- **No spike context at all**: the work is a **patch**. Draft the message with a `Patch: <slug>` trailer (see The Patch Trailer), show it, and commit on a conversational yes. Do not open an editor. Do not write a `Spike:` trailer.
+- **Work that belongs to an open spike but falls outside its written scope**: prefer widening the spike, updating its concept and `.todo.md` in the same commit as the work, over committing it as a patch. One coherent history per theme beats a scattering of patches. Ask the human before widening a scope they have not discussed.
 
 The `.todo.md` edit that moves an item belongs **in the same commit as the work it describes**. One commit should show both the change and the recorded intent behind it.
 
@@ -187,14 +188,28 @@ This makes git navigable along the same axis the docs are organized:
 ```sh
 git log --grep='Spike: my-topic$' --reverse            # every commit from that spike, in order
 git log --format='%h %(trailers:key=Spike,valueonly=true) %s'
+git log --format='%h %(trailers:key=Spike,valueonly=true)%(trailers:key=Patch,valueonly=true) %s'   # spikes and patches together
 ```
 
 Anchor with `$`. Without it, `Spike: my-topic` also matches `Spike: my-topic-extra`.
 
+## The Patch Trailer
+Every commit made outside any spike carries:
+
+```text
+Patch: <slug>
+```
+
+A patch is a self-contained change with no spike doc: a one-off fix, a small feature asked for in conversation, a cleanup. The slug is a short kebab-case name for the change (`m365-planner`, `fix-calendar-tz`), chosen when the work is committed. Every commit of the same patch uses the same slug, so `git log --grep='Patch: m365-planner$'` finds them all, the same way spike slugs work. Never write a bare `Patch:` with no value: it cannot be searched, and git does not parse an empty trailer value.
+
+Because a patch has no concept doc or `.todo.md` to hold its intent, **its commit body carries that instead**: what changed and why, in a few plain sentences. This is the one case where a body is expected rather than earned. Still do not pad it; say what a reader would otherwise have to reconstruct from the diff.
+
+A commit that genuinely spans a spike and a patch (one file touched by both) carries both trailers, one per line.
+
 ## Message Format
 **Subject.** `area: imperative summary`, lowercase after the colon, no trailing period, under about 60 characters. `movement: increase bullet indent`, not `increased` or `increasing`.
 
-**Most commits are subject-only.** An atomic change to a well-scoped file usually has nothing further to say, and inside a spike the `.todo.md` edit riding along in the same commit already records the intent.
+**Most spike commits are subject-only.** An atomic change to a well-scoped file usually has nothing further to say, and inside a spike the `.todo.md` edit riding along in the same commit already records the intent. Patch commits are the exception: see The Patch Trailer.
 
 **Write a body only when there is a why the subject and the diff do not already carry**: a rejected alternative, a non-obvious constraint, a surprising behavior discovered, a decision someone will later want to reverse and should understand before they do.
 
