@@ -18,6 +18,8 @@ LIFEOS_LONG_HORIZON_DAYS="${LIFEOS_LONG_HORIZON_DAYS:-180}"
 . "${LIB_DIR}/trello.sh"
 . "${LIB_DIR}/google.sh"
 . "${LIB_DIR}/m365.sh"
+. "${LIB_DIR}/m365-planner.sh"
+. "${LIB_DIR}/mail-filters.sh"
 . "${LIB_DIR}/odoo.sh"
 . "${LIB_DIR}/slack.sh"
 . "${LIB_DIR}/github.sh"
@@ -72,6 +74,9 @@ Usage:
   ./lifeos.sh gmail create-label ALIAS --name NAME [--execute]
   ./lifeos.sh gmail spam ALIAS [--limit N] [--json]   # list mail Gmail filed as spam; never synced
   ./lifeos.sh gmail not-spam ALIAS (--message ID | --thread ID | --ids-file FILE)... [--execute]   # Spam -> Inbox
+  ./lifeos.sh gmail filters ALIAS [--json]
+  ./lifeos.sh gmail create-filter ALIAS (--from TEXT | --to TEXT | --subject TEXT | --query GMAIL_SEARCH)... (--label NAME_OR_ID | --skip-inbox)... [--execute]   # label and/or skip inbox only; needs gmail.filters_enabled
+  ./lifeos.sh gmail delete-filter ALIAS --filter FILTER_ID [--execute]   # removes the rule only
   ./lifeos.sh drive accounts
   ./lifeos.sh drive search ALIAS QUERY [--json]
   ./lifeos.sh drive list ALIAS FOLDER_ID [--json]
@@ -100,6 +105,9 @@ Usage:
   ./lifeos.sh m365 mail uncategorize ALIAS --category NAME (--message ID | --ids-file FILE)... [--execute]
   ./lifeos.sh m365 mail junk ALIAS [--limit N] [--json]   # list Junk Email; never synced
   ./lifeos.sh m365 mail not-junk ALIAS (--message ID | --ids-file FILE)... [--execute]   # Junk -> Inbox
+  ./lifeos.sh m365 mail rules ALIAS [--json]   # Inbox rules
+  ./lifeos.sh m365 mail create-rule ALIAS --name NAME (--from ADDRESS | --sender-contains TEXT | --subject-contains TEXT)... (--category NAME | --folder NAME_PATH_OR_ID)... [--stop] [--execute]   # categorize and/or move only; needs mail.rules_enabled
+  ./lifeos.sh m365 mail delete-rule ALIAS --rule RULE_ID [--execute]   # removes the rule only
   ./lifeos.sh m365 calendar list-calendars ALIAS
   ./lifeos.sh m365 calendar find ALIAS QUERY [--calendar ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
   ./lifeos.sh m365 calendar sync ALIAS [--qa | --output FILE]
@@ -114,6 +122,13 @@ Usage:
   ./lifeos.sh m365 files resolve-link ALIAS URL [--json]
   ./lifeos.sh m365 files meta ALIAS ITEM_ID [--drive DRIVE_ID] [--json]
   ./lifeos.sh m365 files download ALIAS ITEM_ID --out PATH [--drive DRIVE_ID] [--force]
+  ./lifeos.sh m365 planner plans ALIAS [--json]   # plans shared with you; marks the ones configured in planner.plans
+  ./lifeos.sh m365 planner buckets ALIAS --plan PLAN_ID [--json]
+  ./lifeos.sh m365 planner tasks ALIAS --plan PLAN_ID [--bucket BUCKET_ID] [--mine] [--open] [--json]
+  ./lifeos.sh m365 planner task ALIAS --task TASK_ID [--json]   # includes description and checklist
+  ./lifeos.sh m365 planner sync ALIAS [--qa | --output FILE]   # snapshot configured plans to sources/m365/<alias>-planner.md
+  ./lifeos.sh m365 planner create-task ALIAS --plan PLAN_ID --bucket BUCKET_ID --title TEXT [--due YYYY-MM-DD] [--progress not-started|in-progress|done] [--assign me|EMAIL|USER_ID]... [--desc TEXT | --desc-file FILE] [--execute]
+  ./lifeos.sh m365 planner update-task ALIAS --task TASK_ID [--title TEXT] [--bucket BUCKET_ID] [--due YYYY-MM-DD|none] [--progress ...] [--assign WHO]... [--unassign WHO]... [--desc TEXT | --desc-file FILE] [--execute]   # configured plans only; no delete
   ./lifeos.sh odoo accounts
   ./lifeos.sh odoo projects list ALIAS [--json]
   ./lifeos.sh odoo stages list ALIAS --project PROJECT_ID [--json]
@@ -142,7 +157,7 @@ Usage:
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
   ./lifeos.sh github create-issue --repo ALIAS_OR_OWNER/REPO --title TITLE [--body TEXT | --body-file FILE] [--label NAME]... [--assignee LOGIN]... [--assign-me] [--execute]
   ./lifeos.sh github move-card --repo ALIAS --issue NUMBER --status COLUMN [--execute]
-  ./lifeos.sh sync      # Trello, Calendar, GitHub, and Slack Lists; each skipped with a warning when not configured
+  ./lifeos.sh sync      # Trello, Calendar, GitHub, Slack Lists, and Microsoft 365 Planner; each skipped with a warning when not configured
 
 Real config lives in .env, copied from .env.example.
 EOF
@@ -488,6 +503,21 @@ _sync() {
         _warn "Skipping Slack Lists sync: no Slack account names any lists."
     fi
 
+    # Planner joins the aggregate sync per alias (planner.sync, default true) once plans are configured; see docs/decisions/0008-lifeos-m365-planner.md.
+    local planner_alias planner_aliases=""
+    if [ -f "$(_m365_accounts_path)" ]; then
+        planner_aliases="$(jq -r '(.accounts // [])[] | select((.planner.enabled // false) == true and (.planner.sync // true) == true and ((.planner.plans // []) | length) > 0) | .alias' "$(_m365_accounts_path)" 2>/dev/null)"
+    fi
+    if [ -n "$planner_aliases" ]; then
+        while IFS= read -r planner_alias || [ -n "$planner_alias" ]; do
+            [ -n "$planner_alias" ] && { _m365_planner_sync "$planner_alias" || status=$?; }
+        done <<EOF
+$planner_aliases
+EOF
+    else
+        _warn "Skipping Microsoft 365 Planner sync: no account has planner enabled with configured plans."
+    fi
+
     return "$status"
 }
 
@@ -571,6 +601,9 @@ case "${1:-help}" in
             create-label) shift 2; _gmail_create_label "$@" ;;
             spam) shift 2; _gmail_spam "$@" ;;
             not-spam) shift 2; _gmail_not_spam "$@" ;;
+            filters) shift 2; _gmail_filters "$@" ;;
+            create-filter) shift 2; _gmail_create_filter "$@" ;;
+            delete-filter) shift 2; _gmail_delete_filter "$@" ;;
             *) _err "Unknown Gmail command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;
