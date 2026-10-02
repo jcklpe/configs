@@ -1,6 +1,6 @@
 ---
 name: lifeos-m365
-description: "Use when reading or writing a configured Microsoft 365 account through the lifeos CLI: delegated auth, bounded Inbox snapshots, listing mail folders and their messages, dry-run-gated mail archive/unarchive/move between folders and folder creation, Junk Email review and not-junk rescue (never delete or send), calendar reads and dry-run-gated event create/update, or Outlook contact reads and dry-run-gated contact create/update."
+description: "Use when reading or writing a configured Microsoft 365 account through the lifeos CLI: delegated auth, bounded Inbox snapshots, listing mail folders and their messages, dry-run-gated mail archive/unarchive/move between folders and folder creation, Junk Email review and not-junk rescue (never delete or send), Inbox rules that categorize or move, calendar reads and dry-run-gated event create/update, Outlook contact reads and dry-run-gated contact create/update, or Microsoft Planner plan and task reads, snapshots, and dry-run-gated task create/update."
 ---
 
 # LifeOS Microsoft 365
@@ -56,7 +56,7 @@ lifeos m365 mail create-folder ALIAS --name "Receipts" [--parent inbox] [--execu
 ```
 
 - **Archive** moves Inbox messages to Archive and refuses anything not currently in the Inbox. **Unarchive** moves Archive messages back to the Inbox. **Move** files messages from anywhere into any allowed folder. **Create-folder** makes a new folder, top-level or under `--parent`, and fails if the path exists.
-- Deleted Items, Junk Email, Drafts, Sent Items, Outbox, recoverable items, and every folder under them are never move targets. There is no delete, send, reply, forward, flag, mark-read, rename-folder, delete-folder, or mailbox-rule command.
+- Deleted Items, Junk Email, Drafts, Sent Items, Outbox, recoverable items, and every folder under them are never move targets. There is no delete, send, reply, forward, flag, mark-read, rename-folder, or delete-folder command. Inbox rules are covered under Inbox Rules below.
 - Targets are exact Graph message IDs, via `--message` or `--ids-file FILE` (one ID per line, `#` comments allowed). Unknown IDs, messages outside the required source folder, and messages already in the destination fail the whole call; nothing is skipped silently. Calls are capped at 50 messages (`mail.max_moves_per_call`).
 - Every command is dry-run by default and prints the destination and each message (date, sender, subject, current folder). `--execute` applies it.
 - **A moved message gets a new ID.** The command prints each new `message_id`; use it for any later unarchive or move. Old IDs stop working.
@@ -70,6 +70,14 @@ lifeos m365 mail uncategorize ALIAS --category NAME --message ID [--execute]
 ```
 
 Outlook categories are the Microsoft 365 counterpart of Gmail's user labels, used for subject-matter tags. A category name is free text on the message; it does not need to exist in the mailbox's master category list (it then shows without a color). `categorize` adds one category and keeps the message's others; `uncategorize` removes one. Names are compared case-insensitively, and commas are refused. Adding a category a message already has, or removing one it lacks, fails the whole call. Unlike moves, message IDs do not change. Same gates as moves: dry run by default, `mail.write_enabled` to execute, exact IDs, per-call cap, readback, and the audit log. `mail list` and the synced snapshot both show each message's categories.
+
+### Inbox Rules
+```sh
+lifeos m365 mail rules ALIAS [--json]
+lifeos m365 mail create-rule ALIAS --name NAME (--from ADDRESS | --sender-contains TEXT | --subject-contains TEXT)... (--category NAME | --folder NAME_PATH_OR_ID)... [--stop] [--execute]
+lifeos m365 mail delete-rule ALIAS --rule RULE_ID [--execute]
+```
+Inbox rules sort new mail on arrival. A created rule may only assign one Outlook category, move to an allowed folder (the move-target rules above apply), and stop later rules (`--stop`); there is no way to make it forward, redirect, delete, or mark read. `rules` lists every rule with folder IDs shown as paths, including actions on rules made in Outlook. Rules do not apply to existing mail; file that with `categorize` and `move`. `delete-rule` removes only the rule. Changes need `"mail": {"rules_enabled": true}`, which adds `MailboxSettings.ReadWrite` at the next `lifeos m365 auth ALIAS`; on UT that scope is already approved for the shared client. Each executed change is read back and logged to the mail audit log. See `docs/decisions/0009-mail-filters-and-rules.md` in the configs repo.
 
 ### Junk Review
 ```sh
@@ -119,6 +127,22 @@ lifeos m365 contacts update ALIAS --contact CONTACT_ID --company "Organization"
 These commands operate on the signed-in user's default Outlook Contacts folder, not the institutional organization directory. Reads are bounded and do not recurse through additional contact folders. Create/update writes are dry-run by default and require `--execute`; updates require the exact Graph contact ID. Passing `--email` or `--phone` during an update replaces that complete field array, which the dry-run plan displays. There are no contact or folder delete commands.
 
 After any successful calendar or contact write, re-run the corresponding `sync` command to refresh the LifeOS snapshot.
+
+## Planner
+```sh
+lifeos m365 planner plans ALIAS [--json]
+lifeos m365 planner buckets ALIAS --plan PLAN_ID [--json]
+lifeos m365 planner tasks ALIAS --plan PLAN_ID [--bucket BUCKET_ID] [--mine] [--open] [--json]
+lifeos m365 planner task ALIAS --task TASK_ID [--json]
+lifeos m365 planner sync ALIAS [--qa | --output FILE]
+lifeos m365 planner create-task ALIAS --plan PLAN_ID --bucket BUCKET_ID --title TEXT [--due YYYY-MM-DD] [--progress not-started|in-progress|done] [--assign me|EMAIL|USER_ID]... [--desc TEXT | --desc-file FILE] [--execute]
+lifeos m365 planner update-task ALIAS --task TASK_ID [--title TEXT] [--bucket BUCKET_ID] [--due YYYY-MM-DD|none] [--progress ...] [--assign WHO]... [--unassign WHO]... [--desc TEXT | --desc-file FILE] [--execute]
+```
+Enable per alias with a `planner` block in `m365-accounts.json`: `enabled`, `write_enabled` (default false), `sync` (default true), `max_tasks`, `description_character_limit`, and `plans`, a list of `{id, name, context}`. `plans` names the plans to snapshot, and the only plans writes may touch; find their IDs with `planner plans`. Enabling Planner adds `Tasks.ReadWrite` and `User.ReadBasic.All` to the requested scopes (always `Tasks.ReadWrite`, because UT blocks user consent and only that scope is pre-approved; `write_enabled` is the write gate). After changing scopes, run `lifeos m365 auth ALIAS` once in a real terminal (`--no-browser` prints a device code); until then, Planner calls stall waiting for sign-in.
+
+`planner sync` writes `sources/m365/<alias>-planner.md`: open tasks grouped by bucket in Planner's order, with status, due date, priority, assignee names, labels, description, and checklist, then a compact list of completed tasks. `lifeos sync` runs it for every alias with Planner enabled and plans configured, unless `planner.sync` is false. Only the basic Planner plans Graph exposes are reachable; Planner Premium plans are not.
+
+Writes are dry-run by default and print the current task beside the change. They are limited to plans in `planner.plans`, refuse to run while `write_enabled` is false, and send `If-Match` with the etag read in the same run, so a task changed in between is refused rather than overwritten. Each executed write is read back and logged to `secrets/logs/mail-writes.jsonl` with service `m365-planner`. Due dates are stored at noon UTC to keep the calendar date stable across US time zones; progress has Planner's three states. `--desc` replaces the whole description. There is no delete and no comment command. Team plans are shared, so treat every write as outward-facing and get approval for each one. Decision record: `docs/decisions/0008-lifeos-m365-planner.md` in the configs repo.
 
 ## Files (OneDrive / SharePoint)
 ```sh

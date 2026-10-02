@@ -44,7 +44,7 @@ lifeos doctor
 
 ## Layout
 - `lifeos.sh` — the CLI dispatcher (bootstrap, top-level commands, and the command `case`).
-- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `m365.sh`, `open-austin-org.sh`, `resume.sh`) over shared `common.sh`, plus render/auth/write helpers and the vendored `resume-theme/`. `lib/*.sh` is sourced; the `.py` files are invoked by path.
+- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `m365.sh`, `m365-planner.sh`, `mail-filters.sh`, `open-austin-org.sh`, `resume.sh`) over shared `common.sh`, plus render/auth/write helpers and the vendored `resume-theme/`. `lib/*.sh` is sourced; the `.py` files are invoked by path.
 - `pyproject.toml` / `uv.lock` — Python env manifest + lockfile (managed by `uv`; the `.venv` is git-ignored and rebuilt by `./lifeos.sh setup`).
 - `secrets/` — real secrets and their `.example` templates.
 - `qa/` — `--qa` snapshot output.
@@ -115,6 +115,11 @@ lifeos m365 mail archive ut --message MESSAGE_ID --execute
 lifeos m365 mail unarchive ut --message NEW_MESSAGE_ID --execute
 lifeos m365 mail move ut --folder "Inbox/Receipts" --message MESSAGE_ID
 lifeos m365 mail create-folder ut --name Receipts --parent inbox
+lifeos m365 mail rules ut
+lifeos gmail filters personal
+lifeos m365 planner plans ut
+lifeos m365 planner tasks ut --plan PLAN_ID --mine --open
+lifeos m365 planner sync ut --qa
 lifeos m365 calendar list-calendars ut
 lifeos m365 calendar find ut "Orientation"
 lifeos m365 calendar sync ut --qa

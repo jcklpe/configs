@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-##- LifeOS Microsoft 365: delegated auth plus bounded mail, calendar, and Outlook contact reads and gated writes, including opt-in mail moves between folders (never delete).
+##- LifeOS Microsoft 365: delegated auth plus bounded mail, calendar, and Outlook contact reads and gated writes, including opt-in mail moves between folders (never delete). Planner lives in m365-planner.sh.
 ##- Sourced by lifeos.sh after common.sh and google.sh; uses the shared people alias map for deterministic attendee resolution.
 
 _m365_accounts_path() {
@@ -73,9 +73,12 @@ _m365_accounts_list() {
       " | tenant: " + (.tenant // "organizations") +
       " | mail: " + (((.mail.enabled // false) == true) | tostring) +
       " | mail moves: " + (((.mail.write_enabled // false) == true) | tostring) +
+      " | mail rules: " + (((.mail.rules_enabled // false) == true) | tostring) +
       " | calendar: " + (((.calendar.enabled // false) == true) | tostring) +
       " | contacts: " + (((.contacts.enabled // false) == true) | tostring) +
-      " | files: " + (((.files.enabled // false) == true) | tostring)
+      " | files: " + (((.files.enabled // false) == true) | tostring) +
+      " | planner: " + (((.planner.enabled // false) == true) | tostring) +
+      " | planner writes: " + (((.planner.write_enabled // false) == true) | tostring)
     ' "$(_m365_accounts_path)"
 }
 
@@ -86,10 +89,16 @@ _m365_scopes() {
     # Mail.ReadWrite replaces Mail.Read only when the alias opts into mail moves; there is still no send or delete command.
     if _m365_account_value "$alias" '(.mail.enabled // false) == true' 2>/dev/null | grep -qx true; then
         if _m365_account_value "$alias" '(.mail.write_enabled // false) == true' 2>/dev/null | grep -qx true; then printf 'Mail.ReadWrite\n'; else printf 'Mail.Read\n'; fi
+        # Inbox rules live in mailbox settings (decision 0009).
+        _m365_account_value "$alias" '(.mail.rules_enabled // false) == true' 2>/dev/null | grep -qx true && printf 'MailboxSettings.ReadWrite\n'
     fi
     _m365_account_value "$alias" '(.calendar.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Calendars.ReadWrite\n'
     _m365_account_value "$alias" '(.contacts.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Contacts.ReadWrite\n'
     _m365_account_value "$alias" '(.files.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Files.ReadWrite\n'
+    # Planner always requests Tasks.ReadWrite: UT blocks user consent, and only Tasks.ReadWrite is already approved for this client (decision 0008). planner.write_enabled gates writes in the CLI instead. User.ReadBasic.All turns assignee IDs into names.
+    if _m365_account_value "$alias" '(.planner.enabled // false) == true' 2>/dev/null | grep -qx true; then
+        printf 'Tasks.ReadWrite\nUser.ReadBasic.All\n'
+    fi
     return 0
 }
 
@@ -393,7 +402,7 @@ _m365_write_index() {
         printf 'Last refreshed: %s\n\n' "$refreshed"
         printf '## Source Snapshots\n\n'
         while IFS= read -r alias || [ -n "$alias" ]; do
-            for service in mail calendar contacts; do
+            for service in mail calendar contacts planner; do
                 file="${alias}-${service}.md"
                 [ -f "${dir}/${file}" ] && printf -- '- [%s %s](%s)\n' "$alias" "$service" "$file"
             done
@@ -1641,6 +1650,9 @@ _m365_dispatch() {
                 categorize) shift 2; _m365_mail_category_cmd categorize "$@" ;;
                 uncategorize) shift 2; _m365_mail_category_cmd uncategorize "$@" ;;
                 not-junk) shift 2; _m365_mail_not_junk "$@" ;;
+                rules) shift 2; _m365_mail_rules "$@" ;;
+                create-rule) shift 2; _m365_mail_create_rule "$@" ;;
+                delete-rule) shift 2; _m365_mail_delete_rule "$@" ;;
                 *) _err "Unknown m365 mail command: ${2:-}"; return 1 ;;
             esac
             ;;
@@ -1673,6 +1685,7 @@ _m365_dispatch() {
                 *) _err "Unknown m365 contacts command: ${2:-}"; return 1 ;;
             esac
             ;;
+        planner) shift; _m365_planner_dispatch "$@" ;;
         *) _err "Unknown m365 command: ${1:-}"; return 1 ;;
     esac
 }
