@@ -1,0 +1,23 @@
+{
+  "plans": [
+    {
+      "config": {"id": "plan-1", "name": "Project Tracker", "context": "Synthetic team plan for tests."},
+      "plan": {"id": "plan-1", "title": "Project Tracker", "container": {"containerId": "group-1", "type": "group"}},
+      "details": {"categoryDescriptions": {"category1": "LMS", "category2": null}},
+      "buckets": [
+        {"id": "bucket-todo", "name": "To Do", "orderHint": "8585"},
+        {"id": "bucket-build", "name": "LMS Build", "orderHint": "1000"}
+      ],
+      "tasks": [
+        {"id": "task-1", "title": "Draft coaching rubric", "bucketId": "bucket-todo", "percentComplete": 50, "priority": 3, "dueDateTime": "2026-10-09T12:00:00Z", "createdDateTime": "2026-09-20T15:00:00Z", "createdBy": {"user": {"id": "user-pat"}}, "assignments": {"user-me": {}}, "appliedCategories": {"category1": true}, "hasDescription": true, "checklistItemCount": 2},
+        {"id": "task-2", "title": "Build module shell", "bucketId": "bucket-build", "percentComplete": 0, "priority": 5, "createdDateTime": "2026-09-21T15:00:00Z", "assignments": {}},
+        {"id": "task-3", "title": "Kickoff meeting", "bucketId": "bucket-todo", "percentComplete": 100, "completedDateTime": "2026-09-22T18:00:00Z", "completedBy": {"user": {"id": "user-pat"}}, "createdDateTime": "2026-09-15T15:00:00Z"},
+        {"id": "task-4", "title": "Orphan task", "bucketId": "bucket-gone", "percentComplete": 0, "createdDateTime": "2026-09-25T15:00:00Z"}
+      ],
+      "taskDetails": {
+        "task-1": {"id": "task-1", "description": "Rubric for the practice exercise.", "checklist": {"c1": {"title": "Collect examples", "isChecked": true, "orderHint": "1"}, "c2": {"title": "Review with Pat", "isChecked": false, "orderHint": "2"}}}
+      }
+    }
+  ],
+  "users": {"user-me": {"displayName": "Test Student"}, "user-pat": {"displayName": "Pat Example"}}
+}

@@ -22,7 +22,7 @@ Compensating controls live in the LifeOS command surface: it exposes no generic 
 
 M365 attendee-bearing event writes require `--notify` as an acknowledgement that Microsoft may send invitations or meeting updates. Unlike the Google Calendar path, this flag does not map to a server option that can suppress delivery. Bare attendee names resolve only through the deterministic local alias map; the tool does not search or guess from UT's directory.
 
-Microsoft 365 snapshots remain distinct under `sources/m365/`. They are not silently added to aggregate `lifeos sync`, and M365 calendar data is not merged into the Google Calendar snapshot during the initial implementation.
+Microsoft 365 snapshots remain distinct under `sources/m365/`. They are not silently added to aggregate `lifeos sync`, and M365 calendar data is not merged into the Google Calendar snapshot during the initial implementation. *(Amended 2026-10-02 by [0008](0008-lifeos-m365-planner.md): configured Planner plans join the aggregate sync; other Microsoft 365 snapshots stay out.)*
 
 ## Consequences
 - LifeOS has one canonical UT mailbox source without routing Microsoft 365 back into Gmail or creating a forwarding loop.

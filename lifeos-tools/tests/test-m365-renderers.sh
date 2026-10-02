@@ -74,4 +74,24 @@ assert_contains "$CONTACTS_OUT" "### Ada Lovelace"
 assert_contains "$CONTACTS_OUT" "Contact ID: \`contact-1\`"
 assert_contains "$CONTACTS_OUT" "Met through a research seminar."
 
+
+PLANNER_OUT="${TMPDIR:-/tmp}/lifeos-m365-planner-render-test.md"
+"$PYTHON" "${TOOL_DIR}/lib/m365-render.py" planner \
+    --alias ut \
+    --email student@my.example.edu \
+    --me user-me \
+    --refreshed "2026-10-02 18:00:00 UTC" \
+    --description-limit 2000 \
+    --input "${SCRIPT_DIR}/fixtures/m365-planner.json" > "$PLANNER_OUT"
+grep -F -- "# Microsoft 365 Planner - ut" "$PLANNER_OUT" >/dev/null
+grep -F -- "Open tasks: 3 | Done: 1 | Open and assigned to you: 1" "$PLANNER_OUT" >/dev/null
+grep -F -- "- Assignees: Test Student (you)" "$PLANNER_OUT" >/dev/null
+grep -F -- "- Labels: LMS" "$PLANNER_OUT" >/dev/null
+grep -F -- "- Priority: important" "$PLANNER_OUT" >/dev/null
+grep -F -- "  - [x] Collect examples" "$PLANNER_OUT" >/dev/null
+grep -F -- "### (no bucket)" "$PLANNER_OUT" >/dev/null
+grep -F -- "Kickoff meeting | To Do | completed 2026-09-22 by Pat Example" "$PLANNER_OUT" >/dev/null
+# Buckets follow Planner's ascending orderHint, so LMS Build (1000) precedes To Do (8585).
+[ "$(grep -n '^### LMS Build' "$PLANNER_OUT" | cut -d: -f1)" -lt "$(grep -n '^### To Do' "$PLANNER_OUT" | cut -d: -f1)" ]
+
 printf 'm365 renderer fixtures passed\n'
