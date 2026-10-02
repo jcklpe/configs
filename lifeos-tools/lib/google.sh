@@ -144,6 +144,7 @@ _google_accounts_list() {
       " | email: " + (.email // "") +
       " | gmail: " + (((.gmail.enabled // false) == true) | tostring) +
       " | gmail labels: " + (((.gmail.write_enabled // false) == true) | tostring) +
+      " | gmail filters: " + (((.gmail.filters_enabled // false) == true) | tostring) +
       " | drive: " + (((.drive.enabled // false) == true) | tostring)
     ' "$(_google_accounts_path)"
 }
@@ -168,6 +169,9 @@ _google_account_scopes() {
           "https://www.googleapis.com/auth/gmail.readonly",
           (if (($account.gmail.write_enabled // false) == true) then
             "https://www.googleapis.com/auth/gmail.modify"
+          else empty end),
+          (if (($account.gmail.filters_enabled // false) == true) then
+            "https://www.googleapis.com/auth/gmail.settings.basic"
           else empty end)
         else empty end),
         (if (($account.drive.enabled // false) == true) then
