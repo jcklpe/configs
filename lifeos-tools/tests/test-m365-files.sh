@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-##- Test Microsoft 365 file writes offline: scope, upload transport request, OneNote refusal, existing-name refusal, dry-run and write gates, If-Match on replace, readback, and the audit log.
+##- Test Microsoft 365 file transfers offline: scope, upload and download transport requests, binary download to file, overwrite refusal, OneNote refusal, existing-name refusal, dry-run and write gates, If-Match on replace, readback, and the audit log.
 
 set -eu
 
@@ -37,6 +37,25 @@ if _m365_scopes ut 2>/dev/null | grep -qx 'Files.ReadWrite'; then fail "narrow F
 # The PowerShell transport carries an upload as input_file rather than a JSON body.
 _m365_prepare_powershell_request PUT ut 'https://graph.microsoft.com/v1.0/me/drive/items/root:/a.txt:/content' '' "${WORK}/req.json" --upload-file /tmp/a.txt -H 'If-Match: "e1"'
 jq -e '.input_file == "/tmp/a.txt" and .headers["If-Match"] == "\"e1\"" and .body == ""' "${WORK}/req.json" >/dev/null || fail "upload request shape"
+
+# A download asks the transport to write the bytes to a file, since Invoke-MgGraphRequest refuses non-JSON responses otherwise.
+_m365_prepare_powershell_request GET ut 'https://graph.microsoft.com/v1.0/drives/d1/items/doc-1/content' '' "${WORK}/req.json" --output-file /tmp/b.docx
+jq -e '.output_file == "/tmp/b.docx" and (has("input_file") | not)' "${WORK}/req.json" >/dev/null || fail "download request shape"
+
+# Downloads stream binary bytes to --out and refuse to overwrite without --force.
+_m365_get() {
+    [ "$3" = "--output-file" ] || return 1
+    printf 'PK\003\004binary' > "$4"
+    printf '{}\n'
+}
+_m365_files_download ut doc-1 --drive d1 --out "${WORK}/brainstorm.docx" >/dev/null || fail "download"
+[ "$(head -c 4 "${WORK}/brainstorm.docx" | od -An -tx1 | tr -d ' \n')" = "504b0304" ] || fail "download bytes"
+expect_fail _m365_files_download ut doc-1 --drive d1 --out "${WORK}/brainstorm.docx"
+_m365_files_download ut doc-1 --drive d1 --out "${WORK}/brainstorm.docx" --force >/dev/null || fail "download --force"
+_m365_get() { return 1; }
+expect_fail _m365_files_download ut doc-1 --drive d1 --out "${WORK}/failed.docx"
+[ ! -e "${WORK}/failed.docx" ] || fail "failed download left a file"
+ls -A "$WORK" | grep -F -- '.lifeos-m365-download.' >/dev/null && fail "download temp file left behind"
 
 printf 'hello world\n' > "${WORK}/notes.md"
 printf 'x' > "${WORK}/section.one"

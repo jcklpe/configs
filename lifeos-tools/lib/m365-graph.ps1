@@ -72,6 +72,15 @@ try {
         $invoke.ContentType = "application/json; charset=utf-8"
     }
 
+    if ($request.PSObject.Properties.Name -contains "output_file" -and [string]$request.output_file) {
+        # File downloads are not JSON; Invoke-MgGraphRequest refuses them unless it writes the bytes to a file.
+        $invoke.Remove("OutputType")
+        $invoke.OutputFilePath = [string]$request.output_file
+        Invoke-MgGraphRequest @invoke | Out-Null
+        "{}"
+        exit 0
+    }
+
     $response = Invoke-MgGraphRequest @invoke
     if ($null -eq $response -or [string]$response -eq "") {
         "{}"
