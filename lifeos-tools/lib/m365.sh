@@ -77,6 +77,7 @@ _m365_accounts_list() {
       " | calendar: " + (((.calendar.enabled // false) == true) | tostring) +
       " | contacts: " + (((.contacts.enabled // false) == true) | tostring) +
       " | files: " + (((.files.enabled // false) == true) | tostring) +
+      " | file writes: " + (((.files.write_enabled // false) == true) | tostring) +
       " | planner: " + (((.planner.enabled // false) == true) | tostring) +
       " | planner writes: " + (((.planner.write_enabled // false) == true) | tostring)
     ' "$(_m365_accounts_path)"
@@ -94,7 +95,8 @@ _m365_scopes() {
     fi
     _m365_account_value "$alias" '(.calendar.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Calendars.ReadWrite\n'
     _m365_account_value "$alias" '(.contacts.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Contacts.ReadWrite\n'
-    _m365_account_value "$alias" '(.files.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Files.ReadWrite\n'
+    # Files.ReadWrite.All, not Files.ReadWrite: UT blocks user consent and only the .All scope is approved for the shared client (decision 0010).
+    _m365_account_value "$alias" '(.files.enabled // false) == true' 2>/dev/null | grep -qx true && printf 'Files.ReadWrite.All\n'
     # Planner always requests Tasks.ReadWrite: UT blocks user consent, and only Tasks.ReadWrite is already approved for this client (decision 0008). planner.write_enabled gates writes in the CLI instead. User.ReadBasic.All turns assignee IDs into names.
     if _m365_account_value "$alias" '(.planner.enabled // false) == true' 2>/dev/null | grep -qx true; then
         printf 'Tasks.ReadWrite\nUser.ReadBasic.All\n'
@@ -143,7 +145,7 @@ _m365_uri_encode() {
 }
 
 _m365_prepare_powershell_request() {
-    local method="$1" alias="$2" url="$3" body="$4" out="$5" pair key value separator header name headers_json scopes_json tenant
+    local method="$1" alias="$2" url="$3" body="$4" out="$5" pair key value separator header name headers_json scopes_json tenant input_file=""
     shift 5
     headers_json='{}'
     while [ "$#" -gt 0 ]; do
@@ -155,6 +157,11 @@ _m365_prepare_powershell_request() {
                 if [ "$key" = "$pair" ]; then value=""; else value="${pair#*=}"; fi
                 case "$url" in *\?*) separator='&' ;; *) separator='?' ;; esac
                 url="${url}${separator}$(_m365_uri_encode "$key")=$(_m365_uri_encode "$value")"
+                shift 2
+                ;;
+            --upload-file)
+                [ "$#" -ge 2 ] || { _err "--upload-file requires a path"; return 1; }
+                input_file="$2"
                 shift 2
                 ;;
             -H|--header)
@@ -181,7 +188,8 @@ _m365_prepare_powershell_request() {
         --arg tenant "$tenant" \
         --argjson headers "$headers_json" \
         --argjson scopes "$scopes_json" \
-        '{method: $method, uri: $uri, body: $body, tenant: $tenant, headers: $headers, scopes: $scopes}' > "$out"
+        --arg input_file "$input_file" \
+        '{method: $method, uri: $uri, body: $body, tenant: $tenant, headers: $headers, scopes: $scopes} + (if $input_file != "" then {input_file: $input_file} else {} end)' > "$out"
 }
 
 _m365_powershell_invoke() {
@@ -273,7 +281,15 @@ _m365_http_msal() {
     shift 4
     token="$(_m365_access_token "$alias")" || return 1
     response="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-response.XXXXXX")" || return 1
-    if [ -n "$body" ]; then
+    if [ "${1:-}" = "--upload-file" ]; then
+        # Raw file upload: curl --upload-file sends the bytes; remaining args are headers.
+        local upload="$2"
+        shift 2
+        http_code="$(curl -sS -o "$response" -w '%{http_code}' -X "$method" "$url" \
+            -H "Authorization: Bearer ${token}" \
+            -H "Content-Type: application/octet-stream" \
+            --upload-file "$upload" "$@")" || { _err "Microsoft Graph request failed before receiving a response"; return 1; }
+    elif [ -n "$body" ]; then
         http_code="$(curl -sS -o "$response" -w '%{http_code}' -X "$method" "$url" \
             -H "Authorization: Bearer ${token}" \
             -H "Content-Type: application/json; charset=utf-8" \
@@ -1672,6 +1688,9 @@ _m365_dispatch() {
                 resolve-link) shift 2; _m365_files_resolve_link "$@" ;;
                 meta) shift 2; _m365_files_meta "$@" ;;
                 download) shift 2; _m365_files_download "$@" ;;
+                upload) shift 2; _m365_files_upload "$@" ;;
+                replace) shift 2; _m365_files_replace "$@" ;;
+                create-folder) shift 2; _m365_files_create_folder "$@" ;;
                 *) _err "Unknown m365 files command: ${2:-}"; return 1 ;;
             esac
             ;;
