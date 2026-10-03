@@ -72,7 +72,7 @@ _m365_files_upload() {
     _say "Microsoft 365 file upload plan:"
     _say "Account: $alias"
     _say "Local file: $file ($size bytes)"
-    _say "Destination: $(printf '%s' "$parent_item" | jq -r '(.parentReference.path // "") + "/" + (.name // "")')/$name"
+    _say "Destination: $(printf '%s' "$parent_item" | jq -r 'if (.parentReference.path // "") == "" then "" else .parentReference.path + "/" + (.name // "") end')/$name"
     _say "Folder URL: $(printf '%s' "$parent_item" | jq -r '.webUrl // ""')"
     _say "Note: anyone with access to that folder will see the new file."
     if [ "$execute" -ne 1 ]; then _say "DRY RUN: nothing was uploaded. Re-run with --execute to upload."; return 0; fi
@@ -146,7 +146,7 @@ _m365_files_create_folder() {
     _m365_files_refuse_special "$parent_item" "create a folder in" || return 1
     _say "Microsoft 365 create-folder plan:"
     _say "Account: $alias"
-    _say "New folder: $(printf '%s' "$parent_item" | jq -r '(.parentReference.path // "") + "/" + (.name // "")')/$name"
+    _say "New folder: $(printf '%s' "$parent_item" | jq -r 'if (.parentReference.path // "") == "" then "" else .parentReference.path + "/" + (.name // "") end')/$name"
     if [ "$execute" -ne 1 ]; then _say "DRY RUN: no folder was created. Re-run with --execute to create it."; return 0; fi
     _m365_files_require_write "$alias" || return 1
     created="$(_m365_write POST "$alias" "${parent_url}/children" "$(jq -nc --arg n "$name" '{name: $n, folder: {}, "@microsoft.graph.conflictBehavior": "fail"}')")" || return 1
