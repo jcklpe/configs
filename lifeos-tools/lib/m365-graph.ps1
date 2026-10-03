@@ -63,7 +63,11 @@ try {
     if ($headers.Count -gt 0) {
         $invoke.Headers = $headers
     }
-    if ([string]$request.body) {
+    if ($request.PSObject.Properties.Name -contains "input_file" -and [string]$request.input_file) {
+        # File uploads send the file's raw bytes rather than a JSON body.
+        $invoke.InputFilePath = [string]$request.input_file
+        $invoke.ContentType = "application/octet-stream"
+    } elseif ([string]$request.body) {
         $invoke.Body = [string]$request.body
         $invoke.ContentType = "application/json; charset=utf-8"
     }

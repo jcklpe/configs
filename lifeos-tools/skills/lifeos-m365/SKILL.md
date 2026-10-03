@@ -150,11 +150,16 @@ lifeos m365 files search ALIAS "Work Plan" [--drive DRIVE_ID] [--json]
 lifeos m365 files resolve-link ALIAS SHARING_URL [--json]
 lifeos m365 files meta ALIAS ITEM_ID [--drive DRIVE_ID] [--json]
 lifeos m365 files download ALIAS ITEM_ID --out PATH [--drive DRIVE_ID] [--force]
+lifeos m365 files upload ALIAS LOCAL_FILE --parent FOLDER_ITEM_ID|root [--drive DRIVE_ID] [--name NAME] [--execute]
+lifeos m365 files replace ALIAS ITEM_ID --file LOCAL_FILE [--drive DRIVE_ID] [--execute]
+lifeos m365 files create-folder ALIAS --parent FOLDER_ITEM_ID|root --name NAME [--drive DRIVE_ID] [--execute]
 ```
-These require the `Files.ReadWrite` delegated scope, enabled per account with `"files": {"enabled": true}` in `m365-accounts.json`.
+These require `"files": {"enabled": true}` in `m365-accounts.json`, which requests `Files.ReadWrite.All` (the only file scope in UT's approved set; decision 0010). The writes also need `"write_enabled": true`.
 
 `search` uses the signed-in user's default drive unless `--drive` identifies another OneDrive or SharePoint document library. Its output includes both `item_id` and `drive_id`; preserve both because item IDs are scoped to a drive. `resolve-link` is the preferred entry point for a known Teams, SharePoint, or OneDrive URL: it returns the exact drive/item pair without requiring broad site enumeration. `meta` and `download` use that pair. Downloads refuse to overwrite an existing local path unless `--force` is explicit.
 
-UT reported admin consent granted for Microsoft Graph PowerShell on 2026-09-18, after the earlier `Files.ReadWrite` request hit an admin-approval wall. The local `ut` alias still has files disabled until post-approval re-consent and a real read are verified. When enabling it, run `lifeos m365 auth ut` and confirm that `effective_scopes` includes `Files.ReadWrite`, then resolve or search for a known file before assuming SharePoint access works. Leave files disabled if re-consent causes the existing mail, calendar, or contacts surfaces to fail.
+UT's tenant-wide consent for the shared Graph PowerShell client includes `Files.ReadWrite.All` but not `Files.ReadWrite` (checked 2026-10-02); user consent is blocked, which is why the narrow scope hit an admin-approval wall in September. Files were enabled for `ut` on 2026-10-02.
 
-The file surface is read-only and does not delete, upload, or replace remote content. There is no general rich Word-editing API. Any future Word edit path would require download, a local structured edit, an exact-target replacement upload, and readback verification; implement it only behind a dry-run-first plan and explicit execution gate.
+**Writes** (decision 0010): `upload` adds a new file and refuses an existing name, so it never overwrites; `replace` changes an existing file's contents with `If-Match` on the eTag read in the same run, so a file changed in between is refused; `create-folder` makes a folder. All are dry-run by default, print the destination and its current state, read back name and size, and log to `secrets/logs/mail-writes.jsonl` with service `m365-files`. Version history keeps the replaced version restorable. Uploads are capped at 250 MB. There is no delete, move, rename, or sharing change. Delegated access never exceeds what the user can do in the browser. Shared files are other people's records: treat each executed write as outward-facing and get approval per change.
+
+**OneNote is refused** for writes, and its pages are not readable either: UT has approved no `Notes.*` permission, and OneNote's binary files cannot be safely replaced. A notebook can be found and its metadata read; its content reaches the vault only by the user pasting or exporting it. There is no rich Word-editing API: a Word change means download, a local edit, and `replace`.

@@ -19,6 +19,7 @@ LIFEOS_LONG_HORIZON_DAYS="${LIFEOS_LONG_HORIZON_DAYS:-180}"
 . "${LIB_DIR}/google.sh"
 . "${LIB_DIR}/m365.sh"
 . "${LIB_DIR}/m365-planner.sh"
+. "${LIB_DIR}/m365-files.sh"
 . "${LIB_DIR}/mail-filters.sh"
 . "${LIB_DIR}/odoo.sh"
 . "${LIB_DIR}/slack.sh"
@@ -122,6 +123,9 @@ Usage:
   ./lifeos.sh m365 files resolve-link ALIAS URL [--json]
   ./lifeos.sh m365 files meta ALIAS ITEM_ID [--drive DRIVE_ID] [--json]
   ./lifeos.sh m365 files download ALIAS ITEM_ID --out PATH [--drive DRIVE_ID] [--force]
+  ./lifeos.sh m365 files upload ALIAS LOCAL_FILE --parent FOLDER_ITEM_ID|root [--drive DRIVE_ID] [--name NAME] [--execute]   # new file only; refuses an existing name
+  ./lifeos.sh m365 files replace ALIAS ITEM_ID --file LOCAL_FILE [--drive DRIVE_ID] [--execute]   # eTag-guarded; version history keeps the old copy
+  ./lifeos.sh m365 files create-folder ALIAS --parent FOLDER_ITEM_ID|root --name NAME [--drive DRIVE_ID] [--execute]   # no delete, move, rename, or sharing
   ./lifeos.sh m365 planner plans ALIAS [--json]   # plans shared with you; marks the ones configured in planner.plans
   ./lifeos.sh m365 planner buckets ALIAS --plan PLAN_ID [--json]
   ./lifeos.sh m365 planner tasks ALIAS --plan PLAN_ID [--bucket BUCKET_ID] [--mine] [--open] [--json]

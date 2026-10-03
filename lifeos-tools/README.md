@@ -44,7 +44,7 @@ lifeos doctor
 
 ## Layout
 - `lifeos.sh` — the CLI dispatcher (bootstrap, top-level commands, and the command `case`).
-- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `m365.sh`, `m365-planner.sh`, `mail-filters.sh`, `open-austin-org.sh`, `resume.sh`) over shared `common.sh`, plus render/auth/write helpers and the vendored `resume-theme/`. `lib/*.sh` is sourced; the `.py` files are invoked by path.
+- `lib/` — the implementation: feature modules (`trello.sh`, `google.sh`, `m365.sh`, `m365-planner.sh`, `m365-files.sh`, `mail-filters.sh`, `open-austin-org.sh`, `resume.sh`) over shared `common.sh`, plus render/auth/write helpers and the vendored `resume-theme/`. `lib/*.sh` is sourced; the `.py` files are invoked by path.
 - `pyproject.toml` / `uv.lock` — Python env manifest + lockfile (managed by `uv`; the `.venv` is git-ignored and rebuilt by `./lifeos.sh setup`).
 - `secrets/` — real secrets and their `.example` templates.
 - `qa/` — `--qa` snapshot output.
