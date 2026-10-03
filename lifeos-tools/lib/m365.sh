@@ -145,7 +145,7 @@ _m365_uri_encode() {
 }
 
 _m365_prepare_powershell_request() {
-    local method="$1" alias="$2" url="$3" body="$4" out="$5" pair key value separator header name headers_json scopes_json tenant input_file=""
+    local method="$1" alias="$2" url="$3" body="$4" out="$5" pair key value separator header name headers_json scopes_json tenant input_file="" output_file=""
     shift 5
     headers_json='{}'
     while [ "$#" -gt 0 ]; do
@@ -162,6 +162,11 @@ _m365_prepare_powershell_request() {
             --upload-file)
                 [ "$#" -ge 2 ] || { _err "--upload-file requires a path"; return 1; }
                 input_file="$2"
+                shift 2
+                ;;
+            --output-file)
+                [ "$#" -ge 2 ] || { _err "--output-file requires a path"; return 1; }
+                output_file="$2"
                 shift 2
                 ;;
             -H|--header)
@@ -189,7 +194,8 @@ _m365_prepare_powershell_request() {
         --argjson headers "$headers_json" \
         --argjson scopes "$scopes_json" \
         --arg input_file "$input_file" \
-        '{method: $method, uri: $uri, body: $body, tenant: $tenant, headers: $headers, scopes: $scopes} + (if $input_file != "" then {input_file: $input_file} else {} end)' > "$out"
+        --arg output_file "$output_file" \
+        '{method: $method, uri: $uri, body: $body, tenant: $tenant, headers: $headers, scopes: $scopes} + (if $input_file != "" then {input_file: $input_file} else {} end) + (if $output_file != "" then {output_file: $output_file} else {} end)' > "$out"
 }
 
 _m365_powershell_invoke() {
@@ -281,7 +287,17 @@ _m365_http_msal() {
     shift 4
     token="$(_m365_access_token "$alias")" || return 1
     response="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-response.XXXXXX")" || return 1
-    if [ "${1:-}" = "--upload-file" ]; then
+    if [ "${1:-}" = "--output-file" ]; then
+        # Raw file download: the bytes go straight to disk, following Graph's redirect to the pre-authenticated download URL.
+        local output="$2"
+        shift 2
+        http_code="$(curl -sS -L -o "$output" -w '%{http_code}' -X "$method" "$url" \
+            -H "Authorization: Bearer ${token}" "$@")" || { _err "Microsoft Graph request failed before receiving a response"; rm -f "$output"; return 1; }
+        case "$http_code" in
+            2??) rm -f "$response"; return 0 ;;
+            *) mv "$output" "$response" ;;
+        esac
+    elif [ "${1:-}" = "--upload-file" ]; then
         # Raw file upload: curl --upload-file sends the bytes; remaining args are headers.
         local upload="$2"
         shift 2
@@ -1110,7 +1126,7 @@ _m365_files_resolve_link() {
 }
 
 _m365_files_download() {
-    local alias="$1" item="$2" out="" drive="" force=0 url
+    local alias="$1" item="$2" out="" drive="" force=0 url tmp
     shift 2 2>/dev/null || true
     while [ "$#" -gt 0 ]; do
         case "$1" in
@@ -1127,7 +1143,10 @@ _m365_files_download() {
     [ "$force" -eq 1 ] || [ ! -e "$out" ] || { _err "Refusing to overwrite existing file: $out (use --force)"; return 1; }
     [ -d "$(dirname "$out")" ] || { _err "Output directory does not exist: $(dirname "$out")"; return 1; }
     url="$(_m365_files_item_url "$alias" "$item" "$drive")" || return 1
-    _m365_get "$alias" "${url}/content" > "$out" || { rm -f "$out"; return 1; }
+    # Office files and other binaries are not JSON, so the bytes go to a sibling temp file through the transport's output-file path and replace the target only on success.
+    tmp="$(mktemp "$(dirname "$out")/.lifeos-m365-download.XXXXXX")" || return 1
+    _m365_get "$alias" "${url}/content" --output-file "$tmp" > /dev/null || { rm -f "$tmp"; return 1; }
+    mv -f "$tmp" "$out" || { rm -f "$tmp"; return 1; }
     _say "Downloaded item ${item} -> ${out}"
 }
 
