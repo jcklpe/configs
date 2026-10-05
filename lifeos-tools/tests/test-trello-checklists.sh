@@ -43,6 +43,7 @@ _trello_get() {
               {"id":"%s","name":"Follow-up","checkItems":[]}
             ]' "$CL_A" "$ITEM_TAILOR" "$ITEM_SUBMIT_A" "$CL_B" "$ITEM_SUBMIT_B" "$CL_C"
             ;;
+        /cards/CARD1) printf '{"id":"eeeeeeeeeeeeeeeeeeeeeeee"}' ;;
         *) printf 'unexpected GET %s\n' "$1" >&2; return 1 ;;
     esac
 }
@@ -72,16 +73,16 @@ expect_call() {
     grep -q -F -- "$1" "$CALLS" || fail "expected write: $1"
 }
 
-##- add-checklist creates the checklist on the card, then each --item in order, at the bottom.
+##- add-checklist resolves a short link to the full card ID (POST /checklists rejects a short link), creates the checklist, then adds each --item in order, at the bottom.
 _trello_add_checklist --card "https://trello.com/c/CARD1/1-x" --name "Apply" --item "Tailor" --item "Submit" > /dev/null
-expect_call "POST /checklists idCard=CARD1 name=Apply pos=bottom"
+expect_call "POST /checklists idCard=eeeeeeeeeeeeeeeeeeeeeeee name=Apply pos=bottom"
 expect_call "POST /checklists/dddddddddddddddddddddddd/checkItems name=Tailor pos=bottom"
 expect_call "POST /checklists/dddddddddddddddddddddddd/checkItems name=Submit pos=bottom"
 [ "$(grep -n 'name=Tailor' "$CALLS" | cut -d: -f1)" -lt "$(grep -n 'name=Submit' "$CALLS" | cut -d: -f1)" ] || fail "items must be added in argument order"
 
 ##- add-checklist with no --item creates only the checklist.
 : > "$CALLS"
-_trello_add_checklist --card CARD1 --name "Empty" > /dev/null
+_trello_add_checklist --card eeeeeeeeeeeeeeeeeeeeeeee --name "Empty" > /dev/null
 [ "$(wc -l < "$CALLS" | tr -d ' ')" = "1" ] || fail "add-checklist without items must make exactly one write"
 
 ##- add-checklist-item resolves a unique checklist name to its ID.
