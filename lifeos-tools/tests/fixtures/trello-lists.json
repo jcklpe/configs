@@ -1,5 +1,6 @@
 [
   { "id": "list_ondeck", "name": "On Deck" },
   { "id": "list_snoozed", "name": "Snoozed" },
-  { "id": "list_parked", "name": "Parked" }
+  { "id": "list_parked", "name": "Parked" },
+  { "id": "list_followup", "name": "Follow Up Later" }
 ]

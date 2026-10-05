@@ -465,6 +465,158 @@ _trello_comment() {
         jq -r '"Added comment at " + (.date // "unknown date")'
 }
 
+##- Checklists: create a checklist, add items, and tick or untick items. Names resolve against the card's own checklists; an ambiguous or missing name fails and lists the candidates (decision 0006).
+
+# Resolve a checklist reference (24-hex id, or an exact checklist name on the card) to a checklist id.
+_trello_resolve_checklist_id() {
+    local card="$1" checklist_ref="$2" checklists matches count
+
+    [ -n "$checklist_ref" ] || { _err "Missing checklist"; return 1; }
+    if _looks_like_trello_id "$checklist_ref"; then
+        printf '%s\n' "$checklist_ref"
+        return 0
+    fi
+
+    checklists="$(_trello_get "/cards/${card}/checklists" --data-urlencode "fields=name")" || return 1
+    matches="$(printf '%s' "$checklists" | jq -r --arg name "$checklist_ref" '.[] | select(.name == $name) | .id')"
+    count="$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')"
+    if [ "$count" = "0" ]; then
+        _err "No checklist named '$checklist_ref' on card ${card}. Checklists: $(printf '%s' "$checklists" | jq -r '[.[].name] | if length == 0 then "(none)" else join(", ") end')"
+        return 1
+    fi
+    if [ "$count" != "1" ]; then
+        _err "Multiple checklists named '$checklist_ref' on card ${card}; use the checklist ID: $(printf '%s\n' "$matches" | paste -sd ' ' -)"
+        return 1
+    fi
+    printf '%s\n' "$matches"
+}
+
+# Resolve a check-item reference (24-hex id, or an exact item name) on a card to "<item id>\t<item name>".
+# --checklist narrows the search to one checklist; otherwise every checklist on the card is searched.
+_trello_resolve_check_item() {
+    local card="$1" item_ref="$2" checklist_ref="$3" checklist_id="" checklists matches count
+
+    [ -n "$item_ref" ] || { _err "Missing item"; return 1; }
+    if [ -n "$checklist_ref" ]; then
+        checklist_id="$(_trello_resolve_checklist_id "$card" "$checklist_ref")" || return 1
+    fi
+
+    checklists="$(_trello_get "/cards/${card}/checklists" --data-urlencode "checkItem_fields=name,state")" || return 1
+    matches="$(
+        printf '%s' "$checklists" |
+            jq -r --arg ref "$item_ref" --arg cl "$checklist_id" '
+              .[] | select($cl == "" or .id == $cl) | .name as $list
+              | (.checkItems // [])[] | select(.id == $ref or .name == $ref)
+              | .id + "\t" + .name + "\t" + $list'
+    )"
+    count="$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')"
+    if [ "$count" = "0" ]; then
+        _err "No checklist item '$item_ref' on card ${card}$([ -n "$checklist_ref" ] && printf ' in checklist %s' "$checklist_ref")"
+        return 1
+    fi
+    if [ "$count" != "1" ]; then
+        _err "Multiple checklist items match '$item_ref' on card ${card}; pass --checklist or the item ID:"
+        printf '%s\n' "$matches" | awk -F '\t' '{ printf "  - %s (in %s)\n", $1, $3 }' >&2
+        return 1
+    fi
+    printf '%s\n' "$matches" | cut -f1,2
+}
+
+_trello_add_checklist_items() {
+    local checklist_id="$1"
+    shift
+    local item
+    for item in "$@"; do
+        _trello_write POST "/checklists/${checklist_id}/checkItems" \
+            --data-urlencode "name=${item}" \
+            --data-urlencode "pos=bottom" >/dev/null \
+            || { _err "Failed to add item '${item}' to checklist ${checklist_id}"; return 1; }
+        _say "  Added item: ${item}"
+    done
+}
+
+_trello_add_checklist() {
+    local card="" name="" checklist_id
+    local items=()
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --card) card="$(_card_ref "$2")"; shift 2 ;;
+            --name) name="$2"; shift 2 ;;
+            --item) items+=("$2"); shift 2 ;;
+            *) _err "Unknown add-checklist option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$card" ] || { _err "add-checklist requires --card"; return 1; }
+    [ -n "$name" ] || { _err "add-checklist requires --name"; return 1; }
+
+    checklist_id="$(
+        _trello_write POST "/checklists" \
+            --data-urlencode "idCard=${card}" \
+            --data-urlencode "name=${name}" \
+            --data-urlencode "pos=bottom" | jq -r '.id // empty'
+    )"
+    [ -n "$checklist_id" ] || { _err "Failed to create checklist '${name}' on card ${card}"; return 1; }
+    _say "Created checklist: ${name} | id: ${checklist_id} | card: ${card}"
+    [ "${#items[@]}" -eq 0 ] || _trello_add_checklist_items "$checklist_id" "${items[@]}"
+}
+
+_trello_add_checklist_item() {
+    local card="" checklist_ref="" checklist_id
+    local items=()
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --card) card="$(_card_ref "$2")"; shift 2 ;;
+            --checklist) checklist_ref="$2"; shift 2 ;;
+            --text) items+=("$2"); shift 2 ;;
+            *) _err "Unknown add-checklist-item option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$card" ] || { _err "add-checklist-item requires --card"; return 1; }
+    [ -n "$checklist_ref" ] || { _err "add-checklist-item requires --checklist"; return 1; }
+    [ "${#items[@]}" -gt 0 ] || { _err "add-checklist-item requires --text"; return 1; }
+
+    checklist_id="$(_trello_resolve_checklist_id "$card" "$checklist_ref")" || return 1
+    _say "Checklist ${checklist_ref} (${checklist_id}) on card ${card}:"
+    _trello_add_checklist_items "$checklist_id" "${items[@]}"
+}
+
+# Shared body of check-item / uncheck-item. $1 is the Trello state to set: complete or incomplete.
+_trello_set_check_item_state() {
+    local state="$1" command="$2"
+    shift 2
+    local card="" item_ref="" checklist_ref="" resolved item_id item_name
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --card) card="$(_card_ref "$2")"; shift 2 ;;
+            --item) item_ref="$2"; shift 2 ;;
+            --checklist) checklist_ref="$2"; shift 2 ;;
+            *) _err "Unknown ${command} option: $1"; return 1 ;;
+        esac
+    done
+
+    _trello_write_ready || return 1
+    [ -n "$card" ] || { _err "${command} requires --card"; return 1; }
+    [ -n "$item_ref" ] || { _err "${command} requires --item"; return 1; }
+
+    resolved="$(_trello_resolve_check_item "$card" "$item_ref" "$checklist_ref")" || return 1
+    item_id="$(printf '%s' "$resolved" | cut -f1)"
+    item_name="$(printf '%s' "$resolved" | cut -f2)"
+    _trello_write PUT "/cards/${card}/checkItem/${item_id}" \
+        --data-urlencode "state=${state}" >/dev/null \
+        || { _err "Failed to set item '${item_name}' to ${state}"; return 1; }
+    _say "Set ${state}: ${item_name} | card: ${card}"
+}
+
+_trello_check_item() { _trello_set_check_item_state complete check-item "$@"; }
+_trello_uncheck_item() { _trello_set_check_item_state incomplete uncheck-item "$@"; }
+
 ##- Task chains: supersede (link predecessor <-> successor) and chain traversal.
 ##- Links live in labeled comments ("Continues in:" / "Continues from:"); see
 ##- docs/archive/lifeos-tools-v2.md "Active Theme: Trello Task Chains".
@@ -654,11 +806,17 @@ _trello_chain() {
     fi
 }
 
+# Lists whose cards are woken by a Butler scheduled rule keyed on the start date. A card in one of them
+# without a start date never wakes, so the renderer flags it. Comma-separated; defaults to Snoozed.
+_trello_snooze_lists() {
+    printf '%s\n' "${TRELLO_SNOOZE_LISTS:-Snoozed}"
+}
+
 _trello_render_cards() {
     local lists_file="$1"
     local cards_file="$2"
 
-    jq -r --slurpfile lists "$lists_file" '
+    jq -r --slurpfile lists "$lists_file" --arg snooze_lists "$(_trello_snooze_lists)" '
       def list_name($id):
         (($lists[0][] | select(.id == $id) | .name) // "Unknown list");
       def open_list_cards:
@@ -675,6 +833,19 @@ _trello_render_cards() {
             (((.checkItems // []) | length) | tostring)
           ) |
           join(", "));
+      def snooze_list($name):
+        ($snooze_lists | split(",") | map(gsub("^\\s+|\\s+$"; "")) | index($name)) != null;
+      def checklist_items:
+        ((.checklists // []) | map(select(((.checkItems // []) | length) > 0))) as $lists |
+        if ($lists | length) > 0 then
+          ($lists |
+            map(
+              "\n  - Checklist: " + (.name // "Checklist") + "\n" +
+              ((.checkItems // []) | sort_by(.pos // 0) |
+                map("    - [" + (if .state == "complete" then "x" else " " end) + "] " + (.name // "")) |
+                join("\n"))
+            ) | join(""))
+        else "" end;
       def description:
         if ((.desc // "") | length) > 0 then
           "\n  - Description:\n" + ((.desc // "") | quote_lines("    "))
@@ -708,12 +879,13 @@ _trello_render_cards() {
         (map(
           "- [" + (.name // "Untitled card") + "](" + (.url // "") + ")" +
           (if (.start // "") != "" then " | start: " + .start
-           elif list_name(.idList) == "Snoozed" then " | start: MISSING (snoozed card will never wake)"
+           elif snooze_list(list_name(.idList)) then " | start: MISSING (snoozed card will never wake)"
            else "" end) +
           (if (.due // "") != "" then " | due: " + .due else "" end) +
           (if (.dateLastActivity // "") != "" then " | last activity: " + .dateLastActivity else "" end) +
           (if (labels | length) > 0 then " | labels: " + labels else "" end) +
           (if (checklist_progress | length) > 0 then " | checklists: " + checklist_progress else "" end) +
+          checklist_items +
           description +
           comments
         ) | join("\n")) + "\n"
