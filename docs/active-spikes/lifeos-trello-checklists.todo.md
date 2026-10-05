@@ -2,7 +2,7 @@
 Concept: [lifeos-trello-checklists.md](lifeos-trello-checklists.md).
 
 ## Current State
-- 2026-10-05: commands, snapshot rendering, offline tests, and docs built. Full offline suite green. Live round trip not yet run.
+- 2026-10-05: commands, snapshot rendering, offline tests, and docs built; live round trip passed after one fix (below).
 
 ## To Do
 - [x] Dry-run default: no. Checklist writes are direct, matching every other Trello write; approval belongs to the calling workflow (decided 2026-10-05 when Aslan said to proceed).
@@ -12,9 +12,10 @@ Concept: [lifeos-trello-checklists.md](lifeos-trello-checklists.md).
 - [x] `trello check-item` / `uncheck-item --card CARD --item NAME_OR_ID [--checklist NAME_OR_ID]`. Ambiguous or missing names fail, list candidates, and write nothing.
 - [x] Offline tests: `tests/test-trello-checklists.sh` (stubbed API) and new cases in `tests/test-trello-renderers.sh`. Mutation-checked: removing the ambiguity check, forcing `complete` on uncheck, and hardcoding `Snoozed` each fail a test.
 - [x] `lifeos help`, README, and the `lifeos-trello` skill.
-- [ ] Live round trip on a real card: create a checklist, add an item, tick it, untick it, confirm with `sync`.
+- [x] 2026-10-05: live round trip on a real card: `add-checklist` with an item, `add-checklist-item`, `check-item`, `uncheck-item --checklist`, each confirmed in `sync` output (progress 1/2, then 0/2, items rendered with state). Left the checklist in place as real sub-tasks.
 
 ## Found in use (2026-10-05)
+- [x] `add-checklist` failed live with a 400: `POST /checklists` rejects a card short link in `idCard`, though other card endpoints accept one. It now resolves the reference to the full card ID first (`_trello_card_id`), and the stubbed test asserts the full ID is sent.
 - [x] The `start: MISSING` marker only checked a list literally named `Snoozed`, so a second board with a differently named snooze list got no warning. Added `TRELLO_SNOOZE_LISTS` (comma-separated, default `Snoozed`), documented in `.env.example` and the skill, with renderer tests.
 
 ## Ready For Human QA

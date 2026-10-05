@@ -522,6 +522,19 @@ _trello_resolve_check_item() {
     printf '%s\n' "$matches" | cut -f1,2
 }
 
+# Full 24-hex card ID for a card reference. Most card endpoints accept a short link, but POST /checklists
+# rejects one in idCard with a 400, so creation resolves it first.
+_trello_card_id() {
+    local card="$1" card_id
+    if _looks_like_trello_id "$card"; then
+        printf '%s\n' "$card"
+        return 0
+    fi
+    card_id="$(_trello_get "/cards/${card}" --data-urlencode "fields=id" | jq -r '.id // empty')" || true
+    [ -n "$card_id" ] || { _err "Could not resolve card ${card} to a card ID"; return 1; }
+    printf '%s\n' "$card_id"
+}
+
 _trello_add_checklist_items() {
     local checklist_id="$1"
     shift
@@ -551,6 +564,7 @@ _trello_add_checklist() {
     _trello_write_ready || return 1
     [ -n "$card" ] || { _err "add-checklist requires --card"; return 1; }
     [ -n "$name" ] || { _err "add-checklist requires --name"; return 1; }
+    card="$(_trello_card_id "$card")" || return 1
 
     checklist_id="$(
         _trello_write POST "/checklists" \
