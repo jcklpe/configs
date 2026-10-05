@@ -46,6 +46,10 @@ Usage:
   ./lifeos.sh trello rename-card --card CARD_ID_OR_URL --name NAME
   ./lifeos.sh trello set-desc --card CARD_ID_OR_URL --file FILE
   ./lifeos.sh trello comment --card CARD_ID_OR_URL (--text TEXT | --file FILE)
+  ./lifeos.sh trello add-checklist --card CARD_ID_OR_URL --name NAME [--item TEXT]...
+  ./lifeos.sh trello add-checklist-item --card CARD_ID_OR_URL --checklist NAME_OR_ID --text TEXT [--text TEXT]...
+  ./lifeos.sh trello check-item --card CARD_ID_OR_URL --item NAME_OR_ID [--checklist NAME_OR_ID]
+  ./lifeos.sh trello uncheck-item --card CARD_ID_OR_URL --item NAME_OR_ID [--checklist NAME_OR_ID]
   ./lifeos.sh trello create-label --name NAME [--color COLOR] [--board BOARD_ID]
   ./lifeos.sh trello add-label --card CARD_ID_OR_URL --label LABEL_ID_OR_NAME [--board BOARD_ID]
   ./lifeos.sh trello remove-label --card CARD_ID_OR_URL --label LABEL_ID_OR_NAME [--board BOARD_ID]
@@ -555,6 +559,10 @@ case "${1:-help}" in
             rename-card) shift 2; _trello_rename_card "$@" ;;
             set-desc) shift 2; _trello_set_desc "$@" ;;
             comment) shift 2; _trello_comment "$@" ;;
+            add-checklist) shift 2; _trello_add_checklist "$@" ;;
+            add-checklist-item) shift 2; _trello_add_checklist_item "$@" ;;
+            check-item) shift 2; _trello_check_item "$@" ;;
+            uncheck-item) shift 2; _trello_uncheck_item "$@" ;;
             create-label) shift 2; _trello_create_label "$@" ;;
             add-label) shift 2; _trello_add_label "$@" ;;
             remove-label) shift 2; _trello_remove_label "$@" ;;
