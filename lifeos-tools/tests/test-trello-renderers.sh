@@ -87,5 +87,42 @@ case "$got" in
     *"last activity"*) fail "a card with no dateLastActivity must render no last-activity clause; got: ${got}" ;;
 esac
 
+##- Checklist items render under the card, in Trello's position order, with their state; the progress count stays on the card line.
+got="$(line_for 'Card with a checklist')"
+case "$got" in
+    *"| checklists: Apply 1/2, Empty 0/0"*) : ;;
+    *) fail "the card line must keep its checklist progress; got: ${got}" ;;
+esac
+block="$(grep -A3 -F -- 'Card with a checklist' "$OUT")"
+expected="$(printf '  - Checklist: Apply\n    - [x] Tailor résumé\n    - [ ] Submit')"
+case "$block" in
+    *"$expected"*) : ;;
+    *) fail "checklist items must render in pos order with [x]/[ ] state; got: ${block}" ;;
+esac
+
+##- A checklist with no items renders no block.
+grep -q -F -- '- Checklist: Empty' "$OUT" && fail "an empty checklist must render no item block"
+
+##- Only Snoozed is a snooze list by default, so another list without a start date is not flagged.
+got="$(line_for 'Second snooze list, no start')"
+case "$got" in
+    *MISSING*) fail "a list outside TRELLO_SNOOZE_LISTS must not be flagged; got: ${got}" ;;
+esac
+
+##- TRELLO_SNOOZE_LISTS adds lists to the MISSING check, and Snoozed is only checked if it is named.
+TRELLO_SNOOZE_LISTS="Snoozed, Follow Up Later" _trello_render_cards \
+    "${SCRIPT_DIR}/fixtures/trello-lists.json" \
+    "${SCRIPT_DIR}/fixtures/trello-cards.json" > "$OUT"
+got="$(line_for 'Second snooze list, no start')"
+case "$got" in
+    *"| start: MISSING (snoozed card will never wake)"*) : ;;
+    *) fail "a card in a configured snooze list without a start date must be flagged; got: ${got}" ;;
+esac
+got="$(line_for 'Broken snooze, dragged by hand')"
+case "$got" in
+    *MISSING*) : ;;
+    *) fail "Snoozed must still be flagged when listed in TRELLO_SNOOZE_LISTS; got: ${got}" ;;
+esac
+
 rm -f "$OUT"
 printf 'ok: trello card renderer\n'
