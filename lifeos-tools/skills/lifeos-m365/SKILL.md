@@ -129,6 +129,8 @@ These commands operate on the signed-in user's default Outlook Contacts folder, 
 After any successful calendar or contact write, re-run the corresponding `sync` command to refresh the LifeOS snapshot.
 
 ## Planner
+Before any write the user has not already approved item by item, present the proposed changes as an approval slate using the `draft-approval-slate` skill.
+
 ```sh
 lifeos m365 planner plans ALIAS [--json]
 lifeos m365 planner buckets ALIAS --plan PLAN_ID [--json]

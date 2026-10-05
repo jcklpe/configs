@@ -37,5 +37,8 @@ Unlike Markdown, do not separate comment paragraphs with a blank line or an empt
 
 The one exception is a comment block long enough to carry distinct titled sections, where a blank line may separate one section from the next. Reach for it rarely — a comment block that needs internal section breaks usually signals over-commenting.
 
+## Approving Changes
+When proposing a batch of external or hard-to-reverse writes for the user to approve, use the `draft-approval-slate` skill if it is available: labeled items, the final copy that will ship, and current → proposed for edits. This applies even when the proposal comes up mid-conversation rather than inside a workflow.
+
 ## Keeping This In Sync
 The `## Markdown And Prose Style` section above is duplicated verbatim in `configs/AGENTS.md`, so that a reader of that repo in isolation still sees the rules. **Edit both, or neither.** If they ever disagree, the repo copy wins at load time, which is exactly the silent drift this note exists to prevent.
