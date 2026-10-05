@@ -70,6 +70,10 @@ lifeos trello snooze --card https://trello.com/c/abc123 --until 2026-09-09
 lifeos trello rename-card --card https://trello.com/c/abc123 --name "New title"
 lifeos trello set-desc --card https://trello.com/c/abc123 --file /tmp/card-desc.md
 lifeos trello comment --card https://trello.com/c/abc123 --text "Called today."
+lifeos trello add-checklist --card https://trello.com/c/abc123 --name "Steps" --item "Draft" --item "Send"
+lifeos trello add-checklist-item --card https://trello.com/c/abc123 --checklist "Steps" --text "Follow up"
+lifeos trello check-item --card https://trello.com/c/abc123 --item "Draft"
+lifeos trello uncheck-item --card https://trello.com/c/abc123 --item "Draft" --checklist "Steps"
 lifeos trello supersede --from https://trello.com/c/abc123 --to https://trello.com/c/def456
 lifeos trello supersede --create --from https://trello.com/c/abc123 --list "On Deck" --name "Follow up after vendor reply"
 lifeos trello chain --card https://trello.com/c/abc123

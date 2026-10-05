@@ -44,5 +44,48 @@
     "due": null,
     "labels": [],
     "desc": ""
+  },
+  {
+    "name": "Card with a checklist",
+    "idList": "list_ondeck",
+    "url": "https://trello.com/c/fff/6-checklist",
+    "start": null,
+    "due": null,
+    "labels": [],
+    "desc": "",
+    "checklists": [
+      {
+        "id": "cl1",
+        "name": "Apply",
+        "checkItems": [
+          {
+            "id": "i2",
+            "name": "Submit",
+            "state": "incomplete",
+            "pos": 200
+          },
+          {
+            "id": "i1",
+            "name": "Tailor r\u00e9sum\u00e9",
+            "state": "complete",
+            "pos": 100
+          }
+        ]
+      },
+      {
+        "id": "cl2",
+        "name": "Empty",
+        "checkItems": []
+      }
+    ]
+  },
+  {
+    "name": "Second snooze list, no start",
+    "idList": "list_followup",
+    "url": "https://trello.com/c/ggg/7-followup",
+    "start": null,
+    "due": null,
+    "labels": [],
+    "desc": ""
   }
 ]
