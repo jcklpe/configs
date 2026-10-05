@@ -24,6 +24,8 @@ Each card line carries `| last activity: <iso>`: Trello's `dateLastActivity`, th
 The snapshot groups cards by board heading. If multiple boards are configured, `list-lists` without an argument uses the first configured board; use `lifeos trello list-lists BOARD_ID` for a specific one, and pass `--board BOARD_ID` on writes to a non-default board. Run `list-lists` before using list names if the board taxonomy may have changed. Prefer card URLs or IDs for card operations.
 
 ## Writes
+Before any write the user has not already approved item by item, present the proposed changes as an approval slate using the `draft-approval-slate` skill.
+
 ```sh
 lifeos trello add-card --list "On Deck" --name "Task name" --desc "Optional description" [--board BOARD_ID]
 lifeos trello move-card --card CARD_ID_OR_URL --list Done [--board BOARD_ID]
@@ -42,9 +44,27 @@ lifeos trello snooze --card CARD_ID_OR_URL --until YYYY-MM-DD [--list LIST] [--b
 ```
 
 - Defaults to the `Snoozed` list; sets the card's `start` date to noon UTC on the given day (stable across US time zones). Leaves the due date untouched.
-- **The snapshot renders the wake date** as `| start: <iso>` on the card line, so a snooze can be audited from the vault without opening Trello. A card sitting in `Snoozed` with no start date renders `| start: MISSING (snoozed card will never wake)` — that is the signature of a card dragged into the list by hand, which Butler will never reactivate. Treat it as a bug to fix, not as an ordinary blank.
+- **Other snooze lists:** a board can use its own snooze list name with `--list`. Name every such list in `TRELLO_SNOOZE_LISTS` (comma-separated, default `Snoozed`) so the snapshot flags its cards that lack a start date.
+- **The snapshot renders the wake date** as `| start: <iso>` on the card line, so a snooze can be audited from the vault without opening Trello. A card sitting in a snooze list with no start date renders `| start: MISSING (snoozed card will never wake)` — that is the signature of a card dragged into the list by hand, which Butler will never reactivate. Treat it as a bug to fix, not as an ordinary blank.
 - **Reactivation is not this command's job.** A Butler scheduled rule on the board handles it (daily: collect cards in `Snoozed` whose start date is today/past → move to `On Deck`), so no cron or local scheduler is needed. Setup is one-time: create the `Snoozed` list and the Butler rule.
 - List semantics: `Waiting` = blocked on a reactive signal; `Parked` = deferred indefinitely; `Snoozed` = Parked with a wake date. Do **not** use the due-date field for snoozing (start date avoids the false-deadline semantics).
+
+Run `lifeos trello sync` after to refresh the snapshot.
+
+## Checklists (sub-tasks on a card)
+Checklists hold a card's sub-tasks; comments hold its history. Use a checklist for steps that will be ticked off, and a comment for what happened and when.
+
+```sh
+lifeos trello add-checklist --card CARD_ID_OR_URL --name NAME [--item TEXT]...
+lifeos trello add-checklist-item --card CARD_ID_OR_URL --checklist NAME_OR_ID --text TEXT [--text TEXT]...
+lifeos trello check-item --card CARD_ID_OR_URL --item NAME_OR_ID [--checklist NAME_OR_ID]
+lifeos trello uncheck-item --card CARD_ID_OR_URL --item NAME_OR_ID [--checklist NAME_OR_ID]
+```
+
+- Names resolve against the card's own checklists and items. A name that matches nothing, or more than one thing, fails and lists the candidates; pass `--checklist` or the ID to disambiguate. Nothing is written on a failed resolution.
+- Items are added at the bottom, in argument order. There is no delete, rename, or reorder.
+- Writes are direct, like the other Trello writes. Approval comes from the calling workflow, not a dry run.
+- The snapshot renders each checklist under its card as `- [x] item` / `- [ ] item`, and keeps the `| checklists: Name 1/3` progress on the card line.
 
 Run `lifeos trello sync` after to refresh the snapshot.
 
