@@ -82,9 +82,20 @@ source ${PLUGINS}/zsh-you-should-use/you-should-use.plugin.zsh
 alias python='python3';
 
 # trash-cli: safer rm (sends to trash instead of permanently deleting)
-# brew installs as 'trash', linux trash-cli also provides 'trash'
+# brew installs as 'trash', linux trash-cli also provides 'trash'; on macOS the one on PATH is Apple's /usr/bin/trash, which rejects rm flags
+# rm-style flags (-r, -f, -i, -d, -v and combinations like -rf, plus --recursive/--force) are dropped, because trash takes folders whole and has no use for them; /bin/rm still deletes permanently
 if command -v trash &>/dev/null; then
-    alias rm='trash'
+    unalias rm 2>/dev/null
+    rm() {
+        local args=() a end_of_opts=0 flag_re='^-[rRfidvI]+$'
+        for a in "$@"; do
+            if (( ! end_of_opts )) && [[ $a == -- ]]; then end_of_opts=1; continue; fi
+            if (( ! end_of_opts )) && [[ $a =~ $flag_re || $a == --recursive || $a == --force ]]; then continue; fi
+            [[ $a == -* ]] && a="./$a"  # a file named like a flag, kept by --, must not reach trash as a flag
+            args+=("$a")
+        done
+        trash "${args[@]}"
+    }
 fi
 
 # Mark zshrc as loaded (prevents double-loading when sourced from zprofile)
