@@ -156,6 +156,20 @@ Enable per alias with a `planner` block in `m365-accounts.json`: `enabled`, `wri
 
 Writes are dry-run by default and print the current task beside the change. They are limited to plans in `planner.plans`, refuse to run while `write_enabled` is false, and send `If-Match` with the etag read in the same run, so a task changed in between is refused rather than overwritten. Each executed write is read back and logged to `secrets/logs/mail-writes.jsonl` with service `m365-planner`. Due dates are stored at noon UTC to keep the calendar date stable across US time zones; progress has Planner's three states. `--desc` replaces the whole description. There is no delete and no comment command. Team plans are shared, so treat every write as outward-facing and get approval for each one. Decision record: `docs/decisions/0008-lifeos-m365-planner.md` in the configs repo.
 
+## Experimental Loop Browser CLI
+Loop has a separate browser-backed prototype. Install it with `uv sync --extra loop` in `lifeos-tools/` and the engine command in its README. Do not infer website authentication from a successful Graph profile call.
+
+```sh
+lifeos m365 loop login ALIAS [--url LOOP_URL]
+lifeos m365 loop status ALIAS LOOP_URL
+lifeos m365 loop read ALIAS LOOP_URL
+lifeos m365 loop append ALIAS LOOP_URL (--text TEXT | --file FILE) [--expect-sha256 HASH --execute]
+```
+
+`status`, `read`, and `append` launch separate headless Chromium with per-alias private browser state. They never scan debugging ports, attach to a working browser, copy existing browser profiles, or use the OS clipboard. `login` is an explicit headed window: let the user run it or obtain explicit agreement before opening it when uninterrupted desktop use matters. Sign into the account matching the alias and verify with a subsequent headless read; no browser identity check against Graph has been implemented.
+
+Only plain-text appends are implemented, dry-run by default. Before execution, show the exact append for approval unless already approved, obtain the current text hash from the preview, and require `files.write_enabled`. The hash detects stale text but is not an atomic concurrency guard. The tool verifies an append by reading from a second page and records attempts as local hashes. A possibly-applied error must be investigated by reading before any retry. As of 2026-10-06, the offline editor fixture passes, but live authenticated Loop editing still requires validation; do not claim live capability from that fixture alone.
+
 ## Files (OneDrive / SharePoint)
 ```sh
 lifeos m365 files search ALIAS "Work Plan" [--drive DRIVE_ID] [--json]
