@@ -1,14 +1,17 @@
 # LifeOS Loop Headless To Do
 ## Current State
-Opened 2026-10-06. Prototype built and installed. Dedicated login completed; two new headless CLI processes subsequently read the same live Canvas and reported editable status without another MFA prompt. Immediate browser-restart session reuse is verified. Longer session retention and live authoring remain unverified. No live Loop write authorized or performed; never open a headed window implicitly.
+Opened 2026-10-06. Prototype built and installed. Dedicated login completed; two new headless CLI processes subsequently read the same live Canvas and reported editable status without another MFA prompt. Immediate browser-restart session reuse is verified; longer retention remains unknown. A subsequently authorized live document transfer exposed unreliable multiline keyboard insertion and incomplete reads of virtualized pages. The transfer was corrected with one browser-local rich paste, and its entire text order and hyperlink targets were verified in a fresh browser with a sufficiently tall viewport. This task-specific repair is not implemented in the CLI. Do not use the current CLI append for live documents; never open a headed window implicitly.
 
 ## To Do
+- Replace rapid line-by-line keyboard appends with a verified browser-local paste path; do not replay the failed mutation. Preserve rich content when transferring a source document, and verify persistence before reporting success.
+- Read complete virtualized documents rather than the initially mounted viewport. Exclude collaboration decorations from text hashes and account for native Loop hyperlink spans during verification.
 - Measure session reuse after a longer delay if requested; immediate reuse does not establish the tenant's expiry interval.
 
 ## Ready for Human QA
-- Approve one concrete append to a disposable component, then verify live persistence. The Canvas reports editable status, but no actual live write has been attempted.
+- After the insertion and complete-read fixes, validate the CLI against a disposable live component with an explicitly approved payload. Offline fixtures missed the live virtualization and insertion-order problems.
 
 ## Done
+- Validate an explicitly authorized live source-document transfer. The first approximately 6 KB keyboard append reordered a section; page virtualization also made initial readbacks look truncated. A browser-local HTML/text paste repaired the content, preserved headings and hyperlink targets, and saved successfully. Fresh full-viewport verification matched every source paragraph in order and every linked reference. No task content, account identity, or source URLs belong in this public repository.
 - Inspect existing Microsoft 365 capability gates and upstream Loop browser automation. Existing Graph scopes do not supply a website session; dedicated profile authentication is required.
 - Build isolated headless status/read and plain-text append commands, with explicit login and dry-run-first execution. Implemented in `lib/m365-loop.py` and `lib/m365-loop.sh`, wired into `lifeos m365 loop`; optional Playwright dependency and isolated Chromium engines installed. Browser state and engines are ignored before use.
 - Verify browser isolation, clipboard-free insertion, stale-preview refusal, dry-run behavior, and persistence checks against an offline editor fixture. Browser fixtures pass, including preservation of existing inline formatting, profile locking, and possibly-applied errors without replaying the edit. The complete existing shell fixture suite passes; bash/zsh dispatch and shell syntax checks pass. Fixtures do not establish that the current live Loop UI works.
