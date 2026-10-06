@@ -181,6 +181,32 @@ Calendar and contact writes are dry-run by default and require `--execute`. Ther
 
 File access is disabled in the example account. Set `"files": {"enabled": true}` for an alias only after its tenant has approved `Files.ReadWrite`, then run `lifeos m365 auth ALIAS` again. `search` addresses the user's default drive unless `--drive DRIVE_ID` is supplied. `resolve-link` accepts an existing HTTPS OneDrive, SharePoint, or Teams sharing URL and returns the stable drive/item pair needed by `meta` and `download`. Downloads refuse to overwrite an existing local file unless `--force` is supplied. The CLI does not expose file deletion or a generic Graph request surface.
 
+## Experimental Loop Browser CLI
+Loop website authentication is separate from Graph. This adapter launches its own Chromium process and keeps each alias's browser profile in ignored `secrets/loop-browser/`; it never attaches to a working browser. Ordinary commands are headless. Only the explicit `login` command opens a separate window for Microsoft sign-in. No command uses the OS clipboard.
+
+Install the optional dependency and separate browser engine:
+
+```sh
+cd ~/configs/lifeos-tools
+uv sync --extra loop
+PLAYWRIGHT_BROWSERS_PATH="$PWD/tmp/loop-browser-engines" .venv/bin/python -m playwright install chromium
+lifeos m365 loop login ALIAS
+lifeos m365 loop status ALIAS LOOP_URL
+lifeos m365 loop read ALIAS LOOP_URL
+lifeos m365 loop append ALIAS LOOP_URL --text 'Proposed note'
+lifeos m365 loop append ALIAS LOOP_URL --text 'Proposed note' --expect-sha256 HASH_FROM_PREVIEW --execute
+```
+
+Sign into the account matching the alias, then close the dedicated login window. Verify authentication with `status` or `read`; closing the window alone does not establish authentication. A normal `uv sync` without `--extra loop` can remove the optional dependency; re-enable it with the command above.
+
+This prototype reads visible Canvas text and appends plain text. It does not promise Markdown formatting or edit existing blocks. Appends are dry-run by default, use the existing `files.enabled` / `files.write_enabled` gates, and require a current text hash for execution. That hash is not an atomic concurrency guard against collaborators. An executed append is read back from a second page; uncertain results are reported as possibly applied and never retried automatically. Attempts are logged locally with hashes in the private profile directory. No live authenticated Loop append has been verified yet (2026-10-06); the editor flow has been tested against an offline fixture.
+
+The browser fixture test uses an isolated headless engine, blocks external requests, and checks plain-text appends, preservation of existing inline formatting, dry-run behavior, stale hashes, ambiguous editors, concurrent profile access, and uncertain save handling:
+
+```sh
+.venv/bin/python tests/test-m365-loop.py -v
+```
+
 ## Odoo
 Odoo Project reads use the Odoo 19 JSON-2 API. Copy `secrets/odoo-accounts.example.json` to the ignored `secrets/odoo-accounts.json`, set `ODOO_API_KEY` in the ignored `secrets/.env` file, and use `lifeos odoo accounts` plus `lifeos doctor` to verify setup without printing the key. An account may name a different variable in `api_key_env` when multiple aliases need separate keys.
 
