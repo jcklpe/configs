@@ -172,6 +172,8 @@ Use the same full Chromium engine for headed login and headless commands. ShareP
 
 Only plain-text appends are implemented, dry-run by default. Before execution, show the exact append for approval unless already approved, obtain the current text hash from the preview, and require `files.write_enabled`. The hash detects stale text but is not an atomic concurrency guard. The tool verifies an append by reading from a second page and records attempts as local hashes. A possibly-applied error must be investigated by reading before any retry. As of 2026-10-06, the offline editor fixture passes, but live authenticated Loop editing still requires validation; do not claim live capability from that fixture alone.
 
+Later live validation on 2026-10-06 found that multiline keyboard insertion can reorder content and that virtualized pages make the current read/hash incomplete. Do not execute CLI appends on live notes pending fixes. A task-specific browser-local rich paste was successfully verified against the complete source text and link targets in a fresh full-document viewport; this is not implemented as a CLI capability. Native Loop links render as `span[role=link]` with a URL in the first line of `title`, rather than HTML anchor tags. Never infer a missing link solely from a zero anchor count.
+
 ## Files (OneDrive / SharePoint)
 ```sh
 lifeos m365 files search ALIAS "Work Plan" [--drive DRIVE_ID] [--json]

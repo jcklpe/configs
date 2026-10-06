@@ -203,6 +203,8 @@ Login and headless commands use the same full Chromium engine. SharePoint `.loop
 
 This prototype reads visible Canvas text and appends plain text. It does not promise Markdown formatting or edit existing blocks. Appends are dry-run by default, use the existing `files.enabled` / `files.write_enabled` gates, and require a current text hash for execution. That hash is not an atomic concurrency guard against collaborators. An executed append is read back from a second page; uncertain results are reported as possibly applied and never retried automatically. Attempts are logged locally with hashes in the private profile directory. No live authenticated Loop append has been verified yet (2026-10-06); the editor flow has been tested against an offline fixture.
 
+Live validation on 2026-10-06 exposed limitations the fixture missed: long Loop documents render only nearby pages, so the current read/hash may omit content, and rapid multiline keyboard insertion can reorder text. Do not execute the current CLI append against live notes until these are fixed. A separately authorized transfer was repaired successfully with one browser-local rich paste and verified in a fresh full-document viewport; that repair path is not yet a CLI command.
+
 The browser fixture test uses an isolated headless engine, blocks external requests, and checks plain-text appends, preservation of existing inline formatting, dry-run behavior, stale hashes, ambiguous editors, concurrent profile access, and uncertain save handling:
 
 ```sh
