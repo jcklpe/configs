@@ -115,6 +115,8 @@ lifeos m365 mail folders ut
 lifeos m365 mail attachments ut --message MESSAGE_ID --save ~/Downloads
 lifeos m365 mail categorize ut --category hai --message MESSAGE_ID --execute
 lifeos m365 mail list ut --folder archive --limit 10
+lifeos m365 mail list ut --search 'subject:"weekly update"'
+lifeos m365 mail read ut --message MESSAGE_ID
 lifeos m365 mail archive ut --message MESSAGE_ID --execute
 lifeos m365 mail unarchive ut --message NEW_MESSAGE_ID --execute
 lifeos m365 mail move ut --folder "Inbox/Receipts" --message MESSAGE_ID
@@ -173,7 +175,7 @@ The default `graph-powershell` provider asks for delegated `User.Read`, `Mail.Re
 
 The optional `msal` provider remains available when a dedicated public-client application ID is available. Set `"auth_provider": "msal"`, `client_id`, and `token_path` in the ignored account config. Do not create a client secret or add application permissions.
 
-Mail snapshots are bounded by the alias's days, count, and body limits. `mail folders` and `mail list` read the folder tree and a folder's messages. Moves need `mail.write_enabled` in the alias config (which requests `Mail.ReadWrite`), never target Deleted Items, Junk, Drafts, Sent, or Outbox, and give each moved message a new ID. `mail junk` and `mail not-junk` review Junk Email and rescue misfiled mail to the Inbox. See the `lifeos-m365` skill. Calendar sync uses Graph calendar views over the normal LifeOS date window. Contact sync reads only the user's default Outlook Contacts folder and does not recurse through additional contact folders. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` snapshots go to ignored `lifeos-tools/qa/m365/`.
+Mail snapshots are bounded by the alias's days, count, and body limits. `mail folders` and `mail list` read the folder tree and a folder's messages; `mail list --search` searches every folder except Junk Email, and `mail read` prints one message's full text from any folder. Moves need `mail.write_enabled` in the alias config (which requests `Mail.ReadWrite`), never target Deleted Items, Junk, Drafts, Sent, or Outbox, and give each moved message a new ID. `mail junk` and `mail not-junk` review Junk Email and rescue misfiled mail to the Inbox. See the `lifeos-m365` skill. Calendar sync uses Graph calendar views over the normal LifeOS date window. Contact sync reads only the user's default Outlook Contacts folder and does not recurse through additional contact folders. Production snapshots go to `$LIFEOS_VAULT_PATH/sources/m365/`; `--qa` snapshots go to ignored `lifeos-tools/qa/m365/`.
 
 Calendar and contact writes are dry-run by default and require `--execute`. There are no delete commands. Calendar writes are restricted to configured writable calendar IDs. Because Microsoft can send invitations or meeting updates for attendee-bearing events, those writes also require `--notify` as an explicit acknowledgement; unlike the Google API, Graph does not expose it here as a suppress-delivery switch. During contact updates, supplied email or phone values replace that complete field array. See the `lifeos-m365` skill for the full safety model.
 

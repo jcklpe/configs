@@ -100,7 +100,8 @@ Usage:
   ./lifeos.sh m365 profile ALIAS [--json]
   ./lifeos.sh m365 mail sync ALIAS [--qa | --output FILE]
   ./lifeos.sh m365 mail folders ALIAS [--json]
-  ./lifeos.sh m365 mail list ALIAS --folder NAME_PATH_OR_ID [--limit N] [--json]
+  ./lifeos.sh m365 mail list ALIAS (--folder NAME_PATH_OR_ID | --search KQL)... [--limit N] [--json]   # metadata and web link; a search without --folder skips Junk Email
+  ./lifeos.sh m365 mail read ALIAS --message ID [--full] [--json]   # one message from any folder: recipients, text body, attachment names
   ./lifeos.sh m365 mail archive ALIAS (--message ID | --ids-file FILE)... [--execute]   # Inbox -> Archive
   ./lifeos.sh m365 mail unarchive ALIAS (--message ID | --ids-file FILE)... [--execute]   # Archive -> Inbox
   ./lifeos.sh m365 mail move ALIAS --folder NAME_PATH_OR_ID (--message ID | --ids-file FILE)... [--execute]

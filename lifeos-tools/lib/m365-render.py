@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render bounded Microsoft Graph mail, calendar, contact, and Planner snapshots."""
+"""Render bounded Microsoft Graph mail, calendar, contact, and Planner snapshots, and single mail messages."""
 
 import argparse
 import html
@@ -115,6 +115,16 @@ def unsubscribe_line(message):
     return value + (" (one-click supported)" if one_click else "")
 
 
+def recipients(message, key):
+    return ", ".join(filter(None, (address(item) for item in message.get(key) or [])))
+
+
+def message_body(message, body_limit):
+    body = message.get("body") or {}
+    content = clean_text(body.get("content") or message.get("bodyPreview") or "", body.get("contentType"))
+    return truncate(content, body_limit) if body_limit > 0 else content
+
+
 def render_mail(args, data):
     lines = [
         f"# Microsoft 365 Mail - {args.alias}",
@@ -138,15 +148,14 @@ def render_mail(args, data):
         return "\n".join(lines) + "\n"
     for message in messages:
         subject = message.get("subject") or "(no subject)"
-        body = message.get("body") or {}
-        content = truncate(clean_text(body.get("content") or message.get("bodyPreview") or "", body.get("contentType")), args.body_limit)
+        content = message_body(message, args.body_limit)
         lines.extend(
             [
                 f"### {message.get('receivedDateTime') or 'unknown date'} - {subject}",
                 "",
                 f"- From: {address(message.get('from')) or 'unknown'}",
-                f"- To: {', '.join(filter(None, (address(item) for item in message.get('toRecipients') or [])))}",
-                f"- Cc: {', '.join(filter(None, (address(item) for item in message.get('ccRecipients') or [])))}",
+                f"- To: {recipients(message, 'toRecipients')}",
+                f"- Cc: {recipients(message, 'ccRecipients')}",
                 f"- Importance: {message.get('importance') or 'normal'}",
                 f"- Read: {'yes' if message.get('isRead') else 'no'}",
                 f"- Attachments: {'yes' if message.get('hasAttachments') else 'no'}",
@@ -164,6 +173,44 @@ def render_mail(args, data):
             lines.extend(["- Body:", "", quote(content), ""])
         else:
             lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def attachment_summary(item):
+    parts = [item.get("name") or "(unnamed)", item.get("contentType") or "", f"{item.get('size') or 0} bytes"]
+    if item.get("isInline"):
+        parts.append("inline")
+    return " | ".join(part for part in parts if part)
+
+
+def render_message(args, message):
+    """One message read by ID from any folder; the same fields as the Inbox snapshot plus folder, sent time, Bcc, and attachment names."""
+    lines = [f"# {message.get('subject') or '(no subject)'}", ""]
+    fields = [
+        ("Received", message.get("receivedDateTime")),
+        ("Sent", message.get("sentDateTime")),
+        ("From", address(message.get("from")) or "unknown"),
+        ("To", recipients(message, "toRecipients")),
+        ("Cc", recipients(message, "ccRecipients")),
+        ("Bcc", recipients(message, "bccRecipients")),
+        ("Reply-To", recipients(message, "replyTo")),
+        ("Folder", message.get("folder")),
+        ("Read", "yes" if message.get("isRead") else "no"),
+        ("Draft", "yes" if message.get("isDraft") else ""),
+        ("Importance", message.get("importance") or "normal"),
+        ("Categories", ", ".join(message.get("categories") or [])),
+        ("Conversation ID", f"`{message['conversationId']}`" if message.get("conversationId") else ""),
+        ("Message ID", f"`{message.get('id') or ''}`"),
+        ("Outlook", message.get("webLink")),
+        ("Unsubscribe", unsubscribe_line(message)),
+    ]
+    lines.extend(f"- {label}: {value}" for label, value in fields if value)
+    attachments = message.get("attachments") or []
+    if attachments:
+        lines.append("- Attachments:")
+        lines.extend(f"  - {attachment_summary(item)}" for item in attachments)
+    content = message_body(message, args.body_limit)
+    lines.extend(["- Body:", "", quote(content) if content else "    _No body text._"])
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -411,6 +458,9 @@ def main(argv):
     contacts = subparsers.choices["contacts"]
     contacts.add_argument("--max-results", required=True, type=int)
     contacts.add_argument("--notes-limit", required=True, type=int)
+    message = subparsers.add_parser("message")
+    message.add_argument("--input", required=True)
+    message.add_argument("--body-limit", required=True, type=int, help="0 prints the whole body")
     planner = subparsers.add_parser("planner")
     planner.add_argument("--alias", required=True)
     planner.add_argument("--email", required=True)
@@ -425,6 +475,8 @@ def main(argv):
         output = render_mail(args, data)
     elif args.command == "calendar":
         output = render_calendar(args, data)
+    elif args.command == "message":
+        output = render_message(args, data)
     elif args.command == "planner":
         output = render_planner(args, data)
     else:

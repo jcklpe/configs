@@ -1283,45 +1283,116 @@ _m365_mail_folders() {
     fi
 }
 
+_M365_MAIL_LIST_SELECT='id,conversationId,subject,from,receivedDateTime,isRead,hasAttachments,categories,webLink,parentFolderId'
+_M365_MAIL_READ_SELECT='id,conversationId,subject,from,toRecipients,ccRecipients,bccRecipients,replyTo,receivedDateTime,sentDateTime,body,bodyPreview,hasAttachments,isRead,isDraft,importance,webLink,internetMessageHeaders,categories,parentFolderId'
+
+# List the newest messages in one folder, or search with KQL (Graph $search) in one folder or across the mailbox. A mailbox-wide search leaves out Junk Email; pass --folder junkemail to search it.
 _m365_mail_list() {
-    local alias="${1:-}" folder_spec="" limit=25 json_mode=0 tree folder folder_id data
+    local alias="${1:-}" folder_spec="" search="" limit=25 json_mode=0 dir tree folder="null" folder_id url query junk_path
     [ -n "$alias" ] || { _err "m365 mail list requires ALIAS"; return 1; }
     shift || true
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --folder) [ -n "${2:-}" ] || { _err "--folder requires NAME, PATH, or ID"; return 1; }; folder_spec="$2"; shift 2 ;;
+            --search) [ -n "${2:-}" ] || { _err "--search requires a KQL query"; return 1; }; search="$2"; shift 2 ;;
             --limit) [ -n "${2:-}" ] || { _err "--limit requires N"; return 1; }; limit="$2"; shift 2 ;;
             --json) json_mode=1; shift ;;
             *) _err "Unknown m365 mail list option: $1"; return 1 ;;
         esac
     done
-    [ -n "$folder_spec" ] || { _err "m365 mail list requires --folder"; return 1; }
+    [ -n "$folder_spec" ] || [ -n "$search" ] || { _err "m365 mail list requires --folder, --search, or both"; return 1; }
     case "$limit" in ''|*[!0-9]*) _err "--limit must be a positive integer"; return 1 ;; esac
     [ "$limit" -ge 1 ] && [ "$limit" -le 200 ] || { _err "--limit must be between 1 and 200"; return 1; }
     _m365_require_enabled "$alias" mail || return 1
-    tree="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-folder-tree.XXXXXX")" || return 1
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-mail-list.XXXXXX")" || return 1
+    tree="${dir}/tree.json"
     _m365_mail_folder_tree "$alias" "$tree" || return 1
-    folder="$(_m365_mail_resolve_folder "$tree" "$folder_spec")" || return 1
-    folder_id="$(printf '%s' "$folder" | jq -r '.id')"
-    data="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-folder-messages.XXXXXX")" || return 1
-    _m365_get_paginated "$alias" "$limit" "$data" "$(_m365_graph_base "$alias")/me/mailFolders/$(_m365_uri_encode "$folder_id")/messages" \
-        --data-urlencode "\$top=${limit}" \
-        --data-urlencode "\$orderby=receivedDateTime desc" \
-        --data-urlencode "\$select=id,conversationId,subject,from,receivedDateTime,isRead,hasAttachments,categories" || return 1
-    if [ "$json_mode" -eq 1 ]; then
-        jq --argjson folder "$folder" '{folder: $folder, value: (.value // [])}' "$data"
+    if [ -n "$folder_spec" ]; then
+        folder="$(_m365_mail_resolve_folder "$tree" "$folder_spec")" || return 1
+        folder_id="$(printf '%s' "$folder" | jq -r '.id')"
+        url="$(_m365_graph_base "$alias")/me/mailFolders/$(_m365_uri_encode "$folder_id")/messages"
     else
-        _say "Folder: $(printf '%s' "$folder" | jq -r '.path') ($(printf '%s' "$folder" | jq -r '.totalItemCount // 0') total)"
-        jq -r '(.value // [])[] |
-          "- " + (.receivedDateTime // "") +
-          " | from: " + (.from.emailAddress.name // .from.emailAddress.address // "") +
-          " <" + (.from.emailAddress.address // "") + ">" +
-          " | " + (.subject // "(no subject)") +
-          (if .isRead then "" else " | unread" end) +
-          (if ((.categories // []) | length) > 0 then " | categories: " + (.categories | join(", ")) else "" end) +
-          "\n  message_id: " + (.id // "")
-        ' "$data"
+        url="$(_m365_graph_base "$alias")/me/messages"
     fi
+    if [ -n "$search" ]; then
+        # Graph wants the whole query in double quotes; quotes inside it are escaped. $search returns newest first and cannot be combined with $orderby.
+        query="\"$(printf '%s' "$search" | sed 's/\\/\\\\/g; s/"/\\"/g')\""
+        _m365_get_paginated "$alias" "$limit" "${dir}/messages.json" "$url" \
+            --data-urlencode "\$search=${query}" \
+            --data-urlencode "\$top=${limit}" \
+            --data-urlencode "\$select=${_M365_MAIL_LIST_SELECT}" || return 1
+    else
+        _m365_get_paginated "$alias" "$limit" "${dir}/messages.json" "$url" \
+            --data-urlencode "\$top=${limit}" \
+            --data-urlencode "\$orderby=receivedDateTime desc" \
+            --data-urlencode "\$select=${_M365_MAIL_LIST_SELECT}" || return 1
+    fi
+    # Name each message's folder by its path; a mailbox-wide search drops Junk Email and its subfolders.
+    junk_path="$(jq -r '.[] | select(.wellKnown == "junkemail") | .path' "$tree")"
+    jq --slurpfile tree "$tree" --argjson folder "$folder" --arg search "$search" --arg junk "$junk_path" '
+      ($tree[0] | map({key: .id, value: .path}) | from_entries) as $paths |
+      [(.value // [])[] | . + {folderPath: ($paths[.parentFolderId // ""] // "(folder not listed)")}] as $all |
+      (if $folder == null and $junk != "" then [$all[] | select(.folderPath != $junk and (.folderPath | startswith($junk + "/") | not))] else $all end) as $kept |
+      {folder: $folder, search: (if $search == "" then null else $search end), excludedJunk: (($all | length) - ($kept | length)), value: $kept}
+    ' "${dir}/messages.json" > "${dir}/result.json" || return 1
+    if [ "$json_mode" -eq 1 ]; then
+        cat "${dir}/result.json"
+    else
+        jq -r '
+          (.search != null) as $searching |
+          (if .search == null then "Folder: " + .folder.path + " (" + ((.folder.totalItemCount // 0) | tostring) + " total)"
+           else "Search: " + .search + " | " + (if .folder == null then "all folders except Junk Email" else "folder: " + .folder.path end) + " | " + ((.value | length) | tostring) + " found" +
+             (if .excludedJunk > 0 then " (" + (.excludedJunk | tostring) + " more in Junk Email left out)" else "" end) end),
+          (.value[] |
+            "- " + (.receivedDateTime // "") +
+            " | from: " + (.from.emailAddress.name // .from.emailAddress.address // "") +
+            " <" + (.from.emailAddress.address // "") + ">" +
+            " | " + (.subject // "(no subject)") +
+            (if .isRead then "" else " | unread" end) +
+            (if ((.categories // []) | length) > 0 then " | categories: " + (.categories | join(", ")) else "" end) +
+            (if $searching then " | folder: " + .folderPath else "" end) +
+            "\n  message_id: " + (.id // "") +
+            (if .webLink then "\n  outlook: " + .webLink else "" end))
+        ' "${dir}/result.json"
+    fi
+    rm -rf "$dir"
+}
+
+# Read one message by exact ID from any folder: headers, recipients, text body, attachment names, folder, and web link. Read-only; the body is capped at mail.body_character_limit unless --full.
+_m365_mail_read() {
+    local alias="${1:-}" message_id="" json_mode=0 full=0 dir base folder_id body_limit
+    [ -n "$alias" ] || { _err "m365 mail read requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --message) [ -n "${2:-}" ] || { _err "--message requires ID"; return 1; }; message_id="$2"; shift 2 ;;
+            --full) full=1; shift ;;
+            --json) json_mode=1; shift ;;
+            *) _err "Unknown m365 mail read option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$message_id" ] || { _err "m365 mail read requires --message ID"; return 1; }
+    _m365_require_enabled "$alias" mail || return 1
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-mail-read.XXXXXX")" || return 1
+    base="$(_m365_graph_base "$alias")"
+    _m365_get "$alias" "${base}/me/messages/$(_m365_uri_encode "$message_id")" \
+        --data-urlencode "\$select=${_M365_MAIL_READ_SELECT}" \
+        --data-urlencode "\$expand=attachments(\$select=id,name,contentType,size,isInline)" \
+        -H 'Prefer: outlook.body-content-type="text"' > "${dir}/message.json" || return 1
+    # The folder name is a convenience; a failed lookup leaves it out rather than failing the read.
+    folder_id="$(jq -r '.parentFolderId // empty' "${dir}/message.json")"
+    if [ -z "$folder_id" ] || ! _m365_get "$alias" "${base}/me/mailFolders/$(_m365_uri_encode "$folder_id")" --data-urlencode "\$select=id,displayName" > "${dir}/folder.json" 2>/dev/null; then
+        printf '{}\n' > "${dir}/folder.json"
+    fi
+    jq --slurpfile f "${dir}/folder.json" '. + {folder: ($f[0].displayName // null)}' "${dir}/message.json" > "${dir}/read.json" || return 1
+    if [ "$json_mode" -eq 1 ]; then
+        cat "${dir}/read.json"
+    else
+        body_limit=0
+        [ "$full" -eq 1 ] || body_limit="$(_m365_account_value "$alias" '.mail.body_character_limit // 8000')" || body_limit=8000
+        _m365_render_helper message --body-limit "$body_limit" --input "${dir}/read.json" || return 1
+    fi
+    rm -rf "$dir"
 }
 
 # Shared engine for move, archive, and unarchive. REQUIRED_SOURCE is a folder spec every message must currently sit in, or empty for no source rule.
@@ -1676,6 +1747,7 @@ _m365_dispatch() {
                 sync) shift 2; _m365_mail_sync "$@" ;;
                 folders) shift 2; _m365_mail_folders "$@" ;;
                 list) shift 2; _m365_mail_list "$@" ;;
+                read) shift 2; _m365_mail_read "$@" ;;
                 move) shift 2; _m365_mail_move "$@" ;;
                 archive) shift 2; _m365_mail_archive "$@" ;;
                 unarchive) shift 2; _m365_mail_unarchive "$@" ;;

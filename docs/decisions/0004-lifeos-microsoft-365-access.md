@@ -12,7 +12,7 @@ Add Microsoft 365 as a separate `lifeos m365` command group using delegated Micr
 The permission and capability boundary is:
 
 - `User.Read` to verify the authenticated mailbox identity.
-- `Mail.Read` for bounded read-only Inbox snapshots. There are no mail send, reply, forward, move, mark-read, archive, or delete commands. *(Amended 2026-09-29 by [0007](0007-mail-archive-and-labels.md): opt-in archive and folder moves, with `Mail.ReadWrite`; send and delete stay out.)*
+- `Mail.Read` for bounded read-only Inbox snapshots. There are no mail send, reply, forward, move, mark-read, archive, or delete commands. *(Amended 2026-09-29 by [0007](0007-mail-archive-and-labels.md): opt-in archive and folder moves, with `Mail.ReadWrite`; send and delete stay out.)* *(Amended 2026-10-05: on-demand reads of any folder except Junk Email, which is read only when named: `mail list --search` and `mail read` print one search or one message to stdout. Still `Mail.Read` only; the `sources/` snapshot stays Inbox-only.)*
 - `Calendars.ReadWrite` for bounded calendar views plus event create/update. Writes are dry-run by default, require `--execute`, are restricted to configured writable calendar IDs, and expose no delete command.
 - `Contacts.ReadWrite` for the default Outlook Contacts folder plus contact create/update. Writes are dry-run by default, require `--execute`, require exact contact IDs for updates, and expose no delete command.
 
