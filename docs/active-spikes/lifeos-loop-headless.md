@@ -7,6 +7,8 @@ Start with explicit login, document status, readable text, and dry-run-first pla
 ## Authentication
 Graph authentication does not authenticate the Loop website. Each configured alias gets an independent browser profile under ignored `lifeos-tools/secrets/loop-browser/`. The only headed operation is an explicit `login` command. Never attach to, copy, or scan existing browser profiles or debugging ports. Reauthentication may be necessary when the tenant session expires.
 
+Use full Chromium for both headed and headless launches. On 2026-10-06, the default headless shell stalled on Microsoft's blank “Working…” authentication page, while full Chromium reused the signed-in profile successfully. Allow silent redirects to finish before classifying a login requirement. SharePoint file URLs from Graph may download the binary; request `web=1` for a `.loop` URL without an existing browser-view parameter. Two new headless CLI processes successfully read the live Canvas and reported editable status after the sign-in browser closed. This proves immediate reuse, not any specific session lifetime or a persisted live edit.
+
 ## Editing
 Use browser-local selection and Playwright keyboard insertion. Do not use the OS clipboard, even when headless. Executed appends require a hash from the current text and an enabled file-write capability. The hash detects a stale preview but cannot provide an atomic concurrency guard against another editor. Verify persistence from a separate page; uncertain results are reported as possibly applied and never retried automatically.
 

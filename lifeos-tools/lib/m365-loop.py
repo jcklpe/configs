@@ -14,7 +14,7 @@ from pathlib import Path
 import re
 import sys
 import time
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 TOOLS_DIR = Path(__file__).resolve().parents[1]
 PRIVATE_ROOT = TOOLS_DIR / "secrets" / "loop-browser"
@@ -99,6 +99,7 @@ def browser_session(alias: str, *, headed: bool = False):
         try:
             context = pw.chromium.launch_persistent_context(
                 str(directory / "profile"), headless=not headed,
+                channel="chromium",
                 accept_downloads=False, viewport={"width": 1280, "height": 900},
                 timeout=20_000,
             )
@@ -116,30 +117,43 @@ def browser_session(alias: str, *, headed: bool = False):
                 context.close()
 
 
-def locate_editor(page, timeout: float = 25):
+def locate_editor(page, timeout: float = 45):
+    from playwright.sync_api import Error as BrowserError
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
-        host = (urlsplit(page.url).hostname or "").lower()
-        if host in {"login.microsoftonline.com", "login.live.com"} or host.endswith(".login.microsoftonline.com"):
-            raise LoginRequired("The isolated browser needs a Microsoft sign-in. Run 'lifeos m365 loop login ALIAS' yourself.")
         candidates = []
-        for frame in page.frames:
-            for selector in EDITOR_SELECTORS:
-                locator = frame.locator(selector)
-                for i in range(locator.count()):
-                    candidate = locator.nth(i)
-                    if candidate.is_visible():
-                        candidates.append(candidate)
+        try:
+            for frame in page.frames:
+                for selector in EDITOR_SELECTORS:
+                    locator = frame.locator(selector)
+                    for i in range(locator.count()):
+                        candidate = locator.nth(i)
+                        if candidate.is_visible():
+                            candidates.append(candidate)
+        except BrowserError as exc:
+            # Silent authentication can replace a frame while its editor is being queried.
+            if "Execution context was destroyed" not in str(exc) and "Frame was detached" not in str(exc):
+                raise
+            candidates = []
         if len(candidates) == 1:
             return candidates[0]
         if len(candidates) > 1:
             raise LoopError("Multiple Loop canvases are visible; refusing to guess which one to edit.")
         page.wait_for_timeout(250)
+    host = (urlsplit(page.url).hostname or "").lower()
+    if host in {"login.microsoftonline.com", "login.live.com"} or host.endswith(".login.microsoftonline.com"):
+        if page.locator('input[type="email"], input[type="password"], input[name="loginfmt"], input[name="otc"], #idDiv_SAOTCS_Proofs').count():
+            raise LoginRequired("The isolated browser needs a Microsoft sign-in. Run 'lifeos m365 loop login ALIAS' yourself.")
+        raise LoopError("Microsoft's authentication redirect did not finish. Retry the read before assuming the saved session expired.")
     raise LoopError("No Loop Canvas editor found. Sign into the isolated profile, open a document URL, or check whether the Loop UI changed.")
 
 
 def open_document(page, url: str):
-    page.goto(validate_url(url), wait_until="domcontentloaded", timeout=30_000)
+    parsed = urlsplit(validate_url(url))
+    if (parsed.hostname or "").endswith(".sharepoint.com") and unquote(parsed.path).lower().endswith(".loop") and not any(key.lower() == "web" for key, _ in parse_qsl(parsed.query)):
+        # Graph webUrl can be a download URL; explicitly request the browser editor.
+        parsed = parsed._replace(query=parsed.query + ("&" if parsed.query else "") + "web=1")
+    page.goto(parsed.geturl(), wait_until="domcontentloaded", timeout=30_000)
     return locate_editor(page)
 
 

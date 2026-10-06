@@ -35,7 +35,7 @@ class HeadlessLoopTests(unittest.TestCase):
         from playwright.sync_api import sync_playwright
         os.environ["PLAYWRIGHT_BROWSERS_PATH"] = str(loop.ENGINE_ROOT)
         cls.pw = sync_playwright().start()
-        cls.browser = cls.pw.chromium.launch(headless=True)
+        cls.browser = cls.pw.chromium.launch(headless=True, channel="chromium")
 
     @classmethod
     def tearDownClass(cls):
@@ -103,6 +103,40 @@ class HeadlessLoopTests(unittest.TestCase):
         self.page.locator("body").evaluate("el => el.appendChild(el.firstElementChild.cloneNode(true))")
         with self.assertRaisesRegex(loop.LoopError, "Multiple Loop canvases"):
             loop.locate_editor(self.page, timeout=1)
+
+    def test_silent_auth_redirect_is_allowed_to_finish(self):
+        auth_url = "https://login.microsoftonline.com/offline-auth"
+        self.context.route(auth_url, lambda route: route.fulfill(body=f'<title>Working...</title><script>setTimeout(() => location.replace({json.dumps(URL)}), 500)</script>', content_type="text/html"))
+        self.page.goto(auth_url)
+        editor = loop.locate_editor(self.page, timeout=3)
+        self.assertEqual(editor.inner_text(), "Existing formatted text")
+
+    def test_stalled_auth_redirect_is_not_reported_as_expired_login(self):
+        auth_url = "https://login.microsoftonline.com/offline-auth"
+        self.context.route(auth_url, lambda route: route.fulfill(body='<title>Working...</title>', content_type="text/html"))
+        self.page.goto(auth_url)
+        with self.assertRaisesRegex(loop.LoopError, "redirect did not finish") as raised:
+            loop.locate_editor(self.page, timeout=0.2)
+        self.assertNotIsInstance(raised.exception, loop.LoginRequired)
+
+    def test_interactive_auth_is_reported_after_redirect_wait(self):
+        auth_url = "https://login.microsoftonline.com/offline-auth"
+        self.context.route(auth_url, lambda route: route.fulfill(body='<input type="email" name="loginfmt">', content_type="text/html"))
+        self.page.goto(auth_url)
+        with self.assertRaises(loop.LoginRequired):
+            loop.locate_editor(self.page, timeout=0.2)
+
+    def test_sharepoint_loop_download_urls_request_browser_view(self):
+        page = Mock()
+        for url, expected in [
+            ("https://example.sharepoint.com/Documents/Test.loop", "https://example.sharepoint.com/Documents/Test.loop?web=1"),
+            ("https://example.sharepoint.com/Documents/Test.loop?d=fixture#section", "https://example.sharepoint.com/Documents/Test.loop?d=fixture&web=1#section"),
+            ("https://example.sharepoint.com/Documents/Test.loop?web=1", "https://example.sharepoint.com/Documents/Test.loop?web=1"),
+            (URL, URL),
+        ]:
+            with self.subTest(url=url), patch.object(loop, "locate_editor"):
+                loop.open_document(page, url)
+                page.goto.assert_called_with(expected, wait_until="domcontentloaded", timeout=30_000)
 
     def test_execute_requires_preview_hash_before_launch(self):
         args = loop.parser().parse_args(["append", "fixture", URL, "--text", "Note", "--execute"])
