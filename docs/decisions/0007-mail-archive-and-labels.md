@@ -42,6 +42,7 @@ On Junk, Aslan confirmed on 2026-09-30 that rescued mail belongs in the Inbox to
 
 ## Amendments
 - 2026-10-02: [0009](0009-mail-filters-and-rules.md) adds Gmail filters and Microsoft 365 Inbox rules, limited to labeling, categorizing, skipping the Inbox, and moving.
+- 2026-10-07: [0009](0009-mail-filters-and-rules.md#2026-10-07-duplicate-mail-exception) adds explicitly authorized Microsoft 365 duplicate-mail rules that move future matches to Deleted Items, requiring complete sender and recipient-address conditions. One-off message deletion remains unavailable.
 
 ## Links
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md), amended by this record for mail.

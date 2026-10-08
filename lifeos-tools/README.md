@@ -122,6 +122,7 @@ lifeos m365 mail unarchive ut --message NEW_MESSAGE_ID --execute
 lifeos m365 mail move ut --folder "Inbox/Receipts" --message MESSAGE_ID
 lifeos m365 mail create-folder ut --name Receipts --parent inbox
 lifeos m365 mail rules ut
+lifeos m365 mail create-rule ut --name "Duplicate-address newsletter" --from newsletter@example.org --recipient-contains alias@example.org --delete --stop   # dry run; requires complete sender and recipient addresses; deletion moves to Deleted Items
 lifeos gmail filters personal
 lifeos m365 planner plans ut
 lifeos m365 planner tasks ut --plan PLAN_ID --mine --open

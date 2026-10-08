@@ -23,14 +23,15 @@ Revised 2026-09-30. The `lifeos` tools stay procedural and deterministic; the tr
 6. **Outlook categories** (`m365 mail categorize` / `uncategorize`), only if the calling workflow tags Microsoft 365 mail. Deferred until asked.
 7. **Junk training on Microsoft 365.** `not-junk` is a folder move and may not train Outlook's filter. Check whether Graph v1.0 has a supported action.
 8. **Standing filters and rules** (scope widened 2026-10-02 at Aslan's request). Triage kept re-tagging the same senders by hand, so recurring patterns become Gmail filters and Microsoft 365 Inbox rules, limited to labeling or categorizing, skipping the Inbox, and moving to an allowed folder. See [0009](../decisions/0009-mail-filters-and-rules.md).
+9. **Address-specific duplicate rules** (scope widened 2026-10-07 at Aslan's request). Native Microsoft 365 rules can combine sender and recipient matching and move duplicate-address mail to Deleted Items. `--delete` requires complete sender and recipient addresses; permanent deletion and one-off message deletion stay out of scope. See [0009's dated exception](../decisions/0009-mail-filters-and-rules.md#2026-10-07-duplicate-mail-exception).
 
 Dropped 2026-09-30: **snooze**, which neither Gmail's API nor Graph exposes (people snooze in the mail client); **one-click unsubscribe automation**, since people click the link themselves for now; and **a separate triage listing or full-message read command**, which the sync with `--output` covers.
 
 ## Out Of Scope
-Sending mail, sending replies, creating drafts in the mailbox, deleting or trashing mail, mark-read, filters or rules that forward, redirect, delete, or mark read, snooze, automated unsubscribing, and any scheduler. Drafted replies stay in the chat. Whether mailbox drafts are ever wanted is an open question for later.
+Sending mail, sending replies, creating drafts in the mailbox, one-off message deletion, permanent deletion, mark-read, filters or rules that forward, redirect, or mark read, snooze, automated unsubscribing, and any scheduler. Native deletion rules are restricted to item 9's explicitly authorized sender-and-recipient duplicate cleanup. Drafted replies stay in the chat. Whether mailbox drafts are ever wanted is an open question for later.
 
 ## Safety
-Same model as 0007: exact IDs, dry-run by default, per-call caps, readback, the ignored audit log, and per-account opt-in. Items 1–7 are reads or output-format changes; item 8 writes standing rules, under its own opt-in flags (`gmail.filters_enabled`, `mail.rules_enabled`) and [0009](../decisions/0009-mail-filters-and-rules.md).
+Same model as 0007: exact IDs, dry-run by default, per-call caps, readback, the ignored audit log, and per-account opt-in. Items 1–7 are reads or output-format changes; items 8–9 write standing rules, under their own opt-in flags (`gmail.filters_enabled`, `mail.rules_enabled`) and [0009](../decisions/0009-mail-filters-and-rules.md).
 
 ## Related
 - [LifeOS Microsoft 365 Mail Archive](lifeos-m365-mail-archive.md), the predecessor.

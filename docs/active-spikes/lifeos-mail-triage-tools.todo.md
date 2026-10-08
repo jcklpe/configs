@@ -2,11 +2,15 @@
 Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 
 ## Current State
+- 2026-10-07: address-specific duplicate rules implemented with `--recipient-contains` and bounded `--delete` (to Deleted Items). Complete rule conditions, exceptions, enabled state, sequence, and actions now undergo readback checks. Offline tests pass; one explicitly requested native duplicate-mail rule was created and fully verified by live readback. Matching-arrival behavior awaits a later real message.
 - 2026-10-02: scope widened to standing Gmail filters and Microsoft 365 Inbox rules; commands built, tested offline, read-verified live, and all four accounts re-authorized. No filter or rule has been created yet.
 - Implemented 2026-09-30: sync reliability, web links, unsubscribe headers, HTML-to-text, and the query override. Live-verified on one Gmail account and one Microsoft 365 account: every message has a link, 8 of each inbox carried unsubscribe headers, and no stylesheet text leaked into bodies. Full offline suite green.
 - Decisions settled the same day: no junk report to Microsoft, and Outlook categories added.
 
 ## To Do
+- [x] Add sender-and-recipient native duplicate-mail rules at Aslan's request (2026-10-07): complete address requirements, refusal of category/folder combinations with deletion, no permanent deletion, full readback verification, and offline negative tests for altered predicates or actions.
+- [x] Verify an approved duplicate-mail rule by live create and full readback (2026-10-07). Exact sender and recipient conditions, enabled state, delete-to-Deleted-Items action, and stop-processing action all matched.
+- [ ] Observe the approved duplicate-mail rule's behavior on a later matching arrival without sending synthetic mail.
 - [x] Gmail sync reliability: `_gmail_get` surfaces Google's error reason and message, backs off (2 s, doubling) and retries on 429 and 403 `rateLimitExceeded`/`userRateLimitExceeded` up to `LIFEOS_GMAIL_MAX_RETRIES` (default 5), and names a remedy. `--all` continues past a failing account, reports every failure, exits non-zero, and leaves failed snapshots unchanged.
 - [x] Fixed an ordering bug found along the way: per-message files were named `0.json … 10.json` and globbed in text order, so snapshots interleaved out of order. They are now zero-padded.
 - [x] Gmail web link in sync output (`- Link:`).
