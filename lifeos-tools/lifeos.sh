@@ -117,7 +117,7 @@ Usage:
   ./lifeos.sh m365 mail junk ALIAS [--limit N] [--json]   # list Junk Email; never synced
   ./lifeos.sh m365 mail not-junk ALIAS (--message ID | --ids-file FILE)... [--execute]   # Junk -> Inbox
   ./lifeos.sh m365 mail rules ALIAS [--json]   # Inbox rules
-  ./lifeos.sh m365 mail create-rule ALIAS --name NAME (--from ADDRESS | --sender-contains TEXT | --subject-contains TEXT)... (--category NAME | --folder NAME_PATH_OR_ID)... [--stop] [--execute]   # categorize and/or move only; needs mail.rules_enabled
+  ./lifeos.sh m365 mail create-rule ALIAS --name NAME (--from ADDRESS | --sender-contains TEXT | --subject-contains TEXT | --recipient-contains TEXT)... (--category NAME | --folder NAME_PATH_OR_ID | --delete)... [--stop] [--execute]   # --delete requires full --from and recipient addresses; needs mail.rules_enabled
   ./lifeos.sh m365 mail delete-rule ALIAS --rule RULE_ID [--execute]   # removes the rule only
   ./lifeos.sh m365 calendar list-calendars ALIAS
   ./lifeos.sh m365 calendar find ALIAS QUERY [--calendar ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]

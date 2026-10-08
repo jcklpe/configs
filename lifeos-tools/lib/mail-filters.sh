@@ -177,8 +177,8 @@ _m365_mail_rules() {
 }
 
 _m365_mail_create_rule() {
-    local alias="${1:-}" name="" category="" folder_spec="" stop=0 execute=0 dir folder="" existing sequence conditions actions body created readback ok
-    local froms=() senders=() subjects=()
+    local alias="${1:-}" name="" category="" folder_spec="" stop=0 delete=0 execute=0 dir folder="" existing sequence conditions actions body created readback ok
+    local froms=() senders=() subjects=() recipients=()
     [ -n "$alias" ] || { _err "m365 mail create-rule requires ALIAS"; return 1; }
     shift || true
     while [ "$#" -gt 0 ]; do
@@ -187,8 +187,10 @@ _m365_mail_create_rule() {
             --from) [ -n "${2:-}" ] || { _err "--from requires ADDRESS"; return 1; }; froms+=("$2"); shift 2 ;;
             --sender-contains) [ -n "${2:-}" ] || { _err "--sender-contains requires TEXT"; return 1; }; senders+=("$2"); shift 2 ;;
             --subject-contains) [ -n "${2:-}" ] || { _err "--subject-contains requires TEXT"; return 1; }; subjects+=("$2"); shift 2 ;;
+            --recipient-contains) [ -n "${2:-}" ] || { _err "--recipient-contains requires TEXT"; return 1; }; recipients+=("$2"); shift 2 ;;
             --category) [ -n "${2:-}" ] || { _err "--category requires NAME"; return 1; }; category="$2"; shift 2 ;;
             --folder) [ -n "${2:-}" ] || { _err "--folder requires NAME, PATH, or ID"; return 1; }; folder_spec="$2"; shift 2 ;;
+            --delete) delete=1; shift ;;
             --stop) stop=1; shift ;;
             --execute) execute=1; shift ;;
             --dry-run) execute=0; shift ;;
@@ -196,8 +198,16 @@ _m365_mail_create_rule() {
         esac
     done
     [ -n "$name" ] || { _err "create-rule requires --name"; return 1; }
-    [ "${#froms[@]}" -gt 0 ] || [ "${#senders[@]}" -gt 0 ] || [ "${#subjects[@]}" -gt 0 ] || { _err "create-rule needs at least one --from, --sender-contains, or --subject-contains"; return 1; }
-    [ -n "$category" ] || [ -n "$folder_spec" ] || { _err "create-rule needs --category, --folder, or both"; return 1; }
+    [ "${#froms[@]}" -gt 0 ] || [ "${#senders[@]}" -gt 0 ] || [ "${#subjects[@]}" -gt 0 ] || [ "${#recipients[@]}" -gt 0 ] || { _err "create-rule needs at least one --from, --sender-contains, --subject-contains, or --recipient-contains"; return 1; }
+    [ -n "$category" ] || [ -n "$folder_spec" ] || [ "$delete" -eq 1 ] || { _err "create-rule needs --category, --folder, or --delete"; return 1; }
+    if [ "$delete" -eq 1 ]; then
+        [ "${#froms[@]}" -gt 0 ] && [ "${#recipients[@]}" -gt 0 ] || { _err "--delete requires both --from ADDRESS and --recipient-contains ADDRESS to scope duplicate-mail cleanup"; return 1; }
+        [ -z "$category$folder_spec" ] || { _err "--delete cannot be combined with --category or --folder"; return 1; }
+        local address
+        for address in "${froms[@]}" "${recipients[@]}"; do
+            if ! printf '%s\n' "$address" | LC_ALL=C grep -Eq '^[^[:space:]@<>]+@[^[:space:]@<>]+\.[^[:space:]@<>]+$'; then _err "--delete requires complete sender and recipient email addresses, not fragments"; return 1; fi
+        done
+    fi
     case "$category" in *,*) _err "Category names may not contain commas"; return 1 ;; esac
     _m365_require_enabled "$alias" mail || return 1
     dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-create-rule.XXXXXX")" || return 1
@@ -215,25 +225,34 @@ _m365_mail_create_rule() {
         --argjson froms "$(printf '%s\n' "${froms[@]+"${froms[@]}"}" | jq -R . | jq -sc 'map(select(. != ""))')" \
         --argjson senders "$(printf '%s\n' "${senders[@]+"${senders[@]}"}" | jq -R . | jq -sc 'map(select(. != ""))')" \
         --argjson subjects "$(printf '%s\n' "${subjects[@]+"${subjects[@]}"}" | jq -R . | jq -sc 'map(select(. != ""))')" \
+        --argjson recipients "$(printf '%s\n' "${recipients[@]+"${recipients[@]}"}" | jq -R . | jq -sc 'map(select(. != ""))')" \
         '{} + (if ($froms | length) > 0 then {fromAddresses: [$froms[] | {emailAddress: {address: .}}]} else {} end)
             + (if ($senders | length) > 0 then {senderContains: $senders} else {} end)
-            + (if ($subjects | length) > 0 then {subjectContains: $subjects} else {} end)')"
-    actions="$(jq -cn --arg c "$category" --arg f "$(printf '%s' "$folder" | jq -r '.id // empty' 2>/dev/null)" --argjson stop "$stop" \
-        '{} + (if $c != "" then {assignCategories: [$c]} else {} end) + (if $f != "" then {moveToFolder: $f} else {} end) + (if $stop == 1 then {stopProcessingRules: true} else {} end)')"
+            + (if ($subjects | length) > 0 then {subjectContains: $subjects} else {} end)
+            + (if ($recipients | length) > 0 then {recipientContains: $recipients} else {} end)')"
+    actions="$(jq -cn --arg c "$category" --arg f "$(printf '%s' "$folder" | jq -r '.id // empty' 2>/dev/null)" --argjson stop "$stop" --argjson delete "$delete" \
+        '{} + (if $c != "" then {assignCategories: [$c]} else {} end) + (if $f != "" then {moveToFolder: $f} else {} end) + (if $stop == 1 then {stopProcessingRules: true} else {} end) + (if $delete == 1 then {delete: true} else {} end)')"
     body="$(jq -cn --arg n "$name" --argjson s "$sequence" --argjson c "$conditions" --argjson a "$actions" '{displayName: $n, sequence: $s, isEnabled: true, conditions: $c, actions: $a}')"
     _say "Microsoft 365 Inbox rule create plan:"
     _say "Account: $alias"
     _m365_mail_rules_human "$(jq -cn --argjson b "$body" '{value: [$b + {id: "(new)"}]}')" "$(cat "${dir}/tree.json")"
-    _say "Applies to new mail arriving in the Inbox only; existing mail is not moved or categorized."
+    _say "Different condition types must all match; values within one type are alternatives."
+    [ "$delete" -ne 1 ] || _say "Delete means move to Outlook Deleted Items, not permanent deletion."
+    _say "Applies to new mail arriving in the Inbox only; existing mail is unchanged."
     if [ "$execute" -ne 1 ]; then _say "DRY RUN: no rule was created. Re-run with --execute to create it."; return 0; fi
     _m365_mail_require_rules "$alias" || return 1
     created="$(_m365_write POST "$alias" "$(_m365_mail_rules_url "$alias")" "$body")" || return 1
     readback="$(_m365_get "$alias" "$(_m365_mail_rules_url "$alias")/$(_m365_uri_encode "$(printf '%s' "$created" | jq -r '.id')")")" || return 1
     ok="$(jq -n --argjson want "$body" --argjson got "$readback" '
-      ($got.displayName == $want.displayName) and
-      ((($got.actions.assignCategories // []) | sort) == (($want.actions.assignCategories // []) | sort)) and
-      (($got.actions.moveToFolder // null) == ($want.actions.moveToFolder // null)) and
-      (($got.actions.forwardTo // []) == []) and (($got.actions.redirectTo // []) == []) and (($got.actions.delete // false) == false)')"
+      def meaningful: with_entries(select(.value != null and .value != [] and .value != false and .value != {}));
+      def predicates: (. // {}) | del(."@odata.type") | meaningful | with_entries(
+        if (.value | type) == "array" then .value |= (map(if type == "object" and has("emailAddress") then {emailAddress: {address: (.emailAddress.address | ascii_downcase)}} elif type == "string" then ascii_downcase else . end) | sort) else . end);
+      def rule_actions: (. // {}) | del(."@odata.type") | meaningful | with_entries(if (.value | type) == "array" then .value |= sort else . end);
+      ($got.displayName == $want.displayName) and ($got.isEnabled == true) and (($got.hasError // false) == false) and
+      ($got.sequence == $want.sequence) and
+      (($got.conditions | predicates) == ($want.conditions | predicates)) and
+      (($got.exceptions | predicates) == {}) and
+      (($got.actions | rule_actions) == ($want.actions | rule_actions))')"
     jq -nc --arg ts "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" --arg alias "$alias" --argjson r "$readback" --argjson ok "$ok" '{ts: $ts, service: "m365", alias: $alias, action: "create-rule", rule_id: $r.id, rule: $r.displayName, conditions: $r.conditions, rule_actions: $r.actions, verified: $ok}' | _mail_audit_append || _warn "Could not append to the mail audit log: $(_mail_audit_log_path)"
     [ "$ok" = true ] || { _err "Created rule but readback did not match"; return 1; }
     _say "Created rule (confirmed by readback): $name | rule_id: $(printf '%s' "$created" | jq -r '.id')"
