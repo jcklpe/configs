@@ -32,3 +32,6 @@ Add `lifeos m365 planner` as an opt-in surface per account alias, configured wit
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md)
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
 - [0007 Mail Archive, Folders, And Labels](0007-mail-archive-and-labels.md)
+
+## Experimental move extension (2026-10-11)
+Add dry-run-first `move-task --task ID --plan ID --bucket ID` using the [documented Graph beta task update](https://learn.microsoft.com/en-us/graph/api/plannertask-update?view=graph-rest-beta). The current implementation limits moves to two allowlisted plans in the same Microsoft 365 group, validates bucket membership, refuses active labels, recurrence and externally sourced tasks, and uses one ETag-guarded PATCH. It audits the attempt and verifies the destination and supported preserved fields. It never clones or deletes tasks and never retries an ambiguous write. Goals, custom columns and linked meeting notes remain outside verification. Offline tests are available; live migration is pending destination identification and validation.

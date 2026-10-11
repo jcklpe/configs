@@ -120,4 +120,75 @@ jq -e 'select(.action == "update-task") | .verified == true and .service == "m36
 CURRENT_AFTER="$CURRENT"
 refute _m365_planner_update ut --task task-1 --progress done --execute >/dev/null 2>&1
 
+# Experimental moves use a single beta PATCH and preserve the task, rather than copying it.
+jq '(.accounts[] | select(.alias == "ut") | .planner.plans) += [{id:"plan-2",name:"Destination"}]' "${WORK}/write.json" > "${WORK}/move.json"
+M365_ACCOUNTS_PATH="${WORK}/move.json"
+MOVE_CURRENT="$CURRENT"
+MOVE_GROUP="group-1"
+MOVE_BUCKET_PLAN="plan-2"
+MOVE_FAIL=0
+MOVE_LOSS=0
+MOVE_READ_FAIL=0
+MOVE_DETAILS='{"description":"notes","checklist":{"c1":{"title":"step","isChecked":false}},"references":{"https%3A//example.org":{"alias":"source"}}}'
+_m365_get() {
+    case "$2" in
+        */beta/planner/tasks/task-1)
+            if [ -f "${WORK}/moved" ]; then
+                [ "$MOVE_READ_FAIL" -eq 0 ] || return 1
+                printf '%s' "$MOVE_CURRENT" | jq --argjson loss "$MOVE_LOSS" '.planId="plan-2" | .bucketId="b2" | if $loss == 1 then .assignments={} else . end'
+            else printf '%s\n' "$MOVE_CURRENT"; fi ;;
+        */beta/planner/tasks/task-1/details) printf '%s\n' "$MOVE_DETAILS" ;;
+        */beta/planner/plans/plan-1) printf '%s\n' '{"id":"plan-1","title":"Source","container":{"type":"group","containerId":"group-1"}}' ;;
+        */beta/planner/plans/plan-2) jq -nc --arg g "$MOVE_GROUP" '{id:"plan-2",title:"Destination",container:{type:"group",containerId:$g}}' ;;
+        */beta/planner/buckets/b2) jq -nc --arg p "$MOVE_BUCKET_PLAN" '{id:"b2",name:"To do",planId:$p}' ;;
+        *) return 1 ;;
+    esac
+}
+_m365_http() {
+    printf '%s %s %s %s\n' "$1" "$3" "$4" "${6:-}" >> "${WORK}/move-writes.log"
+    [ "$MOVE_FAIL" -eq 0 ] || return 1
+    touch "${WORK}/moved"
+}
+# Dry run, argument validation, both allowlists, bucket ownership, group, and ETag gates.
+out="$(_m365_planner_dispatch move-task ut --task task-1 --plan plan-2 --bucket b2)"
+printf '%s\n' "$out" | grep -F 'DRY RUN: nothing was moved' >/dev/null
+refute _m365_planner_move ut --task task-1 --plan plan-2 >/dev/null 2>&1
+refute _m365_planner_move ut --task task-1 --plan plan-3 --bucket b2 >/dev/null 2>&1
+MOVE_CURRENT="$(printf '%s' "$CURRENT" | jq '.planId="unlisted"')"
+refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 >/dev/null 2>&1
+MOVE_CURRENT="$CURRENT"
+MOVE_BUCKET_PLAN="plan-1"
+refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 >/dev/null 2>&1
+MOVE_BUCKET_PLAN="plan-2"
+MOVE_GROUP="other-group"
+refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 >/dev/null 2>&1
+MOVE_GROUP="group-1"
+for field in 'del(."@odata.etag")' '.appliedCategories={category1:true}' '.recurrence={}' '.creationSource={}' '.planId="plan-2"'; do
+    MOVE_CURRENT="$(printf '%s' "$CURRENT" | jq "$field")"
+    refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 >/dev/null 2>&1
+done
+MOVE_CURRENT="$CURRENT"
+jq '(.accounts[] | select(.alias == "ut") | .planner.write_enabled)=false' "${WORK}/move.json" > "${WORK}/move-read.json"
+M365_ACCOUNTS_PATH="${WORK}/move-read.json"
+refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute >/dev/null 2>&1
+[ ! -f "${WORK}/move-writes.log" ]
+M365_ACCOUNTS_PATH="${WORK}/move.json"
+out="$(_m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute)"
+printf '%s\n' "$out" | grep -F 'Moved task (confirmed by readback)' >/dev/null
+[ "$(wc -l < "${WORK}/move-writes.log" | tr -d ' ')" = 1 ]
+grep -F 'PATCH https://graph.microsoft.com/beta/planner/tasks/task-1 {"planId":"plan-2","bucketId":"b2"} If-Match: W/"etag-1"' "${WORK}/move-writes.log" >/dev/null
+jq -se 'any(.[]; .action == "move-task" and .verified == true and .changes.from.planId == "plan-1")' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null
+# Refused/ambiguous writes never retry; data loss and unavailable readback never report success.
+rm "${WORK}/moved"
+MOVE_FAIL=1
+refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute >/dev/null 2>&1
+[ "$(wc -l < "${WORK}/move-writes.log" | tr -d ' ')" = 2 ]
+MOVE_FAIL=0
+MOVE_LOSS=1
+refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute >/dev/null 2>&1
+jq -se 'any(.[]; .action == "move-task" and .verified == false)' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null
+rm "${WORK}/moved"
+MOVE_LOSS=0
+MOVE_READ_FAIL=1
+refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute >/dev/null 2>&1
 printf 'm365 planner tests passed\n'

@@ -391,6 +391,73 @@ _m365_planner_update() {
     _say "Updated task (confirmed by readback): $(printf '%s' "$readback" | jq -r '.title') | task_id: $task_id"
 }
 
+# Experimental beta move: one conditional PATCH, never clone/delete or retry an ambiguous write.
+_m365_planner_move() {
+    local alias="${1:-}" task_id="" plan_id="" bucket="" execute=0 base url current details source target destination source_id etag patch changes after after_details ok
+    [ -n "$alias" ] || { _err "m365 planner move-task requires ALIAS"; return 1; }
+    shift
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --task|--plan|--bucket)
+                [ -n "${2:-}" ] || { _err "$1 requires ID"; return 1; }
+                case "$1" in --task) task_id="$2" ;; --plan) plan_id="$2" ;; --bucket) bucket="$2" ;; esac
+                shift 2 ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown m365 planner move-task option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$task_id" ] && [ -n "$plan_id" ] && [ -n "$bucket" ] || { _err "move-task requires --task, --plan, and --bucket"; return 1; }
+    _m365_require_enabled "$alias" planner || return 1
+    _m365_planner_require_plan_allowed "$alias" "$plan_id" || return 1
+    base="$(_m365_graph_base "$alias")" || return 1
+    base="${base%/}"
+    case "$base" in */v1.0) base="${base%/v1.0}/beta" ;; */beta) ;; *) _err "Cannot derive beta Graph endpoint from graph_base"; return 1 ;; esac
+    url="$base/planner/tasks/$(_m365_uri_encode "$task_id")"
+    current="$(_m365_get "$alias" "$url")" || return 1
+    source_id="$(printf '%s' "$current" | jq -er '.planId | select(type == "string" and length > 0)')" || return 1
+    _m365_planner_require_plan_allowed "$alias" "$source_id" || return 1
+    [ "$source_id" != "$plan_id" ] || { _err "Task is already in the destination plan; use update-task for a bucket change"; return 1; }
+    etag="$(printf '%s' "$current" | jq -er '."@odata.etag" | select(type == "string" and length > 0 and . != "*")')" || { _err "Task has no usable ETag"; return 1; }
+    details="$(_m365_get "$alias" "$url/details")" || return 1
+    source="$(_m365_get "$alias" "$base/planner/plans/$(_m365_uri_encode "$source_id")")" || return 1
+    target="$(_m365_get "$alias" "$base/planner/plans/$(_m365_uri_encode "$plan_id")")" || return 1
+    destination="$(_m365_get "$alias" "$base/planner/buckets/$(_m365_uri_encode "$bucket")")" || return 1
+    printf '%s' "$destination" | jq -e --arg p "$plan_id" --arg b "$bucket" '.planId == $p and .id == $b' >/dev/null || { _err "Destination bucket does not belong to the destination plan"; return 1; }
+    # Cross-container moves can drop assignees and group conversations; defer them until preservation is supported.
+    jq -en --argjson s "$source" --argjson t "$target" '
+      ($s.container.type == "group") and ($t.container.type == "group") and
+      (($s.container.containerId // "") != "") and ($s.container.containerId == $t.container.containerId)
+    ' >/dev/null || { _err "Experimental move-task currently requires plans in the same Microsoft 365 group"; return 1; }
+    printf '%s' "$current" | jq -e '
+      ([((.appliedCategories // {}) | .[])] | any(. == true) | not) and
+      (.recurrence == null) and (.creationSource == null)
+    ' >/dev/null || { _err "Move refused: labels, recurrence, or externally sourced tasks need separate review"; return 1; }
+    patch="$(jq -nc --arg p "$plan_id" --arg b "$bucket" '{planId:$p,bucketId:$b}')" || return 1
+    changes="$(jq -nc --argjson c "$current" --argjson p "$patch" '{from:{planId:$c.planId,bucketId:$c.bucketId},to:$p,api:"beta"}')" || return 1
+    _say "Microsoft 365 Planner move-task (experimental Graph beta):"
+    _say "Account: $alias | Task: $task_id"
+    printf '%s' "$current" | jq '{title,planId,bucketId,percentComplete,dueDateTime,assignments}'
+    _say "Destination plan and bucket:"
+    jq -n --argjson p "$target" --argjson b "$destination" '{plan:$p.title,planId:$p.id,bucket:$b.name,bucketId:$b.id}'
+    _say "Same-group move; description, checklist, references, dates, progress, priority, assignees, and conversation link will be checked after the PATCH. Plan-specific goals, custom columns, and linked meeting notes are not supported or verified."
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: nothing was moved. Re-run with --execute to apply."; return 0; fi
+    _m365_planner_require_write "$alias" || return 1
+    # Audit the attempt before dispatch so transport failures and failed readbacks leave a trace.
+    _m365_planner_audit "$alias" move-task-attempt "$task_id" "$(printf '%s' "$current" | jq -r '.title')" false "$changes"
+    _m365_http PATCH "$alias" "$url" "$patch" -H "If-Match: $etag" >/dev/null || { _err "Move failed or outcome is uncertain; inspect the task before retrying. No automatic retry was made."; return 1; }
+    after="$(_m365_get "$alias" "$url")" && after_details="$(_m365_get "$alias" "$url/details")" || { _err "Move was sent but readback failed; inspect the task before retrying"; return 1; }
+    ok="$(jq -n --argjson before "$current" --argjson after "$after" --argjson d "$details" --argjson a "$after_details" --arg p "$plan_id" --arg b "$bucket" '
+      def stable: {id,title,percentComplete,priority,startDateTime,dueDateTime,conversationThreadId,assignees:((.assignments // {}) | keys)};
+      def content: {description:(.description // ""),checklist:(.checklist // {}),references:(.references // {})};
+      ($after.planId == $p and $after.bucketId == $b) and
+      (($before | stable) == ($after | stable)) and (($d | content) == ($a | content))
+    ')" || return 1
+    _m365_planner_audit "$alias" move-task "$task_id" "$(printf '%s' "$current" | jq -r '.title')" "$ok" "$changes"
+    [ "$ok" = true ] || { _err "Move was sent but preservation/readback checks failed; inspect the task before retrying"; return 1; }
+    _say "Moved task (confirmed by readback): $task_id | plan_id: $plan_id | bucket_id: $bucket"
+}
+
 _m365_planner_dispatch() {
     case "${1:-}" in
         plans) shift; _m365_planner_plans "$@" ;;
@@ -400,6 +467,7 @@ _m365_planner_dispatch() {
         sync) shift; _m365_planner_sync "$@" ;;
         create-task) shift; _m365_planner_create "$@" ;;
         update-task) shift; _m365_planner_update "$@" ;;
+        move-task) shift; _m365_planner_move "$@" ;;
         *) _err "Unknown m365 planner command: ${1:-}"; return 1 ;;
     esac
 }
