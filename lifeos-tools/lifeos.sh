@@ -143,6 +143,7 @@ Usage:
   ./lifeos.sh m365 planner sync ALIAS [--qa | --output FILE]   # snapshot configured plans to sources/m365/<alias>-planner.md
   ./lifeos.sh m365 planner create-task ALIAS --plan PLAN_ID --bucket BUCKET_ID --title TEXT [--due YYYY-MM-DD] [--progress not-started|in-progress|done] [--assign me|EMAIL|USER_ID]... [--desc TEXT | --desc-file FILE] [--execute]
   ./lifeos.sh m365 planner update-task ALIAS --task TASK_ID [--title TEXT] [--bucket BUCKET_ID] [--due YYYY-MM-DD|none] [--progress ...] [--assign WHO]... [--unassign WHO]... [--desc TEXT | --desc-file FILE] [--execute]   # configured plans only; no delete
+  ./lifeos.sh m365 planner move-task ALIAS --task TASK_ID --plan PLAN_ID --bucket BUCKET_ID [--execute]   # experimental beta; same group, both plans configured
   ./lifeos.sh odoo accounts
   ./lifeos.sh odoo projects list ALIAS [--json]
   ./lifeos.sh odoo stages list ALIAS --project PROJECT_ID [--json]
