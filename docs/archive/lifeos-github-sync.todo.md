@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS GitHub Sync — To Do
 ## Background
 Generalize GitHub syncing out of the Open-Austin-only adapter into a `lifeos github` command group covering issues, PRs, discussions, and boards for any configured repo. Conceptual doc: `docs/active-spikes/lifeos-github-sync.md`.

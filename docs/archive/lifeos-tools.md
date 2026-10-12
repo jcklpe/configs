@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Tools
 Status: archived. Trello and multi-calendar Google Calendar sync are implemented, live-QA'd, documented, and available to LifeOS through the stable `lifeos` command.
 

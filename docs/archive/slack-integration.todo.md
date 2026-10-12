@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Slack Integration — Todo
 See [the conceptual spike](slack-integration.md). Opened 2026-09-26; built and QA'd 2026-09-26; List snapshot added and spike archived 2026-09-27.
 

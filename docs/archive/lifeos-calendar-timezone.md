@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Calendar Time Zone
 Fix the default time-zone resolution for `lifeos calendar create-event` / `update-event`, which silently fell back to UTC and would have written timed events seven hours off.
 

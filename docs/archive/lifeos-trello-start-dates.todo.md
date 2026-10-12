@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Trello Start Dates — To Do
 ## Background
 The Trello snapshot renders `due:` but not `start:`, and `start` is the field the snooze mechanism runs on — so a snoozed card's wake date is invisible in the vault, and a hand-dragged card with no start date (which Butler will never wake) looks identical to a correct one. Conceptual context: `docs/active-spikes/lifeos-trello-start-dates.md`.

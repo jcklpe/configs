@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Calendar Time Zone — To Do
 ## Background
 `lifeos calendar create-event` planned timed events in UTC instead of the calendar's `America/Chicago`, because `_calendar_default_tz` reads `GET /calendars/{id}` (403 under the current token scope) and both fallbacks then failed on macOS. Conceptual context and the chosen resolution ladder: `docs/active-spikes/lifeos-calendar-timezone.md`.

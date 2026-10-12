@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS GitHub Sync
 ## Why This Exists
 `lifeos` can sync Trello, Calendar, Gmail, Drive, and M365, but its only GitHub capability is `open-austin-org`, a thin adapter that shells out to a *different repo's* tooling (`~/work/org/tools/sync/`) and copies the results into the vault. That was correct when Open Austin was the only GitHub project. It no longer is.

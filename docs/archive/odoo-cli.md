@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Odoo CLI
 ## Purpose
 Add a bounded command-line adapter for Odoo Project so local automation can inspect project/task state and make explicit, reviewable task updates.

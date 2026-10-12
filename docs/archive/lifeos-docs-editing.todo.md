@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Docs Editing — To-Do
 Implementation state for `docs/active-spikes/lifeos-docs-editing.md`. **Blocked on the scope decision (Option 1/2/3 + the boundary-exception question) — do not implement until Aslan confirms.**
 

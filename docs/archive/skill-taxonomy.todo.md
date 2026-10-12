@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Skill Taxonomy To-Do
 Status: **archived 2026-07-13.** All items done; the configs seed layer, LifeOS vault, and `my-website` local project docs/skills were migrated to the taxonomy.
 

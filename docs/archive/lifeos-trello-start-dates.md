@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Trello Start Dates
 Render each card's `start` date in the Trello snapshot, so a snoozed card's wake date can be audited from the vault instead of only from the Trello UI.
 

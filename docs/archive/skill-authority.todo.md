@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Skill Authority To-Do
 Status: **archived 2026-07-10.** All items done; the Copilot instruction-path question was closed unresolved and carried into `TODO.md`.
 

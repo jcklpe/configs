@@ -3,7 +3,7 @@ attention: live
 ---
 # Project Workflow Refinement
 Opened: 2026-10-12
-Status: active. Cross-repository rollout and explicit attention markers added to scope on 2026-10-12; closure remains unapproved.
+Status: active. Cross-repository rollout, explicit attention markers, and the requested archive backfill are implemented as of 2026-10-12. Further workflow corrections are proposed below; closure remains unapproved.
 Spike: project-workflow-refinement
 
 ## Purpose
@@ -32,7 +32,7 @@ Reusable skills use repository-relative references and configured or discovered 
 Update the global seeds and directly affected operating guidance. The initial scope refreshed corresponding imported skills in the development repository that prompted this work. On 2026-10-12 the user expanded the scope to roll the approved improvements into other existing local copies before closure. Compare each copy and preserve its project authority, privacy boundaries, commit policy, and deliberate layout differences. Do not install the library into repositories that do not already carry these workflows. Preserve unrelated working-tree changes. No remote publication is part of this work.
 
 ## Attention Markers and Archive Tradeoff
-Use explicit `attention: live` for active spike pairs and `attention: historical` at closure, respecting equivalent local conventions. The field describes maintenance and authority, not task completion or agreement with every proposal. A visible historical notice and pointers to maintained guidance reinforce the marker when an archived file is retrieved on its own. This adapts an existing local practice without requiring a universal metadata system or retroactively retagging all archives.
+Use explicit `attention: live` for active spike pairs and `attention: historical` at closure, respecting equivalent local conventions. The field describes maintenance and authority, not task completion or agreement with every proposal. A visible historical notice and pointers to maintained guidance reinforce the marker when an archived file is retrieved on its own. The initial rollout adapted an existing local practice without requiring a universal metadata system or automatically retagging old archives; the user subsequently requested the bounded backfill recorded below.
 
 Retaining the full pair remains the working default, not a demonstrated optimum. Searchable files provide a useful route into Git history, but a shorter historical entry could also provide that route. Keeping the pair additionally preserves the task-to-outcome relationship and surrounding reasoning without asking a later agent to reconstruct them across commits. The tradeoff is more historical material that may be mistaken for current guidance; markers and navigation reduce that risk without eliminating it. Revisit the default if actual retrieval shows recurrent confusion or an archive that materially obstructs useful work.
 
@@ -57,7 +57,34 @@ The website and shared-team copies matched older seed versions before this refre
 
 Validation covered 33 standard skill folders, four vault-native skills under their own metadata conventions, referenced resources, relative Markdown links, personal-path checks, and changed-file whitespace. This establishes structural consistency, not fresh-agent behavioral success. The new archive markers have not yet been evaluated in real retrieval after rollout.
 
-No successor spike is required for this bounded update. Existing repository-specific vocabulary and local skill differences retain their own authority during rollout.
+## Archive Backfill — 2026-10-12
+The user requested bulk historical markers for existing archives. The inventory covered Markdown recursively under `docs/archive/` in the six repositories already in rollout scope, including supporting development records and retired policies in those folders. It did not include unrelated personal archives or arbitrary folders named Archive.
+
+| Repository | Newly marked historical | Already historical |
+| --- | ---: | ---: |
+| Global skill source | 45 | 0 |
+| Private vault | 25 | 23 |
+| Website | 90 | 0 |
+| Organization tooling | 19 | 0 |
+| ResearchOps development | 0 | 0 |
+| Shared team project | 0 | 0 |
+
+All 202 documents now have `attention: historical`; 179 required an edit. None had a conflicting attention value. Byte comparisons against pre-edit snapshots verified that bodies, existing frontmatter values, line endings, and encoding markers were preserved. No review or closure dates were invented, and no historical task lists or implementation descriptions were rewritten. The two zero-count repositories currently have no Markdown in `docs/archive/`.
+
+This backfill marks authority; it does not certify historical claims, repair all archive navigation, or establish that current knowledge was fully integrated at each original closure. No present-state routing changed in the private vault, and its existing daily checkpoint already satisfies that day's commit cadence; its metadata edits may remain for the next vault-wide checkpoint rather than sweeping concurrent work into this task.
+
+## Further Review — Proposals, Not Adopted Rules
+Review of the current spike and commit workflows found shared instruction conflicts rather than a missed copy rollout. All four imported `commit-work` copies match the seed. The ResearchOps spike copy also matches; the website and shared-team copies retain governance-directory adaptations, while organization and private-vault copies retain more extensive local authority and workflow differences. Structural validation did not catch the following semantic problems.
+
+1. **Closure readiness and message approval are conflated.** The general spike procedure marks documents historical, moves them, and updates the index before asking for closing-message approval. In this spike, approval of wording did not establish readiness to close. Proposed correction: prepare the closure summary and affected-document check while the pair remains active, and establish that closure itself is authorized before applying the archive transition. Wording-only approval is not closure. One explicit closure decision can cover both readiness and the message; do not add repeated approval gates. Preserve the private vault's existing requirement for approval before archival moves.
+2. **The spike requirement contradicts the patch route.** The spike purpose only exempts throwaway actions, while `commit-work` provides a meaningful, self-contained `Patch:` workflow. Proposed correction: keep substantial or evolving work in spikes and allow a bounded one-off patch without creating a conceptual/to-do pair. Its commit body holds its purpose and reasoning. This reflects the user's stated occasional-patch exception; it is not a new intermediate conversation-document format.
+3. **Unrelated dirty paths trigger contradictory instructions.** `commit-work` says separate-path work needs no coordination ritual, then tells agents to stop and ask when they encounter unrelated changes. Proposed correction: leave those paths alone and continue within the authorized scope; ask when shared-file overlap, dependencies, or uncertain ownership prevent a safe checkpoint. Preserve stronger local worktree requirements. Update the corresponding repository commit policy and rationalization examples if this change is adopted.
+4. **Rewrite verification assumes only commit messages change.** The current skill and source repository policy require an unchanged final tree for every authorized rewrite and assume a particular rewrite tool's backup behavior. That does not cover the user's approved fresh-initial-commit workflow, which incorporated reviewed content. Proposed correction: create an explicit recovery reference before a rewrite, check for competing work first, and verify according to the authorized operation: identical final contents for a message-only change or squash preserving the final state, and exactly the approved content changes when those are part of the request. Authorization and publication boundaries remain intact.
+5. **The closure check needs a concrete test for misplaced current authority.** Integrating durable knowledge is already required; this is a way to verify it, not a new integration stage. The website's maintained agent instructions still describe an archived live-halftone note as the home of current verification limits. Proposed correction: during the existing bounded close-out check, distinguish historical evidence links from instructions that delegate current authority to an archive. Verify and place maintained claims in their current owner, retaining archive links for provenance. Do not bulk promote historical prose into current guidance or rewrite archive bodies.
+
+One small mechanical error also remains in `commit-work`: the sentence below the failure-mode table reverses which duplicate-error pair requires lock retries and which requires `check-ignore`. Correct that sentence with the next approved skill update.
+
+These findings are recorded for discussion. No new skill policy was adopted during the metadata backfill. If adopted, changes belong in the global sources and affected local copies, with their local differences retained. This spike remains the owner; no successor is needed merely to finish this review.
 
 Continues from: docs/archive/commit-work.md
 Continues from: docs/archive/skill-authority.md

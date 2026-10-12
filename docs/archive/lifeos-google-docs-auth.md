@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Spike: LifeOS Google Docs Authorization
 ## Purpose
 Let the normal LifeOS Google account-token workflow request the Google Docs write scope when a bounded tool needs to edit an existing native Google Doc, without turning permission setup into blanket authorization for Drive writes.

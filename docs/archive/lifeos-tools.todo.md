@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Tools To-Do
 Status: archived. Future enhancement threads have been moved to `docs/lifeos-tools-v2.md`.
 

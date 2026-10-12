@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Tools V2
 Status: **archived 2026-07-13.** Promoted from scratch on 2026-06-25 to carry one concrete theme:
 **Trello Task Chains and the `supersede` command** (see the section below). That theme shipped

@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Commit Work
 Status: **archived 2026-07-10.** Opened 2026-07-09 from a design conversation about making git history a first-class artifact of spike work. Shipped: `skills/commit-work/SKILL.md`, the `run-project-spike` wiring, and `docs/decisions/0003-agent-commit-policy.md`, which is where the durable rule now lives. This doc is historical context, not current rules.
 

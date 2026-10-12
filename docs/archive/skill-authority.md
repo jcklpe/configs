@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Skill Authority
 Status: **archived 2026-07-10.** Opened 2026-07-09 after an agent silently rewrote five global skills into repo-local ones. Shipped: `setup-local-skills` copies verbatim and has an update path, `docs/how-to-spike.md` is retired, the repo uses `docs/active-spikes/`, and personal prose rules now live in `agents/AGENTS.global.md` where they bind in every repo. This doc is historical context, not current rules.
 

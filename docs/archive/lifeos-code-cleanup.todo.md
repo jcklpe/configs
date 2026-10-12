@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Code Cleanup To-Do
 Status: **archived 2026-07-11.** All work done and human-QA'd. `lifeos.sh` 2,550 → 324 lines; code in `lib/`, secrets in `secrets/`, QA output in `qa/`. This is the implementation trail, kept for texture.
 

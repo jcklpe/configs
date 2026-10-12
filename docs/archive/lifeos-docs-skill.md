@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Docs Skill
 Give `lifeos docs` its own skill, so the Doc-editing capability is discoverable by the same route as every other service.
 

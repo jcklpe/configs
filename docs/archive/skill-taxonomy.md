@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Skill Taxonomy
 Status: **archived 2026-07-13.** Configs-side implementation committed in `cc7a790 skills: align project workflow taxonomy`; outcome note committed in `bd6fb16 skills: record taxonomy spike outcome`.
 

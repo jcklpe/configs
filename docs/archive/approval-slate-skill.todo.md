@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Approval Slate Skill — To Do
 
 ## Background

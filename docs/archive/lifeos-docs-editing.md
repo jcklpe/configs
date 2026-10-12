@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Spike: LifeOS Docs Editing as a First-Class Capability
 Conceptual doc. Status: **complete (Option 1, verified 2026-08-18) — archived.** The durable rule lives in `docs/decisions/0005-docs-editing-in-lifeos-tools.md` and the `lifeos-drive` / `lifeos-cli` skills.
 
