@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Unified Calendar
 **Archived 2026-09-26** after Aslan's review. The live behaviour is documented in the `lifeos-calendar` and `lifeos-m365` skills and the lifeos-tools README; treat this doc as history where they differ.
 

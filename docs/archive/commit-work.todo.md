@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Commit Work To-Do
 Status: **archived 2026-07-10.** All items done. The durable rule lives in `docs/decisions/0003-agent-commit-policy.md` and the operational skill in `skills/commit-work/SKILL.md`; this doc is the implementation trail, kept messy on purpose.
 

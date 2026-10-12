@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Code Cleanup
 Status: **archived 2026-07-11.** Opened 2026-07-10. Reorganized `configs/lifeos-tools/` and modularized `lifeos.sh` (2,550 → 324 lines) into a dispatcher plus `lib/` modules, moved the Python helpers into `lib/`, and relocated secrets and QA output into `secrets/` and `qa/`. Behavior unchanged throughout, verified against a golden baseline. This doc is historical context, not current rules.
 

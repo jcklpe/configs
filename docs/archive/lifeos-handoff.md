@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Handoff
 Status: **archived 2026-07-11.** Opened and shipped the same day. A user-initiated global `lifeos-handoff` skill that produces, from any repo, a sectioned status report (Progress / Growth / Accomplishment) for the user's LifeOS vault. Redesigned mid-spike after QA to fix an over-attribution problem. This doc is historical context, not current rules.
 

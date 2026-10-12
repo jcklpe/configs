@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Google Sources
 Status: archived. Gmail snapshots and Drive on-demand commands are implemented; personal, professional, and Open Austin live OAuth/API QA have passed. User-confirmed LifeOS agent usage validated the CLI tools.
 

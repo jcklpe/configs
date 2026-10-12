@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Tools V2 To-Do
 Status: **archived 2026-07-13.** The Trello Task Chains / `supersede` theme shipped and passed human QA. Later `calendar find` also shipped. Remaining candidate work was moved to [../scratch/future-ideas.md](../scratch/future-ideas.md#lifeos-tools-v2-future-ideas).
 

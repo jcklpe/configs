@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS CLI Skill To-Do
 Status: **archived 2026-07-13.** All configs-side items done. Conceptual doc: `docs/archive/lifeos-cli-skill.md`.
 

@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Drive Download
 
 Add a bounded `lifeos drive download` command so the CLI can pull **binary** Drive files (`.pdf`, `.docx`, `.png`, `.xlsx`, …) and export native Google files to a local path. Today `lifeos drive read` only renders native Google Docs/Sheets as text and returns *metadata only* for everything else, which leaves agents unable to inspect the contents of PDFs, Word docs, images, and spreadsheets that live on a shared Drive.

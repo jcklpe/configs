@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Slack Integration
 ## Purpose
 Add a `lifeos slack` command surface so an agent can act in Slack **as the user's own Slack account**, under explicit per-action approval:
