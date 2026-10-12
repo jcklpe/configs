@@ -46,7 +46,16 @@ Respect the repo's own rules first. In this pattern, use docs according to this 
 - Active spike to-do docs track implementation state.
 - `TODO.md` is the index of active, recently completed, waiting, and later spikes.
 - `docs/scratch/` is non-authoritative working material.
-- `docs/archive/` is historical context, not current rules, unless durable docs still agree with it.
+- `docs/archive/` is historical context, not current rules. Confirm any guidance against maintained docs or the current implementation; agreement does not make the archive authoritative.
+
+## Attention and Historical Authority
+Give both spike documents explicit YAML frontmatter: `attention: live` while actively maintained, and `attention: historical` when archived. Use the repository's equivalent metadata if it already has a different convention. These values describe how to use the document, not whether its tasks are done or its proposals approved.
+
+`live` means agents should maintain the document as work develops. It does not turn unresolved alternatives or agent proposals into adopted rules. `historical` means the document records the work as it stood at closure; its instructions and task states must not be applied as current guidance. Follow its links to maintained guidance or successor work, then verify there.
+
+Keep the marker in each file so its authority remains visible when search retrieves the document outside its folder. At closure, also put a plain-language historical notice near the top, alongside the closure date and stable slug. Metadata helps readers and tools recognize history; it does not enforce correct retrieval or interpretation on its own.
+
+Keep topical `tags` separate. If the repository uses `reviewed: YYYY-MM-DD`, advance it only after checking the document's claims or recorded state, not merely touching the file. Do not relabel the entire archive or introduce a broader attention taxonomy as part of an ordinary spike.
 
 ## TODO.md Role
 Use `TODO.md` as an index and coordination map, not as the place for fiddly implementation detail.
@@ -193,8 +202,8 @@ Do not create policies for every local implementation choice. Keep ordinary reas
 1. Inspect `AGENTS.md`, `README.md`, `TODO.md`, `docs/active-spikes/`, `docs/scratch/`, `docs/archive/`, durable docs, and repo-local skills.
 2. Decide whether the work belongs in an existing active spike, a new named spike, or a miscellaneous spike bucket.
 3. Choose a short topic slug. For mixed work, use the repo's numbered misc convention.
-4. Create or update `docs/active-spikes/<topic>.md` for conceptual context.
-5. Create or update `docs/active-spikes/<topic>.todo.md` for implementation state.
+4. Create or update `docs/active-spikes/<topic>.md` for conceptual context, with `attention: live` or the repository's equivalent.
+5. Create or update `docs/active-spikes/<topic>.todo.md` for implementation state, with the same attention marker.
 6. Add or update the spike entry in `TODO.md` as an index pointer.
 7. Capture known constraints, non-goals, validation expectations, and open questions before implementation if they matter.
 
@@ -229,12 +238,12 @@ When a spike is finished or superseded:
 1. Review and update the conceptual and to-do docs to reflect progress.
 2. Fold durable lessons into long-lived docs.
 3. Add `Continues in:` / `Continues from:` links if related work continues in another spike.
-4. Leave spike-local detail in the spike docs. Add the closure date and stable spike slug to both; link the conceptual doc to the maintained guidance and successor work that now own the subject. If no successor or maintained guidance resulted, say so rather than inventing one.
+4. Leave spike-local detail in the spike docs. Set both to `attention: historical` or the repository's equivalent, and add a plain-language historical notice, closure date, and stable spike slug to both; link the conceptual doc to the maintained guidance and successor work that now own the subject. If no successor or maintained guidance resulted, say so rather than inventing one.
 5. Move both spike docs from `docs/active-spikes/` to `docs/archive/`. Retain the pair by default, even when all useful current guidance has been integrated elsewhere.
 6. Update `TODO.md` so the active work index stays current.
 7. Where agent commits are permitted, land the archival as a single commit via `commit-work`, with the spike summary as its message. Show the message to the user and commit on their approval.
 
-Archived spike docs are historical context. They may be out of date. Do not treat archived docs as current project rules unless a durable doc still says the same thing. Keep their historical body as it stood at closure; later navigation repairs are allowed, and any necessary factual correction should be marked as a later correction rather than silently rewriting the record.
+Archived spike docs are historical context. They may be out of date. Use maintained docs or the current implementation to establish what applies now, even when the archive appears to agree. Keep their historical body as it stood at closure; later navigation repairs are allowed, and any necessary factual correction should be marked as a later correction rather than silently rewriting the record.
 
 The archived pair is a discoverable entry point into the development history: ordinary file searches can find its subject and reasoning, and its stable slug connects it to `git log --grep='Spike: <slug>$' --reverse`. Git supplies the earlier versions and finer sequence. Do not delete the archived pair merely because it can be recovered from Git, or compress it into a replacement summary by default. No separate history index is required.
 
