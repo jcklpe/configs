@@ -57,12 +57,19 @@ Avoid auxiliary docs unless progressive disclosure is useful. If the skill appro
 ## Authority
 Be explicit about where the skill applies:
 
-- **Global seed skill:** reusable fallback under `~/configs/skills/`.
+- **Global seed skill:** reusable fallback in the user's configured or discovered seed library.
 - **Repo-local skill:** project authority under `repo/skills/`.
 - **Tool-specific skill:** lives beside the tool and owns that tool's mechanics.
 - **Vault-local skill:** project/vault authority inside the vault.
 
 Write seed text as conditions, not deictic facts. "If the current repo already has..." is portable. "This repo's local skill..." is not portable when copied.
+
+## Paths and Dependencies
+Do not embed personal absolute paths, usernames, or assumptions about the author's checkout and installation layout in reusable skills. Use repository-relative paths for project resources, skill-relative paths for bundled resources, and documented configuration or discovery for separately installed tools. Replacing a username with `~` does not make a personal folder convention portable. Use an exact system path only when it is an actual tool or platform requirement, and explain that requirement.
+
+Check supporting scripts, references, examples, assets, and metadata as well as `SKILL.md`. Identify the required commands and workflows, how they are located, and what to do if unavailable. Distinguish required dependencies from optional integrations; do not imply that another user has the author's global skills installed. Preserve intentional repository-relative conventions and local authority while making reusable instructions independent of the author's machine.
+
+Select examples for the skill's intended audience. Do not copy private conversation, source material, or local configuration into a reusable skill merely to illustrate its origin.
 
 ## Boundaries
 Every skill should make its non-goals discoverable:
@@ -78,15 +85,13 @@ For project workflow skills, coordinate with the shared taxonomy:
 docs/pinned-issues.md        unresolved things intentionally preserved for later
 docs/scratch/future-ideas.md conceptual someday material
 docs/scratch/misc.md         raw observed friction / issue intake
-docs/decisions/              settled durable rules
+docs/policies/               current durable rules, defaults, and procedures
 docs/active-spikes/          active scoped work
 ```
 
 ## Validation
-Run the skill validator when creating or substantially changing a skill:
+When creating or substantially changing a skill, locate the available validator through the session's skill catalog or configured installation. If `skill-creator` is available, its `scripts/quick_validate.py` path is relative to that installed skill's directory; run it with the target skill directory and a compatible Python environment. Do not guess or embed the current machine's installation address in the instructions. If the validator or its runtime dependencies are unavailable, report that limit and inspect frontmatter and references directly rather than claiming validation passed.
 
-```sh
-python3 /Users/aslan/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/<skill-name>
-```
+Also check dependency availability and path portability across the complete folder. Frontmatter validation alone does not establish that a skill can be used after cloning.
 
 Forward-test only when the skill is complex enough that another agent may reasonably misapply it. Use realistic prompts and raw artifacts, not your conclusions.

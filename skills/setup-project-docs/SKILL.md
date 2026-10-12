@@ -1,6 +1,6 @@
 ---
 name: setup-project-docs
-description: "Set up or retrofit a repository's durable project documentation for agent-assisted work: root README, .gitignore, AGENTS.md, CLAUDE.md symlink, TODO.md, docs/active-spikes, docs/scratch, docs/archive, docs/decisions, optional pinned issues/future ideas, and optional repo-local skills. Use when starting a new repo, adding the spike/scratch/archive/decision workflow to an existing repo, or making repo docs cloneable for future agents and collaborators."
+description: "Set up or retrofit a repository's durable project documentation for agent-assisted work: root README, .gitignore, AGENTS.md, CLAUDE.md symlink, TODO.md, docs/active-spikes, docs/scratch, docs/archive, docs/policies, optional pinned issues/future ideas, and optional repo-local skills. Use when starting a new repo, adding the spike/scratch/archive/policy workflow to an existing repo, or making repo docs cloneable for future agents and collaborators."
 ---
 
 # Setup Project Docs
@@ -8,7 +8,7 @@ description: "Set up or retrofit a repository's durable project documentation fo
 If the current repo already has `skills/setup-project-docs/SKILL.md`, read and follow the repo-local skill first. Treat this global skill as fallback seed material.
 
 ## Purpose
-Set up a low-ceremony docs ecology that lets humans and agents keep context over time without turning every thought into a ticket. The structure should preserve the difference between durable rules, active work, scratch thinking, and historical context.
+Set up a low-ceremony docs ecology that lets humans and agents keep context over time without turning every thought into a ticket. The structure should preserve the difference between current policies, active work, scratch thinking, and historical context.
 
 This skill initializes the structure. Use `run-project-spike` to conduct active spike work, `triage-project-misc` to route loose notes, `log-future-idea` to capture conceptual someday material, `pin-issue` to preserve unresolved issues for later, `setup-local-skills` to copy seed skills into a project repo, and `update-local-skills` to refresh existing local skill copies.
 
@@ -27,7 +27,7 @@ repo/
     scratch/
       misc.md
     archive/
-    decisions/
+    policies/
 ```
 
 Optional, when the repo should carry its own agent workflows:
@@ -39,16 +39,23 @@ repo/
     triage-project-misc/
 ```
 
-Use the `setup-local-skills` skill to copy full skill folders from the seed library, usually `~/configs/skills/`, into the project. Use `update-local-skills` when the repo already has local skills and the user wants to refresh them from the seed versions. Do not symlink repo-local skills; copied skills are allowed to evolve with the repo.
+Use the `setup-local-skills` skill to locate the configured or discovered seed library and copy complete skill folders with their portability and dependency checks. Use `update-local-skills` when the repo already has local skills and the user wants to refresh them from the seed versions. Do not symlink repo-local skills; copied skills are allowed to evolve with the repo.
 
 Do not copy a whole personal skill library into a repo by default. Add repo-local skills only when they are part of how the repo should be operated after clone.
+
+## Review and Skill Dependencies
+Read the user's current review and commit preferences and the repository's commit policy before checkpointing setup files. Honor a requested scaffold review period: leave edits uncommitted until the user authorizes the checkpoint. Do not infer permission to push from permission to initialize a repository or make local commits. Outside a requested review period, follow the repository's normal authorized commit workflow rather than adding a new approval ritual.
+
+Before calling the setup complete, check that workflows referenced by `AGENTS.md` and required repo-local skills are available after cloning. Copy the necessary supporting skill folders, scripts, references, and assets when authorized. Do not assume the cloner has the maintainer's global skill installation. Distinguish required workflows from optional tools; do not vendor the whole personal skill library to satisfy incidental references. State where agents should load the local skills, without claiming automatic discovery unless that mechanism has been configured.
+
+The scaffold establishes documentation locations and operating conventions. It does not establish a product specification or preserve the full project discussion. Report which project rationale, references, and open questions have actually been captured, and which remain elsewhere or unwritten. Do not manufacture that missing substance from the folder structure.
 
 ## File Roles
 Use root `README.md` for the human-facing project overview: what the project is, how to start, and the most important commands or links.
 
 Use `.gitignore` to keep local agent state, OS junk, secrets, env files, tokens, caches, and generated private artifacts out of version control. This skill includes `assets/default.gitignore` as a starter; merge it with existing project-specific ignore rules instead of overwriting a real `.gitignore`.
 
-Use `AGENTS.md` for durable agent instructions: repo layout, validation expectations, safety rules, local skill precedence, and conventions agents must follow.
+Use `AGENTS.md` for durable agent instructions: repo layout, validation expectations, safety rules, local skill precedence, and conventions agents must follow. Describe portable project conventions rather than the current maintainer's surrounding workspace, private reference sources, or checkout-specific storage arrangement. Keep machine-specific setup details outside shareable project authority unless they are actual project requirements.
 
 When the repo should support Claude-style repo guidance, symlink `CLAUDE.md` to `AGENTS.md` so the same neutral instructions stay authoritative:
 
@@ -62,24 +69,27 @@ Use `docs/active-spikes/` for current spike doc pairs. Each active spike should 
 
 Use `docs/scratch/` for rough, non-authoritative thinking: copied references, early notes, possible future spikes, and `misc.md`.
 
-Use `docs/archive/` for closed or superseded spike history. Archived docs are historical context, not current rules, unless durable docs still agree with them.
+Use `docs/archive/` for retained closed or superseded spike pairs, which make development history discoverable and connect its subject to Git through a stable spike slug. Follow `run-project-spike` for closure dates and pointers to maintained guidance or continuing work. Archived docs are historical context, not current rules, unless durable docs still agree with them.
 
-Use `docs/decisions/` for durable tradeoffs that should outlive a spike. Prefer short numbered records like `0001-docs-workflow.md` when decision records are useful. A record's shape:
+Use `docs/policies/` for current, durable project guidance: rules, defaults, procedures, suggested processes, exceptions, and the rationale needed to apply them. Prefer subject-focused files such as `0001-repository-boundaries.md`; numbering is optional and should follow the repository's convention.
+
+Policies describe what applies now. Revise them directly when the approach changes; Git records prior versions and the reasons for changes. Do not default to append-only Architecture Decision Records (ADRs), superseded decision chains, or a required Context / Decision / Consequences format. Keep rationale that helps someone act today, but leave setup chronology and abandoned alternatives in Git history or archived development notes.
+
+A minimal policy might use:
 
 ```md
-# 0001 Short Decision Title
-## Context
-Why this decision came up.
+# Repository Boundaries
+## Current Approach
+What belongs where, and how to operate the arrangement.
 
-## Decision
-What we chose.
+## Rationale
+Why this arrangement matters for current work.
 
-## Consequences
-What this makes easier, harder, or out of scope.
-
-## Links
-Related spikes, TODO items, or files.
+## Exceptions
+Only when real exceptions need explanation.
 ```
+
+Preserve an existing project's deliberate vocabulary and documentation conventions unless migration is authorized. A new-project default is not permission to rename an existing `decisions/` folder. When no Git history exists, agree on a lightweight way to preserve changes rather than silently treating a current policy as an immutable historical record.
 
 Do not create a `README.md` inside `docs/` or any of its subfolders. In a folder where every file is documentation, `README` names nothing, and such a file inevitably restates the authority rules that already live in `AGENTS.md` while carrying a hand-maintained file listing that `ls` provides for free. `TODO.md` is the index.
 
@@ -158,4 +168,5 @@ The detailed routing process belongs in the `triage-project-misc` skill.
 5. Add or update `README.md`, `AGENTS.md`, `CLAUDE.md`, and `TODO.md` only with repo-relevant guidance.
 6. If adding repo-local skills, use `setup-local-skills` to copy full skill folders into `repo/skills/`. If local skills already exist and should be refreshed, use `update-local-skills`.
 7. Keep private or sensitive information out of public repos. Use examples and placeholders for local-only values.
-8. Report what was created, what was intentionally skipped, and which docs need human review.
+8. Check required skill dependencies and distinguish established conventions from project content still needing capture.
+9. Report what was created, what was intentionally skipped, and which docs need human review; checkpoint only within the user's current review and commit preferences.

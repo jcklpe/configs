@@ -1,6 +1,6 @@
 ---
 name: pin-issue
-description: "Preserve an unresolved project issue in docs/pinned-issues.md without turning it into a backlog item or durable decision. Use when the user says to put a pin in something, circle back later, defer a thorny question, preserve an unresolved concern, revisit pinned issues, or route a pin into active work, future ideas, misc intake, or a decision record."
+description: "Preserve an unresolved project issue in docs/pinned-issues.md without turning it into a backlog item or durable policy. Use when the user says to put a pin in something, circle back later, defer a thorny question, preserve an unresolved concern, revisit pinned issues, or route a pin into active work, future ideas, misc intake, or a current policy."
 ---
 
 # Pin Issue
@@ -15,13 +15,13 @@ The default register is `docs/pinned-issues.md`. Create it only when the user as
 ## Taxonomy
 Use the first matching destination:
 
-- `docs/decisions/` for settled durable rules.
+- `docs/policies/` for current durable rules, defaults, and procedures.
 - `docs/pinned-issues.md` for unresolved issues intentionally preserved for later.
 - `docs/scratch/future-ideas.md` for conceptual someday material.
 - `docs/scratch/misc.md` for raw observed friction, QA nits, bugs, and issue intake.
 - `docs/active-spikes/` for active scoped work.
 
-Do not treat `docs/pinned-issues.md` as a pre-decision queue. Some pins become decision records; many become active work, misc notes, future ideas, or nothing.
+Do not treat `docs/pinned-issues.md` as a queue that must produce policies. Some pins lead to policies; many become active work, misc notes, future ideas, or nothing.
 
 ## What Belongs Here
 Pin an issue when the right handling depends on future context, such as:
@@ -61,7 +61,7 @@ Revisit when: ...
 3. Add a short entry under `## Current Pins`. Preserve the user's framing where it matters, but keep the entry plain and compact.
 4. State the pinned issue, the current context that makes pinning reasonable, and the concrete revisit trigger.
 5. Prefer a condition-based revisit trigger over a vague date.
-6. Link to related active spikes, archived spikes, decision records, issues, or files only when the link will help future review.
+6. Link to related active spikes, archived spikes, policies, issues, or files only when the link will help future review.
 7. Avoid duplicating the same work across `docs/pinned-issues.md`, `docs/scratch/`, `TODO.md`, and spike todo docs. One place should own active work.
 
 ## Revisiting Workflow
@@ -71,7 +71,7 @@ When the user asks to revisit pins, inspect each relevant entry and route it int
 - **Promote to active work:** move concrete tasks into the relevant spike `.todo.md` or `TODO.md`, then remove the pin.
 - **Move to future ideas:** move conceptual someday material to `docs/scratch/future-ideas.md`, then remove the pin.
 - **Move to misc:** move raw issue intake or QA observations to `docs/scratch/misc.md`, then remove the pin.
-- **Record durable decision:** create or update a decision record under `docs/decisions/`, then remove the pin.
+- **Record durable policy:** create or update a current policy under `docs/policies/`, then remove the pin.
 - **Discard:** remove the pin if the issue is no longer relevant.
 
 When promoting a pin, preserve enough origin context in the receiving doc to explain why the issue was pinned. Do not keep a duplicate historical copy in `docs/pinned-issues.md`.
@@ -79,6 +79,6 @@ When promoting a pin, preserve enough origin context in the receiving doc to exp
 ## Hygiene Rules
 Keep the register short. It should feel like a clean list of live unresolved calls, not a history log.
 
-Do not add resolved, archived, or completed sections by default. Preserve history in archived spike docs, durable decision records, commit history, or the receiving active work doc.
+Do not add resolved, archived, or completed sections by default. Preserve history in archived spike docs, current policies, commit history, or the receiving active work doc.
 
 Do not include private, sensitive, or public-unsafe context in public repositories. Use placeholders or generic phrasing when the pinned issue depends on private information.
