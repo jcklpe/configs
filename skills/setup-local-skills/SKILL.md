@@ -1,6 +1,6 @@
 ---
 name: setup-local-skills
-description: "Copy reusable seed skill folders from a personal configs skill library into a repository's local skills folder for first-time vendoring. Use when the user wants a project repo to carry its own skills after clone, asks to vendor or copy global skills locally, or wants repo-local skill authority without symlinking."
+description: "Copy reusable seed skill folders into a repository for first-time vendoring, checking portability and required dependencies. Use when the user wants a project to carry its own skills after clone or asks to copy global skills locally."
 ---
 
 # Setup Local Skills
@@ -12,11 +12,7 @@ Copy complete skill folders from a seed library into the current repo so the rep
 
 Use `update-local-skills` when a repo already has the skill and the user wants to refresh, compare, sync, or update it from the global seed version.
 
-Default seed source:
-
-```text
-~/configs/skills/
-```
+Locate the seed library from the user's request, project configuration, or the installed skill catalog. Resolve an installed skill's source when useful; do not assume a personal checkout name or home-directory layout. Ask for the source only if the available context cannot resolve it.
 
 Default local target:
 
@@ -37,47 +33,50 @@ Keep a skill global-only when it is merely a personal preference, experimental, 
 
 ## Copy Workflow
 1. Identify the repo root and inspect existing `AGENTS.md`, `skills/`, and docs.
-2. List available seed skills from `~/configs/skills/` by looking for first-level folders with `SKILL.md`.
+2. Locate the seed library and list available skill folders containing `SKILL.md`.
 3. Confirm which skills the user wants copied unless the request named them clearly.
 4. Create `skills/` in the repo if missing.
-5. Copy each requested skill folder wholesale, preserving `SKILL.md` and any `references/`, `scripts/`, or `assets/` folders.
+5. Read each selected skill and check its supporting resources, paths, and dependencies using the portability check below. Copy its complete authored folder, preserving `SKILL.md`, metadata, and any `references/`, `scripts/`, or `assets/` folders.
 6. Do not copy generated caches, `.DS_Store`, secrets, local env files, or unrelated scratch material.
 7. If the skill already exists in the repo, this is an update, not a copy. Use `update-local-skills`.
 8. Update or suggest updating `AGENTS.md` with local skill precedence.
 
-Copy the skill **verbatim**. Do not adapt its text on the way in. See "Why Verbatim Copies Are Correct" below.
+Prefer a verbatim copy when the source is portable and its required dependencies are available. Do not make silent adaptations on the way in. A reusable defect should be repaired in the seed when that edit is authorized; make any necessary project adaptation explicit and preserve intentional local authority.
 
 Use normal filesystem copy tools available in the environment. Prefer simple, inspectable commands over a custom framework.
 
-## Why Verbatim Copies Are Correct
-A skill's text must be true no matter which copy of it is being read.
+## Portable Copies and Local Authority
+A reusable skill's authority text should be true no matter which copy is being read. This does not establish that all its referenced tools and resources are available.
 
-The `## Local Precedence` section is written as a *condition* — "if the current repo already has this skill, follow that one first" — which defers correctly when read from the global copy, and is trivially satisfied when read from the local one. The same bytes are right in both places, so a verbatim copy needs no adaptation and an update can overwrite losslessly.
+The `## Local Precedence` section is written as a *condition* — "if the current repo already has this skill, follow that one first" — which defers correctly when read from the global copy, and is trivially satisfied when read from the local one. Preserve that condition when copying. Later updates still require comparison because the local copy may have deliberately diverged.
 
 Never rewrite a copied skill to assert that it *is* the repo-local one. That statement is deictic: "this repository" resolves against whichever repo the agent is reading from, not against the file's location on disk. A global skill claiming to be authoritative for "this repository" hijacks every project it is invoked in, and tells the agent to ignore that project's actual local copy.
 
 **Seed text states conditions. It never states facts about its own location.**
 
-Genuine repo-specific facts — that spike docs live in `notes/` rather than `docs/`, say — belong in the repo's `AGENTS.md`, which already outranks skills, not inside the skill file.
+Keep repository-wide conventions, such as spike placement, in `AGENTS.md` rather than duplicating them across skills. A local skill may intentionally specialize the workflow; preserve that specialization when updating it.
+
+## Portability Check
+Check `SKILL.md` and its supporting resources for personal absolute paths, assumed checkout locations, private examples, missing relative targets, and links or symlinks to resources outside the copied folder. Use repository-relative or skill-relative references for supplied resources and documented configuration or discovery for installed dependencies. `~` alone does not make a personal layout portable.
+
+Determine whether required skills, scripts, commands, and assets will be available to the intended cloner. Supply dependencies within the authorized scope or explain the setup they require. Optional integrations and occasional references do not justify copying an entire library. If a required dependency remains missing, report that limitation instead of calling the copied workflow self-contained or usable after clone.
 
 ## Local Precedence Text
 Add this to `AGENTS.md` when the repo has local skills:
 
 ```md
-When this repo has `skills/`, repo-local skills are project authority. Prefer
-`skills/<skill-name>/SKILL.md` over similarly named global skills. Global skills
-are fallback seed material, not project rules.
+When this repo has `skills/`, repo-local skills are project authority. Prefer `skills/<skill-name>/SKILL.md` over similarly named global skills. Global skills are fallback seed material, not project rules.
 ```
 
 ## After Copying
-A verbatim copy is already correct, so nothing *must* change. Over time a repo may still want its copy to say project-specific things:
+Verify copied relative references resolve and required dependencies have a documented, available route. A byte-identical copy preserves the source; it does not prove portability. Over time a repo may want its copy to say project-specific things:
 
-- exact repo paths
+- repository-relative paths
 - project-specific authority order
 - project-specific validation commands
 - public/private information boundaries
 - naming conventions for docs, scratch files, or spikes
 
-Let those divergences appear when the project needs them, not as a copy-time ritual. Never touch the `## Local Precedence` section.
+Let those divergences appear when the project needs them, not as a copy-time ritual. Preserve the conditional local-precedence rule.
 
-Report the copied skill folders and any existing skills left untouched.
+Report the copied skill folders, explicit adaptations, required dependencies still unavailable, and any existing skills left untouched.
