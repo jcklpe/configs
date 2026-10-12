@@ -93,3 +93,5 @@ Sequencing: build `commit-work` first, then use it to commit this spike's work. 
 ## Open Questions
 - Does `docs/` want a `README.md` explaining the layout, as `run-project-spike`'s directory sketch implies?
 - **Should the `description:` fields be rewritten to lead with triggers instead of feature inventories?** A skill's description is always in the agent's context; its body loads only when invoked. So the description is the expensive field, and it exists to answer "should I load this right now?" Several of ours open with a workflow summary and only reach the trigger at the end — `run-project-spike` spends 46 words listing its features before it says "Use when starting, continuing, promoting...". The Superpowers `writing-skills` guide argues, plausibly, that an agent skimming a description may act on the summary instead of loading the skill. This is a mechanical, low-risk edit to six frontmatter lines, but it is a change to how every skill announces itself and should be made deliberately rather than swept in with the authority fixes.
+
+Continues in: docs/active-spikes/project-workflow-refinement.md

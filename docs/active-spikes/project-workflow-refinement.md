@@ -1,5 +1,6 @@
 # Project Workflow Refinement
 Opened: 2026-10-12
+Status: active. Closing message wording approved 2026-10-12; readiness to close remains under discussion.
 Spike: project-workflow-refinement
 
 ## Purpose
@@ -26,6 +27,14 @@ Reusable skills use repository-relative references and configured or discovered 
 
 ## Boundaries
 Update the global seeds and directly affected operating guidance. Refresh the corresponding imported skills in the development repository that prompted this work after comparing them with the seeds. Other repositories' local skill copies are not automatically migrated. Preserve unrelated working-tree changes. No remote publication is part of this work.
+
+## Maintained Guidance
+- [Commit work](../../skills/commit-work/SKILL.md) and the [repository commit policy](../decisions/0003-agent-commit-policy.md) own checkpoint scope, concurrency, review holds, and the pre-commit audience check.
+- [Run project spike](../../skills/run-project-spike/SKILL.md) owns active reasoning, bounded maintenance, retained archives, and closing-message review.
+- [Write skills](../../skills/write-skills/SKILL.md), [setup local skills](../../skills/setup-local-skills/SKILL.md), and [update local skills](../../skills/update-local-skills/SKILL.md) own path portability and dependency checks.
+- [Setup project docs](../../skills/setup-project-docs/SKILL.md) owns the reusable scaffold and current-policy defaults; [triage project misc](../../skills/triage-project-misc/SKILL.md), [pin issue](../../skills/pin-issue/SKILL.md), and [log future idea](../../skills/log-future-idea/SKILL.md) use those defaults.
+
+No successor spike is required for this bounded update. Existing repository-specific vocabulary and unrelated local skill copies retain their own authority.
 
 Continues from: docs/archive/commit-work.md
 Continues from: docs/archive/skill-authority.md

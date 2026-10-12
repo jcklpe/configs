@@ -35,10 +35,10 @@ Keep a skill global-only when it is merely a personal preference, experimental, 
 1. Identify the repo root and inspect existing `AGENTS.md`, `skills/`, and docs.
 2. Locate the seed library and list available skill folders containing `SKILL.md`.
 3. Confirm which skills the user wants copied unless the request named them clearly.
-4. Create `skills/` in the repo if missing.
-5. Read each selected skill and check its supporting resources, paths, and dependencies using the portability check below. Copy its complete authored folder, preserving `SKILL.md`, metadata, and any `references/`, `scripts/`, or `assets/` folders.
-6. Do not copy generated caches, `.DS_Store`, secrets, local env files, or unrelated scratch material.
-7. If the skill already exists in the repo, this is an update, not a copy. Use `update-local-skills`.
+4. Check each requested destination before copying anything. If the skill already exists in the repo, use `update-local-skills` for that skill instead of overwriting it. Continue first-time copying only for missing skills.
+5. Read each selected new skill and check its supporting resources, paths, and dependencies using the portability check below.
+6. Create `skills/` in the repo if missing.
+7. Copy each new skill's complete authored folder, preserving `SKILL.md`, metadata, and any `references/`, `scripts/`, or `assets/` folders. Exclude generated caches, `.DS_Store`, secrets, local env files, and unrelated scratch material.
 8. Update or suggest updating `AGENTS.md` with local skill precedence.
 
 Prefer a verbatim copy when the source is portable and its required dependencies are available. Do not make silent adaptations on the way in. A reusable defect should be repaired in the seed when that edit is authorized; make any necessary project adaptation explicit and preserve intentional local authority.
