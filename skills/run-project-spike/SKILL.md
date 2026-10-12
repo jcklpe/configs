@@ -27,7 +27,7 @@ docs/
     future-ideas.md
     misc-1.md
   archive/
-  decisions/
+  policies/
   pinned-issues.md
 ```
 
@@ -59,7 +59,7 @@ Active spikes use two docs:
 - A conceptual doc, such as `docs/active-spikes/<topic>.md`.
 - A to-do doc, such as `docs/active-spikes/<topic>.todo.md`.
 
-The conceptual doc explains the work's purpose, philosophy, boundaries, and settled model. It should help a new agent understand what kind of solution would be in character for the project.
+The conceptual doc explains the work's purpose, philosophy, boundaries, developing alternatives, and settled model where one exists. Distinguish user-adopted positions from agent proposals and unresolved questions. It should help a new agent understand what kind of solution would be in character for the project. Substantial exploratory discussion can belong here without turning every possibility into an implementation task.
 
 The to-do doc tracks concrete atomic tasks for implementation work. It should be operational: files, actions, QA notes, unresolved questions, and what has already happened.
 
@@ -77,7 +77,10 @@ Use the conceptual doc for:
 - safety and privacy boundaries
 - continuation links to predecessor or successor spikes
 
-Avoid turning the conceptual doc into a running changelog. When implementation details become durable rules, fold them into longer-lived docs such as `README.md`, `AGENTS.md`, a decision record, a runbook, or another active reference doc.
+Avoid turning the conceptual doc into a running changelog. When implementation details become durable rules, fold them into longer-lived docs such as `README.md`, `AGENTS.md`, a current policy, a runbook, or another active reference doc.
+
+## Selecting Material for the Repository
+Before writing spike notes, consider the repository's intended audience. Preserve project-relevant reasoning, qualifications, corrections, and useful examples without copying unnecessary or unauthorized private conversation, source packages, personal paths, or surrounding workspace details. Permission to preserve development reasoning is not permission to publish private source material. Keep user decisions distinguishable from agent suggestions; a saved proposal is not evidence of human agreement.
 
 ## To-Do Docs
 Use the to-do doc for:
@@ -132,7 +135,7 @@ Unplanned work gets *added* entries — surprises, reversals, things discovered 
 A `To Do` item that is dropped rather than done is moved to `Done` and marked as dropped, with the reason. Deleting it erases the fact that it was ever considered.
 
 ## Committing Spike Work
-Repos differ on whether agents may commit. Follow the repo's own policy, stated in its `AGENTS.md` or its decision records. **If the repo says nothing, do not commit and do not offer to.**
+Repos differ on whether agents may commit. Follow the repo's own policy, stated in its `AGENTS.md` or its durable policies. **If the repo says nothing, do not commit and do not offer to.**
 
 Where agent commits are permitted, use the `commit-work` skill. Do not write commit logic, staging logic, or commit messages here; hand it the spike's slug and let it own the rest. It writes a `Spike: <slug>` trailer on each commit, which is what later allows a spike's history to be reconstructed:
 
@@ -140,9 +143,9 @@ Where agent commits are permitted, use the `commit-work` skill. Do not write com
 git log --grep='Spike: <slug>$' --reverse
 ```
 
-Commit at the **completion boundary** — when implementation is finished and verified as far as the terminal allows. This is independent of which bucket the item lands in: most work goes straight from `To Do` to `Done`, and only some stops at `Ready for Human QA`. The commit happens when the work is finished, and the bucket is chosen afterward. Do not wait for the user's QA confirmation to commit: it may arrive days later, or conversationally, or never, and finished work should not sit uncommitted in a tree another agent may be writing to.
+Use `commit-work` to choose timely checkpoints for coherent changes and useful experimental states. Preserve distinct candidates and consequential corrections while keeping concurrent spikes traceable. A conversation turn ending is not itself a checkpoint, and an entire spike need not finish before committing. Human QA status is separate from checkpoint timing; an explicit request to review before committing overrides routine checkpointing until that review ends or the user authorizes the checkpoint.
 
-The `.todo.md` edit that moves an item belongs in the same commit as the work it describes. One commit then shows both the change and its recorded intent.
+The `.todo.md` edit that moves an item and a `TODO.md` update describing the same work belong in the same commit as that work when their full diffs are in scope. Shared files require checking for unrelated work from concurrent spikes; their filename alone is not a reason to split them into separate commits.
 
 When the user confirms QA, moving items to `Done` is its own doc-only commit, batched per **approval event**: one approval is one commit, however many items it covered. It records when the work was blessed, which no other artifact does.
 
@@ -176,15 +179,15 @@ Use the shared routing taxonomy before promoting scratch material:
 - `docs/pinned-issues.md` for unresolved issues intentionally preserved for later.
 - `docs/scratch/future-ideas.md` for conceptual someday material.
 - `docs/scratch/misc.md` for raw observed friction and issue intake.
-- `docs/decisions/` for settled durable rules.
+- `docs/policies/` for current durable rules, defaults, and procedures.
 - `docs/active-spikes/` for active scoped work.
 
 Only promote material into an active spike when the user is actually starting scoped work or the project needs an active implementation container now.
 
-## Durable Decisions
-Decision records are part of the project's durable docs structure, not the spike process itself. During a spike, create or update a decision record only when a tradeoff has become a durable project rule that should outlive the spike.
+## Durable Policies
+Policies are part of the project's durable docs structure, not the spike process itself. During a spike, create or update a policy when an approach has become durable guidance that should outlive the spike. Policies describe the current rules, defaults, procedures, exceptions, and useful rationale; revise them directly and let Git preserve their evolution. Respect existing project conventions unless migration is authorized.
 
-Do not create decision records for every local implementation choice. Keep ordinary reasoning in the conceptual spike doc unless it needs to become long-lived project authority.
+Do not create policies for every local implementation choice. Keep ordinary reasoning in the conceptual spike doc unless it needs to become long-lived project authority.
 
 ## Starting A Spike
 1. Inspect `AGENTS.md`, `README.md`, `TODO.md`, `docs/active-spikes/`, `docs/scratch/`, `docs/archive/`, durable docs, and repo-local skills.
@@ -199,6 +202,8 @@ Do not create decision records for every local implementation choice. Keep ordin
 Keep conceptual understanding in the conceptual doc and operational state in the to-do doc. Update item statuses as work moves. Preserve enough history to explain decisions, but move durable rules out of the spike when they become repo policy.
 
 Do not let scratch notes silently become authority. Promote them deliberately.
+
+Repair direct dependencies when actual changes land: a moved file's inbound links, an index entry, or instructions invalidated by a changed command. Keep speculative alternatives in the spike until settled or implemented; do not repeatedly rewrite durable guidance to match each possibility discussed. Reserve the broader check of affected live guidance for closure. Neither pass grants authority to edit unrelated projects or external systems.
 
 ## Continuation Links
 When work moves into a new phase instead of continuing in the same spike, link related predecessor and successor spikes so the work graph can be followed later.
@@ -224,26 +229,30 @@ When a spike is finished or superseded:
 1. Review and update the conceptual and to-do docs to reflect progress.
 2. Fold durable lessons into long-lived docs.
 3. Add `Continues in:` / `Continues from:` links if related work continues in another spike.
-4. Leave spike-local detail in the spike docs.
-5. Move both spike docs from `docs/active-spikes/` to `docs/archive/`.
+4. Leave spike-local detail in the spike docs. Add the closure date and stable spike slug to both; link the conceptual doc to the maintained guidance and successor work that now own the subject. If no successor or maintained guidance resulted, say so rather than inventing one.
+5. Move both spike docs from `docs/active-spikes/` to `docs/archive/`. Retain the pair by default, even when all useful current guidance has been integrated elsewhere.
 6. Update `TODO.md` so the active work index stays current.
 7. Where agent commits are permitted, land the archival as a single commit via `commit-work`, with the spike summary as its message. Show the message to the user and commit on their approval.
 
-Archived spike docs are historical context. They may be out of date. Do not treat archived docs as current project rules unless a durable doc still says the same thing.
+Archived spike docs are historical context. They may be out of date. Do not treat archived docs as current project rules unless a durable doc still says the same thing. Keep their historical body as it stood at closure; later navigation repairs are allowed, and any necessary factual correction should be marked as a later correction rather than silently rewriting the record.
+
+The archived pair is a discoverable entry point into the development history: ordinary file searches can find its subject and reasoning, and its stable slug connects it to `git log --grep='Spike: <slug>$' --reverse`. Git supplies the earlier versions and finer sequence. Do not delete the archived pair merely because it can be recovered from Git, or compress it into a replacement summary by default. No separate history index is required.
 
 ### The Archival Commit
 The archival is itself a commit: the doc moves and the `TODO.md` update are its diff. So its message is the spike's summary, and it is the one commit in a spike worth reviewing before it lands.
 
-That message is a **synthesis, not a rollup**. Draw on the trailer log, the conceptual doc, the to-do doc's `Done` section, and what you still hold in working context. The most valuable content is what cannot be recovered from the diff: what was tried and abandoned, what turned out to be the wrong frame, which constraint was discovered halfway through, which argument was made well and then lost. **Dead ends leave no trace in the tree.** If they are not written down now, they are gone.
+That message is a **synthesis, not a rollup**. Draw on the trailer log, the conceptual doc, the to-do doc's `Done` section, and verified working context. Explain consequential alternatives, discovered constraints, and corrections needed to understand the result; do not invent a cleaner development story or infer user agreement. Earlier commits may preserve an abandoned implementation, but they cannot recover reasoning never recorded. Select only material suitable for the repository's audience.
 
 Write the summary message and do the archival doc pass as one act, from one synthesis.
 
 ## Durable Lessons Check
-Before archiving, ask:
+Before archiving, check the live guidance affected by this spike. Search for changed paths, commands, and rules where useful; this is a bounded dependency check, not a whole-repository audit. Preserve substantial reasoning, examples, and qualifications when integrating them into maintained docs; current guidance need not be a compressed summary. Historical accounts of an old behavior are not stale instructions to rewrite.
+
+Ask:
 
 - Did commands, setup, public APIs, or workflows change? Update `README.md`.
 - Did agent workflow change? Update `AGENTS.md` or the relevant repo-local skill.
-- Did a durable tradeoff get settled? Add or update a decision record.
+- Did a durable tradeoff get settled? Add or update a current policy.
 - Did shell load order, install behavior, or symlink behavior change? Update durable setup docs.
 - Did the work add a repeatable manual process? Add or update a runbook or skill.
 - Did it create future roadmap work? Update `TODO.md` or create a draft in `docs/scratch/`.

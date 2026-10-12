@@ -110,7 +110,7 @@ The rules that matter most, because breaking them is silent:
 - **Commit by pathspec, never stage.** `git commit -F - -- <explicit paths>`. Git's index is repo-global shared state, and this repo often has two agents in it at once — one agent's `git add` followed by another's bare `git commit` puts the first agent's files in the second's commit, with no error.
 - **Never `git add -f`.** Git's own refusal to add an ignored file recommends `-f`, and `-f` then commits the secret. Run `git check-ignore -q <path>` first. See [docs/decisions/0001-secrets-and-local-env.md](docs/decisions/0001-secrets-and-local-env.md).
 - **Never `--amend`, rebase, force-push, or `--no-verify`.**
-- **One commit does one thing.** If the summary needs the word "and," it is two commits.
+- **One commit does one coherent thing.** Keep implementation and its directly associated documentation and status updates together; split unrelated purposes. Commit promptly at useful boundaries so concurrent spikes stay traceable. Explicit paths do not isolate overlapping edits within one file: inspect full selected diffs. Honor explicit pre-commit review holds and the spike workflow's review of the closing message.
 
 `gitall` and `gitcommit` in [git/git.sh](git/git.sh) are the user's own sweep helpers and are not to be changed by an agent. Both run `git add -A` followed by a bare `git commit`, so both will silently absorb an agent's in-progress files into an unrelated commit. **Do not run `gitall` or `gitcommit` in this repo while an agent is working in it.** `gitpush` is safe: it touches no index, and pushing is the user's job anyway.
 
