@@ -77,10 +77,7 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Cross-project skill feedback | [agents/skills-feedback-log.md](agents/skills-feedback-log.md) |
 
 ## Docs workflow
-Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when a body
-of work needs shared context, taste, constraints, or implementation history. Scratch docs
-are non-authoritative. Archived docs are historical context, not current rules, unless a
-durable doc still agrees with them.
+Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when a body of work needs shared context, taste, constraints, or implementation history. Scratch docs are non-authoritative. Archived docs are historical context; verify current guidance in maintained docs or the current implementation. Follow the spike skill for explicit attention markers and closure navigation.
 
 Spikes earn their keep here because `configs/` is both personal and portable. A change often has to answer more than "does it work?" — it has to fit the shell load order, stay safe for a public repo, avoid secrets, remain idempotent across machines, and not slow down startup. That is more context than a ticket carries.
 

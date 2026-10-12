@@ -1,17 +1,23 @@
+---
+attention: live
+---
 # Project Workflow Refinement Tasks
-Status: active. Closing message wording approved 2026-10-12; readiness to close remains under discussion.
+Status: active. Cross-repository rollout and attention markers are implemented; closure remains unapproved.
 Spike: project-workflow-refinement
 
 ## Current State
-The approved skill changes are implemented as of 2026-10-12. All nine affected seeds and five imported copies passed structural validation, and the imported folders match their seeds. These checks do not establish how a fresh agent will interpret the workflows. A subsequent readiness review found that the existing-copy guard in `setup-local-skills` followed its copy step; that ordering is now corrected. The development repository retains one unpushed initial commit and an unchanged consumer submodule. Closing-message wording is approved, but closure itself is not; the pair remains active. The [conceptual document](project-workflow-refinement.md) links the maintained guidance.
+The approved changes and expanded rollout are implemented as of 2026-10-12. Validation covers nine global seeds, 24 standard local skill folders across four target repositories, and four vault-native skills. These checks do not establish how a fresh agent will interpret the workflows or whether the new markers improve real retrieval. Local differences are recorded in the [conceptual document](project-workflow-refinement.md#rollout--2026-10-12). The existing-copy guard in `setup-local-skills` was corrected during the earlier readiness review; dependency review during rollout also added fallbacks for optional helpers not installed in every target. Target changes were checkpointed locally, following the vault's daily cadence and the development repository's previously requested single-initial-commit arrangement. That remote was rechecked empty before amendment, a recovery reference was retained, and the consumer submodule remains unchanged. Nothing was pushed. The earlier closing-message approval does not authorize closure of the expanded work; this pair remains active.
 
 ## To Do
-None.
+None in the approved implementation scope.
 
 ## Ready For Human QA
-- Decide whether the spike is ready to close. — Closing-message wording approved 2026-10-12; closure remains unapproved while readiness and the archive tradeoff are discussed.
+- Decide whether the spike is ready to close after the expanded rollout. — Earlier closing-message wording was approved on 2026-10-12; closure remains unapproved. Structural checks pass, while agent behavior and archive retrieval remain untested in use.
 
 ## Done
+- Add portable attention markers to the global spike workflow and setup guidance; distinguish maintained proposals from adopted rules and archives from current authority. — Implemented 2026-10-12. Active pairs use `attention: live`; closure sets `attention: historical` and adds a visible notice and maintained-guidance pointers. Existing equivalent conventions remain valid; no bulk archive retagging occurred.
+- Compare and roll the approved workflow improvements into existing local copies, preserving project-specific rules and documenting intentional differences. — Implemented 2026-10-12 across the ResearchOps development, website, organization tooling, shared-team, and private-vault repositories. Updated 25 local skill files after comparison. Preserved established governance locations, team boundaries, private-vault rules, and specialized workflows.
+- Validate the rollout, reconcile directly affected guidance, and report any remaining gaps before reconsidering closure. — Structural validation, relative-link/resource checks, personal-path scans, and whitespace checks pass. Corrected a stale documentation-tree entry and a live personal-path dependency; optional helper skills now have local fallbacks. No fresh-agent behavioral test or real archive-retrieval evaluation has been performed.
 - Validate the complete changes, prepare the archive with maintained-document pointers, and present the closing commit message for approval. — Structural validation and archive preparation completed on 2026-10-12. The user approved the message wording but questioned readiness, so the documents returned to active work. No archival commit was made.
 - Correct the existing-copy guard ordering in `setup-local-skills`. — Found during the 2026-10-12 readiness review; the workflow now routes existing skills to comparison/update before any copy can occur. Fresh-agent behavioral validation has not been performed.
 - Refine commit scope, checkpoint timing, review holds, and privacy checks while preserving concurrency safeguards; reconcile directly affected repository instructions. — Implemented 2026-10-12 in `commit-work`, `AGENTS.md`, and the existing agent commit policy. Explicit-path selection remains; the text now distinguishes path isolation from same-file overlap and keeps related bookkeeping with its change. Skill validation and diff checks pass.
