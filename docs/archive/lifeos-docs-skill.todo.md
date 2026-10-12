@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Docs Skill — To Do
 ## Background
 `lifeos docs` shipped without a skill of its own. See the conceptual doc for the 2026-09-06 failure that motivated this.

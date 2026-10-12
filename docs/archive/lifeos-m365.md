@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Microsoft 365
 Status: archived 2026-07-29. QA completed and the spike is closed.
 

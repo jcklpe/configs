@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Unified Calendar — Todo
 See [the conceptual spike](unified-calendar.md).
 

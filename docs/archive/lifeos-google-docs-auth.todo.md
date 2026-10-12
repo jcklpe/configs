@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Google Docs Authorization To-Do
 ## To Do
 - None.

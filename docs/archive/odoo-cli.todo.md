@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Odoo CLI — To Do
 Done and archived 2026-09-27: the adapter met its definition of done in live use on 2026-09-19 and the user confirmed afterwards that it works well.
 

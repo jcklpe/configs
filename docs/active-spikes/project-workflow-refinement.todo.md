@@ -2,19 +2,24 @@
 attention: live
 ---
 # Project Workflow Refinement Tasks
-Status: active. Cross-repository rollout and attention markers are implemented; closure remains unapproved.
+Status: active. Cross-repository rollout, attention markers, and the requested archive backfill are implemented; further workflow corrections remain proposals and closure remains unapproved.
 Spike: project-workflow-refinement
 
 ## Current State
 The approved changes and expanded rollout are implemented as of 2026-10-12. Validation covers nine global seeds, 24 standard local skill folders across four target repositories, and four vault-native skills. These checks do not establish how a fresh agent will interpret the workflows or whether the new markers improve real retrieval. Local differences are recorded in the [conceptual document](project-workflow-refinement.md#rollout--2026-10-12). The existing-copy guard in `setup-local-skills` was corrected during the earlier readiness review; dependency review during rollout also added fallbacks for optional helpers not installed in every target. Target changes were checkpointed locally, following the vault's daily cadence and the development repository's previously requested single-initial-commit arrangement. That remote was rechecked empty before amendment, a recovery reference was retained, and the consumer submodule remains unchanged. Nothing was pushed. The earlier closing-message approval does not authorize closure of the expanded work; this pair remains active.
 
+The subsequent requested archive backfill is also complete: 179 metadata-only edits across four repositories, with 23 existing historical markers retained. All 202 archive documents passed body and frontmatter preservation checks. The semantic review found unresolved instruction conflicts; see [Further Review](project-workflow-refinement.md#further-review--proposals-not-adopted-rules). No skill changes were made during this backfill.
+
 ## To Do
-None in the approved implementation scope.
+- Resolve the proposed corrections to closure approval, spike-versus-patch scope, unrelated dirty files, authorized rewrite verification, and the existing current-authority check. These are findings for discussion, not adopted requirements. If approved, update the owning skills and affected policy restatements, then merge into the existing local copies without flattening their differences.
+- Correct the reversed error-pair explanation in `commit-work` with the next skill update.
 
 ## Ready For Human QA
-- Decide whether the spike is ready to close after the expanded rollout. — Earlier closing-message wording was approved on 2026-10-12; closure remains unapproved. Structural checks pass, while agent behavior and archive retrieval remain untested in use.
+- Decide whether the spike is ready to close after resolving the further review. — Earlier closing-message wording was approved on 2026-10-12; closure remains unapproved. Structural checks pass, while agent behavior and archive retrieval remain untested in use. Newly identified instruction conflicts are still open.
 
 ## Done
+- Backfill explicit historical attention markers in existing project archives. — Requested and implemented 2026-10-12. Updated 45 source-repository, 25 private-vault, 90 website, and 19 organization-tooling documents; retained 23 existing markers. All 202 archived Markdown files now say historical. Bodies, other metadata, and dates were preserved; no conflicting attention values were found. ResearchOps development and the shared-team project had no archived Markdown.
+- Review spike and commit skills after rollout. — Completed 2026-10-12. Confirmed that imported commit skills match their seed and spike differences are intentional; recorded shared semantic conflicts and one error-table explanation defect as unresolved findings rather than silently adopting new rules.
 - Add portable attention markers to the global spike workflow and setup guidance; distinguish maintained proposals from adopted rules and archives from current authority. — Implemented 2026-10-12. Active pairs use `attention: live`; closure sets `attention: historical` and adds a visible notice and maintained-guidance pointers. Existing equivalent conventions remain valid; no bulk archive retagging occurred.
 - Compare and roll the approved workflow improvements into existing local copies, preserving project-specific rules and documenting intentional differences. — Implemented 2026-10-12 across the ResearchOps development, website, organization tooling, shared-team, and private-vault repositories. Updated 25 local skill files after comparison. Preserved established governance locations, team boundaries, private-vault rules, and specialized workflows.
 - Validate the rollout, reconcile directly affected guidance, and report any remaining gaps before reconsidering closure. — Structural validation, relative-link/resource checks, personal-path scans, and whitespace checks pass. Corrected a stale documentation-tree entry and a live personal-path dependency; optional helper skills now have local fallbacks. No fresh-agent behavioral test or real archive-retrieval evaluation has been performed.

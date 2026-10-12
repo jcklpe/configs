@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # Approval Slate Skill — Conceptual
 
 Status: archived 2026-08-05. The spike drafted a general `approval-slate` skill and closed after the skill text and global symlink wiring were in place.

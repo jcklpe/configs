@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS CLI Skill
 Status: **archived 2026-07-13.** Opened 2026-07-12. The configs half of the LifeOS runbook conversion: formalized the `lifeos` CLI agent guide into co-located tool skills under `lifeos-tools/skills/`, symlinked them globally, and removed the old `AGENT.md` surface.
 

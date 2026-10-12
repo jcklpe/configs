@@ -1,3 +1,6 @@
+---
+attention: historical
+---
 # LifeOS Handoff To-Do
 Status: **archived 2026-07-11.** Skill built, redesigned after QA into the three-dimension PM-report model, wired global, and tentatively QA-passed. This is the implementation trail.
 
