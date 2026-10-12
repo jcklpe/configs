@@ -37,6 +37,8 @@ The flow is:
 ## Routing Taxonomy
 Use the first matching destination:
 
+Use the named pinning and future-idea skills when available; otherwise follow the corresponding routing outcome below and the repository's own rules. These optional helpers are not a reason to assume the cloner has a global skill library. Starting an active spike still follows the repository's spike workflow.
+
 - If it is a durable rule the project is adopting, move it into a current policy under `docs/policies/`.
 - If it is an unresolved issue, concern, question, or tradeoff being intentionally preserved for later, move it to `docs/pinned-issues.md` with `pin-issue`.
 - If it is conceptual someday material, move it to `docs/scratch/future-ideas.md` with `log-future-idea`.

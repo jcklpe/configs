@@ -65,11 +65,11 @@ ln -sf AGENTS.md CLAUDE.md
 
 Use `TODO.md` as the short spike index and coordination map. Keep it scan-friendly: active spikes, waiting-for-human-QA, recently archived/completed spikes, and lightweight later ideas. Detailed implementation state belongs in each spike's `.todo.md`.
 
-Use `docs/active-spikes/` for current spike doc pairs. Each active spike should have a conceptual doc and a `.todo.md` companion.
+Use `docs/active-spikes/` for current spike doc pairs. Each active spike should have a conceptual doc and a `.todo.md` companion, marked `attention: live` or the repository's equivalent under `run-project-spike`. This means actively maintained, not that every proposal is approved.
 
 Use `docs/scratch/` for rough, non-authoritative thinking: copied references, early notes, possible future spikes, and `misc.md`.
 
-Use `docs/archive/` for retained closed or superseded spike pairs, which make development history discoverable and connect its subject to Git through a stable spike slug. Follow `run-project-spike` for closure dates and pointers to maintained guidance or continuing work. Archived docs are historical context, not current rules, unless durable docs still agree with them.
+Use `docs/archive/` for retained closed or superseded spike pairs, which make development history discoverable and connect its subject to Git through a stable spike slug. Follow `run-project-spike` for `attention: historical` metadata, a visible historical notice, closure dates, and pointers to maintained guidance or continuing work. Archived docs record prior work; confirm current guidance in maintained docs or the current implementation. Do not mass-retag existing archives during setup.
 
 Use `docs/policies/` for current, durable project guidance: rules, defaults, procedures, suggested processes, exceptions, and the rationale needed to apply them. Prefer subject-focused files such as `0001-repository-boundaries.md`; numbering is optional and should follow the repository's convention.
 

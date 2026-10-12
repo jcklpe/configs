@@ -18,7 +18,7 @@ Start from observed need. A good skill usually comes from:
 
 Prefer updating an existing skill when the user-facing trigger is the same. Create a new skill when the trigger, workflow, or authority boundary is genuinely distinct.
 
-If the observation is real but the fix is not clear, use `log-skills-feedback` instead of editing a skill immediately.
+If the observation is real but the fix is not clear, use `log-skills-feedback` when available. Otherwise preserve the evidence and unresolved question in the repository's existing misc or skill-feedback destination; do not require the maintainer's global helper merely to record feedback.
 
 ## Naming
 Use lowercase hyphenated names. Prefer short imperative verb-noun names when the skill is an action:
