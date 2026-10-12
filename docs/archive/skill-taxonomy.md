@@ -56,3 +56,5 @@ The configs seed layer now carries the taxonomy directly:
 The LifeOS vault has been migrated to the same model, including individual decision records under `docs/decisions/`.
 
 The `my-website` project has local migration edits in its working tree but they are intentionally uncommitted from this repo. Its current docs/skills link check passes when archived historical docs are excluded.
+
+Continues in: docs/active-spikes/project-workflow-refinement.md

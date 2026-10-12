@@ -206,3 +206,5 @@ The Claude memory currently records "git commits are user-handled; don't commit 
 
 ## Deferred
 Whether agents need an interface for coordinating when two of them must genuinely touch the same file is pinned in `docs/deferred-decisions.md`. The pathspec rule makes concurrent *commits* safe; it does nothing about two agents editing the same file in the working tree. That hazard is real but unobserved, and out of scope here.
+
+Continues in: docs/active-spikes/project-workflow-refinement.md
