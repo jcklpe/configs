@@ -26,7 +26,7 @@ Create it only when the user asks to log a future idea or an existing misc/futur
 ## Taxonomy
 Use the first matching destination:
 
-- `docs/decisions/` for settled durable rules.
+- `docs/policies/` for current durable rules, defaults, and procedures.
 - `docs/pinned-issues.md` for unresolved issues intentionally preserved for later.
 - `docs/scratch/future-ideas.md` for conceptual someday project or vault buildout material.
 - `docs/scratch/misc.md` for raw observed friction, QA nits, bugs, and issue intake.
@@ -77,5 +77,5 @@ During later triage:
 - Move raw observations out to `docs/scratch/misc.md`.
 - Move unresolved questions out to `docs/pinned-issues.md`.
 - Promote scoped work into `docs/active-spikes/` through `run-project-spike`.
-- Record settled rules under `docs/decisions/`.
+- Record settled rules under `docs/policies/`.
 - Delete ideas that no longer matter.
