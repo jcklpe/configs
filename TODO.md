@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, decisions, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- Project Workflow Refinement (slug `project-workflow-refinement`, opened 2026-10-12): approved updates to commit timing and concurrency, retained spike archives, privacy, and skill portability. [Purpose](docs/active-spikes/project-workflow-refinement.md); [tasks](docs/active-spikes/project-workflow-refinement.todo.md).
+- Project Workflow Refinement (slug `project-workflow-refinement`): approved revisions implemented; closing-message wording approved 2026-10-12, but readiness to close remains under discussion. [Purpose](docs/active-spikes/project-workflow-refinement.md); [tasks](docs/active-spikes/project-workflow-refinement.todo.md).
 - LifeOS Loop Headless (slug `lifeos-loop-headless`, built 2026-10-06): isolated browser-session reuse verified. Live transfer exposed incomplete reads of virtualized pages and reordered multiline keyboard insertion; avoid live CLI appends pending fixes. A task-specific browser-local rich paste succeeded with complete text/link verification but is not implemented in the CLI. `docs/active-spikes/lifeos-loop-headless.md`, `docs/active-spikes/lifeos-loop-headless.todo.md`
 - LifeOS Microsoft 365 Mail Read (slug `lifeos-m365-mail-read`, built 2026-10-05): `mail read` and `mail list --search` read any message's text and search across folders, so archived and sent mail stays readable without moving it back to the Inbox. 0004 amended inline. Ready for human QA; only an optional sync scope remains. `docs/active-spikes/lifeos-m365-mail-read.md`, `docs/active-spikes/lifeos-m365-mail-read.todo.md`
 - LifeOS Trello Checklists (slug `lifeos-trello-checklists`, opened 2026-10-05): `lifeos trello` reads and writes card checklists (render in sync, create, add item, tick/untick), so sub-tasks live in checklists and history in comments. Nothing built yet. `docs/active-spikes/lifeos-trello-checklists.md`, `docs/active-spikes/lifeos-trello-checklists.todo.md`
@@ -46,7 +46,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - Promote a LifeOS Tools future idea from `docs/scratch/future-ideas.md` only when one concrete theme becomes active work.
 
 ## Waiting For Human QA
-- None. The four open items were closed 2026-09-07: three as de facto passed on real use, and the `lifeos-docs` installer line waived until the next real install.
+- None.
 
 ## Later
 - Confirm GitHub Copilot reads `~/.claude/CLAUDE.md`. From a repo with neither `CLAUDE.md` nor `AGENTS.md`, ask whether its instructions contain the heading `Global Agent Instructions` — that string exists only in `agents/AGENTS.global.md`. Copilot answered yes from inside this repo, where its own `CLAUDE.md -> AGENTS.md` symlink makes the answer ambiguous. If it cannot see the global file, `symlinks.sh` needs a Copilot-specific instruction path.
