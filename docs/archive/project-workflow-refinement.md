@@ -1,10 +1,13 @@
 ---
-attention: live
+attention: historical
 ---
 # Project Workflow Refinement
 Opened: 2026-10-12
-Status: active. Cross-repository rollout, archive markers, and the five further workflow refinements plus diagnostic correction are approved and implemented as of 2026-10-12. Closure remains unapproved.
+Closed: 2026-10-12
+Status: closed at the user’s direction after the approved implementation and rollout.
 Spike: project-workflow-refinement
+
+Historical record of this spike at closure. Earlier assessments and interim approval states remain below as development history. Use the owners in [Maintained Guidance](#maintained-guidance) for current rules; the [Closure Decision](#closure-decision--2026-10-12) records the final disposition.
 
 ## Purpose
 Refine the reusable project workflow skills after reviewing how spikes, granular commits, and copied skills work together. Substantial project work continues to use conceptual/to-do pairs. This is a bounded update to the existing process, not a replacement documentation system.
@@ -96,6 +99,13 @@ The response proposed an appropriate conceptual/to-do pair and index entry, with
 The reported tensions concern the ResearchOps product: platform access, methodological wording in existing consumer templates, and the two meanings of product brief. The agent grounded these in repository material and did not turn them into additional workflow rules. Its proposed experiment remains unadopted; reviewing this report does not authorize ResearchOps implementation.
 
 The exercise supports the clarity of the planning, authority, and closure instructions in this context. The prompt explicitly prohibited writes and asked about workflow stages, so the result does not demonstrate unprompted skill selection, actual checkpoint granularity, concurrent-file handling, history rewrites, the small-patch exception, or retrieval of conflicting historical guidance. No workflow correction is supported by this report. Together with the prior checks, it is sufficient evidence to recommend closure of this bounded spike; remaining long-term behavior questions can be revisited if ordinary use exposes a concrete problem. Closure itself remains unapproved.
+
+## Closure Decision — 2026-10-12
+The user authorized closure after qualifying the fresh-thread exercise: the prompt asked questions whose answers had been supplied in the skills, so reproducing those answers gives little evidence about how well the workflow operates in practice. The earlier agent assessment placed too much weight on that result as a reason to close. Retain it above as an assessment made during development, not as behavioral validation.
+
+The reason to close is that the agreed skill changes, comparison and rollout of existing copies, archive backfill, and bounded maintenance are complete. Structural checks and manual scenario review support the consistency of the written guidance. Actual execution, checkpoint choices under concurrent work, and retrieval of potentially conflicting historical guidance remain untested by this exercise. The user chose learning through ordinary use and logging concrete problems in Kaizen rather than extending this spike into an evaluation program.
+
+Current rules live in the linked maintained guidance. Cross-project skill observations can be captured through [log skills feedback](../../skills/log-skills-feedback/SKILL.md) in the [reusable feedback log](../../agents/skills-feedback-log.md), with project-private evidence kept in its appropriate local context. Comparing these feedback mechanisms is follow-on discussion, not an adopted redesign or unfinished implementation requirement of this spike. No successor spike is opened by closure.
 
 Continues from: docs/archive/commit-work.md
 Continues from: docs/archive/skill-authority.md
