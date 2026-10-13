@@ -63,6 +63,7 @@ create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.codex/s
 create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.codex/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/skills/log-future-idea" "${HOME}/.codex/skills/log-future-idea"
 create_symlink_if_needed "${CONFIGS}/skills/pin-issue" "${HOME}/.codex/skills/pin-issue"
+create_symlink_if_needed "${CONFIGS}/skills/kaizen" "${HOME}/.codex/skills/kaizen"
 create_symlink_if_needed "${CONFIGS}/skills/log-skills-feedback" "${HOME}/.codex/skills/log-skills-feedback"
 create_symlink_if_needed "${CONFIGS}/skills/write-skills" "${HOME}/.codex/skills/write-skills"
 create_symlink_if_needed "${CONFIGS}/skills/draft-approval-slate" "${HOME}/.codex/skills/draft-approval-slate"
@@ -70,7 +71,10 @@ create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.codex/skill
 create_symlink_if_needed "${CONFIGS}/skills/update-local-skills" "${HOME}/.codex/skills/update-local-skills"
 create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.codex/skills/commit-work"
 create_symlink_if_needed "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.codex/skills/lifeos-handoff"
-create_symlink_if_needed "${CONFIGS}/agents/skills-feedback-log.md" "${HOME}/.codex/skills-feedback-log.md"
+# Retire only the known shortcut into the old public log; preserve unrelated user files/links.
+if [ -L "${HOME}/.codex/skills-feedback-log.md" ] && [ "$(readlink "${HOME}/.codex/skills-feedback-log.md")" = "${CONFIGS}/agents/skills-feedback-log.md" ]; then
+    rm "${HOME}/.codex/skills-feedback-log.md"
+fi
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-cli" "${HOME}/.codex/skills/lifeos-cli"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-trello" "${HOME}/.codex/skills/lifeos-trello"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-calendar" "${HOME}/.codex/skills/lifeos-calendar"
@@ -92,6 +96,7 @@ create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.claude/
 create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.claude/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/skills/log-future-idea" "${HOME}/.claude/skills/log-future-idea"
 create_symlink_if_needed "${CONFIGS}/skills/pin-issue" "${HOME}/.claude/skills/pin-issue"
+create_symlink_if_needed "${CONFIGS}/skills/kaizen" "${HOME}/.claude/skills/kaizen"
 create_symlink_if_needed "${CONFIGS}/skills/log-skills-feedback" "${HOME}/.claude/skills/log-skills-feedback"
 create_symlink_if_needed "${CONFIGS}/skills/write-skills" "${HOME}/.claude/skills/write-skills"
 create_symlink_if_needed "${CONFIGS}/skills/draft-approval-slate" "${HOME}/.claude/skills/draft-approval-slate"
@@ -99,7 +104,10 @@ create_symlink_if_needed "${CONFIGS}/skills/track-changes" "${HOME}/.claude/skil
 create_symlink_if_needed "${CONFIGS}/skills/update-local-skills" "${HOME}/.claude/skills/update-local-skills"
 create_symlink_if_needed "${CONFIGS}/skills/commit-work" "${HOME}/.claude/skills/commit-work"
 create_symlink_if_needed "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.claude/skills/lifeos-handoff"
-create_symlink_if_needed "${CONFIGS}/agents/skills-feedback-log.md" "${HOME}/.claude/skills-feedback-log.md"
+# Retire only the known shortcut into the old public log; preserve unrelated user files/links.
+if [ -L "${HOME}/.claude/skills-feedback-log.md" ] && [ "$(readlink "${HOME}/.claude/skills-feedback-log.md")" = "${CONFIGS}/agents/skills-feedback-log.md" ]; then
+    rm "${HOME}/.claude/skills-feedback-log.md"
+fi
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-cli" "${HOME}/.claude/skills/lifeos-cli"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-trello" "${HOME}/.claude/skills/lifeos-trello"
 create_symlink_if_needed "${CONFIGS}/lifeos-tools/skills/lifeos-calendar" "${HOME}/.claude/skills/lifeos-calendar"

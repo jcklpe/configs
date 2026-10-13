@@ -74,7 +74,7 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Rough or historical notes | [docs/scratch/](docs/scratch/) (not authoritative), [docs/archive/](docs/archive/) (historical, not current rules) |
 | Unresolved issue to revisit later | [docs/pinned-issues.md](docs/pinned-issues.md) |
 | Conceptual future idea | [docs/scratch/future-ideas.md](docs/scratch/future-ideas.md) |
-| Cross-project skill feedback | [agents/skills-feedback-log.md](agents/skills-feedback-log.md) |
+| Kaizen incident learning | [skills/kaizen/SKILL.md](skills/kaizen/SKILL.md); records live in configured private stores, never this public repo |
 
 ## Docs workflow
 Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when a body of work needs shared context, taste, constraints, or implementation history. Scratch docs are non-authoritative. Archived docs are historical context; verify current guidance in maintained docs or the current implementation. Follow the spike skill for explicit attention markers and closure navigation.
