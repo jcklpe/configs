@@ -18,7 +18,9 @@ Start from observed need. A good skill usually comes from:
 
 Prefer updating an existing skill when the user-facing trigger is the same. Create a new skill when the trigger, workflow, or authority boundary is genuinely distinct.
 
-If the observation is real but the fix is not clear, use `log-skills-feedback` when available. Otherwise preserve the evidence and unresolved question in the repository's existing misc or skill-feedback destination; do not require the maintainer's global helper merely to record feedback.
+Before revising a skill, consult relevant private Kaizen concerns when the `kaizen` workflow and its designated store are available. A consequential observed failure can be captured and analyzed there even if the remedy is uncertain. If unavailable, report the evidence in the current authorized conversation; do not use a public scratch file as a private-incident fallback.
+
+Incident capture and analysis do not authorize a skill change. Bring proposed standing-guidance changes to the user with exact scope and wording, and apply only what the user has approved. An explicit request to create or revise the skill already supplies approval within that request; Kaizen adds no repeated permission gate. After implementation, update the private concern with what changed and what remains untested.
 
 ## Naming
 Use lowercase hyphenated names. Prefer short imperative verb-noun names when the skill is an action:
