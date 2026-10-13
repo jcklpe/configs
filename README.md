@@ -28,6 +28,13 @@ All install scripts are **idempotent** - safe to run multiple times.
 - **Editor:** [VS Code](https://code.visualstudio.com/), [Micro](https://micro-editor.github.io/)
 - **Agent skills:** reusable `SKILL.md` workflows live in `skills/` and are symlinked into Codex by `symlinks.sh`
 
+## Private Kaizen
+The [Kaizen skill](skills/kaizen/SKILL.md) captures workflow incidents, checks relevant prior evidence, and prepares improvements for user approval. Global instructions activate it during ordinary work; it is not a background service. The installer exposes the skill to Codex and Claude. A private project can vendor the same skill and declare its own private current-concerns and incident files in its agent instructions.
+
+Keep records outside this public repository. Configure global `current` and `incidents` locations in a private JSON file selected by `KAIZEN_CONFIG`, or in `kaizen/locations.json` under `XDG_CONFIG_HOME` (the user's `.config` directory when unset). See the skill for the JSON shape and connector-only access. The installer does not create private records or copy machine-specific locations into this repo. If access is missing, the agent reports that capture was not completed rather than creating a public fallback.
+
+The old `log-skills-feedback` name redirects to Kaizen. The former public intake is retired; changing its current contents does not remove past Git versions. Proposed rule changes still require user approval.
+
 ## Troubleshooting
 ### Prompts look broken
 - **In VS Code terminal:** Normal - uses simplified prompt for compatibility
