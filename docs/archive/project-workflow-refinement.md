@@ -110,3 +110,5 @@ Current rules live in the linked maintained guidance. Cross-project skill observ
 Continues from: docs/archive/commit-work.md
 Continues from: docs/archive/skill-authority.md
 Continues from: docs/archive/skill-taxonomy.md
+
+Continues in: docs/archive/private-kaizen-workflow.md
