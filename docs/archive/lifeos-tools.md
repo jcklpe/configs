@@ -16,7 +16,7 @@ This repo owns the public-safe helper tooling.
 
 The LifeOS vault owns private LifeOS content.
 
-The local checkout may contain ignored secrets and tokens beside the tool, following the repo-wide convention in `docs/decisions/0001-secrets-and-local-env.md`.
+The local checkout may contain ignored secrets and tokens beside the tool, following the repo-wide convention in `docs/policies/0001-secrets-and-local-env.md`.
 
 The tool should not commit or generate private source snapshots inside this repo.
 

@@ -2,7 +2,7 @@
 attention: historical
 ---
 # Commit Work
-Status: **archived 2026-07-10.** Opened 2026-07-09 from a design conversation about making git history a first-class artifact of spike work. Shipped: `skills/commit-work/SKILL.md`, the `run-project-spike` wiring, and `docs/decisions/0003-agent-commit-policy.md`, which is where the durable rule now lives. This doc is historical context, not current rules.
+Status: **archived 2026-07-10.** Opened 2026-07-09 from a design conversation about making git history a first-class artifact of spike work. Shipped: `skills/commit-work/SKILL.md`, the `run-project-spike` wiring, and `docs/policies/0003-agent-commit-policy.md`, which is where the durable rule now lives. This doc is historical context, not current rules.
 
 Companion to-do: `docs/archive/commit-work.todo.md`.
 Sibling spike: `docs/archive/skill-authority.md` (same conversation, separate subject).
@@ -62,7 +62,7 @@ And `git add -f` obliges, silently. That is the one command in this whole design
 
 Two consequences, both load-bearing:
 
-- `commit-work` must **never** run `git add -f`, `git add --force`, or `git commit --no-verify`. This is not a preference. See `docs/decisions/0001-secrets-and-local-env.md`.
+- `commit-work` must **never** run `git add -f`, `git add --force`, or `git commit --no-verify`. This is not a preference. See `docs/policies/0001-secrets-and-local-env.md`.
 - Because untracked and ignored files fail *identically*, the agent cannot learn which it is from the error. It must run `git check-ignore -q <path>` **before** deciding to `git add` a new file. Exit 0 means ignored: refuse, and say so out loud.
 
 ### Failure modes are not interchangeable
@@ -201,7 +201,7 @@ Born from the same design conversation as `docs/archive/skill-authority.md`, but
 `commit-work` should be built **first**, then used to commit the `skill-authority` work. That is a real dogfooding test — `skill-authority` is small enough that if the commit workflow is annoying, it will be felt immediately and cheaply.
 
 ## Durable Output
-The commit policy — *agent commits, never pushes; always pathspec; commit at completion, not at Done* — constrains every future agent in this repo. It belongs in `docs/decisions/0003-agent-commit-policy.md`, not buried in a spike doc that eventually archives.
+The commit policy — *agent commits, never pushes; always pathspec; commit at completion, not at Done* — constrains every future agent in this repo. It belongs in `docs/policies/0003-agent-commit-policy.md`, not buried in a spike doc that eventually archives.
 
 The Claude memory currently records "git commits are user-handled; don't commit or offer to." That memory will actively fight this design in every future session and must be rewritten once the decision record lands.
 

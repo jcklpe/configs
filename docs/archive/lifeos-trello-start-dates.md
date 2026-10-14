@@ -40,7 +40,7 @@ A card in a list named `Snoozed` with no start date is a broken snooze. Renderin
 | start: MISSING (snoozed card will never wake)
 ```
 
-This is a deliberate exception to "just mirror `due`". The list name is the only signal available at render time about whether a start date was *expected*, and a snapshot that can show the bug is worth more than one that is uniformly terse. It follows the same principle settled in `docs/decisions/0006-writes-fail-rather-than-guess.md`: make the broken state loud rather than letting it read as normal.
+This is a deliberate exception to "just mirror `due`". The list name is the only signal available at render time about whether a start date was *expected*, and a snapshot that can show the bug is worth more than one that is uniformly terse. It follows the same principle settled in `docs/policies/0006-writes-fail-rather-than-guess.md`: make the broken state loud rather than letting it read as normal.
 
 The check is on the literal list name `Snoozed`, matching what `snooze` defaults to. A custom `--list` target will not be flagged; that is an accepted limitation rather than a reason to guess at intent.
 

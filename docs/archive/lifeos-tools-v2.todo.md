@@ -47,12 +47,12 @@ list, `--dry-run`/preview, auto-`sync` after write, vault-side writes.
 ## Candidate Work Items
 - Moved to [../scratch/future-ideas.md](../scratch/future-ideas.md#lifeos-tools-v2-future-ideas). Promote one concrete theme into a new active spike when actual use shows it is worth implementing.
 
-Calendar writes shipped (`create-event` / `update-event`, attendees, allowlist, dry-run, `--series`). See `docs/decisions/0002-lifeos-calendar-writes.md`. Earlier ideas about a dedicated `LifeOS Reminders` calendar, access-role visibility, and "keep writes create-only" are obsolete.
+Calendar writes shipped (`create-event` / `update-event`, attendees, allowlist, dry-run, `--series`). See `docs/policies/0002-lifeos-calendar-writes.md`. Earlier ideas about a dedicated `LifeOS Reminders` calendar, access-role visibility, and "keep writes create-only" are obsolete.
 
 ## Not Now
 - Do not add Gmail mutations.
 - Do not add Drive-wide cloning or recursive indexing.
-- Do not add `calendar delete-event`, and do not relax the writable-calendar allowlist or the `--notify`-gated email-out. (Calendar create/update are now allowed within those bounds; see `docs/decisions/0002-lifeos-calendar-writes.md`.)
+- Do not add `calendar delete-event`, and do not relax the writable-calendar allowlist or the `--notify`-gated email-out. (Calendar create/update are now allowed within those bounds; see `docs/policies/0002-lifeos-calendar-writes.md`.)
 - Do not replace the CLI with MCP/plugin tooling.
 
 ## Done Since Task Chains

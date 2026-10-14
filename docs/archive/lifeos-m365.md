@@ -4,9 +4,9 @@ attention: historical
 # LifeOS Microsoft 365
 Status: archived 2026-07-29. QA completed and the spike is closed.
 
-This spike is now archived. The implementation and QA are complete, and the durable decision and implementation history live in this archive plus the decision record at `docs/decisions/0004-lifeos-microsoft-365-access.md`.
+This spike is now archived. The implementation and QA are complete, and the durable decision and implementation history live in this archive plus the decision record at `docs/policies/0004-lifeos-microsoft-365-access.md`.
 
-Durable access and write-safety decision: `docs/decisions/0004-lifeos-microsoft-365-access.md`.
+Durable access and write-safety decision: `docs/policies/0004-lifeos-microsoft-365-access.md`.
 
 ## Purpose
 Add Microsoft 365 as a first-class LifeOS source so the UT mailbox can be the canonical institutional inbox while LifeOS can also read and deliberately write the associated calendar and Outlook contacts.

@@ -28,6 +28,9 @@ All install scripts are **idempotent** - safe to run multiple times.
 - **Editor:** [VS Code](https://code.visualstudio.com/), [Micro](https://micro-editor.github.io/)
 - **Agent skills:** reusable `SKILL.md` workflows live in `skills/` and are symlinked into Codex by `symlinks.sh`
 
+## Project Documentation
+Current project guidance lives in [docs/policies/](docs/policies/). Revise policies directly; Git and archived spike notes retain their history. [TODO.md](TODO.md) indexes active work, and [AGENTS.md](AGENTS.md) defines the documentation workflow.
+
 ## Private Kaizen
 The [Kaizen skill](skills/kaizen/SKILL.md) captures workflow incidents, checks relevant prior evidence, and prepares improvements for user approval. Global instructions activate it during ordinary work; it is not a background service. The installer exposes the skill to Codex and Claude. A private project can vendor the same skill and declare its own private current-concerns and incident files in its agent instructions.
 

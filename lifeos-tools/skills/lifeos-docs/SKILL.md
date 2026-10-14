@@ -74,4 +74,4 @@ A comment on a shared Doc is an outward-facing write like any other: show the dr
 - Do not edit a shared or collaborative document without explicit approval for that specific change. Show the dry-run plan and let the user approve it.
 - Preserve the document's existing authorship and conventions. Do not append agent minutes to someone else's doc because a transcript was processed elsewhere.
 - Keep private context out of shared documents.
-- Do not reach for `~/work/org/tools/google-docs/` instead. That tool exists for Open Austin's own workflow and authenticates as the `open-austin` account; it will 403 on documents that account cannot reach. This command is the general one. The duplication is deliberate — see `docs/decisions/0005-docs-editing-in-lifeos-tools.md`.
+- Do not reach for `~/work/org/tools/google-docs/` instead. That tool exists for Open Austin's own workflow and authenticates as the `open-austin` account; it will 403 on documents that account cannot reach. This command is the general one. The duplication is deliberate — see `docs/policies/0005-docs-editing-in-lifeos-tools.md`.

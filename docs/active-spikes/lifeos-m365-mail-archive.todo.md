@@ -2,7 +2,7 @@
 Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). Scope widened 2026-09-29 to Gmail archive and labels plus M365 folders.
 
 ## Current State
-- Implemented 2026-09-29: M365 folders, list, archive, unarchive, move, create-folder; Gmail labels, list, archive, unarchive, label (`--skip-inbox`), unlabel, create-label. Decision 0007 written, 0004 amended, skills and README updated, offline tests added.
+- Implemented 2026-09-29: M365 folders, list, archive, unarchive, move, create-folder; Gmail labels, list, archive, unarchive, label (`--skip-inbox`), unlabel, create-label. Policy 0007 written, 0004 amended, skills and README updated, offline tests added.
 - M365 is live-verified on the UT mailbox, and Gmail on `personal` and `professional`. `open-austin` is re-consented and its token verified. All three Gmail accounts can write.
 
 ## To Do
@@ -10,7 +10,7 @@ Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). 
 - [x] `Mail.ReadWrite` is already in the UT Graph PowerShell effective context; requesting it prompted nothing (2026-09-29).
 
 ### Phase 1 — Decision
-- [x] `docs/decisions/0007-mail-archive-and-labels.md` amends 0004 and covers Gmail; rejected alternatives recorded. 0004's mail bullet points to it.
+- [x] `docs/policies/0007-mail-archive-and-labels.md` amends 0004 and covers Gmail; rejected alternatives recorded. 0004's mail bullet points to it.
 
 ### Phase 2 — Command
 - [x] M365 `mail folders`, `mail list`, `mail archive`, `mail unarchive`, `mail move`, `mail create-folder`: dry-run default, exact IDs, source rules, refused targets, cap of 50, Graph `$batch`, readback under the new ID.
