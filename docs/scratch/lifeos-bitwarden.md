@@ -41,7 +41,7 @@ tools.
 - **Account login is separate from unlock.** A one-time `bw login` per machine establishes
   account auth; it produces locked, encrypted CLI state in the bw CLI's own data dir. That is
   runtime/secret state and stays out of git, consistent with
-  `docs/decisions/0001-secrets-and-local-env.md`.
+  `docs/policies/0001-secrets-and-local-env.md`.
 - **Writes are the real risk surface now, not the password.** Cleanup means destructive
   edits and deletes. The safety model is three-layered:
   1. **Backup before cleanup** — export a full vault snapshot so any session is fully
@@ -111,7 +111,7 @@ redundant.
   future-ideas parking lot `docs/scratch/future-ideas.md` (which says: CLI is the durable
   boundary, MCP may wrap behavior later, writes need previews and no hard delete — this spike
   honors all three).
-- Bound by `docs/decisions/0001-secrets-and-local-env.md` for secret handling.
+- Bound by `docs/policies/0001-secrets-and-local-env.md` for secret handling.
 - The exploration that led here (rejecting env-var passwords, rejecting side-terminal
   handoffs, rejecting report-only, and discovering the MCP unlock dialog) is the reason the
   model looks the way it does. Keep that trail; don't re-litigate it.

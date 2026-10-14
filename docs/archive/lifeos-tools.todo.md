@@ -9,7 +9,7 @@ Conceptual doc: `docs/archive/lifeos-tools.md`.
 ## Background
 We need a small LifeOS helper script in `configs/` that pulls live Trello and Google Calendar data into Markdown files inside the private LifeOS vault.
 
-The repo-wide secrets/env pattern is already settled in `docs/decisions/0001-secrets-and-local-env.md`: real local secret files may live in the working tree if ignored; tracked examples with fake values sit beside them.
+The repo-wide secrets/env pattern is already settled in `docs/policies/0001-secrets-and-local-env.md`: real local secret files may live in the working tree if ignored; tracked examples with fake values sit beside them.
 
 ## Project Organization
 Planned initial folder:
@@ -82,7 +82,7 @@ Future enhancement threads are preserved in `docs/lifeos-tools-v2.md` and `docs/
 
 ## Done
 - Added docs workflow and scratch/archive/decision folders.
-- Settled repo-wide secrets/env hygiene in `docs/decisions/0001-secrets-and-local-env.md`.
+- Settled repo-wide secrets/env hygiene in `docs/policies/0001-secrets-and-local-env.md`.
 - Archived the secrets/env scratch spike.
 - Drafted the LifeOS conceptual spike.
 - Promoted the LifeOS spike docs out of `docs/scratch/`.

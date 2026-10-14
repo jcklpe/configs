@@ -19,7 +19,7 @@ The v1 baseline is:
 - `lifeos` is the stable local CLI entrypoint.
 - Trello sync and explicit Trello writes work.
 - Google Calendar sync is read-only and combined across selected calendars.
-- Google Calendar **writes** now exist: `create-event` / `update-event` with attendee invites (dry-run by default, writable-calendar allowlist, no delete). See `docs/decisions/0002-lifeos-calendar-writes.md`.
+- Google Calendar **writes** now exist: `create-event` / `update-event` with attendee invites (dry-run by default, writable-calendar allowlist, no delete). See `docs/policies/0002-lifeos-calendar-writes.md`.
 - A `people` command group resolves attendee names (local alias map → Google People API).
 - Gmail snapshots work across configured Google account aliases.
 - Drive search/list/meta/read is on-demand and read-only.
@@ -43,7 +43,7 @@ invariant cannot be half-applied.
 at a gate stays with the user and the vault agents. The CLI never decides to supersede; it only
 executes a supersede the human/agent has already decided on. It writes to Trello only — no vault
 files, no credentials in the vault (those stay in `lifeos-tools/.env`, per
-`docs/decisions/0001-secrets-and-local-env.md`).
+`docs/policies/0001-secrets-and-local-env.md`).
 
 ### Where the links live: comments, not the description
 Decision: **the link record is a labeled comment**, not a description stanza.
@@ -133,7 +133,7 @@ Potential improvements:
 The current generated Trello snapshot is not a write-back database. Keep that boundary.
 
 ## Calendar V2 Ideas
-**Mostly shipped.** Calendar writes now exist with a tool-enforced safety model; see `docs/decisions/0002-lifeos-calendar-writes.md`. The conservative assumptions this section originally held — "stay read-only by default," "create-only on a dedicated reminders calendar," "never create guest events or modify attendee lists" — were deliberately retired. The decision record is authoritative if this scratch note drifts.
+**Mostly shipped.** Calendar writes now exist with a tool-enforced safety model; see `docs/policies/0002-lifeos-calendar-writes.md`. The conservative assumptions this section originally held — "stay read-only by default," "create-only on a dedicated reminders calendar," "never create guest events or modify attendee lists" — were deliberately retired. The decision record is authoritative if this scratch note drifts.
 
 Done:
 
@@ -216,4 +216,4 @@ Good candidate active spikes:
 - LifeOS setup helper.
 - Agent callable wrapper.
 
-(Calendar writes shipped — see `docs/decisions/0002-lifeos-calendar-writes.md`. The "dedicated LifeOS reminders calendar" candidate is superseded by the writable-calendar allowlist.)
+(Calendar writes shipped — see `docs/policies/0002-lifeos-calendar-writes.md`. The "dedicated LifeOS reminders calendar" candidate is superseded by the writable-calendar allowlist.)

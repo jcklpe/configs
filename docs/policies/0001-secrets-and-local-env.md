@@ -1,10 +1,5 @@
 # 0001 Secrets And Local Env Hygiene
-## Context
-This repo is a personal dotfiles and setup repo that may be public. It has historically managed shell, editor, terminal, installer, and symlink config without much secret-bearing local state.
-
-LifeOS tooling needs API keys, OAuth credentials, OAuth tokens, and local private paths. Those values need to be available to local scripts, but they must not be committed.
-
-## Decision
+## Current Approach
 Use a personal dotfiles tool hygiene pattern:
 
 - Real secret-bearing files may live inside the local `configs/` working tree.
@@ -30,7 +25,10 @@ If a `secrets/` folder is useful for a tool, use a default-deny ignore pattern t
 
 Do not load secrets from global shell startup by default. Tools should load their own env/config at runtime, or a shell module should make any secret-loading behavior explicit.
 
-## Consequences
+## Rationale
+This public-safe dotfiles and setup repository also carries tools that need API credentials, tokens, and private local configuration. Adjacent ignored real files and tracked fake examples make those tools usable after cloning without publishing local secrets.
+
+## Operating Notes
 This keeps the workflow simple and portable: local secrets can travel with the local checkout on a machine, while git only sees public-safe source, docs, examples, and templates.
 
 The main risk is accidental tracking. Mitigate that by adding ignore rules before creating real files, committing fake examples, and checking `git status --short` before commits.

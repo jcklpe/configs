@@ -40,7 +40,7 @@ lifeos github move-card --repo open-austin --issue 545 --status Done --execute
 
 Dry-run by default; an unknown column lists the valid ones rather than failing blankly.
 
-**A board move is a legitimate input to the automation, not a fight with it.** Both tracked repos wire board and issue state together deliberately: moving a card to Done triggers GitHub's native `Auto-close issue` and the issue closes; moving one out of a terminal column is picked up by a reconciler that reopens it. That is the designed path, documented in `open-austin/org`'s `docs/decisions/0005-board-sync-architecture.md`.
+**A board move is a legitimate input to the automation, not a fight with it.** Both tracked repos wire board and issue state together deliberately: moving a card to Done triggers GitHub's native `Auto-close issue` and the issue closes; moving one out of a terminal column is picked up by a reconciler that reopens it. That is the designed path, documented in `open-austin/org`'s `docs/policies/0005-board-sync-architecture.md`.
 
 **The real caveat is latency, not conflict.** Card→close is instant because it is native. Card→reopen is cron-driven — `*/5` in the org repo, `*/15` in HAI — and GitHub delays scheduled runs under load, with a measured first reopen taking 25+ minutes. **So a sync run immediately after a move will show the board and the issue disagreeing, and that is expected rather than broken.** Re-sync later.
 
@@ -72,7 +72,7 @@ sources/github/<owner>-<repo>/
   board-<name>.md        Projects v2 items grouped by status column
 ```
 
-Index files are orientation layers, not mirrors: a 160-character preview per item, with full text in the detail file. That follows LifeOS decision 0002 and keeps `sources/` scannable.
+Index files are orientation layers, not mirrors: a 160-character preview per item, with full text in the detail file. That follows LifeOS policy 0002 and keeps `sources/` scannable.
 
 **Discussions carry their full thread**, including nested replies rendered as blockquotes. That is deliberate and differs from how an issue is treated: an issue's substance is usually its title and body, while a discussion's substance *is* the argument in the replies. Truncating one would discard the thing worth having.
 

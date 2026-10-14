@@ -2,7 +2,7 @@
 attention: historical
 ---
 # Secrets And Local Env Scratch Spike
-Status: archived. Durable lessons were folded into `AGENTS.md`, `.gitignore`, and `docs/decisions/0001-secrets-and-local-env.md`.
+Status: archived. Durable lessons were folded into `AGENTS.md`, `.gitignore`, and `docs/policies/0001-secrets-and-local-env.md`.
 
 ## Outcome
 We chose a personal dotfiles tool hygiene pattern:
