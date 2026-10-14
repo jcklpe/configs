@@ -28,7 +28,7 @@ Doc-editing works via `~/work/org/tools/google-docs/` but is invisible to `lifeo
 - [x] Update `lifeos help` usage block. → Added the two `docs` lines.
 - [x] Update the `lifeos-drive` skill. → Replaced the "no existing-Doc edit command" line and added an "Editing an existing Doc" section pointing at `lifeos docs`.
 - [x] Update the `lifeos-cli` skill. → Pointed its `--docs-write` note at `lifeos docs replace-once` as the bounded editor.
-- [x] Add a decision record. → `docs/decisions/0005-docs-editing-in-lifeos-tools.md` (in configs, **not** the org repo, per Aslan's constraint that org stays free of lifeos references).
+- [x] Add a decision record. → `docs/policies/0005-docs-editing-in-lifeos-tools.md` (in configs, **not** the org repo, per Aslan's constraint that org stays free of lifeos references).
 - [x] Decide on parity for the org repo copy. → Keep both; org repo untouched and self-contained; duplication accepted and documented here.
 - [x] Verified end-to-end from the agent shell (2026-08-18): `lifeos help` lists the commands; `lifeos docs read open-austin <id>` renders the ACT agenda doc; `lifeos docs replace-once <url> ...` dry-runs cleanly (URL→ID extraction works).
 - [x] Real `--execute` verified (2026-08-18): net-zero round-trip on the ACT agenda doc (edit a line, then revert it) — both writes succeeded, revision advanced each time, doc restored exactly. Aslan declined human QA and asked the agent to test, since the agent is the primary user.

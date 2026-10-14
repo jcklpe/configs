@@ -23,7 +23,7 @@ Concept: [lifeos-mail-triage-tools.md](lifeos-mail-triage-tools.md).
 - [x] `not-junk` decision (Aslan, 2026-09-30): rescued mail goes into the Inbox and is triaged like any other item, which is current behavior. No report to Microsoft.
 - [x] Outlook categories (Aslan asked 2026-09-30): `m365 mail categorize` / `uncategorize`, categories shown in `mail list` and the snapshot, offline tests, a live add-then-remove round trip on one UT message, and a 0007 addendum.
 - [x] UT full-inbox view: no change (Aslan, 2026-09-30: not broken, don't fix). Older UT mail is listed with `mail list`, metadata only.
-- [x] Scope widened to standing filters and rules (Aslan, 2026-10-02), recorded in [0009](../decisions/0009-mail-filters-and-rules.md) with a 0007 amendment.
+- [x] Scope widened to standing filters and rules (Aslan, 2026-10-02), recorded in [0009](../policies/0009-mail-filters-and-rules.md) with a 0007 amendment.
 - [x] Gmail filters: `gmail filters`, `create-filter` (from/to/subject/query; one user label and/or skip Inbox), `delete-filter`; dry run previews recent matches. Needs `gmail.filters_enabled` (adds `gmail.settings.basic`).
 - [x] Microsoft 365 Inbox rules: `m365 mail rules`, `create-rule` (from/sender-contains/subject-contains; category, allowed-folder move, stop), `delete-rule`. Needs `mail.rules_enabled` (adds `MailboxSettings.ReadWrite`).
 - [x] Offline tests: `tests/test-mail-filters.sh`. Live reads verified on all three Gmail accounts and UT (2026-10-02). All three Gmail accounts and UT re-authorized with the new scopes the same day.

@@ -37,7 +37,7 @@ Rejected alternatives, and why:
 
 - **Git submodule into both repos** — gives collaborators a pointer to a repo they cannot use, plus submodule maintenance, for no benefit.
 - **Re-provisioning via `setup-local-skills`** — recreates the dual-maintenance problem the move exists to solve, for people who have not asked.
-- **A link reference in the org repo** — considered and explicitly declined by Aslan. The org repo should carry no reference to the private tooling at all, matching the precedent set by `docs/decisions/0005`, where `lifeos docs` was ported out of the org repo and the org repo was left with no `lifeos` mention.
+- **A link reference in the org repo** — considered and explicitly declined by Aslan. The org repo should carry no reference to the private tooling at all, matching the precedent set by `docs/policies/0005`, where `lifeos docs` was ported out of the org repo and the org repo was left with no `lifeos` mention.
 
 ## Correction 2026-09-07: The Org-Side Rip-Out Is Mostly Cancelled
 The original plan had a successor spike removing `tools/sync/` from `~/work/org`. **Investigation says do not do that**, and the evidence is direct.
@@ -75,7 +75,7 @@ So "board sync" in this spike means **reading board state into local context**, 
 - **Board sync comes along.** Aslan's call: the vault needs issue context *and* board context, plus whatever writes those require. So `boards.py`'s Projects v2 reading is in scope here, not left behind.
 - **Repo list is configuration, not code.** Follow the existing alias pattern (`google-accounts.json`, `m365-accounts.json`) rather than hardcoding.
 - **Existing prior art is 463 lines** across `~/work/org/tools/sync/{issues,boards,labels}.py` and `run.sh`. Port and generalize rather than rewrite from scratch; the issue-with-full-comment-threads rendering is already solved there.
-- Writes stay dry-run-by-default and follow `docs/decisions/0006-writes-fail-rather-than-guess.md`.
+- Writes stay dry-run-by-default and follow `docs/policies/0006-writes-fail-rather-than-guess.md`.
 
 ## Downstream Work This Unblocks
 The vault's `open-austin-github` skill describes the current adapter and public/private boundary. It needs substantial rewriting once this lands, and it is the reason the LifeOS skill-renaming pass should not touch that skill in isolation.

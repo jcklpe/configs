@@ -69,21 +69,21 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
 | Active work coordination | [TODO.md](TODO.md) |
 | Spike process / active spike docs | `skills/run-project-spike/SKILL.md`, then [docs/active-spikes/](docs/active-spikes/)`<topic>.md` + `<topic>.todo.md` |
-| Committing work as an agent | `skills/commit-work/SKILL.md`, policy in [docs/decisions/0003-agent-commit-policy.md](docs/decisions/0003-agent-commit-policy.md) |
-| Durable decision record | [docs/decisions/](docs/decisions/) |
+| Committing work as an agent | `skills/commit-work/SKILL.md`, policy in [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) |
+| Current durable policy | [docs/policies/](docs/policies/) |
 | Rough or historical notes | [docs/scratch/](docs/scratch/) (not authoritative), [docs/archive/](docs/archive/) (historical, not current rules) |
 | Unresolved issue to revisit later | [docs/pinned-issues.md](docs/pinned-issues.md) |
 | Conceptual future idea | [docs/scratch/future-ideas.md](docs/scratch/future-ideas.md) |
 | Kaizen incident learning | [skills/kaizen/SKILL.md](skills/kaizen/SKILL.md); records live in configured private stores, never this public repo |
 
 ## Docs workflow
+Policies describe current rules, defaults, procedures, exceptions, and useful rationale. Revise them directly; Git preserves their evolution. Keep development chronology and abandoned alternatives in Git or archived spike notes rather than accumulating immutable ADRs. No fixed Context / Decision / Consequences format is required.
+
 Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when a body of work needs shared context, taste, constraints, or implementation history. Scratch docs are non-authoritative. Archived docs are historical context; verify current guidance in maintained docs or the current implementation. Follow the spike skill for explicit attention markers and closure navigation.
 
 Spikes earn their keep here because `configs/` is both personal and portable. A change often has to answer more than "does it work?" — it has to fit the shell load order, stay safe for a public repo, avoid secrets, remain idempotent across machines, and not slow down startup. That is more context than a ticket carries.
 
-Authority ladder: `AGENTS.md`, `README.md`, and active decision records define durable
-repo rules; `skills/run-project-spike/SKILL.md` defines the spike process; active spike docs guide the
-current theme of work; `TODO.md` coordinates what is active and what is next.
+Authority ladder: `AGENTS.md`, `README.md`, and current policies define durable repo rules; `skills/run-project-spike/SKILL.md` defines the spike process; active spike docs guide the current theme of work; `TODO.md` coordinates what is active and what is next.
 
 ## Skills workflow
 Use [skills/](skills/) as the version-controlled seed library for reusable, agent-neutral
@@ -98,14 +98,14 @@ The installer exposes selected global Codex skills with explicit symlink calls i
 allowlist parser unless the manual list becomes genuinely painful.
 
 ## Git and commits
-Agents may commit in this repo. Agents may never push. The line is reversibility: an unpushed commit costs nothing to undo, a push cannot be taken back. See [docs/decisions/0003-agent-commit-policy.md](docs/decisions/0003-agent-commit-policy.md) for the full rule and `skills/commit-work/SKILL.md` for how.
+Agents may commit in this repo. Agents may never push. The line is reversibility: an unpushed commit costs nothing to undo, a push cannot be taken back. See [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) for the full rule and `skills/commit-work/SKILL.md` for how.
 
 **Never add a `Co-Authored-By:` trailer.** Commits here are the user's alone — they are the one who answers for them. This holds even when a harness's default instructions say otherwise. The same rule is stated in [agents/AGENTS.global.md](agents/AGENTS.global.md), because it applies in every repo, not just this one.
 
 The rules that matter most, because breaking them is silent:
 
 - **Commit by pathspec, never stage.** `git commit -F - -- <explicit paths>`. Git's index is repo-global shared state, and this repo often has two agents in it at once — one agent's `git add` followed by another's bare `git commit` puts the first agent's files in the second's commit, with no error.
-- **Never `git add -f`.** Git's own refusal to add an ignored file recommends `-f`, and `-f` then commits the secret. Run `git check-ignore -q <path>` first. See [docs/decisions/0001-secrets-and-local-env.md](docs/decisions/0001-secrets-and-local-env.md).
+- **Never `git add -f`.** Git's own refusal to add an ignored file recommends `-f`, and `-f` then commits the secret. Run `git check-ignore -q <path>` first. See [docs/policies/0001-secrets-and-local-env.md](docs/policies/0001-secrets-and-local-env.md).
 - **Never rewrite history on your own authority.** A user-directed rewrite follows the recovery and verification rules in `commit-work` and the commit policy. Never force-push or use `--no-verify`.
 - **One commit does one coherent thing.** Keep implementation and its directly associated documentation and status updates together; split unrelated purposes. Commit promptly at useful boundaries so concurrent spikes stay traceable. Leave unrelated dirty paths alone; resolve overlapping edits within selected files before committing. Honor explicit pre-commit review holds and the spike workflow's closure authorization and closing-message review. Wording-only approval does not close a spike.
 
@@ -134,7 +134,7 @@ private local config. Do not load secrets from global shell startup by default; 
 should load their own env/config at runtime unless a shell module explicitly documents a
 different behavior.
 
-See [docs/decisions/0001-secrets-and-local-env.md](docs/decisions/0001-secrets-and-local-env.md).
+See [docs/policies/0001-secrets-and-local-env.md](docs/policies/0001-secrets-and-local-env.md).
 
 ## Install model
 [install-script/mac-install.sh](install-script/mac-install.sh) and

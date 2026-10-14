@@ -2,7 +2,7 @@
 attention: historical
 ---
 # Commit Work To-Do
-Status: **archived 2026-07-10.** All items done. The durable rule lives in `docs/decisions/0003-agent-commit-policy.md` and the operational skill in `skills/commit-work/SKILL.md`; this doc is the implementation trail, kept messy on purpose.
+Status: **archived 2026-07-10.** All items done. The durable rule lives in `docs/policies/0003-agent-commit-policy.md` and the operational skill in `skills/commit-work/SKILL.md`; this doc is the implementation trail, kept messy on purpose.
 
 Conceptual doc: `docs/archive/commit-work.md`.
 
@@ -14,7 +14,7 @@ The design was worked out in conversation on 2026-07-09. The conceptual doc reco
 ## Project Organization
 - `skills/commit-work/SKILL.md` — the new skill. Global (symlinked into `~/.claude/skills`, Codex, and Copilot via `install-script/functions/symlinks.sh`).
 - `skills/run-project-spike/SKILL.md` — gains calls to `commit-work` at the completion boundary and at archival. Does **not** learn how to write commit messages.
-- `docs/decisions/0003-agent-commit-policy.md` — the durable rule.
+- `docs/policies/0003-agent-commit-policy.md` — the durable rule.
 - `git/git.sh` — **untouched.** `gitall` is explicitly out of scope.
 
 ## General Principles
@@ -104,7 +104,7 @@ The repo now uses `docs/active-spikes/` throughout; the migration landed as `ski
 
   A related hole, worth naming: this spike's `.todo.md` was not committed until the work was finished, so its `To Do → Done` transitions exist nowhere in git. The original list survived only because it was still in the session's conversation. Committing at each completion boundary would have captured every transition. The first spike could not do that, because `commit-work` did not exist yet. Every spike after this one can.
 
-- [x] **Wrote `docs/decisions/0003-agent-commit-policy.md`.** Records the rule, not the how — reversibility as the approval line, pathspec-only, no `add -f`, no rewriting, no pushing, completion boundary, the "and" test, silent-in-scope. Notes explicitly that it supersedes the prior "agents never commit" rule *including any stored agent memory that still asserts it*, and that `gitall` is unchanged but must not be run while an agent works.
+- [x] **Wrote `docs/policies/0003-agent-commit-policy.md`.** Records the rule, not the how — reversibility as the approval line, pathspec-only, no `add -f`, no rewriting, no pushing, completion boundary, the "and" test, silent-in-scope. Notes explicitly that it supersedes the prior "agents never commit" rule *including any stored agent memory that still asserts it*, and that `gitall` is unchanged but must not be run while an agent works.
 
 - [x] **Added the `AGENTS.md` pointer.** A new `## Git and commits` section plus a row in the "Where things go" table. Written unwrapped, per that file's own convergence rule, without reflowing the hard-wrapped paragraphs around it.
 
@@ -126,4 +126,4 @@ There is no test suite. Validate by using it:
 - **A dirty tree at spike start** is stray work. Ask, do not sweep.
 
 ## Public Safety And Secrets
-`commit-work` stages nothing and commits only named paths, which reduces the risk of sweeping a `.env` or a token file into a commit. It should still refuse to commit a path matched by `.gitignore` and should say so loudly rather than silently skipping. See `docs/decisions/0001-secrets-and-local-env.md`.
+`commit-work` stages nothing and commits only named paths, which reduces the risk of sweeping a `.env` or a token file into a commit. It should still refuse to commit a path matched by `.gitignore` and should say so loudly rather than silently skipping. See `docs/policies/0001-secrets-and-local-env.md`.

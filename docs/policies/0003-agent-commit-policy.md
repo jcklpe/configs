@@ -1,12 +1,5 @@
 # 0003 Agent Commit Policy
-## Context
-This repo's git history has been produced by `gitall`: a sweep-everything-into-one-commit-and-push helper. It works for a solo dev who never reads their own history back. It fails at three things now wanted from it — collaborating with other humans, supporting future archaeology, and generating source material for written case studies about how work actually went.
-
-Until now the standing rule was that agents never commit. That rule existed because an agent committing with `git commit -a` is indistinguishable from `gitall`, only faster and less accountable. The rule was protecting against bad commit *scope*, not against agents.
-
-Two things changed. `run-project-spike` produces naturally atomic units of work with their reasoning already written down, which is most of a good commit. And the user routinely runs two agents at once in the same clone, which makes commit safety a correctness question rather than a stylistic one: git's index is repo-global shared mutable state, so one agent's `git add` followed by another's bare `git commit` silently places the first agent's files in the second's commit, under the wrong message.
-
-## Decision
+## Current Approach
 Agents may commit in this repo. Agents may never push.
 
 Routine in-scope local checkpoints do not need individual approval. Honor an explicit request to review before committing until that review ends or the user authorizes the checkpoint. Under `run-project-spike`, establish authorization to close before marking or moving the pair into history; one clear approval can cover closure and its closing message, but wording-only approval is not closure. Local commits are recoverable, but rewriting them can disrupt concurrent work; publication can expose content to others before a later correction.
@@ -25,9 +18,12 @@ Concretely:
 - **Check the audience before recording content and again before committing.** Keep unauthorized private source material, unnecessary conversational details, credentials, and personal paths out of public files and messages. Preserve project reasoning without presenting agent proposals as user decisions. Later deletion or history rewriting is not the publication safeguard.
 - Spike commits carry a `Spike: <slug>` trailer, a bare slug rather than a path, because paths change when a spike archives and commit messages do not.
 
-`skills/commit-work/SKILL.md` is the operational skill and holds the failure-mode table, the rationalization table, and the message format. This record holds the rule.
+`skills/commit-work/SKILL.md` is the operational skill and holds the failure-mode table, the rationalization table, and the message format. This policy holds the rule.
 
-## Consequences
+## Rationale
+Local commits are recoverable checkpoints; pushes publish content and are reserved for the user. Concurrent agents share one Git index, so explicit path selection, full-diff review, timely checkpoints, and overlap resolution prevent unrelated work from entering the wrong commit. Coherent scope makes history usable for later reconstruction and case-study source material.
+
+## Operating Notes
 Commit scope stops being an accident of when someone got around to running `gitall`, which is the precondition for every other benefit. Message quality follows from scope; it cannot precede it.
 
 `git log --grep='Spike: <slug>$' --reverse` reconstructs any spike's history in order, and the archival commit's message is a synthesis of it. Together these make the commit log a durable, greppable index into the spike docs, in the same way that `🔗 Continues in:` markers index Trello cards to one another.
@@ -37,8 +33,6 @@ Commit scope stops being an accident of when someone got around to running `gita
 `gitpush` is safe to run at any time. It touches no index, and it is the human-only step this record turns on.
 
 The main risk is silent bad scope: an agent committing without confirmation could quietly produce an incoherent history. Mitigations are recoverable local checkpoints, explicit path selection, full-diff inspection, and resolving overlap before committing. Unrelated work outside the selected paths remains untouched; its presence alone does not require a question.
-
-This record supersedes the previous "agents never commit" rule, including any stored agent memory that still asserts it.
 
 ## Links
 - [AGENTS.md](../../AGENTS.md)

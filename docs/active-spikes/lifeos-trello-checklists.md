@@ -17,7 +17,7 @@ Let `lifeos trello` read and write card checklists, so an agent can keep a card'
 Trello's REST API supports all four (`/cards/{id}/checklists`, `/checklists/{id}/checkItems`, `/cards/{id}/checkItem/{idCheckItem}` with `state`).
 
 ## Design Notes
-- Follow [0006](../decisions/0006-writes-fail-rather-than-guess.md): an ambiguous checklist or item name fails and lists the candidates rather than guessing.
+- Follow [0006](../policies/0006-writes-fail-rather-than-guess.md): an ambiguous checklist or item name fails and lists the candidates rather than guessing.
 - No item deletion in the first cut. Renaming and reordering wait until someone needs them.
 
 ## Decision
