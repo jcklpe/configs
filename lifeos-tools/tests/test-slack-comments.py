@@ -26,6 +26,9 @@ class CommentsTest(unittest.TestCase):
         self.more_pages = False
         self.no_permalink = False
         self.missing_readback = False
+        self.history = [self.root]
+        self.history_more = False
+        self.hide_root = False
         self.patches = [patch.object(slack, 'account', return_value=self.acct), patch.object(slack, 'call', side_effect=self.call)]
         for p in self.patches:
             p.start()
@@ -37,11 +40,15 @@ class CommentsTest(unittest.TestCase):
             raise slack.SlackError('missing_scope (needed: channels:history)')
         if method == 'auth.test':
             return self.auth
+        if method == 'conversations.history':
+            if self.history_more and not params.get('cursor'):
+                return {'messages': [], 'response_metadata': {'next_cursor': 'next'}}
+            return {'messages': self.history}
         if method == 'conversations.replies':
             if 'oldest' in params:
                 return {'messages': [] if self.missing_readback else [self.reply]}
             if params['limit'] == 1:
-                return {'messages': [self.root]}
+                return {'messages': [] if self.hide_root else [self.root]}
             if self.more_pages and not params.get('cursor'):
                 return {'messages': [self.root], 'response_metadata': {'next_cursor': 'page2'}}
             return {'messages': [self.root, self.reply]}
@@ -164,6 +171,84 @@ class CommentsTest(unittest.TestCase):
         with patch.object(slack, 'call', return_value={'messages': [], 'has_more': True}):
             with self.assertRaisesRegex(slack.SlackError, 'without a cursor'):
                 slack.paged(self.acct, 'conversations.replies', {}, 'messages')
+
+    def configure_discovery(self):
+        self.base = self.base[:3]
+        self.acct['lists'] = [{'id': 'F1', 'discussion_channel_id': 'C1'}]
+
+    def test_automatic_discovery_without_url(self):
+        self.configure_discovery()
+        code, out, err = self.run_cli('comments')
+        self.assertEqual(code, 0, err)
+        self.assertIn('discussion C1 / 1700000000.000001', out)
+        self.assertEqual([x[0] for x in self.calls[:3]], ['auth.test', 'conversations.history', 'conversations.replies'])
+
+    def test_first_user_comment_uses_existing_empty_root(self):
+        self.configure_discovery()
+        self.root['reply_count'] = 0
+        self.history_more = True
+        code, out, err = self.run_cli('comment', '--execute')
+        self.assertEqual(code, 0, err)
+        self.assertIn('Verified comment', out)
+        self.assertTrue(any(m == 'conversations.history' and p.get('cursor') == 'next' for m, p, _ in self.calls))
+        self.assertEqual(sum(m == 'chat.postMessage' for m, _, _ in self.calls), 1)
+
+    def test_explicit_channel_without_configuration(self):
+        self.base = self.base[:3] + ['--channel', 'C1']
+        self.assertEqual(self.run_cli()[0], 0)
+        self.assertIn('conversations.history', [m for m, _, _ in self.calls])
+
+    def test_missing_mapping_never_guesses_a_channel(self):
+        self.base = self.base[:3]
+        code, _, err = self.run_cli('comment', '--execute')
+        self.assertEqual(code, 1)
+        self.assertIn('no ID will be guessed', err)
+        self.assertEqual(self.calls, [])
+
+    def test_missing_and_ambiguous_roots_refused(self):
+        self.configure_discovery()
+        for history, error in [([], 'No verified discussion root'), ([self.root, dict(self.root, ts='1700000009.000001')], 'Multiple discussion roots')]:
+            self.history = history
+            code, _, err = self.run_cli('comment', '--execute')
+            self.assertEqual(code, 1)
+            self.assertIn(error, err)
+            self.assertNotIn('chat.postMessage', [m for m, _, _ in self.calls])
+
+    def test_discovered_root_rechecked_before_send(self):
+        self.configure_discovery()
+        self.hide_root = True
+        code, _, err = self.run_cli('comment', '--execute')
+        self.assertEqual(code, 1)
+        self.assertIn('root does not identify', err)
+        self.assertNotIn('chat.postMessage', [m for m, _, _ in self.calls])
+
+    def test_history_failure_refuses_send(self):
+        self.configure_discovery()
+        self.failure = 'conversations.history'
+        self.assertEqual(self.run_cli('comment', '--execute')[0], 1)
+        self.assertNotIn('chat.postMessage', [m for m, _, _ in self.calls])
+
+    def test_history_paging_cap_refuses_send(self):
+        self.configure_discovery()
+        with patch.object(slack, 'paged', side_effect=slack.SlackError('more than 20 pages')):
+            code, _, err = self.run_cli('comment', '--execute')
+        self.assertEqual(code, 1)
+        self.assertIn('more than 20 pages', err)
+        self.assertNotIn('chat.postMessage', [m for m, _, _ in self.calls])
+
+    def test_malformed_root_metadata_refused(self):
+        self.configure_discovery()
+        for metadata in [dict(self.root, ts=None), dict(self.root, slack_list=['F1', 'Rec1']), dict(self.root, thread_ts='1700000099.000001')]:
+            self.history = [metadata]
+            self.assertEqual(self.run_cli('comment', '--execute')[0], 1)
+        self.assertNotIn('chat.postMessage', [m for m, _, _ in self.calls])
+
+    def test_bad_or_conflicting_configured_channels_refused(self):
+        self.configure_discovery()
+        for entries in [[{'id': 'F1', 'discussion_channel_id': ['C1']}], [{'id': 'F1', 'discussion_channel_id': 'C1'}, {'id': 'F1', 'discussion_channel_id': 'C2'}]]:
+            self.acct['lists'] = entries
+            self.assertEqual(self.run_cli('comment', '--execute')[0], 1)
+        self.assertEqual(self.calls, [])
 
 
 if __name__ == '__main__':

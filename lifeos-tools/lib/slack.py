@@ -687,19 +687,53 @@ def cmd_lists_get(args):
     return 0
 
 
+def is_list_comment_root(message, acct, list_id, item_id):
+    link = message.get("slack_list") or {}
+    ts = message.get("ts", "")
+    return (isinstance(link, dict) and message.get("subtype") == "list_record_comment"
+            and link.get("list_id") == list_id and link.get("list_record_id") == item_id
+            and message.get("team") in (None, acct["team_id"])
+            and isinstance(ts, str) and bool(re.fullmatch(r"[0-9]{10}\.[0-9]{6}", ts))
+            and message.get("thread_ts", ts) == ts)
+
+
 def list_comment_target(acct, args):
-    """Resolve only a supplied real discussion URL; the Lists API exposes no thread locator."""
-    parsed = urllib.parse.urlparse(args.url)
-    if parsed.scheme != "https" or not (parsed.hostname or "").endswith(".slack.com") or not re.fullmatch(r"/archives/[A-Z0-9]+/p[0-9]{16}", parsed.path):
-        raise SlackError("Use a copied HTTPS Slack comment permalink for --url")
-    channel, ts = parse_message_url(args.url)
-    if not re.fullmatch(r"[0-9]{10}\.[0-9]{6}", ts):
-        raise SlackError("Invalid discussion thread timestamp in --url")
+    """Find a verified root by real permalink or history in a known List conversation."""
+    if args.url:
+        parsed = urllib.parse.urlparse(args.url)
+        if parsed.scheme != "https" or not (parsed.hostname or "").endswith(".slack.com") or not re.fullmatch(r"/archives/[A-Z0-9]+/p[0-9]{16}", parsed.path):
+            raise SlackError("Use a copied HTTPS Slack comment permalink for --url")
+        channel, ts = parse_message_url(args.url)
+        if not re.fullmatch(r"[0-9]{10}\.[0-9]{6}", ts):
+            raise SlackError("Invalid discussion thread timestamp in --url")
+    else:
+        ts = None
+        channel = args.channel
+        if not channel:
+            configured = [entry.get("discussion_channel_id") for entry in acct.get("lists", []) if entry.get("id") == args.list_id and entry.get("discussion_channel_id")]
+            if any(not isinstance(value, str) for value in configured):
+                raise SlackError("Configured discussion_channel_id must be a Slack conversation ID string")
+            configured = set(configured)
+            if len(configured) > 1:
+                raise SlackError("Conflicting discussion_channel_id values for this List in account configuration")
+            channel = next(iter(configured), None)
+        if not channel:
+            raise SlackError("List discussion conversation is not configured. Set lists[].discussion_channel_id to its verified conversation ID, or supply --channel ID (or --url). The current scopes/API responses do not expose this List-to-conversation lookup; no ID will be guessed.")
+        if not re.fullmatch(r"[CG][A-Z0-9]+", channel):
+            raise SlackError("List discussion channel must be a real Slack conversation ID (C... or G...)")
     verify_identity(acct)
+    if ts is None:
+        # Roots exist even for observed items with no user comments. Scan the known List conversation, never guess a root timestamp.
+        history = paged(acct, "conversations.history", {"channel": channel, "limit": 100}, "messages")
+        matches = {message["ts"] for message in history if is_list_comment_root(message, acct, args.list_id, args.item_id)}
+        if not matches:
+            raise SlackError("No verified discussion root found for this List item in the supplied/configured conversation. Check the channel and item; a missing root may reflect retention or API visibility. No public root-creation route is established, so nothing will be posted.")
+        if len(matches) != 1:
+            raise SlackError("Multiple discussion roots identify this List item; supply --url to select the intended discussion")
+        ts = matches.pop()
     page = call(acct, "conversations.replies", {"channel": channel, "ts": ts, "limit": 1})
     root = next((m for m in page.get("messages", []) if m.get("ts") == ts), {})
-    link = root.get("slack_list") or {}
-    if root.get("subtype") != "list_record_comment" or link.get("list_id") != args.list_id or link.get("list_record_id") != args.item_id or root.get("team") not in (None, acct["team_id"]):
+    if not is_list_comment_root(root, acct, args.list_id, args.item_id):
         raise SlackError("Discussion root does not identify the requested List and item; refusing to use this thread")
     return channel, ts
 
@@ -826,7 +860,9 @@ def build_parser():
     p = lists.add_parser("items"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("--limit", type=int); p.add_argument("--archived", action="store_true"); p.set_defaults(func=cmd_lists_items)
     p = lists.add_parser("get"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.set_defaults(func=cmd_lists_get)
     for name, func in (("comments", cmd_lists_comments), ("comment", cmd_lists_comment)):
-        p = lists.add_parser(name); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.add_argument("--url", required=True, help="copied existing List item comment permalink; root must match List/item")
+        p = lists.add_parser(name); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); target = p.add_mutually_exclusive_group()
+        target.add_argument("--url", help="copied comment permalink; root must match List/item")
+        target.add_argument("--channel", help="known List discussion conversation; otherwise use lists[].discussion_channel_id")
         if name == "comment":
             p.add_argument("--text"); p.add_argument("--text-file"); p.add_argument("--execute", action="store_true")
         p.set_defaults(func=func)

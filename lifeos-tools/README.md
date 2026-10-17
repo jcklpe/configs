@@ -149,8 +149,8 @@ lifeos m365 files download ut ITEM_ID --drive DRIVE_ID --out /tmp/document.docx
 lifeos slack whoami example
 lifeos slack post example --channel C0000000000 --text "Hello"
 lifeos slack lists items example F0000000000 --limit 20
-lifeos slack lists comments example F0000000000 Rec0000000000 --url "$COMMENT_URL"
-lifeos slack lists comment example F0000000000 Rec0000000000 --url "$COMMENT_URL" --text "Update"  # dry run
+lifeos slack lists comments example F0000000000 Rec0000000000
+lifeos slack lists comment example F0000000000 Rec0000000000 --text "Update"  # dry run
 lifeos slack sync example   # snapshot configured Lists into sources/slack/
 lifeos odoo accounts
 lifeos odoo projects list example
@@ -164,7 +164,7 @@ lifeos open-austin-org sync --qa
 lifeos sync   # Trello, Calendar, GitHub, and Slack Lists; unconfigured sources are skipped with a warning
 ```
 
-List discussion commands require an existing comment permalink copied into `COMMENT_URL`; the root must identify the exact List and item. They cannot discover or create a discussion from record IDs alone. Sends require specific approval and `--execute`; readback failures after a send report `PARTIAL` and must be inspected before retrying. Live reads and permalink retrieval are verified; comment sends await approved live QA. See the [Slack skill](skills/lifeos-slack/SKILL.md#list-item-discussions) for API boundaries and commands.
+List discussion commands discover the item's exact root through history using the List entry's `discussion_channel_id` in ignored account config, or an explicit `--channel ID`. They support a first user comment when Slack exposes a zero-reply root; no existing comment URL is needed. A real `--url` remains an optional shortcut. A new List still needs its verified discussion conversation mapping: the checked APIs/current scopes do not supply that bootstrap lookup. Sends require specific approval and `--execute`; inspect `PARTIAL` or uncertain outcomes before retrying. URL-free and empty-root reads are live-verified; sends await approved live QA. See the [Slack skill](skills/lifeos-slack/SKILL.md#list-item-discussions) for API evidence and boundaries.
 
 Agent-facing usage notes live in the `lifeos-cli` skill (`lifeos-tools/skills/lifeos-cli/SKILL.md`), co-located with the tool and symlinked into `~/.claude/skills/` and `~/.codex/skills/` by the installer, so local agents get it globally.
 
