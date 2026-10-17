@@ -191,4 +191,91 @@ rm "${WORK}/moved"
 MOVE_LOSS=0
 MOVE_READ_FAIL=1
 refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute >/dev/null 2>&1
+# Existing label names, merged state, concurrency and failure handling use no network.
+M365_ACCOUNTS_PATH="${WORK}/write.json"
+LABELS='{"categoryDescriptions":{"category1":"Urgent","category2":"Blocked","category3":null,"@odata.type":"ignored"}}'
+LABEL_CURRENT='{"id":"task-1","planId":"plan-1","title":"Mine open","bucketId":"b1","percentComplete":0,"assignments":{"user-me":{}},"appliedCategories":{"category1":true},"@odata.etag":"W/\"label-etag\""}'
+LABEL_FAIL=0 LABEL_LOSS=0 LABEL_READ_FAIL=0 LABEL_RENAME=0
+_m365_get() {
+    case "$2" in
+        */planner/tasks/task-1)
+            if [ -f "${WORK}/label-written" ]; then
+                [ "$LABEL_READ_FAIL" -eq 0 ] || return 1
+                jq --argjson b "$LABEL_CURRENT" --argjson loss "$LABEL_LOSS" '$b + . + {"@odata.etag":"new"} | if $loss == 1 then .bucketId="lost" else . end | .appliedCategories |= with_entries(select(.value == true))' "${WORK}/label-patch"
+            else printf '%s\n' "$LABEL_CURRENT"; fi ;;
+        */planner/plans/plan-1/details)
+            printf 'x\n' >> "${WORK}/label-name-reads"
+            if [ "$LABEL_RENAME" -eq 1 ] && [ "$(wc -l < "${WORK}/label-name-reads")" -gt 1 ]; then printf '%s' "$LABELS" | jq '.categoryDescriptions.category2="Renamed"'; else printf '%s\n' "$LABELS"; fi ;;
+        *) return 1 ;;
+    esac
+}
+_m365_http() {
+    printf '%s %s %s %s\n' "$1" "$3" "$4" "${6:-}" >> "${WORK}/label-writes"
+    [ "$LABEL_FAIL" -eq 0 ] || return 1
+    printf '%s' "$4" > "${WORK}/label-patch"
+    touch "${WORK}/label-written"
+}
+reset_labels() { rm -f "${WORK}/label-written" "${WORK}/label-patch" "${WORK}/label-writes"; : > "${WORK}/label-name-reads"; }
+reset_labels
+out="$(_m365_planner_dispatch labels ut --plan plan-1 --json)"
+printf '%s' "$out" | jq -e 'length == 2 and .[1] == {id:"category2",name:"Blocked"}' >/dev/null
+refute _m365_planner_dispatch labels ut --json >/dev/null 2>&1
+refute _m365_planner_dispatch label ut --task task-1 >/dev/null 2>&1
+refute _m365_planner_dispatch label ut --task task-1 --label Missing --execute >/dev/null 2>&1
+LABELS_DUP="$LABELS"
+LABELS="$(printf '%s' "$LABELS" | jq '.categoryDescriptions.category3="BLOCKED"')"
+refute _m365_planner_dispatch label ut --task task-1 --label Blocked --execute >/dev/null 2>&1
+LABELS="$LABELS_DUP"
+[ ! -f "${WORK}/label-writes" ]
+out="$(_m365_planner_dispatch label ut --task task-1 --label blocked)"
+printf '%s' "$out" | grep -F 'DRY RUN' >/dev/null
+[ ! -f "${WORK}/label-writes" ]
+M365_ACCOUNTS_PATH="${WORK}/read.json"
+refute _m365_planner_dispatch label ut --task task-1 --label Blocked --execute >/dev/null 2>&1
+M365_ACCOUNTS_PATH="${WORK}/write.json"
+LABEL_SAVED="$LABEL_CURRENT"
+LABEL_CURRENT="$(printf '%s' "$LABEL_CURRENT" | jq '.planId="not-allowed"')"
+refute _m365_planner_dispatch label ut --task task-1 --label Blocked --execute >/dev/null 2>&1
+LABEL_CURRENT="$LABEL_SAVED"
+reset_labels
+LABEL_RENAME=1
+refute _m365_planner_dispatch label ut --task task-1 --label Blocked --execute >/dev/null 2>&1
+[ ! -f "${WORK}/label-writes" ]
+LABEL_RENAME=0
+reset_labels
+out="$(_m365_planner_dispatch label ut --task task-1 --label Blocked --execute)"
+printf '%s' "$out" | grep -F 'confirmed by readback' >/dev/null
+jq -e '. == {appliedCategories:{category1:true,category2:true}}' "${WORK}/label-patch" >/dev/null
+grep -F 'If-Match: W/"label-etag"' "${WORK}/label-writes" >/dev/null
+[ "$(wc -l < "${WORK}/label-writes" | tr -d ' ')" = 1 ]
+jq -se 'any(.[]; .action == "label" and .verified == true)' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null
+# Duplicate application reads current state and performs no second PATCH.
+out="$(_m365_planner_dispatch label ut --task task-1 --label Blocked --execute)"
+printf '%s' "$out" | grep -F 'No change' >/dev/null
+[ "$(wc -l < "${WORK}/label-writes" | tr -d ' ')" = 1 ]
+# Removing one label preserves all other labels; omitted false readback is valid.
+LABEL_CURRENT="$(printf '%s' "$LABEL_CURRENT" | jq '.appliedCategories.category2=true')"
+reset_labels
+_m365_planner_dispatch unlabel ut --task task-1 --label Blocked --execute >/dev/null
+jq -e '. == {appliedCategories:{category1:true,category2:false}}' "${WORK}/label-patch" >/dev/null
+LABEL_CURRENT="$LABEL_SAVED"
+reset_labels
+LABEL_FAIL=1
+refute _m365_planner_dispatch label ut --task task-1 --label Blocked --execute >/dev/null 2>&1
+[ "$(wc -l < "${WORK}/label-writes" | tr -d ' ')" = 1 ]
+LABEL_FAIL=0
+reset_labels
+LABEL_LOSS=1
+refute _m365_planner_dispatch label ut --task task-1 --label Blocked --execute >/dev/null 2>&1
+LABEL_LOSS=0
+reset_labels
+LABEL_READ_FAIL=1
+refute _m365_planner_dispatch label ut --task task-1 --label Blocked --execute >/dev/null 2>&1
+LABEL_READ_FAIL=0
+reset_labels
+# Label support does not add group-conversation permissions to configured scope requests.
+lacks "$(_m365_scopes ut)" 'Group.'
+lacks "$(_m365_scopes ut)" 'Group-Conversation.'
+[ ! -f "${WORK}/label-writes" ]
+
 printf 'm365 planner tests passed\n'

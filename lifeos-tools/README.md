@@ -126,6 +126,11 @@ lifeos m365 mail create-rule ut --name "Duplicate-address newsletter" --from new
 lifeos gmail filters personal
 lifeos m365 planner plans ut
 lifeos m365 planner tasks ut --plan PLAN_ID --mine --open
+lifeos m365 planner comments ut --task TASK_ID --json
+lifeos m365 planner comment ut --task TASK_ID --file comment.txt   # dry run; group notifications possible
+lifeos m365 planner labels ut --plan PLAN_ID
+lifeos m365 planner label ut --task TASK_ID --label "Blocked"   # dry run; existing unique name, preserves other labels
+lifeos m365 planner unlabel ut --task TASK_ID --label "Blocked" --execute
 lifeos m365 planner sync ut --qa
 lifeos m365 calendar list-calendars ut
 lifeos m365 calendar find ut "Orientation"
