@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Bounded Slack client that acts as the user's own account (user OAuth token).
 
-Reads: accounts, whoami, channels, users, thread, lists schema / items / get, and sync (a Markdown snapshot of configured Lists).
-Writes (dry-run unless --execute): post (optionally in a thread), dm, lists create / update.
+Reads: accounts, whoami, channels, users, thread, lists schema / items / get / comments, and sync (a Markdown snapshot of configured Lists).
+Writes (dry-run unless --execute): post (optionally in a thread), dm, lists create / update / comment.
 Every write checks that the token belongs to the configured team and user, then reads back
 what it wrote. There are no delete commands.
 """
@@ -107,6 +107,8 @@ def call(acct, method, params=None, json_body=False):
         if exc.code == 429:
             raise SlackError(f"{method}: rate limited (retry after {exc.headers.get('Retry-After', '?')}s)")
         raise SlackError(f"{method}: HTTP {exc.code}")
+    except (urllib.error.URLError, TimeoutError):
+        raise SlackError(f"{method}: network request failed; for writes, check the destination before retrying")
     if not body.get("ok"):
         error = body.get("error", "unknown_error")
         detail = f" (needed: {body['needed']})" if body.get("needed") else ""
@@ -126,6 +128,8 @@ def paged(acct, method, params, key, limit=None, max_pages=20):
             return results[:limit]
         cursor = ((page.get("response_metadata") or {}).get("next_cursor") or "").strip()
         if not cursor:
+            if page.get("has_more"):
+                raise SlackError(f"{method}: more results reported without a cursor; refusing a partial result")
             return results
     raise SlackError(f"{method}: more than {max_pages} pages; narrow the request")
 
@@ -683,6 +687,71 @@ def cmd_lists_get(args):
     return 0
 
 
+def list_comment_target(acct, args):
+    """Resolve only a supplied real discussion URL; the Lists API exposes no thread locator."""
+    parsed = urllib.parse.urlparse(args.url)
+    if parsed.scheme != "https" or not (parsed.hostname or "").endswith(".slack.com") or not re.fullmatch(r"/archives/[A-Z0-9]+/p[0-9]{16}", parsed.path):
+        raise SlackError("Use a copied HTTPS Slack comment permalink for --url")
+    channel, ts = parse_message_url(args.url)
+    if not re.fullmatch(r"[0-9]{10}\.[0-9]{6}", ts):
+        raise SlackError("Invalid discussion thread timestamp in --url")
+    verify_identity(acct)
+    page = call(acct, "conversations.replies", {"channel": channel, "ts": ts, "limit": 1})
+    root = next((m for m in page.get("messages", []) if m.get("ts") == ts), {})
+    link = root.get("slack_list") or {}
+    if root.get("subtype") != "list_record_comment" or link.get("list_id") != args.list_id or link.get("list_record_id") != args.item_id or root.get("team") not in (None, acct["team_id"]):
+        raise SlackError("Discussion root does not identify the requested List and item; refusing to use this thread")
+    return channel, ts
+
+
+def cmd_lists_comments(args):
+    acct = account(args.alias)
+    channel, ts = list_comment_target(acct, args)
+    messages = paged(acct, "conversations.replies", {"channel": channel, "ts": ts, "limit": 100}, "messages")
+    print(f"List {args.list_id}, item {args.item_id}: discussion {channel} / {ts}")
+    for message in messages:
+        if message.get("ts") != ts:
+            print(f"- [{message.get('ts')}] {message.get('user') or message.get('bot_id') or '?'}: {message.get('text', '')}")
+    link = call(acct, "chat.getPermalink", {"channel": channel, "message_ts": ts}).get("permalink")
+    if link:
+        print(f"Discussion permalink: {link}")
+    return 0
+
+
+def cmd_lists_comment(args):
+    acct = account(args.alias)
+    text = read_text(args)
+    if len(text) > 40000:
+        raise SlackError("Comment exceeds Slack's 40,000 character message limit")
+    channel, ts = list_comment_target(acct, args)
+    print_message_plan("List item comment", acct, f"List {args.list_id}, item {args.item_id}, channel {channel}", ts, text)
+    if not args.execute:
+        print("DRY RUN: nothing was sent. Re-run with --execute after approval.")
+        return 0
+    # The target and acting identity have been checked above, including on dry runs.
+    try:
+        sent = call(acct, "chat.postMessage", {"channel": channel, "thread_ts": ts, "text": text, "unfurl_links": False, "unfurl_media": False}, json_body=True)
+    except SlackError as exc:
+        raise SlackError(f"Comment send failed or has an uncertain outcome: {exc}. Check the discussion before retrying; no automatic retry.")
+    message_ts = sent.get("ts")
+    print(f"Slack accepted comment: channel {channel}, ts {message_ts or '(missing)'}; verifying readback")
+    try:
+        if not message_ts or sent.get("channel") != channel:
+            raise SlackError("Send response lacks a timestamp or reports a different channel")
+        page = call(acct, "conversations.replies", {"channel": channel, "ts": ts, "oldest": message_ts, "latest": message_ts, "inclusive": "true", "limit": 100})
+        message = next((m for m in page.get("messages", []) if m.get("ts") == message_ts), {})
+        if message.get("user") != acct["user_id"] or message.get("thread_ts") != ts or message.get("text") != text:
+            raise SlackError("Readback does not confirm the exact comment text, author, and discussion")
+        link = call(acct, "chat.getPermalink", {"channel": channel, "message_ts": message_ts}).get("permalink")
+        if not link:
+            raise SlackError("chat.getPermalink returned no permalink")
+    except SlackError as exc:
+        raise SlackError(f"PARTIAL: comment accepted at {channel} / {message_ts}, but verification failed: {exc}. Do not resend; inspect this discussion first.")
+    print(f"Verified comment by {message['user']}: {message['text']}")
+    print(f"Permalink: {link}")
+    return 0
+
+
 def print_list_plan(action, acct, list_id, item_id, cells):
     print(f"Slack List {action} plan:")
     print(f"Account: {acct['alias']} (team {acct['team_id']}, acting as user {acct['user_id']})")
@@ -756,6 +825,11 @@ def build_parser():
     p = lists.add_parser("schema"); p.add_argument("alias"); p.add_argument("list_id"); p.set_defaults(func=cmd_lists_schema)
     p = lists.add_parser("items"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("--limit", type=int); p.add_argument("--archived", action="store_true"); p.set_defaults(func=cmd_lists_items)
     p = lists.add_parser("get"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.set_defaults(func=cmd_lists_get)
+    for name, func in (("comments", cmd_lists_comments), ("comment", cmd_lists_comment)):
+        p = lists.add_parser(name); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.add_argument("--url", required=True, help="copied existing List item comment permalink; root must match List/item")
+        if name == "comment":
+            p.add_argument("--text"); p.add_argument("--text-file"); p.add_argument("--execute", action="store_true")
+        p.set_defaults(func=func)
     p = lists.add_parser("create"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("--field", action="append", default=[]); p.add_argument("--field-file", action="append", default=[], help="NAME=PATH: Markdown file, or .json rich_text blocks"); p.add_argument("--parent"); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_lists_create)
     p = lists.add_parser("update"); p.add_argument("alias"); p.add_argument("list_id"); p.add_argument("item_id"); p.add_argument("--field", action="append", default=[]); p.add_argument("--field-file", action="append", default=[], help="NAME=PATH: Markdown file, or .json rich_text blocks"); p.add_argument("--execute", action="store_true"); p.set_defaults(func=cmd_lists_update)
     return parser

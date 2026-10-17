@@ -60,11 +60,22 @@ lifeos slack sync [ALIAS] [--qa | --output DIR]  # snapshot configured Lists to 
 lifeos slack lists schema ALIAS LIST_ID
 lifeos slack lists items ALIAS LIST_ID [--limit N] [--archived]
 lifeos slack lists get ALIAS LIST_ID ITEM_ID
+lifeos slack lists comments ALIAS LIST_ID ITEM_ID --url COMMENT_URL
+lifeos slack lists comment ALIAS LIST_ID ITEM_ID --url COMMENT_URL (--text TEXT | --text-file FILE) [--execute]
 lifeos slack lists create ALIAS LIST_ID --field "Name=..." --field "Status=Done" [--field-file "Description=desc.md"] [--parent ITEM_ID] [--execute]
 lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--field-file "Description=desc.json"] [--execute]
 ```
 
 `--text-file FILE` may replace `--text` anywhere. List IDs (`F...`) and item IDs (`Rec...`) appear in List item URLs.
+
+## List Item Discussions
+`lists comments` reads an existing item's discussion; `lists comment` adds a reply, dry-run by default. Supply a real comment permalink copied from that item's discussion as `--url`. A reply permalink's `thread_ts` resolves the discussion root. The CLI verifies the acting identity and reads the root with `conversations.replies`, requiring `subtype=list_record_comment` and matching `slack_list.list_id` / `list_record_id` before it uses the thread. These root fields were observed in a live read on 2026-10-17; they are not a documented Lists API contract, so missing or changed metadata is refused.
+
+The public [`slackLists.items.info`](https://docs.slack.dev/reference/methods/slackLists.items.info/) response does not document a discussion locator, and the checked live item did not supply one. There is no supported automatic thread discovery or first-comment creation from List and record IDs alone in this CLI. Copy an existing comment link manually; if no discussion exists, create its first comment in Slack before using these commands. Never derive a timestamp from a record ID or its creation time, or a conversation ID from a List ID. Never invent a permalink.
+
+Reads use [`conversations.replies`](https://docs.slack.dev/reference/methods/conversations.replies/) with the appropriate conversation-history scope. Sending uses [`chat.postMessage`](https://docs.slack.dev/reference/methods/chat.postMessage/) with `chat:write`. The configured token already had the needed scopes during read-only verification; this feature adds no scopes or credentials. List/record identity comes from the root, so comment commands do not require a Lists write call.
+
+After `--execute`, the CLI fetches the returned timestamp in the same discussion and checks text, author, and thread, then obtains the link from [`chat.getPermalink`](https://docs.slack.dev/reference/methods/chat.getPermalink/). Slack may normalize message text; a mismatch is reported as unverified rather than silently accepted. A `PARTIAL` error means Slack accepted the send but readback or permalink retrieval failed: inspect the printed channel/timestamp before retrying, to avoid duplicates. A transport failure during send can also leave an uncertain outcome. The CLI never retries sends automatically. Live reads and API permalink retrieval have passed; posting through these commands has only been mock-tested, pending a specifically approved live destination and message.
 
 ## List Snapshot
 `lifeos slack sync` writes each List named under an account's `"lists"` (`[{"id": "F...", "name": "ops"}]`) to `sources/slack/<alias>/list-<name>.md`: items grouped by Status in the List's own choice order, each linked to its record, with assignees by name, other fields, and the description rendered as Markdown with its links. It is a generated snapshot: read it for orientation, re-read the live item (`lists get`) before any write, and never edit the snapshot by hand.
