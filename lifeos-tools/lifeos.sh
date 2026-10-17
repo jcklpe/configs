@@ -170,6 +170,8 @@ Usage:
   ./lifeos.sh slack lists schema ALIAS LIST_ID
   ./lifeos.sh slack lists items ALIAS LIST_ID [--limit N] [--archived]
   ./lifeos.sh slack lists get ALIAS LIST_ID ITEM_ID
+  ./lifeos.sh slack lists comments ALIAS LIST_ID ITEM_ID --url COMMENT_URL
+  ./lifeos.sh slack lists comment ALIAS LIST_ID ITEM_ID --url COMMENT_URL (--text TEXT | --text-file FILE) [--execute]
   ./lifeos.sh slack lists create ALIAS LIST_ID --field NAME=VALUE... [--parent ITEM_ID] [--execute]
   ./lifeos.sh slack lists update ALIAS LIST_ID ITEM_ID --field NAME=VALUE... [--execute]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
