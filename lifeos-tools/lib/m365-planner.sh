@@ -458,9 +458,213 @@ _m365_planner_move() {
     _say "Moved task (confirmed by readback): $task_id | plan_id: $plan_id | bucket_id: $bucket"
 }
 
+##- Existing plan labels: names are resolved uniquely, never created or renamed.
+_m365_planner_labels() {
+    local alias="${1:-}" plan_id="" json_mode=0 details labels
+    [ -n "$alias" ] || { _err "m365 planner labels requires ALIAS"; return 1; }
+    shift || true
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --plan) [ -n "${2:-}" ] || { _err "--plan requires ID"; return 1; }; plan_id="$2"; shift 2 ;;
+            --json) json_mode=1; shift ;;
+            *) _err "Unknown m365 planner labels option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$plan_id" ] || { _err "labels requires --plan ID"; return 1; }
+    _m365_require_enabled "$alias" planner || return 1
+    details="$(_m365_get "$alias" "$(_m365_planner_url "$alias" "planner/plans/$(_m365_uri_encode "$plan_id")/details")")" || return 1
+    labels="$(printf '%s' "$details" | jq -c '[((.categoryDescriptions // {}) | to_entries[]) | select(.key | test("^category[1-9][0-9]*$")) | select(.value | type == "string" and length > 0) | {id: .key, name: .value}]')" || return 1
+    if [ "$json_mode" -eq 1 ]; then printf '%s\n' "$labels"; else printf '%s' "$labels" | jq -r '.[] | "- " + .name + " | label_id: " + .id'; fi
+}
+
+_m365_planner_label() {
+    local action="$1" alias="${2:-}" task_id="" label="" execute=0 current labels matches key wanted patch expected after ok
+    [ -n "$alias" ] || { _err "m365 planner $action requires ALIAS"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --task) [ -n "${2:-}" ] || { _err "--task requires ID"; return 1; }; task_id="$2"; shift 2 ;;
+            --label) [ -n "${2:-}" ] || { _err "--label requires NAME"; return 1; }; label="$2"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            *) _err "Unknown m365 planner $action option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$task_id" ] && [ -n "$label" ] || { _err "$action requires --task ID and --label NAME"; return 1; }
+    _m365_require_enabled "$alias" planner || return 1
+    current="$(_m365_get "$alias" "$(_m365_planner_url "$alias" "planner/tasks/$(_m365_uri_encode "$task_id")")")" || return 1
+    _m365_planner_require_plan_allowed "$alias" "$(printf '%s' "$current" | jq -r '.planId')" || return 1
+    labels="$(_m365_planner_labels "$alias" --plan "$(printf '%s' "$current" | jq -r '.planId')" --json)" || return 1
+    matches="$(printf '%s' "$labels" | jq -c --arg n "$label" '[.[] | select((.name | ascii_downcase) == ($n | ascii_downcase))]')" || return 1
+    [ "$(printf '%s' "$matches" | jq length)" -eq 1 ] || { _err "Label '$label' must match exactly one existing plan label (case-insensitive); use planner labels to inspect names"; return 1; }
+    key="$(printf '%s' "$matches" | jq -r '.[0].id')"
+    wanted=true
+    [ "$action" = unlabel ] && wanted=false
+    expected="$(printf '%s' "$current" | jq -c --arg k "$key" --argjson v "$wanted" '(.appliedCategories // {}) | with_entries(select(.key | test("^category[1-9][0-9]*$"))) | . + {($k): $v}')" || return 1
+    _say "Microsoft 365 Planner $action plan: $alias | task_id: $task_id | $(printf '%s' "$current" | jq -r '.title')"
+    _say "Label: $(printf '%s' "$matches" | jq -r '.[0].name') ($key) -> $wanted; other labels and task fields are preserved."
+    _say "Note: this plan is shared; changes are visible to everyone on it."
+    if [ "$(printf '%s' "$current" | jq -r --arg k "$key" '.appliedCategories[$k] // false')" = "$wanted" ]; then
+        _say "No change: label already has the requested state."
+        return 0
+    fi
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: nothing was changed. Re-run with --execute to apply."; return 0; fi
+    _m365_planner_require_write "$alias" || return 1
+    # Recheck the name binding before the conditional task write; plan label names have a separate ETag and cannot be guarded atomically with the task.
+    labels="$(_m365_planner_labels "$alias" --plan "$(printf '%s' "$current" | jq -r '.planId')" --json)" || return 1
+    printf '%s' "$labels" | jq -e --arg n "$label" --arg k "$key" '[.[] | select((.name | ascii_downcase) == ($n | ascii_downcase))] | length == 1 and .[0].id == $k' >/dev/null || { _err "Plan label names changed; inspect before retrying"; return 1; }
+    patch="$(jq -nc --argjson c "$expected" '{appliedCategories: $c}')" || return 1
+    _m365_planner_audit "$alias" "$action-attempt" "$task_id" "$(printf '%s' "$current" | jq -r '.title')" false "$patch" || return 1
+    _m365_http PATCH "$alias" "$(_m365_planner_url "$alias" "planner/tasks/$(_m365_uri_encode "$task_id")")" "$patch" -H "If-Match: $(printf '%s' "$current" | jq -r '."@odata.etag"')" >/dev/null || { _err "Label write refused or failed; outcome may be uncertain. Read the task before retrying; no automatic retry was made."; return 1; }
+    after="$(_m365_get "$alias" "$(_m365_planner_url "$alias" "planner/tasks/$(_m365_uri_encode "$task_id")")")" || { _err "Label write sent but readback failed; inspect the task before retrying"; return 1; }
+    # Graph can omit false categories; compare active sets and every other task property except the server ETag.
+    ok="$(jq -n --argjson e "$expected" --argjson b "$current" --argjson a "$after" 'def active: with_entries(select(.key | test("^category[1-9][0-9]*$"))) | with_entries(select(.value == true)); (($a.appliedCategories // {} | active) == ($e | active)) and (($a | del(."@odata.etag", .appliedCategories)) == ($b | del(."@odata.etag", .appliedCategories)))')" || return 1
+    _m365_planner_audit "$alias" "$action" "$task_id" "$(printf '%s' "$current" | jq -r '.title')" "$ok" "$patch" || return 1
+    [ "$ok" = true ] || { _err "Label write sent but readback or preserved task fields did not match; inspect before retrying"; return 1; }
+    _say "Updated label (confirmed by readback): $label | task_id: $task_id"
+}
+
+##- Task-scoped group conversation comments; never request broader OAuth scopes.
+_m365_planner_comment_access() {
+    local alias="$1" access="$2" context
+    [ "$(_m365_auth_provider "$alias")" = graph-powershell ] || { _err "Comment scope inspection currently supports graph-powershell only; no authorization was changed"; return 1; }
+    context="$(_m365_powershell_auth "$alias" "")" || return 1
+    printf '%s' "$context" | jq -e --arg access "$access" '(.effective_scopes // []) as $s | if $access == "write" then ($s | index("Group.ReadWrite.All")) != null else any($s[]; . == "Group.Read.All" or . == "Group.ReadWrite.All" or . == "Group-Conversation.Read.All" or . == "Group-Conversation.ReadWrite.All") end' >/dev/null || { _err "Comments need existing group-conversation permission (read: Group-Conversation.Read.All or documented higher; write: Group.ReadWrite.All). Stop for approval; no permission was requested."; return 1; }
+}
+
+_m365_planner_comment_posts() {
+    local alias="$1" group="$2" thread="$3" url root page merged='{"value":[]}' count=0
+    root="$(_m365_planner_url "$alias" "groups/$(_m365_uri_encode "$group")/threads/$(_m365_uri_encode "$thread")/posts")"
+    url="$root"
+    while [ -n "$url" ]; do
+        count=$((count + 1))
+        [ "$count" -le 20 ] || { _err "Comment pagination exceeds 20 pages; refusing incomplete duplicate check"; return 1; }
+        case "$url" in "$root"|"$root"\?*) ;; *) _err "Unexpected comment pagination target"; return 1 ;; esac
+        page="$(_m365_get "$alias" "$url")" || return 1
+        printf '%s' "$page" | jq -e '.value | type == "array"' >/dev/null || return 1
+        merged="$(jq -nc --argjson a "$merged" --argjson b "$page" '{value: ($a.value + $b.value)}')" || return 1
+        [ "$(printf '%s' "$merged" | jq '.value | length')" -le 1000 ] || { _err "More than 1000 comments; refusing incomplete duplicate check"; return 1; }
+        url="$(printf '%s' "$page" | jq -r '."@odata.nextLink" // empty')"
+    done
+    printf '%s\n' "$merged"
+}
+
+_m365_planner_comment_journal() {
+    local dest="$1" state="$2" thread="$3" hash="$4" tmp
+    tmp="$(mktemp "${dest}.XXXXXX")" || return 1
+    jq -nc --arg state "$state" --arg thread "$thread" --arg hash "$hash" '{state:$state,thread:$thread,hash:$hash}' > "$tmp" && mv "$tmp" "$dest"
+}
+
+_m365_planner_comments() (
+    local mode="$1" alias="${2:-}" task_id="" file="" execute=0 json_mode=0 current plan group thread posts matches text hash recovery lock journal state saved_thread created patch after ok action
+    [ -n "$alias" ] || { _err "planner $mode requires ALIAS"; return 1; }
+    shift 2
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --task) [ -n "${2:-}" ] || { _err "--task requires ID"; return 1; }; task_id="$2"; shift 2 ;;
+            --file) [ -n "${2:-}" ] || { _err "--file requires PATH"; return 1; }; file="$2"; shift 2 ;;
+            --execute) execute=1; shift ;;
+            --dry-run) execute=0; shift ;;
+            --json) json_mode=1; shift ;;
+            *) _err "Unknown planner $mode option: $1"; return 1 ;;
+        esac
+    done
+    [ -n "$task_id" ] || { _err "$mode requires --task ID"; return 1; }
+    if [ "$mode" = comments ]; then
+        [ -z "$file" ] && [ "$execute" -eq 0 ] || { _err "comments is read-only"; return 1; }
+    else
+        [ -f "$file" ] || { _err "comment requires --file PATH"; return 1; }
+        text="$(cat "$file")"
+        printf '%s' "$text" | grep -q '[^[:space:]]' || { _err "Comment must not be blank"; return 1; }
+        [ -n "$text" ] && [ "${#text}" -le 10000 ] || { _err "Comment must contain 1–10000 characters"; return 1; }
+    fi
+    _m365_require_enabled "$alias" planner || return 1
+    current="$(_m365_get "$alias" "$(_m365_planner_url "$alias" "planner/tasks/$(_m365_uri_encode "$task_id")")")" || return 1
+    _m365_planner_require_plan_allowed "$alias" "$(printf '%s' "$current" | jq -r '.planId')" || return 1
+    action=read
+    [ "$mode" = comment ] && action=write
+    _m365_planner_comment_access "$alias" "$action" || return 1
+    plan="$(_m365_get "$alias" "$(_m365_planner_url "$alias" "planner/plans/$(printf '%s' "$current" | jq -r '.planId | @uri')")")" || return 1
+    group="$(printf '%s' "$plan" | jq -r 'if .container.type == "group" then .container.containerId elif (.container == null and .owner != null) then .owner else empty end')"
+    [ -n "$group" ] || { _err "Comments require a group-backed plan"; return 1; }
+    thread="$(printf '%s' "$current" | jq -r '.conversationThreadId // empty')"
+    if [ "$mode" = comments ]; then
+        posts='{"value":[]}'
+        [ -z "$thread" ] || posts="$(_m365_planner_comment_posts "$alias" "$group" "$thread")" || return 1
+        if [ "$json_mode" -eq 1 ]; then jq -n --arg task "$task_id" --arg thread "$thread" --argjson p "$posts" '{task_id:$task,thread_id:(if $thread == "" then null else $thread end),posts:$p.value}'; else printf '%s' "$posts" | "$LIFEOS_PY" "${LIB_DIR}/m365-planner-comments.py" render; fi
+        return
+    fi
+    umask 077
+    hash="$(printf '%s' "$text" | "$LIFEOS_PY" -c 'import hashlib,sys; print(hashlib.sha256(sys.stdin.buffer.read()).hexdigest())')" || return 1
+    recovery="$(dirname "$(_mail_audit_log_path)")/planner-comments"
+    mkdir -p "$recovery" || return 1
+    journal="$recovery/$(printf '%s' "$alias/$task_id" | "$LIFEOS_PY" -c 'import hashlib,sys; print(hashlib.sha256(sys.stdin.buffer.read()).hexdigest())').json"
+    lock="${journal}.lock"
+    mkdir "$lock" 2>/dev/null || { _err "Comment operation locked: $lock; inspect any running or interrupted operation before retrying"; return 1; }
+    trap 'rmdir "$lock"' EXIT
+    state="" saved_thread=""
+    if [ -f "$journal" ]; then
+        if [ -z "$thread" ] && [ "$(jq -r '(.state == "verified") and (.thread != "")' "$journal")" = true ]; then _err "Task lost its previously verified conversation link; inspect $journal before creating another thread"; return 1; fi
+        state="$(jq -r '.state' "$journal")" || return 1
+        if [ "$state" != verified ]; then
+            [ "$(jq -r '.hash' "$journal")" = "$hash" ] || { _err "Unresolved prior comment attempt: $journal; inspect before posting different text"; return 1; }
+            saved_thread="$(jq -r '.thread' "$journal")"
+            [ -n "$saved_thread" ] || { _err "Prior thread creation outcome is uncertain: $journal. Do not retry creation; inspect the group conversation first."; return 1; }
+            [ -z "$thread" ] || [ "$thread" = "$saved_thread" ] || { _err "Task thread changed during pending recovery: $journal"; return 1; }
+            thread="$saved_thread"
+        fi
+    fi
+    posts='{"value":[]}' matches='[]'
+    if [ -n "$thread" ]; then
+        posts="$(_m365_planner_comment_posts "$alias" "$group" "$thread")" || return 1
+        matches="$(printf '%s' "$posts" | "$LIFEOS_PY" "${LIB_DIR}/m365-planner-comments.py" match "$file")" || return 1
+    fi
+    if [ "$state" = pending-link ] && [ "$(printf '%s' "$matches" | jq length)" -eq 0 ]; then _err "Created thread post remains unverified: $journal; no additional post was sent"; return 1; fi
+    if [ "$state" = pending-reply ] && [ "$(printf '%s' "$matches" | jq length)" -eq 0 ]; then _err "Prior reply outcome remains uncertain: $journal. No retry was sent."; return 1; fi
+    if [ "$(printf '%s' "$matches" | jq length)" -gt 0 ] && [ "$(printf '%s' "$current" | jq -r '.conversationThreadId // empty')" = "$thread" ]; then
+        [ "$execute" -eq 0 ] || _m365_planner_comment_journal "$journal" verified "$thread" "$hash" || return 1
+        _say "No change: matching comment already exists in the task thread."
+        return 0
+    fi
+    _say "Planner comment plan: $alias | task_id: $task_id | $(printf '%s' "$current" | jq -r '.title')"
+    _say "Group conversation: $group | thread: ${thread:-new, to be linked to this task}"
+    _say "This shared group post may trigger Microsoft 365 group notifications. Exact text:"
+    printf '%s\n' "$text"
+    if [ "$execute" -ne 1 ]; then _say "DRY RUN: no comment or task link was written."; return 0; fi
+    _m365_planner_require_write "$alias" || return 1
+    if [ -z "$thread" ]; then
+        _m365_planner_comment_journal "$journal" pending-create "" "$hash" || return 1
+        _m365_planner_audit "$alias" comment-create-attempt "$task_id" "$(printf '%s' "$current" | jq -r '.title')" false "$(jq -nc --arg h "$hash" '{text_sha256:$h}')"
+        created="$(_m365_write POST "$alias" "$(_m365_planner_url "$alias" "groups/$(_m365_uri_encode "$group")/threads")" "$(jq -nc --arg topic "Planner task [$task_id]" --arg t "$text" '{topic:$topic,posts:[{body:{contentType:"text",content:$t}}]}')")" || { _err "Thread creation failed or is uncertain: $journal. Inspect before retrying; no automatic retry."; return 1; }
+        thread="$(printf '%s' "$created" | jq -r '.id // empty')"
+        [ -n "$thread" ] || { _err "Thread creation returned no ID; outcome uncertain: $journal"; return 1; }
+        _m365_planner_comment_journal "$journal" pending-link "$thread" "$hash" || return 1
+    elif [ "$(printf '%s' "$matches" | jq length)" -eq 0 ]; then
+        _m365_planner_comment_journal "$journal" pending-reply "$thread" "$hash" || return 1
+        _m365_planner_audit "$alias" comment-reply-attempt "$task_id" "$(printf '%s' "$current" | jq -r '.title')" false "$(jq -nc --arg h "$hash" --arg t "$thread" '{text_sha256:$h,thread:$t}')"
+        _m365_write POST "$alias" "$(_m365_planner_url "$alias" "groups/$(_m365_uri_encode "$group")/threads/$(_m365_uri_encode "$thread")/reply")" "$(jq -nc --arg t "$text" '{post:{body:{contentType:"text",content:$t}}}')" >/dev/null || { _err "Reply failed or is uncertain: $journal. Read comments before retrying; no automatic retry."; return 1; }
+    fi
+    posts="$(_m365_planner_comment_posts "$alias" "$group" "$thread")" || { _err "Comment sent but readback failed: $journal"; return 1; }
+    matches="$(printf '%s' "$posts" | "$LIFEOS_PY" "${LIB_DIR}/m365-planner-comments.py" match "$file")" || return 1
+    [ "$(printf '%s' "$matches" | jq length)" -gt 0 ] || { _err "Comment not yet verified in thread; inspect before retrying: $journal"; return 1; }
+    patch="$(jq -nc --arg t "$thread" '{conversationThreadId:$t}')"
+    if [ "$(printf '%s' "$current" | jq -r '.conversationThreadId // empty')" != "$thread" ]; then
+        _m365_http PATCH "$alias" "$(_m365_planner_url "$alias" "planner/tasks/$(_m365_uri_encode "$task_id")")" "$patch" -H "If-Match: $(printf '%s' "$current" | jq -r '."@odata.etag"')" >/dev/null || { _err "Comment exists but linking failed or is uncertain; preserve thread $thread and inspect: $journal"; return 1; }
+    fi
+    after="$(_m365_get "$alias" "$(_m365_planner_url "$alias" "planner/tasks/$(_m365_uri_encode "$task_id")")")" || return 1
+    ok="$(jq -n --argjson a "$after" --argjson b "$current" --arg t "$thread" '$a.conversationThreadId == $t and (($a | del(."@odata.etag",.conversationThreadId)) == ($b | del(."@odata.etag",.conversationThreadId)))')" || return 1
+    _m365_planner_audit "$alias" comment "$task_id" "$(printf '%s' "$current" | jq -r '.title')" "$ok" "$(jq -nc --arg h "$hash" --arg t "$thread" --argjson p "$matches" '{text_sha256:$h,thread:$t,post_ids:$p}')"
+    [ "$ok" = true ] || { _err "Comment exists but task link or unrelated fields failed verification: $journal"; return 1; }
+    _m365_planner_comment_journal "$journal" verified "$thread" "$hash" || return 1
+    _say "Comment and task link confirmed by readback | task_id: $task_id | post_ids: $matches"
+)
+
 _m365_planner_dispatch() {
     case "${1:-}" in
         plans) shift; _m365_planner_plans "$@" ;;
+        comments|comment) _m365_planner_comments "$@" ;;
+        labels) shift; _m365_planner_labels "$@" ;;
+        label|unlabel) _m365_planner_label "$@" ;;
         buckets) shift; _m365_planner_buckets "$@" ;;
         tasks) shift; _m365_planner_tasks "$@" ;;
         task) shift; _m365_planner_task "$@" ;;
