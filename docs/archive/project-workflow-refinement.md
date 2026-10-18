@@ -105,7 +105,7 @@ The user authorized closure after qualifying the fresh-thread exercise: the prom
 
 The reason to close is that the agreed skill changes, comparison and rollout of existing copies, archive backfill, and bounded maintenance are complete. Structural checks and manual scenario review support the consistency of the written guidance. Actual execution, checkpoint choices under concurrent work, and retrieval of potentially conflicting historical guidance remain untested by this exercise. The user chose learning through ordinary use and logging concrete problems in Kaizen rather than extending this spike into an evaluation program.
 
-Current rules live in the linked maintained guidance. Cross-project skill observations can be captured through [log skills feedback](../../skills/log-skills-feedback/SKILL.md) in the [reusable feedback log](../../agents/skills-feedback-log.md), with project-private evidence kept in its appropriate local context. Comparing these feedback mechanisms is follow-on discussion, not an adopted redesign or unfinished implementation requirement of this spike. No successor spike is opened by closure.
+Current rules live in the linked maintained guidance. Cross-project skill observations can be captured through the [Kaizen workflow](../../skills/kaizen/SKILL.md) in designated private stores. Comparing these feedback mechanisms is follow-on discussion, not an adopted redesign or unfinished implementation requirement of this spike. No successor spike is opened by closure.
 
 Continues from: docs/archive/commit-work.md
 Continues from: docs/archive/skill-authority.md
