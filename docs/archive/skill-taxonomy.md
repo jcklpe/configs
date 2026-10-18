@@ -23,7 +23,6 @@ The practical problem is cross-contamination. `misc.md` should not become a futu
 - Rename the global `track-deferred-decisions` seed skill to `pin-issue`.
 - Rename the configs register from `docs/deferred-decisions.md` to `docs/pinned-issues.md`.
 - Add global seed skills for `log-future-idea`, `log-skills-feedback`, `write-skills`, and `update-local-skills`.
-- Add `agents/skills-feedback-log.md` as the cross-project feedback register.
 - Update related global skills so they coordinate the taxonomy.
 - Vendor or update the local skill copies in LifeOS and `my-website` once the global seeds are coherent.
 
@@ -41,7 +40,7 @@ Use the first matching category:
 - If it is conceptual someday material, use `docs/scratch/future-ideas.md`.
 - If it is raw observed friction, QA notes, bugs, nits, or issue intake, use `docs/scratch/misc.md`.
 - If it is active scoped work, use `docs/active-spikes/`.
-- If it is reusable skill/process feedback that crosses project boundaries, use `agents/skills-feedback-log.md`.
+- Reusable skill/process feedback now belongs in the designated private Kaizen store; see `skills/kaizen/SKILL.md`.
 
 ## Local Vendoring
 Local projects should carry the skills that shape their normal workflow. Updating those copies needs to preserve local authority: read global and local versions, identify upstream changes and local divergence, and avoid silent overwrites.
@@ -53,7 +52,7 @@ The configs seed layer now carries the taxonomy directly:
 - `log-future-idea` owns `docs/scratch/future-ideas.md`.
 - `triage-project-misc` routes raw issue intake without leaking future concepts or pins into misc.
 - `write-skills` captures light-touch skill authoring guidance.
-- `log-skills-feedback` writes cross-project skill observations to `agents/skills-feedback-log.md`.
+- `log-skills-feedback` now redirects to the private Kaizen workflow.
 - `update-local-skills` owns refreshes of existing repo-local skill copies.
 
 The LifeOS vault has been migrated to the same model, including individual decision records under `docs/decisions/`.
