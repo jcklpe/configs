@@ -13,7 +13,6 @@ None currently.
 ## Done
 - [x] Promoted the skill-feedback loop note from `docs/scratch/misc.md` into this spike. The original note asked for a lightweight feedback loop short of strict TDD: log concrete skill friction, do not auto-apply, and triage periodically.
 - [x] **Create/update global skills: `pin-issue`, `log-future-idea`, `log-skills-feedback`, `write-skills`, `update-local-skills`.** Done. `track-deferred-decisions` was renamed/split to `pin-issue`; `setup-local-skills` now points update work to `update-local-skills`.
-- [x] **Add `agents/skills-feedback-log.md`.** Done. The log starts with the taxonomy/feedback-loop issue as the first open feedback item.
 - [x] **Update coordinating global skills: `triage-project-misc`, `run-project-spike`, `setup-project-docs`, `setup-local-skills`.** Done. They now distinguish pinned issues, future ideas, misc intake, decisions, and active spikes.
 - [x] **Rename configs register from `docs/deferred-decisions.md` to `docs/pinned-issues.md` and update references.** Done. Current configs links pass; historical archive references were left as historical text.
 - [x] **Update symlink installer for renamed/new global skills and the feedback log.** Done, and refreshed current `~/.codex` / `~/.claude` symlinks for the new skill names.

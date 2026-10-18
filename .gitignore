@@ -192,3 +192,6 @@ secrets/*
 # lifeos-tools --qa output: real synced data, never committed
 lifeos-tools/qa/
 **/qa/
+
+# Retired public incident log; private records belong outside this repository.
+/agents/skills-feedback-log.md
