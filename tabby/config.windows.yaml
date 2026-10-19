@@ -57,7 +57,7 @@ terminal:
       - '#66D7D1'
       - '#F2EFEA'
   bell: audible
-  profile: local:wsl
+  profile: local:custom:wsl-home
 window:
   quake: false
 version: 8
@@ -166,6 +166,16 @@ hotkeys:
     - Ctrl-Shift-P
 language: en-US
 enableWelcomeTab: false
+profiles:
+  - type: local
+    name: WSL / Home
+    id: local:custom:wsl-home
+    options:
+      command: wsl.exe
+      args:
+        - --cd
+        - '~'
+      shellType: unix
 profileDefaults:
   ssh:
     disableDynamicTitle: true
