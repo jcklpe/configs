@@ -28,6 +28,15 @@ All install scripts are **idempotent** - safe to run multiple times.
 - **Editor:** [VS Code](https://code.visualstudio.com/), [Micro](https://micro-editor.github.io/)
 - **Agent skills:** reusable `SKILL.md` workflows live in `skills/` and are symlinked into Codex by `symlinks.sh`
 
+## Windows Tabby
+Windows Tabby reads `%APPDATA%\tabby\config.yaml`, separately from the Linux config inside WSL. Close Tabby, then run this in an administrator PowerShell from the Windows configs checkout:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install-script\windows-tabby.ps1 -ReplaceExisting
+```
+
+The script backs up an existing config before linking it to `tabby/config.windows.yaml`, installs the repo's regular/bold FiraCode Nerd Font Mono for the Windows user, and is safe to rerun. Windows Developer Mode also permits creating the symlink without elevation. The Windows config keeps the Linux theme and shortcuts but uses Tabby's built-in default WSL profile instead of a Linux executable path. WSL's default distribution should already be working. Run this focused script rather than the full Linux symlink installer to configure the native Windows app.
+
 ## Project Documentation
 Current project guidance lives in [docs/policies/](docs/policies/). Revise policies directly; Git and archived spike notes retain their history. [TODO.md](TODO.md) indexes active work, and [AGENTS.md](AGENTS.md) defines the documentation workflow.
 
