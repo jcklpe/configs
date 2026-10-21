@@ -147,6 +147,10 @@ lifeos m365 files resolve-link ut 'https://example.sharepoint.com/:w:/r/sites/te
 lifeos m365 files meta ut ITEM_ID --drive DRIVE_ID
 lifeos m365 files download ut ITEM_ID --drive DRIVE_ID --out /tmp/document.docx
 lifeos slack whoami example
+lifeos slack conversations example --types im,mpim --user U0000000000
+lifeos slack history example --channel D0000000000 --limit 50
+lifeos slack search example 'from:<@U0000000000>' --limit 20
+lifeos slack permalink example --channel D0000000000 --ts 1700000000.000001
 lifeos slack post example --channel C0000000000 --text "Hello"
 lifeos slack lists items example F0000000000 --limit 20
 lifeos slack lists comments example F0000000000 Rec0000000000
@@ -163,6 +167,8 @@ lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
 lifeos sync   # Trello, Calendar, GitHub, and Slack Lists; unconfigured sources are skipped with a warning
 ```
+
+`conversations` discovers existing channels, DMs and group DMs without opening or joining them. `history` reads one bounded page, reports a next cursor/end marker, and supports timestamp bounds; use `thread` for replies. `search` returns one newest-first result page and requires the existing `search:read` scope. Missing scopes are reported without modifying OAuth grants. See the [Slack skill](skills/lifeos-slack/SKILL.md#read-only-conversation-lookup) for pagination and visibility limits.
 
 List discussion commands discover the item's exact root through history using the List entry's `discussion_channel_id` in ignored account config, or an explicit `--channel ID`. They support a first user comment when Slack exposes a zero-reply root; no existing comment URL is needed. A real `--url` remains an optional shortcut. A new List still needs its verified discussion conversation mapping: the checked APIs/current scopes do not supply that bootstrap lookup. Sends require specific approval and `--execute`; inspect `PARTIAL` or uncertain outcomes before retrying. URL-free and empty-root reads are live-verified; sends await approved live QA. See the [Slack skill](skills/lifeos-slack/SKILL.md#list-item-discussions) for API evidence and boundaries.
 

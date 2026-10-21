@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bounded Slack client that acts as the user's own account (user OAuth token).
 
-Reads: accounts, whoami, channels, users, thread, lists schema / items / get / comments, and sync (a Markdown snapshot of configured Lists).
+Reads: accounts, whoami, channels, conversations (including existing DMs), users, history, search, permalink, thread, lists schema / items / get / comments, and sync (a Markdown snapshot of configured Lists).
 Writes (dry-run unless --execute): post (optionally in a thread), dm, lists create / update / comment.
 Every write checks that the token belongs to the configured team and user, then reads back
 what it wrote. There are no delete commands.
@@ -594,6 +594,106 @@ def cmd_channels(args):
     return 0
 
 
+def positive_limit(value):
+    value = int(value)
+    if not 1 <= value <= 100:
+        raise argparse.ArgumentTypeError("must be between 1 and 100")
+    return value
+
+
+def conversation_types(value):
+    types = value.split(",")
+    if not types or any(t not in ("public_channel", "private_channel", "im", "mpim") for t in types):
+        raise argparse.ArgumentTypeError("types must be comma-separated public_channel,private_channel,im,mpim")
+    return value
+
+
+def cmd_conversations(args):
+    acct = account(args.alias)
+    verify_identity(acct)
+    conversations = paged(acct, "conversations.list", {"types": args.types, "exclude_archived": "false" if args.archived else "true", "limit": 200}, "channels")
+    selected = []
+    for ch in conversations:
+        if args.user:
+            if ch.get("is_im"):
+                if ch.get("user") != args.user:
+                    continue
+            elif ch.get("is_mpim"):
+                members = paged(acct, "conversations.members", {"channel": ch["id"], "limit": 200}, "members")
+                if args.user not in members:
+                    continue
+            else:
+                continue
+        if ch.get("is_im"):
+            label = "DM with " + ch.get("user", "?")
+        elif ch.get("is_mpim"):
+            label = "group DM " + ch.get("name", "")
+        else:
+            label = "#" + ch.get("name", "?")
+        selected.append(f"- {label} | id: {ch.get('id')} | archived: {bool(ch.get('is_archived'))}")
+    print("Existing visible conversations; listing never opens or joins a conversation.")
+    print("\n".join(selected) if selected else "No matching visible conversations.")
+    return 0
+
+
+def print_history_message(message):
+    suffix = f" | thread: {message['thread_ts']}" if message.get("thread_ts") else ""
+    if message.get("reply_count"):
+        suffix += f" | replies: {message['reply_count']}"
+    print(f"- [{message.get('ts')}] {message.get('user') or message.get('bot_id') or '?'}{suffix}: {message.get('text', '')}")
+
+
+def cmd_history(args):
+    acct = account(args.alias)
+    verify_identity(acct)
+    page = call(acct, "conversations.history", {"channel": args.channel, "limit": args.limit, "cursor": args.cursor, "oldest": args.oldest, "latest": args.latest, "inclusive": "true" if args.inclusive else "false"})
+    cursor = ((page.get("response_metadata") or {}).get("next_cursor") or "").strip()
+    if page.get("has_more") and not cursor:
+        raise SlackError("conversations.history: more results reported without a cursor; narrow the time range")
+    print(f"History in {args.channel}, newest first; one page, up to {args.limit} messages. Thread replies require `thread`.")
+    for message in page.get("messages") or []:
+        print_history_message(message)
+    print(f"Next cursor: {cursor}" if cursor else "End of accessible history in the requested time range.")
+    return 0
+
+
+def cmd_search(args):
+    if not args.query.strip():
+        raise SlackError("search needs a nonempty query")
+    acct = account(args.alias)
+    verify_identity(acct)
+    result = call(acct, "search.messages", {"query": args.query, "count": args.limit, "page": args.page, "sort": "timestamp", "sort_dir": "desc", "highlight": "false"}).get("messages") or {}
+    paging = result.get("paging") or {}
+    pagination = result.get("pagination") or {}
+    total = result.get("total", paging.get("total", pagination.get("total_count", "unknown")))
+    pages = paging.get("pages", pagination.get("page_count", "unknown"))
+    print(f"Search results newest first: page {args.page} of {pages}; total {total}. Search visibility and Slack search filters apply.")
+    for message in result.get("matches") or []:
+        channel = message.get("channel") or {}
+        print(f"Conversation: {channel.get('name', '?')} ({channel.get('id', '?')})")
+        print_history_message(message)
+        if message.get("permalink"):
+            print(f"Permalink: {message['permalink']}")
+    return 0
+
+
+def search_page(value):
+    value = int(value)
+    if not 1 <= value <= 100:
+        raise argparse.ArgumentTypeError("page must be between 1 and 100")
+    return value
+
+
+def cmd_permalink(args):
+    acct = account(args.alias)
+    verify_identity(acct)
+    link = call(acct, "chat.getPermalink", {"channel": args.channel, "message_ts": args.ts}).get("permalink")
+    if not link:
+        raise SlackError("chat.getPermalink returned no permalink")
+    print(link)
+    return 0
+
+
 def cmd_users(args):
     acct = account(args.alias)
     users = paged(acct, "users.list", {"limit": 200}, "members")
@@ -848,6 +948,14 @@ def build_parser():
     sub.add_parser("accounts").set_defaults(func=cmd_accounts)
     p = sub.add_parser("whoami"); p.add_argument("alias"); p.set_defaults(func=cmd_whoami)
     p = sub.add_parser("channels"); p.add_argument("alias"); p.add_argument("query", nargs="?"); p.set_defaults(func=cmd_channels)
+    p = sub.add_parser("conversations", help="list existing channels, DMs and group DMs without opening or joining")
+    p.add_argument("alias"); p.add_argument("--types", type=conversation_types, default="public_channel,private_channel,im,mpim"); p.add_argument("--user", help="filter existing DMs/group DMs by verified user ID"); p.add_argument("--archived", action="store_true"); p.set_defaults(func=cmd_conversations)
+    p = sub.add_parser("history", help="read one page of conversation history; use thread for replies")
+    p.add_argument("alias"); p.add_argument("--channel", required=True); p.add_argument("--limit", type=positive_limit, default=50); p.add_argument("--cursor"); p.add_argument("--oldest"); p.add_argument("--latest"); p.add_argument("--inclusive", action="store_true"); p.set_defaults(func=cmd_history)
+    p = sub.add_parser("search", help="read one page of message search; requires existing search:read scope")
+    p.add_argument("alias"); p.add_argument("query"); p.add_argument("--limit", type=positive_limit, default=50); p.add_argument("--page", type=search_page, default=1); p.set_defaults(func=cmd_search)
+    p = sub.add_parser("permalink", help="get Slack's permalink for an existing message")
+    p.add_argument("alias"); p.add_argument("--channel", required=True); p.add_argument("--ts", required=True); p.set_defaults(func=cmd_permalink)
     p = sub.add_parser("users"); p.add_argument("alias"); p.add_argument("query", nargs="?"); p.set_defaults(func=cmd_users)
     p = sub.add_parser("thread"); p.add_argument("alias"); p.add_argument("url", nargs="?"); p.add_argument("--channel"); p.add_argument("--ts"); p.set_defaults(func=cmd_thread)
     for name in ("post", "reply"):
