@@ -8,7 +8,7 @@ description: "Act in Slack as the user's own account through the lifeos CLI: ver
 If the current repo already has `lifeos-tools/skills/lifeos-slack/SKILL.md`, read and follow the repo-local skill first. Treat this as fallback seed material.
 
 ## What It Is
-`lifeos slack` uses a **user OAuth token**, so messages appear under the user's own name and avatar, not a bot. It is bounded: no delete commands, no message or channel syncing, no search. The one sync is a read-only snapshot of configured Slack Lists.
+`lifeos slack` uses a **user OAuth token**, so messages appear under the user's own name and avatar, not a bot. It is bounded: no delete commands, no message or channel syncing. Read-only conversation discovery, history and search are bounded to existing account access; none opens a DM or joins a channel. The one sync is a read-only snapshot of configured Slack Lists.
 
 ## Setup (once per workspace)
 1. At https://api.slack.com/apps, choose **Create New App → From an app manifest**, pick the workspace, and paste:
@@ -51,6 +51,10 @@ Slack Lists methods need a paid Slack plan. Scope names and behavior are Slack's
 lifeos slack accounts
 lifeos slack whoami ALIAS
 lifeos slack channels ALIAS [QUERY]            # name -> ID; shows whether the user is a member
+lifeos slack conversations ALIAS --types im,mpim --user U0000000000  # existing DMs/group DMs only
+lifeos slack history ALIAS --channel D0000000000 --limit 50        # one page, newest first
+lifeos slack search ALIAS 'from:<@U0000000000> after:2026-01-01' --limit 20
+lifeos slack permalink ALIAS --channel D0000000000 --ts 1700000000.000001
 lifeos slack users ALIAS [QUERY]               # name -> U... ID
 lifeos slack thread ALIAS MESSAGE_URL          # or --channel ID --ts TS
 lifeos slack post ALIAS --channel ID --text "..." [--thread-ts TS] [--execute]
@@ -67,6 +71,17 @@ lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--field-f
 ```
 
 `--text-file FILE` may replace `--text` anywhere. List IDs (`F...`) and item IDs (`Rec...`) appear in List item URLs.
+
+## Read-only Conversation Lookup
+`conversations` defaults to `public_channel,private_channel,im,mpim`; use `--types im,mpim` to narrow discovery and `--user U...` to filter existing direct/group conversations. The filter checks group membership through `conversations.members`; it does not open a DM. `--archived` includes archived conversations. Listing pages to completion up to the existing 20-page cap and fails if incomplete.
+
+`history` returns one page (default 50, maximum 100), newest first, and prints an explicit next cursor or end marker. Continue with `--cursor`; narrow with `--oldest TS`, `--latest TS`, and optional `--inclusive`. History lists roots/events; retrieve reply bodies with `thread`. Retention and the token's conversation visibility still apply. `permalink` obtains Slack's actual message URL by known channel/timestamp.
+
+`search` returns one timestamp-descending page (`--limit 1..100`, `--page 1..100`) with result totals and API permalinks. Search results are subject to Slack UI filters and search indexing, so they are leads to verify with history/thread reads. It requires existing `search:read`; conversation listing/history require the appropriate `*:read`/`*:history` scopes. A missing scope is a blocker to report, not permission to expand OAuth grants, install credentials, or fall back to a browser. None of these commands changes scopes or external state.
+
+Live read-only verification on 2026-10-21 confirmed existing DM/group-DM discovery, group membership filtering, DM history, thread replies and API message permalinks with the configured Open Austin token. `search.messages` returned `missing_scope` requiring `search:read`; no scopes or credentials were changed.
+
+API references: [conversations.list](https://docs.slack.dev/reference/methods/conversations.list/), [conversations.history](https://docs.slack.dev/reference/methods/conversations.history/), [search.messages](https://docs.slack.dev/reference/methods/search.messages/).
 
 ## List Item Discussions
 `lists comments` reads an item's discussion; `lists comment` adds a comment, including the first user comment when Slack already exposes the item's root, dry-run by default. No per-item comment URL is required when the List's discussion conversation is configured:

@@ -162,6 +162,10 @@ Usage:
   ./lifeos.sh slack accounts
   ./lifeos.sh slack whoami ALIAS
   ./lifeos.sh slack channels ALIAS [QUERY]
+  ./lifeos.sh slack conversations ALIAS [--types public_channel,private_channel,im,mpim] [--user USER_ID] [--archived]
+  ./lifeos.sh slack history ALIAS --channel ID [--limit 1..100] [--cursor CURSOR] [--oldest TS] [--latest TS] [--inclusive]
+  ./lifeos.sh slack search ALIAS QUERY [--limit 1..100] [--page 1..100]
+  ./lifeos.sh slack permalink ALIAS --channel ID --ts TS
   ./lifeos.sh slack users ALIAS [QUERY]
   ./lifeos.sh slack thread ALIAS (MESSAGE_URL | --channel ID --ts TS)
   ./lifeos.sh slack post ALIAS (--channel ID [--thread-ts TS] | --url MESSAGE_URL) (--text TEXT | --text-file FILE) [--execute]   # as the user; dry-run by default
