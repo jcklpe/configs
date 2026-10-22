@@ -44,7 +44,7 @@ Folders named in each account's `drive.index_exclude` are listed by name in a "D
 
 An empty exclusion list is not the same as a considered one. If a new sensitive folder appears, add it to `index_exclude` rather than relying on an agent to notice.
 
-**The reason not to bulk-copy Drive contents into `sources/` is that `sources/` is generated and gets overwritten — not sensitivity.** Medical, legal, financial, and tax material is squarely within what the vault is for; LifeOS policy [0012](../../../../My%20Drive/LifeOS/docs/policies/0012-sensitivity-boundary-lifeos-vs-trello.md) sets the actual threat model as identity theft and account compromise, not general privacy, and explicitly places sensitive personal context inside LifeOS. Extract what is durably useful into the relevant focus note, which is a real destination that survives a sync.
+**The reason not to bulk-copy Drive contents into `sources/` is that `sources/` is generated and gets overwritten — not sensitivity.** Medical, legal, financial, and tax material is squarely within what the vault is for; LifeOS policy [0012](../../../../My%20Drive/LifeOS/_meta/policies/0012-sensitivity-boundary-lifeos-vs-trello.md) sets the actual threat model as identity theft and account compromise, not general privacy, and explicitly places sensitive personal context inside LifeOS. Extract what is durably useful into the relevant focus note, which is a real destination that survives a sync.
 
 **The genuine exclusions are narrow:** passwords and PINs live in Bitwarden and nowhere else, and credentials, tokens, OAuth files, and API config do not belong in the vault at all. Those are the things that could be used to authenticate as Aslan. Everything else is a routing question, not a safety one.
 
