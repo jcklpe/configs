@@ -8,6 +8,8 @@ description: "Run and bucket project work in focused spike docs with a conceptua
 If the current repo already has `skills/run-project-spike/SKILL.md`, or a `how-to-spike.md` document, read and follow the repo-local process first. Treat this global skill as fallback seed material. Resolve the work's owning context, active-spike location, scratch location, archive location, and index from local instructions or existing conventions before acting. Use those resolved destinations throughout this procedure. The `docs/...` paths and root `TODO.md` below illustrate a fallback layout, not mandatory locations or permission to create a scaffold. Preserve existing placement unless a migration is explicitly authorized.
 
 ## Purpose
+Keep a project's spike records with its actual working project, following local documentation conventions, rather than creating a parallel set in a separate context store. A project may contain many spikes; a product may persist across them. Closing a spike or project does not automatically close its broader subject or move a stable product. Use context indexes to retain useful active/archive project pointers.
+
 A spike is not just a checklist. It is a temporary collaboration space for the user and agents to build taste, vocabulary, decisions, and implementation history around a specific theme of work.
 
 Use a spike for substantial or evolving project work that needs shared reasoning, an implementation plan, or continuity across checkpoints. Related small work can share a miscellaneous spike bucket such as `misc-302` when that context is useful.
@@ -87,6 +89,9 @@ Use the conceptual doc for:
 - continuation links to predecessor or successor spikes
 
 Avoid turning the conceptual doc into a running changelog. When implementation details become durable rules, fold them into longer-lived docs such as `README.md`, `AGENTS.md`, a current policy, a runbook, or another active reference doc.
+
+## Optional External References
+When local AGENTS declares an ignored paths-only configuration for external context or reference assets, parse it as data and resolve only the locations needed for this work. References may live outside the repository; do not copy private sources into the public tree merely for discovery. Keep actual private paths in local configuration and committed examples generic. Never execute/source the configuration or load unrelated credential-bearing environment files. Report missing configuration or inaccessible required context and continue independent work only. Gitignore is not access control and does not untrack existing files or erase history.
 
 ## Selecting Material for the Repository
 Before writing spike notes, consider the repository's intended audience. Preserve project-relevant reasoning, qualifications, corrections, and useful examples without copying unnecessary or unauthorized private conversation, source packages, personal paths, or surrounding workspace details. Permission to preserve development reasoning is not permission to publish private source material. Keep user decisions distinguishable from agent suggestions; a saved proposal is not evidence of human agreement.
