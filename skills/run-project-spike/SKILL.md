@@ -5,7 +5,7 @@ description: "Run and bucket project work in focused spike docs with a conceptua
 
 # Run Project Spike
 ## Local Precedence
-If the current repo already has `skills/run-project-spike/SKILL.md`, or a `how-to-spike.md` document, read and follow the repo-local process first. Treat this global skill as fallback seed material.
+If the current repo already has `skills/run-project-spike/SKILL.md`, or a `how-to-spike.md` document, read and follow the repo-local process first. Treat this global skill as fallback seed material. Resolve the work's owning context, active-spike location, scratch location, archive location, and index from local instructions or existing conventions before acting. Use those resolved destinations throughout this procedure. The `docs/...` paths and root `TODO.md` below illustrate a fallback layout, not mandatory locations or permission to create a scaffold. Preserve existing placement unless a migration is explicitly authorized.
 
 ## Purpose
 A spike is not just a checklist. It is a temporary collaboration space for the user and agents to build taste, vocabulary, decisions, and implementation history around a specific theme of work.
@@ -31,9 +31,9 @@ docs/
   pinned-issues.md
 ```
 
-Do not add a `README.md` to `docs/` or any subfolder of it. `TODO.md` is the index, and a per-folder README will only restate the authority rules that already live in `AGENTS.md`.
+In the fallback layout, use `TODO.md` as the index rather than adding redundant per-folder READMEs. Follow local indexing and existing overview conventions when they differ.
 
-The setup skill owns creating this structure. This skill uses the structure once it exists: active conceptual and to-do docs go in `docs/active-spikes/`, rough pre-spike material goes in `docs/scratch/`, and finished or superseded spike history goes in `docs/archive/`. Durable long-term docs stay in `docs/` or another repo-specific location instead of being mixed with active spike work.
+The setup skill owns creating this structure. This skill uses the resolved structure once it exists. In the fallback layout, active conceptual and to-do docs go in `docs/active-spikes/`, rough pre-spike material goes in `docs/scratch/`, and finished or superseded spike history goes in `docs/archive/`. Durable long-term docs stay in `docs/` or another repo-specific location instead of being mixed with active spike work.
 
 If a repo already uses flat active docs directly under `docs/`, preserve that convention unless the user is intentionally migrating the repo to `docs/active-spikes/`.
 
@@ -58,7 +58,7 @@ Keep the marker in each file so its authority remains visible when search retrie
 Keep topical `tags` separate. If the repository uses `reviewed: YYYY-MM-DD`, advance it only after checking the document's claims or recorded state, not merely touching the file. Do not relabel the entire archive or introduce a broader attention taxonomy as part of an ordinary spike.
 
 ## TODO.md Role
-Use `TODO.md` as an index and coordination map, not as the place for fiddly implementation detail.
+Use the resolved index (`TODO.md` in the fallback layout) as a coordination map, not as the place for fiddly implementation detail. Reuse a local index or owning note rather than requiring a new index for each work context.
 
 It should point to active spike docs, note waiting-for-human-QA items, list recently completed or archived spikes, and hold lightweight later ideas. Detailed work items, command logs, and state transitions belong in the spike's `.todo.md`.
 
@@ -173,11 +173,11 @@ Use `Ready for Human QA` for things the agent cannot fully verify from the termi
 Be specific. A good QA item names the surface, route, interaction, or visual state the user should inspect.
 
 ## Scratch Promotion
-Use `docs/scratch/` for rough notes, copied references, draft outlines, and exploratory material that is not yet a spike or durable rule.
+Use the resolved scratch location (`docs/scratch/` in the fallback layout) for rough notes, copied references, draft outlines, and exploratory material that is not yet a spike or durable rule. Add a scratch folder only when useful.
 
 Scratch docs are not authoritative. Promote useful material into an active spike, durable doc, or runbook before relying on it.
 
-Promotion means move, not copy. When promoting a scratch doc into `docs/active-spikes/`, move its useful content into the active conceptual and to-do docs, then delete or clearly retire the old scratch source. Do not leave an outdated duplicate in `docs/scratch/`.
+Promotion means move, not copy. When promoting a scratch doc into the resolved active-spike location, move its useful content into the active conceptual and to-do docs, then delete or clearly retire the old scratch source. Do not leave an outdated duplicate in `docs/scratch/`.
 
 If a scratch doc contains multiple themes, split it deliberately: move each useful piece into the right destination, then remove the routed source material. Preserve nuance and concrete user phrasing while moving it.
 
@@ -199,12 +199,12 @@ Policies are part of the project's durable docs structure, not the spike process
 Do not create policies for every local implementation choice. Keep ordinary reasoning in the conceptual spike doc unless it needs to become long-lived project authority.
 
 ## Starting A Spike
-1. Inspect `AGENTS.md`, `README.md`, `TODO.md`, `docs/active-spikes/`, `docs/scratch/`, `docs/archive/`, durable docs, and repo-local skills.
+1. Inspect local instructions, durable docs, existing work locations/indexes, and repo-local skills. Resolve the owning context and its active, scratch, archive, and index destinations before selecting paths.
 2. Decide whether the work belongs in an existing active spike, a new named spike, or a miscellaneous spike bucket. For a self-contained patch that needs no spike context, use the patch route instead and stop this setup sequence.
 3. Choose a short topic slug. For mixed work, use the repo's numbered misc convention.
-4. Create or update `docs/active-spikes/<topic>.md` for conceptual context, with `attention: live` or the repository's equivalent.
-5. Create or update `docs/active-spikes/<topic>.todo.md` for implementation state, with the same attention marker.
-6. Add or update the spike entry in `TODO.md` as an index pointer.
+4. Create or update `<topic>.md` in the resolved active-spike location for conceptual context, with `attention: live` or the repository's equivalent.
+5. Create or update `<topic>.todo.md` beside it for implementation state, with the same attention marker.
+6. Add or update the spike entry in the resolved index or owning note.
 7. Capture known constraints, non-goals, validation expectations, and open questions before implementation if they matter.
 
 ## During A Spike
@@ -240,7 +240,7 @@ When a spike appears finished or superseded, prepare closure while keeping both 
 3. Add `Continues in:` / `Continues from:` links if related work continues in another spike, and identify the maintained guidance that now owns the subject. If no successor or maintained guidance resulted, say so rather than inventing one.
 4. Prepare the closing summary and, where agent commits are permitted, its proposed archival commit message. Establish that the user authorizes closure itself as well as the message. One clear approval can cover both; use existing explicit authorization rather than asking again. Approval of wording alone is not permission to close. Until closure is authorized, keep the pair in its active location with its active attention marker and index entry.
 5. Once closure is authorized, leave spike-local detail in the pair, set both to `attention: historical` or the repository's equivalent, and add a plain-language historical notice, actual closure date, stable spike slug, and the identified guidance or successor pointers.
-6. Move both spike docs from `docs/active-spikes/` to `docs/archive/`, repair inbound and continuation links, and update `TODO.md`. Retain the pair by default, even when all useful current guidance has been integrated elsewhere.
+6. Move both spike docs from the resolved active location to the matching archive, repair inbound and continuation links, and update the resolved index. The fallback layout uses `docs/active-spikes/` → `docs/archive/`. Retain the pair by default, even when all useful current guidance has been integrated elsewhere.
 7. Where agent commits are permitted and the closing message has been approved, record the archival through `commit-work` using that summary. Normally this is one archival commit; preserve a repository's explicit alternative cadence. Do not request the same approval twice.
 
 Archived spike docs are historical context. They may be out of date. Use maintained docs or the current implementation to establish what applies now, even when the archive appears to agree. Keep their historical body as it stood at closure; later navigation repairs are allowed, and any necessary factual correction should be marked as a later correction rather than silently rewriting the record.
