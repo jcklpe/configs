@@ -146,6 +146,10 @@ lifeos m365 files search ut "Work Plan"
 lifeos m365 files resolve-link ut 'https://example.sharepoint.com/:w:/r/sites/team/document'
 lifeos m365 files meta ut ITEM_ID --drive DRIVE_ID
 lifeos m365 files download ut ITEM_ID --drive DRIVE_ID --out /tmp/document.docx
+lifeos m365 excel sheets ALIAS ITEM_ID --drive DRIVE_ID --json
+lifeos m365 excel read-range ALIAS ITEM_ID --drive DRIVE_ID --sheet Inventory --range A1:D20 --json
+lifeos m365 excel write-range ALIAS ITEM_ID --drive DRIVE_ID --sheet Inventory --range A1:B2 --file patch.json   # dry run; prints preview_sha256
+lifeos m365 excel help
 lifeos slack whoami example
 lifeos slack conversations example --types im,mpim --user U0000000000
 lifeos slack history example --channel D0000000000 --limit 50
@@ -187,7 +191,7 @@ lifeos m365 auth ut
 lifeos m365 profile ut
 ```
 
-The default `graph-powershell` provider asks for delegated `User.Read`, `Mail.Read`, `Calendars.ReadWrite`, and `Contacts.ReadWrite`, plus `Files.ReadWrite` when the alias enables files. It stores its authenticated context in PowerShell's protected CurrentUser cache and never exposes a raw token through the LifeOS CLI. The auth result reports the requested and effective scope names so tenant consent can be verified without exposing the cache. In some managed tenants, Microsoft's shared client may already have a cumulative effective scope set broader than the scopes LifeOS requests. LifeOS does not expose a generic Graph request command: its mail surface remains read-only, calendar and contact writes remain dry-run-gated, and no delete commands exist.
+The default `graph-powershell` provider asks for delegated `User.Read`, `Mail.Read` (or `Mail.ReadWrite` when mail writes are enabled), `Calendars.ReadWrite`, and `Contacts.ReadWrite`, plus `Files.ReadWrite.All` when the alias enables files. It stores its authenticated context in PowerShell's protected CurrentUser cache and never exposes a raw token through the LifeOS CLI. The auth result reports the requested and effective scope names so tenant consent can be verified without exposing the cache. In some managed tenants, Microsoft's shared client may already have a cumulative effective scope set broader than the scopes LifeOS requests. LifeOS does not expose a generic Graph request command; its supported mutations remain bounded and dry-run-gated.
 
 The optional `msal` provider remains available when a dedicated public-client application ID is available. Set `"auth_provider": "msal"`, `client_id`, and `token_path` in the ignored account config. Do not create a client secret or add application permissions.
 
@@ -195,7 +199,16 @@ Mail snapshots are bounded by the alias's days, count, and body limits. `mail fo
 
 Calendar and contact writes are dry-run by default and require `--execute`. There are no delete commands. Calendar writes are restricted to configured writable calendar IDs. Because Microsoft can send invitations or meeting updates for attendee-bearing events, those writes also require `--notify` as an explicit acknowledgement; unlike the Google API, Graph does not expose it here as a suppress-delivery switch. During contact updates, supplied email or phone values replace that complete field array. See the `lifeos-m365` skill for the full safety model.
 
-File access is disabled in the example account. Set `"files": {"enabled": true}` for an alias only after its tenant has approved `Files.ReadWrite`, then run `lifeos m365 auth ALIAS` again. `search` addresses the user's default drive unless `--drive DRIVE_ID` is supplied. `resolve-link` accepts an existing HTTPS OneDrive, SharePoint, or Teams sharing URL and returns the stable drive/item pair needed by `meta` and `download`. Downloads refuse to overwrite an existing local file unless `--force` is supplied. The CLI does not expose file deletion or a generic Graph request surface.
+File access is disabled in the example account. Set `"files": {"enabled": true}` for an alias only after its tenant has approved `Files.ReadWrite.All`, then run `lifeos m365 auth ALIAS` again. `search` addresses the user's default drive unless `--drive DRIVE_ID` is supplied. `resolve-link` accepts an existing HTTPS OneDrive, SharePoint, or Teams sharing URL and returns the stable drive/item pair needed by `meta` and `download`. Downloads refuse to overwrite an existing local file unless `--force` is supplied. The CLI does not expose file deletion or a generic Graph request surface.
+
+### Direct Excel edits
+`lifeos m365 excel` edits an existing business OneDrive/SharePoint `.xlsx` through Graph workbook endpoints, without whole-file replacement. Commands cover worksheets, tables, bounded ranges, values/formulas/number formats, table properties and row append, and range/font/fill formatting. `help` lists the full surface. There is no local sync requirement or Excel add-in dependency. Browser coauthoring still requires live verification; these requests are not transactions or guaranteed lock-free edits.
+
+Writes use the existing `files.enabled` and `files.write_enabled` gates. They first print a JSON preview with the current target, exact payload and `preview_sha256`. After reviewing it, repeat the same command with `--expect HASH --execute`. The fingerprint includes the operation, target, payload, file eTag and read target; any changed preview is refused. A second check immediately before the request reduces stale writes, but does not provide an atomic compare-and-swap. Work in separate ranges while coauthoring.
+
+Payload examples: range `{"values":[["Label",42]],"numberFormat":[[null,"0.00"]]}`, append `{"values":[["New row",42]]}`, table `{"name":"Entries","style":"TableStyleMedium2"}`, format `{"wrapText":true,"columnWidth":120}`, font `{"bold":true,"color":"#17365D"}`. Range matrices must exactly match the requested rectangle; `null` means preserve that property. Use a `formulas` matrix for formulas, without also supplying a value for the same cell. Reads/writes cap ranges and resulting tables at 10,000 cells; payloads cap at 1 MiB. Append requires visible headers and no totals row; table creation requires existing unique text headers. Width and height values are passed directly to Graph; compare the preview's current API values before choosing replacements rather than reusing XLSX column-width numbers.
+
+Mutations persist individually without a workbook session. There are no CLI mutation retries; PowerShell SDK retries are also disabled for workbook mutations. Audit entries record the target, preview fingerprint and started/verified/unverified/uncertain state, not cell contents. A timeout or failed readback may follow an applied write: inspect the target before another attempt, especially for appends. Existing Graph authentication is reused unchanged. Successful file access does not prove workbook access; endpoint permission/tenant errors remain visible. Live worksheet, table and bounded range reads passed with an existing managed account on October 22, 2026; write and browser coauthoring verification remain pending. [Spike](../docs/active-spikes/lifeos-m365-excel.md).
 
 ## Experimental Loop Browser CLI
 Loop website authentication is separate from Graph. This adapter launches its own Chromium process and keeps each alias's browser profile in ignored `secrets/loop-browser/`; it never attaches to a working browser. Ordinary commands are headless. Only the explicit `login` command opens a separate window for Microsoft sign-in. No command uses the OS clipboard.

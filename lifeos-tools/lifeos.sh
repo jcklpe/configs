@@ -20,6 +20,7 @@ LIFEOS_LONG_HORIZON_DAYS="${LIFEOS_LONG_HORIZON_DAYS:-180}"
 . "${LIB_DIR}/m365.sh"
 . "${LIB_DIR}/m365-planner.sh"
 . "${LIB_DIR}/m365-files.sh"
+. "${LIB_DIR}/m365-excel.sh"
 . "${LIB_DIR}/m365-loop.sh"
 . "${LIB_DIR}/mail-filters.sh"
 . "${LIB_DIR}/odoo.sh"
@@ -136,6 +137,7 @@ Usage:
   ./lifeos.sh m365 files upload ALIAS LOCAL_FILE --parent FOLDER_ITEM_ID|root [--drive DRIVE_ID] [--name NAME] [--execute]   # new file only; refuses an existing name
   ./lifeos.sh m365 files replace ALIAS ITEM_ID --file LOCAL_FILE [--drive DRIVE_ID] [--execute]   # eTag-guarded; version history keeps the old copy
   ./lifeos.sh m365 files create-folder ALIAS --parent FOLDER_ITEM_ID|root --name NAME [--drive DRIVE_ID] [--execute]   # no delete, move, rename, or sharing
+  ./lifeos.sh m365 excel help   # bounded workbook reads and guarded cell/table/format writes; no whole-file replacement
   ./lifeos.sh m365 planner plans ALIAS [--json]   # plans shared with you; marks the ones configured in planner.plans
   ./lifeos.sh m365 planner comments ALIAS --task TASK_ID [--json]   # group-backed allowlisted task; existing group permissions required
   ./lifeos.sh m365 planner comment ALIAS --task TASK_ID --file PATH [--execute]   # deduplicated group post; may trigger group notifications
