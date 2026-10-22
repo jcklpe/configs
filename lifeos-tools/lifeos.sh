@@ -63,8 +63,8 @@ Usage:
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar find QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
   ./lifeos.sh calendar sync [--google-only] [--qa | --output FILE]   # one agenda: Google calendars plus enabled Microsoft 365 calendars
-  ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--notify] [--execute]
-  ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--notify] [--execute]
+  ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
+  ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
   ./lifeos.sh people resolve NAME [--json]
   ./lifeos.sh people list-aliases
   ./lifeos.sh people add-alias NAME EMAIL

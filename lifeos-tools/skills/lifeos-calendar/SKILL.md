@@ -43,6 +43,17 @@ Writes are **dry-run by default** — the command prints the full plan and chang
 - **update-event merges attendees** by default; pass `--replace-attendees` to replace the list.
 - **Recurring edits default to the single occurrence.** `update-event --event INSTANCE_ID` edits only that occurrence; `--series` retargets the series master (the plan's `Scope:` line says which). Create recurring events with `--recurrence "RRULE:FREQ=WEEKLY;BYDAY=MO"` (repeatable); `--recurrence` on update requires `--series`.
 
+Availability: `--transparency transparent` marks an event **Free**; `--transparency opaque` marks it **Busy**. Both create and update accept it. Omission preserves Google's Busy default on create and the stored value on update. This setting changes whether the event blocks time; it does not change event visibility or sharing.
+
+Personal reminder: `--popup-minutes 0` requests one popup at event start; integers through `40320` specify minutes before start. Both create and update accept it. An explicit value replaces the event's reminder overrides with one popup and disables calendar-default reminders for that event. Omission uses defaults on create and preserves existing reminders on update. `--notify` remains separate: it controls attendee email updates, not the authenticated user's popup reminder. Saving a popup setting does not establish that a client/device will display it.
+
+When either option is explicit, the dry-run shows the requested settings, and an executed write fetches the saved event and verifies only those settings. A readback failure returns `PARTIAL` after the accepted write; inspect that event before retrying, and never automatically recreate it. Existing single-instance versus `--series` targeting applies to these fields too.
+
+```sh
+lifeos calendar create-event --title "Example event" --start 2030-01-02T09:00 --tz Etc/UTC --transparency transparent --popup-minutes 0
+lifeos calendar update-event --event EVENT_ID --transparency opaque
+```
+
 Times: `YYYY-MM-DD` makes an all-day event, `YYYY-MM-DDTHH:MM` a timed one (zoned to the calendar's time zone unless `--tz`). Missing `--end` defaults to +1 day (all-day, exclusive) or +1 hour (timed). Run `lifeos calendar sync` after a write.
 
 The zone for a timed event comes from `--tz` if given, otherwise from the target calendar. **If it cannot be read, the command fails rather than guessing** — a wrong zone writes a real event at the wrong hour and looks entirely normal afterward, so there is no safe default (policy `docs/policies/0006-writes-fail-rather-than-guess.md`). The error names the exact `--tz` value to pass, so a failure is one flag from resolved; it also points at the likely cause, which is worth fixing rather than routing around forever. Zones are IANA names (`America/Chicago`), never abbreviations (`CDT`). Still read the plan's `Time zone:` line before `--execute`.

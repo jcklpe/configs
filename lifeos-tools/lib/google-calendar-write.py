@@ -83,6 +83,35 @@ def build_times(start, end, tz):
     return start_obj, end_obj
 
 
+def popup_minutes(value):
+    minutes = int(value)
+    if not 0 <= minutes <= 40320:
+        raise argparse.ArgumentTypeError("popup minutes must be between 0 and 40320")
+    return minutes
+
+
+def verify_settings():
+    try:
+        data = json.load(sys.stdin)
+        expected, event = data["expected"], data["event"]
+        if not isinstance(expected, dict) or not isinstance(event, dict):
+            raise ValueError
+    except (ValueError, KeyError, TypeError):
+        fail("invalid calendar settings readback data")
+    if "transparency" in expected:
+        actual = event.get("transparency", "opaque")
+        if actual != expected["transparency"]:
+            fail("readback does not confirm requested transparency")
+        label = "Free" if actual == "transparent" else "Busy"
+        print(f"Verified transparency: {actual} ({label})")
+    if "reminders" in expected:
+        reminders = event.get("reminders") or {}
+        if not isinstance(reminders, dict) or reminders.get("useDefault") is not False or reminders.get("overrides") != expected["reminders"]["overrides"]:
+            fail("readback does not confirm requested popup reminder override")
+        print(f"Verified popup reminder: {expected['reminders']['overrides'][0]['minutes']} minutes before start")
+    return 0
+
+
 def main(argv):
     parser = argparse.ArgumentParser(prog="google-calendar-write.py build-event")
     parser.add_argument("--title")
@@ -91,6 +120,8 @@ def main(argv):
     parser.add_argument("--tz")
     parser.add_argument("--location")
     parser.add_argument("--description")
+    parser.add_argument("--transparency", choices=("transparent", "opaque"), help="transparent = Free; opaque = Busy; omitted preserves defaults/current value")
+    parser.add_argument("--popup-minutes", type=popup_minutes, help="one popup reminder 0..40320 minutes before start; replaces event reminder overrides")
     parser.add_argument("--attendee", action="append", default=[], dest="attendees")
     parser.add_argument(
         "--recurrence",
@@ -109,6 +140,11 @@ def main(argv):
         body["description"] = args.description
     if args.recurrence:
         body["recurrence"] = args.recurrence
+
+    if args.transparency is not None:
+        body["transparency"] = args.transparency
+    if args.popup_minutes is not None:
+        body["reminders"] = {"useDefault": False, "overrides": [{"method": "popup", "minutes": args.popup_minutes}]}
 
     start_obj, end_obj = build_times(args.start, args.end, args.tz)
     if start_obj is not None:
@@ -129,4 +165,6 @@ if __name__ == "__main__":
     argv = sys.argv[1:]
     if argv and argv[0] == "build-event":
         argv = argv[1:]
+    if argv == ["verify-settings"]:
+        raise SystemExit(verify_settings())
     raise SystemExit(main(argv))

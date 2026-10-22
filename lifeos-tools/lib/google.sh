@@ -2044,9 +2044,19 @@ _calendar_resolve_attendees() {
     return 0
 }
 
+# Verify only explicitly requested availability/reminder fields after a successful write. A failed check must not invite an automatic repeat of an accepted write.
+_calendar_verify_event_settings() {
+    local calendar_encoded="$1" event_id="$2" expected="$3" event_encoded readback
+    event_encoded="$(_urlencode "$event_id")" || return 1
+    readback="$(_calendar_get "/calendars/${calendar_encoded}/events/${event_encoded}")" || return 1
+    printf '%s' "$readback" | jq -e --arg id "$event_id" '.id == $id' >/dev/null || { _err "Settings readback returned a different or missing event ID"; return 1; }
+    jq -n --argjson expected "$expected" --argjson event "$readback" '{expected: $expected, event: $event}' | _calendar_write_helper verify-settings
+}
+
 _calendar_create_event() {
     local calendar_id="primary" title="" start="" end="" tz="" location="" desc="" desc_file=""
-    local notify=0 execute=0 encoded body send_updates created
+    local notify=0 execute=0 encoded body send_updates created created_id
+    local transparency="" popup_minutes=""
     local attendees_raw=() build_args=() recurrence_rules=()
 
     while [ "$#" -gt 0 ]; do
@@ -2061,6 +2071,8 @@ _calendar_create_event() {
             --desc-file) [ -n "${2:-}" ] || { _err "--desc-file requires FILE"; return 1; }; desc_file="$2"; shift 2 ;;
             --attendee) [ -n "${2:-}" ] || { _err "--attendee requires NAME or EMAIL"; return 1; }; attendees_raw+=("$2"); shift 2 ;;
             --recurrence) [ -n "${2:-}" ] || { _err "--recurrence requires an RRULE line"; return 1; }; recurrence_rules+=("$2"); shift 2 ;;
+            --transparency) [ -n "${2:-}" ] || { _err "--transparency requires transparent (Free) or opaque (Busy)"; return 1; }; transparency="$2"; shift 2 ;;
+            --popup-minutes) [ -n "${2:-}" ] || { _err "--popup-minutes requires 0..40320"; return 1; }; popup_minutes="$2"; shift 2 ;;
             --notify) notify=1; shift ;;
             --execute) execute=1; shift ;;
             --dry-run) execute=0; shift ;;
@@ -2098,6 +2110,8 @@ _calendar_create_event() {
     [ -n "$tz" ] && build_args+=(--tz "$tz")
     [ -n "$location" ] && build_args+=(--location "$location")
     [ -n "$desc" ] && build_args+=(--description "$desc")
+    [ -n "$transparency" ] && build_args+=(--transparency "$transparency")
+    [ -n "$popup_minutes" ] && build_args+=(--popup-minutes "$popup_minutes")
     local email rule
     for email in "${_RESOLVED_EMAILS[@]}"; do
         build_args+=(--attendee "$email")
@@ -2117,6 +2131,12 @@ _calendar_create_event() {
     _say "End: ${end:-<default>}"
     [ -n "$tz" ] && _say "Time zone: $tz"
     _say "Location: ${location:-<none>}"
+    _say "Transparency: ${transparency:-<default: opaque/Busy>}"
+    if [ -n "$popup_minutes" ]; then
+        _say "Popup reminder: $popup_minutes minutes before start (replaces event reminders)"
+    else
+        _say "Popup reminder: <calendar defaults>"
+    fi
     if [ "${#recurrence_rules[@]}" -gt 0 ]; then
         _say "Recurrence: ${recurrence_rules[*]}"
     fi
@@ -2134,11 +2154,19 @@ _calendar_create_event() {
 
     encoded="$(_urlencode "$calendar_id")" || return 1
     created="$(_calendar_write POST "/calendars/${encoded}/events?sendUpdates=${send_updates}" "$body")" || return 1
+    created_id="$(printf '%s' "$created" | jq -r '.id // empty')"
     _say "Created event: $(printf '%s' "$created" | jq -r '.htmlLink // .id // "(unknown)"')"
+    if [ -n "$transparency" ] || [ -n "$popup_minutes" ]; then
+        if [ -z "$created_id" ] || ! _calendar_verify_event_settings "$encoded" "$created_id" "$body"; then
+            _err "PARTIAL: create accepted but requested settings were not verified (calendar $calendar_id, event ${created_id:-unknown}). Inspect the event before retrying; do not create it again automatically."
+            return 1
+        fi
+    fi
 }
 
 _calendar_update_event() {
     local calendar_id="primary" event_id="" title="" start="" end="" tz="" location="" desc="" desc_file=""
+    local transparency="" popup_minutes=""
     local notify=0 execute=0 replace_attendees=0 set_title=0 set_location=0 set_desc=0 scope_series=0
     local encoded event_encoded target_id target_encoded body send_updates current scope_label updated
     local attendees_raw=() build_args=() final_emails=() recurrence_rules=()
@@ -2159,6 +2187,8 @@ _calendar_update_event() {
             --replace-attendees) replace_attendees=1; shift ;;
             --series) scope_series=1; shift ;;
             --instance) scope_series=0; shift ;;
+            --transparency) [ -n "${2:-}" ] || { _err "--transparency requires transparent (Free) or opaque (Busy)"; return 1; }; transparency="$2"; shift 2 ;;
+            --popup-minutes) [ -n "${2:-}" ] || { _err "--popup-minutes requires 0..40320"; return 1; }; popup_minutes="$2"; shift 2 ;;
             --notify) notify=1; shift ;;
             --execute) execute=1; shift ;;
             --dry-run) execute=0; shift ;;
@@ -2245,6 +2275,8 @@ EOF
     [ -n "$tz" ] && build_args+=(--tz "$tz")
     [ "$set_location" -eq 1 ] && build_args+=(--location "$location")
     [ "$set_desc" -eq 1 ] && build_args+=(--description "$desc")
+    [ -n "$transparency" ] && build_args+=(--transparency "$transparency")
+    [ -n "$popup_minutes" ] && build_args+=(--popup-minutes "$popup_minutes")
     local email rule
     for email in "${final_emails[@]}"; do
         build_args+=(--attendee "$email")
@@ -2276,4 +2308,10 @@ EOF
 
     updated="$(_calendar_write PATCH "/calendars/${encoded}/events/${target_encoded}?sendUpdates=${send_updates}" "$body")" || return 1
     _say "Updated event: $(printf '%s' "$updated" | jq -r '.htmlLink // .id // "(unknown)"')"
+    if [ -n "$transparency" ] || [ -n "$popup_minutes" ]; then
+        if ! _calendar_verify_event_settings "$encoded" "$target_id" "$body"; then
+            _err "PARTIAL: update accepted but requested settings were not verified (calendar $calendar_id, event $target_id). Inspect the event before retrying; do not repeat the write automatically."
+            return 1
+        fi
+    fi
 }
