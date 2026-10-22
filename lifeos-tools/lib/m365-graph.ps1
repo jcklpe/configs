@@ -81,6 +81,10 @@ try {
         exit 0
     }
 
+    # Workbook POSTs can append twice after an ambiguous timeout; leave retry decisions to verified readback and a new preview.
+    if ([string]$request.uri -match '/workbook/' -and [string]$request.method -ne 'GET') {
+        Set-MgRequestContext -MaxRetry 0 | Out-Null
+    }
     $response = Invoke-MgGraphRequest @invoke
     if ($null -eq $response -or [string]$response -eq "") {
         "{}"
