@@ -31,6 +31,7 @@ create_symlink_if_needed "${CONFIGS}/git/git.gitignore_global" "${HOME}/.gitigno
 create_symlink_if_needed "${CONFIGS}/zsh/zshrc" "${HOME}/.zshrc"
 create_symlink_if_needed "${CONFIGS}/zsh/zprofile" "${HOME}/.zprofile"
 create_symlink_if_needed "${CONFIGS}/nano/config.nanorc" "${HOME}/.nanorc"
+create_symlink_if_needed "${CONFIGS}/r/lintr" "${HOME}/.lintr"
 
 ##- Global agent instruction files
 # One source file, two links. Deliberately not named AGENTS.md in-repo: Codex loads
