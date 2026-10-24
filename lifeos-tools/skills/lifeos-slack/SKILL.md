@@ -79,7 +79,7 @@ lifeos slack lists update ALIAS LIST_ID ITEM_ID --field "Status=Done" [--field-f
 
 `search` returns one timestamp-descending page (`--limit 1..100`, `--page 1..100`) with result totals and API permalinks. Search results are subject to Slack UI filters and search indexing, so they are leads to verify with history/thread reads. It requires existing `search:read`; conversation listing/history require the appropriate `*:read`/`*:history` scopes. A missing scope is a blocker to report, not permission to expand OAuth grants, install credentials, or fall back to a browser. None of these commands changes scopes or external state.
 
-Live read-only verification on 2026-10-21 confirmed existing DM/group-DM discovery, group membership filtering, DM history, thread replies and API message permalinks with the configured Open Austin token. `search.messages` returned `missing_scope` requiring `search:read`; no scopes or credentials were changed.
+Live read-only verification on 2026-10-21 confirmed existing DM/group-DM discovery, group membership filtering, DM history, thread replies and API message permalinks through existing account access. `search.messages` returned `missing_scope` requiring `search:read`; no scopes or credentials were changed.
 
 API references: [conversations.list](https://docs.slack.dev/reference/methods/conversations.list/), [conversations.history](https://docs.slack.dev/reference/methods/conversations.history/), [search.messages](https://docs.slack.dev/reference/methods/search.messages/).
 
