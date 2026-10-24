@@ -6,7 +6,7 @@ This file is the source for `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md`, both
 **Nothing repo-specific belongs in this file.** It is read from inside every project on this machine, so a statement about "this repo" resolves against whichever repo is being worked in, not against the repo this file lives in. State preferences, never facts about a location. A rule that only makes sense in one project belongs in that project's `AGENTS.md`.
 
 ## LifeOS
-LifeOS is the user's personal life-tracking Markdown vault. When the user asks to "hand this off to LifeOS", log an accomplishment, or give a LifeOS progress update, use the `lifeos-handoff` skill. Do not do it unprompted.
+LifeOS is the user's personal life-tracking Markdown vault. When the user asks for LifeOS work, a handoff, accomplishment logging, or a LifeOS progress update, use `operate-lifeos` to find the configured workspace and its current instructions. Do not initiate handoffs or logging unprompted.
 
 ## Kaizen
 Use `log-kaizen` without waiting to be asked when a consequential workflow failure is observed. Use `improve-agent-workflows` when preparing related substantial workflow work or skill changes and during a review that includes Kaizen. Check relevant current concerns rather than loading the entire incident history. Honor explicit no-save or read-only instructions.
