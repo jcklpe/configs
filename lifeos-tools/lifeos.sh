@@ -21,7 +21,6 @@ LIFEOS_LONG_HORIZON_DAYS="${LIFEOS_LONG_HORIZON_DAYS:-180}"
 . "${LIB_DIR}/m365-planner.sh"
 . "${LIB_DIR}/m365-files.sh"
 . "${LIB_DIR}/m365-excel.sh"
-. "${LIB_DIR}/m365-loop.sh"
 . "${LIB_DIR}/mail-filters.sh"
 . "${LIB_DIR}/odoo.sh"
 . "${LIB_DIR}/slack.sh"
@@ -98,10 +97,6 @@ Usage:
   ./lifeos.sh docs comments ALIAS DOC_URL_OR_ID
   ./lifeos.sh docs comment ALIAS DOC_URL_OR_ID [--quote TEXT] (--body TEXT | --body-file FILE) [--tab-id ID]... [--execute]   # add one comment; the quote must occur once
   ./lifeos.sh m365 accounts
-  ./lifeos.sh m365 loop login ALIAS [--url LOOP_URL]   # explicit separate sign-in window
-  ./lifeos.sh m365 loop status ALIAS LOOP_URL
-  ./lifeos.sh m365 loop read ALIAS LOOP_URL   # isolated headless browser
-  ./lifeos.sh m365 loop append ALIAS LOOP_URL (--text TEXT | --file FILE) [--expect-sha256 HASH --execute]   # experimental plain-text append, dry-run by default
   ./lifeos.sh m365 auth ALIAS [--no-browser]
   ./lifeos.sh m365 profile ALIAS [--json]
   ./lifeos.sh m365 mail sync ALIAS [--qa | --output FILE]

@@ -1797,7 +1797,6 @@ _m365_dispatch() {
             ;;
         planner) shift; _m365_planner_dispatch "$@" ;;
         excel) shift; _m365_excel_dispatch "$@" ;;
-        loop) shift; _m365_loop_dispatch "$@" ;;
         *) _err "Unknown m365 command: ${1:-}"; return 1 ;;
     esac
 }

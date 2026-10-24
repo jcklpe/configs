@@ -1,4 +1,9 @@
+---
+attention: historical
+---
 # LifeOS Loop Headless
+Retired 2026-10-22 at the user’s request: Loop will not be used. Slug: `lifeos-loop-headless`. The adapter, commands, optional dependency, and feature-specific tests were removed. The original implementation record below is historical; its remaining work and live QA are cancelled. No successor spike.
+
 Build a bounded CLI adapter for Microsoft Loop using an isolated Playwright Chromium profile. Ordinary commands run headlessly and emit small JSON results. The user's working browser, mouse, keyboard, and OS clipboard must stay available.
 
 ## Scope

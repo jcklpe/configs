@@ -208,37 +208,7 @@ Writes use the existing `files.enabled` and `files.write_enabled` gates. They fi
 
 Payload examples: range `{"values":[["Label",42]],"numberFormat":[[null,"0.00"]]}`, append `{"values":[["New row",42]]}`, table `{"name":"Entries","style":"TableStyleMedium2"}`, format `{"wrapText":true,"columnWidth":120}`, font `{"bold":true,"color":"#17365D"}`. Range matrices must exactly match the requested rectangle; `null` means preserve that property. Use a `formulas` matrix for formulas, without also supplying a value for the same cell. Reads/writes cap ranges and resulting tables at 10,000 cells; payloads cap at 1 MiB. Append requires visible headers and no totals row; table creation requires existing unique text headers. Width and height values are passed directly to Graph; compare the preview's current API values before choosing replacements rather than reusing XLSX column-width numbers.
 
-Mutations persist individually without a workbook session. There are no CLI mutation retries; PowerShell SDK retries are also disabled for workbook mutations. Audit entries record the target, preview fingerprint and started/verified/unverified/uncertain state, not cell contents. A timeout or failed readback may follow an applied write: inspect the target before another attempt, especially for appends. Existing Graph authentication is reused unchanged. Successful file access does not prove workbook access; endpoint permission/tenant errors remain visible. Live worksheet, table and bounded range reads passed with an existing managed account on October 22, 2026; write and browser coauthoring verification remain pending. [Spike](../docs/active-spikes/lifeos-m365-excel.md).
-
-## Experimental Loop Browser CLI
-Loop website authentication is separate from Graph. This adapter launches its own Chromium process and keeps each alias's browser profile in ignored `secrets/loop-browser/`; it never attaches to a working browser. Ordinary commands are headless. Only the explicit `login` command opens a separate window for Microsoft sign-in. No command uses the OS clipboard.
-
-Install the optional dependency and separate browser engine:
-
-```sh
-cd ~/configs/lifeos-tools
-uv sync --extra loop
-PLAYWRIGHT_BROWSERS_PATH="$PWD/tmp/loop-browser-engines" .venv/bin/python -m playwright install chromium
-lifeos m365 loop login ALIAS
-lifeos m365 loop status ALIAS LOOP_URL
-lifeos m365 loop read ALIAS LOOP_URL
-lifeos m365 loop append ALIAS LOOP_URL --text 'Proposed note'
-lifeos m365 loop append ALIAS LOOP_URL --text 'Proposed note' --expect-sha256 HASH_FROM_PREVIEW --execute
-```
-
-Sign into the account matching the alias, then close the dedicated login window. Verify authentication with `status` or `read`; closing the window alone does not establish authentication. A normal `uv sync` without `--extra loop` can remove the optional dependency; re-enable it with the command above.
-
-Login and headless commands use the same full Chromium engine. SharePoint `.loop` file URLs automatically request `web=1` to open the editor rather than download the binary. Canvas discovery waits up to 45 seconds for silent authentication redirects; a stalled redirect does not establish that the session expired. On 2026-10-06, a live read and editable-status check succeeded in two fresh headless browser processes after the login browser closed. Session reuse across an immediate browser restart is verified; its longer expiry duration remains unknown. Each command closes its browser on completion.
-
-This prototype reads visible Canvas text and appends plain text. It does not promise Markdown formatting or edit existing blocks. Appends are dry-run by default, use the existing `files.enabled` / `files.write_enabled` gates, and require a current text hash for execution. That hash is not an atomic concurrency guard against collaborators. An executed append is read back from a second page; uncertain results are reported as possibly applied and never retried automatically. Attempts are logged locally with hashes in the private profile directory. No live authenticated Loop append has been verified yet (2026-10-06); the editor flow has been tested against an offline fixture.
-
-Live validation on 2026-10-06 exposed limitations the fixture missed: long Loop documents render only nearby pages, so the current read/hash may omit content, and rapid multiline keyboard insertion can reorder text. Do not execute the current CLI append against live notes until these are fixed. A separately authorized transfer was repaired successfully with one browser-local rich paste and verified in a fresh full-document viewport; that repair path is not yet a CLI command.
-
-The browser fixture test uses an isolated headless engine, blocks external requests, and checks plain-text appends, preservation of existing inline formatting, dry-run behavior, stale hashes, ambiguous editors, concurrent profile access, and uncertain save handling:
-
-```sh
-.venv/bin/python tests/test-m365-loop.py -v
-```
+Mutations persist individually without a workbook session. There are no CLI mutation retries; PowerShell SDK retries are also disabled for workbook mutations. Audit entries record the target, preview fingerprint and started/verified/unverified/uncertain state, not cell contents. A timeout or failed readback may follow an applied write: inspect the target before another attempt, especially for appends. Existing Graph authentication is reused unchanged. Successful file access does not prove workbook access; endpoint permission/tenant errors remain visible. Live worksheet, table and bounded range reads passed with an existing managed account on October 22, 2026. Representative live checks of all six write commands passed October 24, including values/formulas/number formats, table creation and rename, row append, range sizing/wrapping and sheet creation. The user confirmed the edit appeared in the already-open browser workbook without refreshing. Same-cell simultaneous edits and every formula/formatting variation remain outside that test. [Spike](../docs/active-spikes/lifeos-m365-excel.md).
 
 ## Odoo
 Odoo Project reads use the Odoo 19 JSON-2 API. Copy `secrets/odoo-accounts.example.json` to the ignored `secrets/odoo-accounts.json`, set `ODOO_API_KEY` in the ignored `secrets/.env` file, and use `lifeos odoo accounts` plus `lifeos doctor` to verify setup without printing the key. An account may name a different variable in `api_key_env` when multiple aliases need separate keys.
