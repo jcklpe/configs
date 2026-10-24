@@ -1,0 +1,18 @@
+schema_version = 1
+
+[upstream]
+repository = "https://github.com/philphilphil/obsidian-track-changes"
+path = "docs/SKILL.md"
+revision = "9d7a799"
+release = "2.2.0"
+last_synced = "2026-09-23"
+evidence = "Carried forward from the existing Source Note. The upstream baseline was not independently retrieved or synchronized during this folder relocation."
+
+[local]
+# These are preservation requirements, not a claim that every item differs from upstream.
+preserve = [
+  "Respect human-authored prose and the review-only default; do not turn a review into an unsolicited rewrite.",
+  "Honor an explicit chat-only review request instead of inserting annotations.",
+  "Use consistent reviewer attribution and distinguish human marks and replies from agent proposals.",
+  "Preserve local project authority and the established inline-comment/reply workflow.",
+]
