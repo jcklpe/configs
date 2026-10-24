@@ -13,6 +13,7 @@ Concept: [modular-skill-distribution.md](modular-skill-distribution.md).
 Capture the agreed three-collection architecture and a reviewable migration plan. The initial 2026-10-24 request was documentation-only. The user's subsequent instruction authorizes the privacy review, scoped local checkpoints to a clean working tree, and then beginning implementation. Start with the general-skills review/authoring boundary after that baseline. Remote publication, historical rewriting, credential changes, and unresolved external choices are not implied.
 
 ## Current state
+- Agent Hands now has an independent local repository with Odoo provider support, bounded operations, and setup skills. The old command delegates to extracted code without migrating private config. Offline checks passed in isolation; no live service operation or remote publication occurred.
 - Public GitHub destinations and AGPL-3.0-only are selected. Project-workflows is an independent local submodule with a configs branch, combined setup/update skills, templates, and private-config ignores. Neither new remote repository has been created or published.
 - Architecture agreed: `agent-hands`, `project-workflows`, and `general-skills`; the first two are intended shareable submodules, and the third remains an ordinary configs folder initially.
 - Both `log-kaizen` and `improve-agent-workflows` belong in `general-skills`, alongside `operate-lifeos`, `write-skills`, `track-changes`, and its proposed update companion.
@@ -42,15 +43,15 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Decide the selected global/client installations separately from source ownership; keep project adoption independent of the general collection.
 
 ### Agent-hands extraction
-- [ ] Establish the agent-hands repository/package structure and preserve appropriate attribution/history only after privacy review of material to be carried over.
+- [x] Establish the agent-hands repository/package structure and preserve appropriate attribution/history only after privacy review of material to be carried over.
 - [ ] Extract Google authorization/setup support and Gmail, Drive, Docs, Sheets, Calendar, and Contacts skills with their existing supported capabilities.
 - [ ] Extract Microsoft authorization/setup support and Outlook Mail, Calendar, Contacts, Files, Excel, and Planner skills with their existing supported capabilities.
 - [ ] Extract Trello setup/authorization/use behavior, including neutral linking, checklists, and honest partial-failure handling.
 - [ ] Extract Slack setup/authorization and separate messaging/Lists capabilities, preserving current access limits and known limitations.
-- [ ] Extract Odoo setup/authorization/project-task capabilities with current bounds and rate handling.
+- [x] Extract Odoo setup/authorization/project-task capabilities with current bounds and rate handling.
 - [ ] Extract GitHub setup/authorization and Issues, Projects, Pull Requests, and Discussions skills; do not add deferred Discussion writes.
 - [ ] Generalize the Markdown-to-PDF pipeline with explicit inputs/themes/output; keep theme assets with the renderer and verify non-résumé use.
-- [ ] Implement capability-selective uv/dependency provisioning and the setup-agent-hands entry procedure, without installing unrelated service stacks.
+- [ ] Implement capability-selective uv provisioning as Python services are extracted. The setup-agent-hands entry now exists and routes the implemented Odoo capability without installing Python or unrelated providers.
 - [ ] Write the relevant MCP catalog with official sources, client/plugin distinctions, optional setup, capability overlap, and verification status.
 
 ### Project-workflows distribution
@@ -73,7 +74,7 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Verify the LifeOS adaptations use public neutral helpers without copying executable scripts, tokens, or private configuration into the vault.
 
 ### Installation, privacy, and cutover
-- [ ] Finish wiring both collections as submodules in configs. Project-workflows is registered locally and its selected client links are updated; agent-hands extraction remains. Retire temporary source bridges after remaining consumers migrate.
+- [ ] Finish selected global/client cutover and retire temporary source bridges after consumers migrate. Both collections are registered locally as submodules; workflow links are updated. Existing Odoo callers retain their legacy configuration route, while other service extraction remains.
 - [ ] Add configs/agents/integrations.md for client selections and extras, referencing the portable MCP catalog instead of duplicating it.
 - [ ] Update README, AGENTS routing, installer documentation, and affected consumers when the implementation actually changes their behavior.
 - [ ] Perform the privacy pass over proposed files and relevant Git history before committing/publishing this work; inspect examples, identifiers, paths, caches, private defaults, and real ignore behavior.
@@ -100,6 +101,7 @@ The initial capture checks established paired frontmatter, relative links to exi
 The first implementation slice checks YAML frontmatter with the available Ruby parser, TOML provenance, moved content, compatibility and installed-client link resolution, installer syntax under Bash/Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run without PyYAML; do not report that validator as passed. No upstream synchronization, live service write, full installer run, or new test suite was performed.
 
 ## Done
+- [x] Extract the first neutral service capability and register Agent Hands locally. Odoo preserves its operation bounds and legacy caller configuration, while the standalone route uses literal env parsing and adjacent ignored files. Retained request fixtures plus configuration/isolation checks pass; no live account/write or real credentials were carried into the new history.
 - [x] Prepare and adopt the project-workflows collection locally. Preserve six procedure bodies/assets, add two adoption/update procedures and templates, retain source notices, configure the project branch and parent pin, and repair global routing. Verified frontmatter, TOML, links, shell syntax, privacy/ignore behavior, and an isolated branch/merge/recursive-clone fixture. Real remote availability and fresh client discovery remain unverified.
 - [x] Replace lifeos-handoff with a thin operate-lifeos entry using ignored workspace pointers and vault-owned instructions. Preserved the four prior handoff/attribution sections in the private owner, added private routing, verified YAML and links, and installed the replacement in Codex/Claude. Real pointers are ignored and owner-readable; the public example contains no private location. Unrelated vault edits remain untouched.
 - [x] Define Kaizen capture/review responsibilities and shared data/configuration contracts with both skills in general-skills. Independent procedures share current-concerns/incident Markdown records and literal env keys; legacy JSON discovery remains for existing consumers. Invalid selected configuration does not fall back to another destination.

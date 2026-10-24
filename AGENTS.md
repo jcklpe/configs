@@ -65,7 +65,7 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Project workflow procedure | `project-workflows/skills/<skill-name>/SKILL.md`, with tracked choices in `project-workflows/workflow.toml` |
 | General review, authoring, or skill-maintenance procedure | `general-skills/<skill-name>/SKILL.md`; see [current collection](general-skills/README.md) |
 | Cross-repo agent preference | [agents/AGENTS.global.md](agents/AGENTS.global.md) — never repo-specific facts |
-| Tool-specific skill | beside the tool, e.g. `lifeos-tools/skills/<skill-name>/SKILL.md` |
+| Portable service/tool capability | `agent-hands/skills/<skill-name>/SKILL.md`; unextracted services remain under `lifeos-tools/skills/` |
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
 | Active work coordination | [TODO.md](TODO.md) |

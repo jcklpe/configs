@@ -38,3 +38,8 @@
 	path = project-workflows
 	url = https://github.com/jcklpe/project-workflows.git
 	branch = codex/project-configs
+
+[submodule "agent-hands"]
+	path = agent-hands
+	url = https://github.com/jcklpe/agent-hands.git
+	branch = main
