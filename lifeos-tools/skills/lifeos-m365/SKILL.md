@@ -170,24 +170,6 @@ Team plans are shared, so treat every write as outward-facing and get approval f
 
 `move-task` is experimental: it PATCHes `planId` and `bucketId` through Graph beta, leaving other commands on their configured API version. Both plans must be allowlisted and belong to the same Microsoft 365 group; cross-group moves are refused because assignment and conversation preservation is not implemented. It validates the destination bucket and refuses tasks with active labels, recurrence, or a creation source. Dry runs show the current task and destination. Execution uses the task ETag, logs the attempt, and verifies the task ID, destination, description, checklist, references, dates, progress, priority, assignee IDs, and conversation link. Plan-specific goals, custom columns, and linked meeting notes are not supported or verified; inspect those in Planner before using this experimental command. Transport or verification failures require inspection before retrying; there is no automatic retry, clone/delete fallback, or rollback. Offline tests cover this behavior. Live same-group moves were validated on 2026-10-11 with task IDs, descriptions, assignments, dates, progress, priority and destinations preserved. Empty checklists/references and absent conversation links also matched; nonempty checklist/reference and conversation preservation still lack live validation. The account-level `plans` listing may omit other group plans; a bounded Graph `GET /groups/{known-group-id}/planner/plans` lookup can discover them.
 
-## Experimental Loop Browser CLI
-Loop has a separate browser-backed prototype. Install it with `uv sync --extra loop` in `lifeos-tools/` and the engine command in its README. Do not infer website authentication from a successful Graph profile call.
-
-```sh
-lifeos m365 loop login ALIAS [--url LOOP_URL]
-lifeos m365 loop status ALIAS LOOP_URL
-lifeos m365 loop read ALIAS LOOP_URL
-lifeos m365 loop append ALIAS LOOP_URL (--text TEXT | --file FILE) [--expect-sha256 HASH --execute]
-```
-
-`status`, `read`, and `append` launch separate headless Chromium with per-alias private browser state. They never scan debugging ports, attach to a working browser, copy existing browser profiles, or use the OS clipboard. `login` is an explicit headed window: let the user run it or obtain explicit agreement before opening it when uninterrupted desktop use matters. Sign into the account matching the alias and verify with a subsequent headless read; no browser identity check against Graph has been implemented.
-
-Use the same full Chromium engine for headed login and headless commands. SharePoint `.loop` URLs lacking a `web` query parameter automatically request browser view. A temporary Microsoft authentication redirect is allowed to finish; a stalled blank redirect is not proof that another login is required. On 2026-10-06, live read and editable-status checks succeeded in two fresh headless processes after the sign-in browser closed. Longer session retention and actual live writes remain unverified.
-
-Only plain-text appends are implemented, dry-run by default. Before execution, show the exact append for approval unless already approved, obtain the current text hash from the preview, and require `files.write_enabled`. The hash detects stale text but is not an atomic concurrency guard. The tool verifies an append by reading from a second page and records attempts as local hashes. A possibly-applied error must be investigated by reading before any retry. As of 2026-10-06, the offline editor fixture passes, but live authenticated Loop editing still requires validation; do not claim live capability from that fixture alone.
-
-Later live validation on 2026-10-06 found that multiline keyboard insertion can reorder content and that virtualized pages make the current read/hash incomplete. Do not execute CLI appends on live notes pending fixes. A task-specific browser-local rich paste was successfully verified against the complete source text and link targets in a fresh full-document viewport; this is not implemented as a CLI capability. Native Loop links render as `span[role=link]` with a URL in the first line of `title`, rather than HTML anchor tags. Never infer a missing link solely from a zero anchor count.
-
 ## Files (OneDrive / SharePoint)
 ```sh
 lifeos m365 files search ALIAS "Work Plan" [--drive DRIVE_ID] [--json]
@@ -211,7 +193,7 @@ UT's tenant-wide consent for the shared Graph PowerShell client includes `Files.
 ## Direct Excel Workbook Operations
 Use `lifeos m365 excel help` for the bounded command surface: `sheets`, `tables`, `read-range`, `table-range`, `write-range`, `format-range`, `add-sheet`, `add-table`, `update-table`, and `append-rows`. Each takes `ALIAS ITEM_ID`, with `--drive DRIVE_ID` when known. Read and edit the shared `.xlsx` through Graph instead of replacing the entire file. This route does not require an open desktop workbook or a ChatGPT add-in.
 
-Existing `files.enabled` and `files.write_enabled` gates apply; no new scope or consent is requested. Permission to use file APIs does not establish workbook API access. Read-only worksheet/table/range calls passed with existing managed-account access on October 22, 2026. Live mutation and browser coauthoring remain unverified.
+Existing `files.enabled` and `files.write_enabled` gates apply; no new scope or consent is requested. Permission to use file APIs does not establish workbook API access. Read-only worksheet/table/range calls passed with existing managed-account access on October 22, 2026. On October 24, representative live checks passed for all six write commands in a test workbook, and the user confirmed that the edit appeared in the already-open browser workbook without refreshing. This does not establish same-cell simultaneous-edit safety or every formula/formatting case.
 
 Writes preview by default, showing the exact target, payload and current data. After the specific edit is authorized, repeat the same command with `--expect PREVIEW_SHA256 --execute`. A changed file eTag, target, payload or operation invalidates the preview. This is a preflight guard, not an atomic lock: simultaneous changes can still conflict. Keep each write bounded and read back its result. The CLI verifies requested effects and records attempts in the existing private audit log without cell contents; failure is not evidence that nothing changed. Inspect the target before retrying an uncertain or unverified operation. Workbook mutations have no automatic CLI or PowerShell SDK retry and no rollback.
 
