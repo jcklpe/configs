@@ -17,8 +17,8 @@ Capture the agreed three-collection architecture and a reviewable migration plan
 - Both `log-kaizen` and `improve-agent-workflows` belong in `general-skills`, alongside `operate-lifeos`, `write-skills`, `track-changes`, and its proposed update companion.
 - Service use combines supported read/write/comment operations by coherent domain; provider authorization is the main shared dependency, with further sharing justified by actual code.
 - Project configuration lives inside its root-level `project-workflows/` submodule. Each adopting project gets a branch from adoption; the parent pins an exact child commit.
-- The requested privacy review is complete to the scope recorded in the conceptual document; historical cache findings remain unresolved. No migration has started at this baseline checkpoint.
-- The clean-tree request covers scoped checkpoints of the existing Loop retirement, Slack privacy edits, tool-skill corrections, and shared TODO updates; preserve their distinct work histories.
+- The requested privacy review and scoped baseline checkpoints are complete. A clean working tree was verified before implementation; historical cache findings remain unresolved.
+- The first implementation slice has relocated track-changes and write-skills, preserved existing client access through temporary file links, and added update-derived-skills with a recorded upstream baseline. The installer and source routing reflect the new owners; no upstream synchronization or new global install has happened.
 
 ## Project organization and principles
 The conceptual document owns decisions, rationale, boundaries, proposed folder structure, service mapping, and open choices. This checklist owns work state. Public notes must contain only portable architecture and public-safe examples; actual account details, private endpoints, credential files, and personal context stay out.
@@ -39,7 +39,6 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Define adjacent configuration schemas, per-skill examples, account selection, path resolution, and exact ignore rules.
 - [ ] Decide the selected global/client installations separately from source ownership; keep project adoption independent of the general collection.
 - [ ] Define Kaizen capture/review responsibilities and shared data/configuration contracts with both skills in general-skills.
-- [ ] Define the minimum upstream baseline/adaptation record for track-changes and the proposed update-derived-skills procedure.
 
 ### Agent-hands extraction
 - [ ] Establish the agent-hands repository/package structure and preserve appropriate attribution/history only after privacy review of material to be carried over.
@@ -63,8 +62,9 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Verify the branch/pin procedure and that required child commits are reachable by collaborators before any parent reference is published.
 
 ### General skills and LifeOS ownership
-- [ ] Move track-changes and write-skills into general-skills while preserving local authority, source provenance, and client accessibility.
 - [ ] Implement update-derived-skills around a known upstream baseline and intentional adaptations; reconcile track-changes only after checking its actual upstream/plugin compatibility.
+  - The maintenance procedure and structured record are implemented. The existing source note supplies a claimed baseline, not an independently verified comparison. Retrieve that baseline and check the actual upstream/plugin compatibility before completing the reconciliation portion of this item.
+- [ ] Repoint remaining live references and existing client installations to the moved general-skills owners, verify fresh client discovery, then remove the temporary compatibility links.
 - [ ] Replace lifeos-handoff with a thin operate-lifeos entry using ignored workspace pointers and vault-owned instructions.
 - [ ] Split the current Kaizen procedure into log-kaizen and improve-agent-workflows in general-skills; retain private routing and explicit approval for standing-rule changes.
 - [ ] Retire log-skills-feedback and repair all live references and installer links.
@@ -85,20 +85,27 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Complete human QA and a durable-guidance/dependency review before requesting spike closure; keep the spike active until closure is authorized.
 
 ## Ready for Human QA
-No implementation is ready for QA. After implementation is authorized and developed, prepare concrete checks for:
+The first slice has file-level verification; a newly started Codex/Claude session should still discover and load `track-changes` and `write-skills` through its existing installation. No restart is required merely to continue this migration, and the new maintenance skill has not been installed globally.
+
+As subsequent slices become ready, prepare concrete checks for:
 - Fresh-machine bootstrap for each claimed platform, including missing uv/Python and a single selected service.
 - Skill discovery and local-over-global selection in the actual agent clients.
 - Project clone/adoption, branch selection, local divergence, and upstream reconciliation.
 - General Markdown/PDF output and selected themes.
 - Existing LifeOS operations after ownership moves, with live writes only for specifically authorized targets.
 
-## Validation for this capture
-Check the paired frontmatter, relative links to existing owners, the exact TODO entry, agreed skill placement, and the distinction between decisions and open choices. Check that no implementation files changed and pre-existing working-tree changes remain intact. No service command, live write, install, new test suite, or upstream synchronization is needed to verify a documentation-only capture.
+## Validation
+The initial capture checks established paired frontmatter, relative links to existing owners, the exact TODO entry, agreed skill placement, and the distinction between decisions and open choices. That documentation-only checkpoint preserved pre-existing changes.
+
+The first implementation slice checks YAML frontmatter with the available Ruby parser, TOML provenance, moved content, compatibility and installed-client link resolution, installer syntax under Bash/Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run without PyYAML; do not report that validator as passed. No upstream synchronization, live service write, full installer run, or new test suite was performed.
 
 ## Done
+- [x] Move track-changes and write-skills into general-skills while preserving local authority, source provenance, and client accessibility. Existing Codex/Claude links resolve through temporary file symlinks; the installer targets the new owners. Supporting authoring metadata was preserved byte-for-byte.
+- [x] Define the minimum upstream baseline/adaptation record for track-changes and the proposed update-derived-skills procedure. Added `upstream.toml` with the existing source note's revision/date/release, explicit verification limits, and local preservation requirements. The companion procedure now exists; actual upstream reconciliation remains pending above.
+- [x] Commit the reviewed spike and existing authorized changes in scoped checkpoints, then verify a clean working tree before implementation. No push or history rewrite was performed.
 - [x] Obtain an explicit go-ahead for implementation and identify the first bounded migration slice. Planning approval is not implementation approval. The later 2026-10-24 request explicitly authorizes implementation after privacy review and a clean baseline; begin with general review/authoring skill relocation and derived-skill maintenance.
 - [x] Perform the initial repository privacy review before checkpointing. Scanned 300 current files and 3,708 reachable historical blobs with no size skips; no current credential-pattern hits or matches to 16 current secrets were found. Local configuration remains ignored. Historical cache candidates remain a separate unresolved issue; no keys were tested or history rewritten.
-- [x] Capture the agreed taxonomy, folder structure, skill breakdown, dependencies, configuration/distribution model, LifeOS boundary, open choices, and migration sequence in a conceptual spike. Saved 2026-10-24; implementation remains on hold.
-- [x] Create a separate operational checklist and add the spike to the root TODO index. Saved 2026-10-24; only the planning records are in scope.
+- [x] Capture the agreed taxonomy, folder structure, skill breakdown, dependencies, configuration/distribution model, LifeOS boundary, open choices, and migration sequence in a conceptual spike. Saved 2026-10-24 under the initial documentation-only authorization; implementation was authorized afterward.
+- [x] Create a separate operational checklist and add the spike to the root TODO index. Saved 2026-10-24 with only planning records in that initial scope.
 - [x] Verify the documentation capture. Frontmatter, relative links, fenced blocks, agreed general-skill placement, index uniqueness, and whitespace checks passed. The TODO delta is exactly one added entry; pre-existing modified files were preserved. Additional edits appeared in the existing Excel spike files during capture and were left alone. No implementation, commit, or push was performed.
 
