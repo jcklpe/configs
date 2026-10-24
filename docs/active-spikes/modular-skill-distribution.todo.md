@@ -38,7 +38,6 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Define supported platforms and onboarding prerequisites, including machines without uv, Python, or Bash.
 - [ ] Define adjacent configuration schemas, per-skill examples, account selection, path resolution, and exact ignore rules.
 - [ ] Decide the selected global/client installations separately from source ownership; keep project adoption independent of the general collection.
-- [ ] Define Kaizen capture/review responsibilities and shared data/configuration contracts with both skills in general-skills.
 
 ### Agent-hands extraction
 - [ ] Establish the agent-hands repository/package structure and preserve appropriate attribution/history only after privacy review of material to be carried over.
@@ -66,8 +65,7 @@ Future work spans configs, two new package repositories, and selected consumers.
   - The maintenance procedure and structured record are implemented. The existing source note supplies a claimed baseline, not an independently verified comparison. Retrieve that baseline and check the actual upstream/plugin compatibility before completing the reconciliation portion of this item.
 - [ ] Repoint remaining live references and existing client installations to the moved general-skills owners, verify fresh client discovery, then remove the temporary compatibility links.
 - [ ] Replace lifeos-handoff with a thin operate-lifeos entry using ignored workspace pointers and vault-owned instructions.
-- [ ] Split the current Kaizen procedure into log-kaizen and improve-agent-workflows in general-skills; retain private routing and explicit approval for standing-rule changes.
-- [ ] Retire log-skills-feedback and repair all live references and installer links.
+- [ ] Retire the temporary skills/kaizen source route after remaining private references have been repointed. Existing vault-local Kaizen copies retain local authority until deliberately migrated.
 - [ ] Move personal task-chain choices, account/resource mappings, snapshot/index destinations, combined-agenda orchestration, and résumé content/destination conventions into appropriate LifeOS procedures.
 - [ ] Separate Google and Microsoft calendar implementations; settle any neutral shared renderer before removing current combined-agenda behavior.
 - [ ] Verify the LifeOS adaptations use public neutral helpers without copying executable scripts, tokens, or private configuration into the vault.
@@ -100,6 +98,9 @@ The initial capture checks established paired frontmatter, relative links to exi
 The first implementation slice checks YAML frontmatter with the available Ruby parser, TOML provenance, moved content, compatibility and installed-client link resolution, installer syntax under Bash/Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run without PyYAML; do not report that validator as passed. No upstream synchronization, live service write, full installer run, or new test suite was performed.
 
 ## Done
+- [x] Define Kaizen capture/review responsibilities and shared data/configuration contracts with both skills in general-skills. Independent procedures share current-concerns/incident Markdown records and literal env keys; legacy JSON discovery remains for existing consumers. Invalid selected configuration does not fall back to another destination.
+- [x] Split the current Kaizen procedure into log-kaizen and improve-agent-workflows in general-skills; retain private routing and explicit approval for standing-rule changes. Verified YAML, private-file ignores, blank templates, existing destination access, owner-only local config permissions, installer syntax, and targeted client link resolution. No incident records or private paths were added to tracked files.
+- [x] Retire log-skills-feedback and repair all live references and installer links. Removed the compatibility files, updated active README/global/authoring guidance, and removed only installer-owned Codex/Claude aliases. Historical spike references remain history; a separate short kaizen route preserves old private source links.
 - [x] Correct the installer's directory-symlink replacement before further skill cutover. Temporary Bash/Zsh fixtures verify directory relinking without nesting, idempotency, dangling/fresh links, and preservation of real files/directories. No full installer run was needed.
 - [x] Move track-changes and write-skills into general-skills while preserving local authority, source provenance, and client accessibility. Existing Codex/Claude links resolve through temporary file symlinks; the installer targets the new owners. Supporting authoring metadata was preserved byte-for-byte.
 - [x] Define the minimum upstream baseline/adaptation record for track-changes and the proposed update-derived-skills procedure. Added `upstream.toml` with the existing source note's revision/date/release, explicit verification limits, and local preservation requirements. The companion procedure now exists; actual upstream reconciliation remains pending above.

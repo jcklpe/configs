@@ -41,11 +41,11 @@ The script backs up an existing config before linking it to `tabby/config.window
 Current project guidance lives in [docs/policies/](docs/policies/). Revise policies directly; Git and archived spike notes retain their history. [TODO.md](TODO.md) indexes active work, and [AGENTS.md](AGENTS.md) defines the documentation workflow.
 
 ## Private Kaizen
-The [Kaizen skill](skills/kaizen/SKILL.md) captures workflow incidents, checks relevant prior evidence, and prepares improvements for user approval. Global instructions activate it during ordinary work; it is not a background service. The installer exposes the skill to Codex and Claude. A private project can vendor the same skill and declare its own private current-concerns and incident files in its agent instructions.
+The [log-kaizen](general-skills/log-kaizen/SKILL.md) skill captures private workflow incidents. [improve-agent-workflows](general-skills/improve-agent-workflows/SKILL.md) checks relevant evidence, prepares proposals, and applies authorized improvements. Global instructions activate the appropriate procedure during ordinary work; neither is a background service. The installer exposes both to Codex and Claude as replacements for the prior combined Kaizen skill. Projects can adopt them separately and declare their own private stores.
 
-Keep records outside this public repository. Configure global `current` and `incidents` locations in a private JSON file selected by `KAIZEN_CONFIG`, or in `kaizen/locations.json` under `XDG_CONFIG_HOME` (the user's `.config` directory when unset). See the skill for the JSON shape and connector-only access. The installer does not create private records or copy machine-specific locations into this repo. If access is missing, the agent reports that capture was not completed rather than creating a public fallback.
+Keep records outside this public repository. Each skill's adjacent `.env.example` defines `KAIZEN_GLOBAL_CURRENT` and `KAIZEN_GLOBAL_INCIDENTS`; actual values belong in an ignored `.env`. `KAIZEN_ENV_FILE` can select a shared env file explicitly. Existing `KAIZEN_CONFIG`/XDG JSON configuration remains a migration fallback when no env source is selected or present. See either skill for exact precedence, privacy checks, and connector-only access. The installer does not create private records or copy configuration. Missing access is reported rather than replaced with a public fallback.
 
-The old `log-skills-feedback` name redirects to Kaizen. The former public intake is retired; changing its current contents does not remove past Git versions. Proposed rule changes still require user approval.
+The `log-skills-feedback` entry is removed. A temporary `skills/kaizen` route preserves old source links while consumers migrate. Removing current files does not remove past Git versions. Proposed rule changes still require user approval.
 
 ## Troubleshooting
 ### Prompts look broken
