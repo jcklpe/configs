@@ -33,3 +33,8 @@
 [submodule "plugins/powerlevel10k"]
 	path = plugins/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k.git
+
+[submodule "project-workflows"]
+	path = project-workflows
+	url = https://github.com/jcklpe/project-workflows.git
+	branch = codex/project-configs
