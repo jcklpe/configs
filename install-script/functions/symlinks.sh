@@ -8,12 +8,20 @@ create_symlink_if_needed() {
     local source="$1"
     local target="$2"
 
-    if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
-        echo_skip "✓ $target already linked correctly"
+    if [ -L "$target" ]; then
+        if [ "$(readlink "$target")" = "$source" ]; then
+            echo_skip "✓ $target already linked correctly"
+            return 0
+        fi
+        # Do not follow an existing directory link and create a nested link inside its destination.
+        ln -sfn "$source" "$target" || return 1
+    elif [ -e "$target" ]; then
+        printf '%s\n' "Refusing to replace an existing file or directory: $target" >&2
+        return 1
     else
-        ln -sf "$source" "$target"
-        echo "✓ Created symlink: $target → $source"
+        ln -s "$source" "$target" || return 1
     fi
+    echo "✓ Created symlink: $target → $source"
 }
 
 # Helper function to create directory if needed

@@ -336,6 +336,8 @@ The privacy review and scoped baseline checkpoints are complete, and the working
 Validation covered YAML frontmatter for all three skills, TOML parsing, installed and compatibility-link resolution, preservation of moved content, installer syntax under Bash and Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run because PyYAML was absent from the checked runtimes; frontmatter was parsed with the available Ruby YAML parser instead. No test suite, live service operation, full installer run, or new global installation was introduced. Runtime discovery in a newly started client and eventual bridge removal remain cutover checks.
 
 ## Current evidence and related work
+The continued implementation corrected the installer's directory-link replacement before further cutover. Existing symlinks are replaced without following their destination; real files and directories are preserved with an explicit refusal. Temporary Bash and Zsh fixtures verified relinking, repeated invocation, dangling/fresh links, and preservation of existing contents. No full installer or live service operation was run for this check.
+
 Read-only inspection during capture found the existing `skills/` library and `lifeos-tools/` implementation, the uv manifest, current spike/index conventions, and existing uncommitted changes. Those changes were preserved during capture, then reviewed and checkpointed under the later clean-baseline authorization. Loop retirement is committed with archived notes and must not be reintroduced. Current implementation state is recorded above; the remaining migration checklist is still active.
 
 Current owners and relevant work:
