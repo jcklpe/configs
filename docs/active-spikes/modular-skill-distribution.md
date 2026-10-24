@@ -1,0 +1,344 @@
+---
+attention: live
+opened: 2026-10-24
+tags: [skills, cli, distribution, architecture]
+---
+
+# Modular Skill Distribution
+Slug: `modular-skill-distribution`.
+
+Tasks: [modular-skill-distribution.todo.md](modular-skill-distribution.todo.md).
+
+## Status and authorization
+This spike captures the user's agreed architecture and migration intent from the design discussion through 2026-10-24. The initial request authorized documentation only. A subsequent instruction on 2026-10-24 authorizes a repository privacy check, committing the spike and checkpointing the existing work to a clean tree, then beginning implementation. Complete that baseline before starting extraction. Remote publication, history rewriting, credential changes, and unresolved external choices retain their own authorization boundaries.
+
+The taxonomy and distribution boundaries below are agreed. Detailed implementation choices and unfinished decisions are identified separately. The requested privacy review is recorded below; historical exposure is not resolved by a clean working tree. Agents never push under the current repository policy; creating an origin or proposing a distribution plan does not authorize a GitHub write, history rewrite, or publication.
+
+## Purpose and design rationale
+Make the useful capabilities independently adoptable without requiring the rest of the author's configuration or personal workspace. Someone should be able to obtain a skill collection, point an agent at its setup entry, configure only the services they want, and use it in an unrelated project.
+
+Keep the custom CLI implementations. The discussion did not establish that replacing them wholesale with MCPs would improve the system: existing capabilities, deterministic restrictions, and customization matter, and maintenance burden should be assessed from observed work rather than presumed. Include relevant MCPs alongside the CLIs where useful.
+
+Use skill folders as the discoverable distribution unit: concise action-oriented instructions, supporting code, assets, examples, and explicit dependencies. Use moderate granularity around a coherent service/domain, combining reads and supported writes in `use-*` skills. Comments are part of the relevant use skill. Avoid one skill for every API action, one giant platform skill, and a single runtime that makes every service depend on every other service.
+
+Separate three questions: where a skill's source lives, which collection someone downloads, and which agent/project installs or invokes it. A globally available skill need not be copied into every repository. A folder in a package does not imply authorization to execute its writes.
+
+## Agreed taxonomy
+| Collection | Ownership and distribution | Boundary |
+| --- | --- | --- |
+| `agent-hands` | Shareable repository, included in configs as one submodule; service/tool capabilities, provider authorization, setup, neutral CLI code, and relevant MCP documentation. | No required LifeOS vault, personal accounts, task conventions, or project-workflow package. |
+| `project-workflows` | Separate shareable repository, included in configs and adopting projects as a submodule. | The procedures needed to organize and continue a project's work; no automatic dependency on general skills or service tooling. |
+| `general-skills` | Ordinary configs folder initially, with individually installable procedures. | Includes the LifeOS entry point, skill authoring/review/maintenance, and both Kaizen skills. It is not brought into every adopting project. |
+
+The final placement is explicit: **both `log-kaizen` and `improve-agent-workflows` belong in `general-skills`, not `project-workflows`.** Their procedures can be adopted separately when wanted. `draft-approval-slate` belongs in `project-workflows`. `track-changes` and `write-skills` remain in `general-skills`.
+
+`project-workflows` is the settled collection name for this proposal, replacing earlier working labels `workflow-skills` and `project-management-skills`. Accordingly, the setup/update pair is `setup-project-workflows` and `update-project-workflows`. `improve-agent-workflows` retains the plural spelling used in the detailed proposal; its final trigger text and precise scope remain to be written.
+
+## Target folder structure
+All paths in these sketches are proposed. None of the new collections or skills has been created by capturing this spike.
+
+```text
+configs/
+├── agent-hands/                         # Submodule: independent shareable repo
+│   ├── README.md
+│   ├── mcp-integrations.md
+│   └── skills/
+│       ├── setup-agent-hands/
+│       ├── setup-google-services/
+│       ├── authorize-google/
+│       ├── use-gmail/
+│       ├── use-google-drive/
+│       ├── use-google-docs/
+│       ├── use-google-sheets/
+│       ├── use-google-calendar/
+│       ├── use-google-contacts/
+│       ├── setup-microsoft-services/
+│       ├── authorize-microsoft/
+│       ├── use-outlook-mail/
+│       ├── use-outlook-calendar/
+│       ├── use-outlook-contacts/
+│       ├── use-microsoft-files/
+│       ├── use-excel-workbooks/
+│       ├── use-planner/
+│       ├── setup-trello/
+│       ├── authorize-trello/
+│       ├── use-trello/
+│       ├── setup-slack/
+│       ├── authorize-slack/
+│       ├── use-slack-messages/
+│       ├── use-slack-lists/
+│       ├── setup-odoo/
+│       ├── authorize-odoo/
+│       ├── use-odoo-projects/
+│       ├── setup-github/
+│       ├── authorize-github/
+│       ├── use-github-issues/
+│       ├── use-github-projects/
+│       ├── use-github-pull-requests/
+│       ├── use-github-discussions/
+│       └── render-markdown-pdf/
+│           ├── SKILL.md
+│           ├── scripts/
+│           └── assets/themes/
+├── project-workflows/                   # Submodule: shared/default checkout
+│   ├── README.md
+│   ├── workflow.toml
+│   ├── .workflow.env.example
+│   ├── .workflow.env                    # Ignored machine-specific values
+│   ├── .gitignore
+│   └── skills/
+│       ├── setup-project-workflows/
+│       │   ├── SKILL.md
+│       │   └── assets/templates/
+│       ├── update-project-workflows/
+│       ├── run-project-spike/
+│       ├── triage-project-misc/
+│       ├── draft-approval-slate/
+│       ├── commit-work/
+│       ├── pin-issue/
+│       └── log-future-idea/
+├── general-skills/
+│   ├── operate-lifeos/
+│   ├── write-skills/
+│   ├── track-changes/
+│   ├── update-derived-skills/
+│   ├── log-kaizen/
+│   └── improve-agent-workflows/
+└── agents/
+    ├── AGENTS.global.md
+    └── integrations.md
+```
+
+The broad service breakdown is agreed; exact provider setup names, command entrypoints, and module internals are design proposals to settle during implementation planning. A separate authorization skill is useful where it owns actual shared provider machinery, not merely to duplicate an existing login command.
+
+An adopting project uses the collection directly at its root:
+
+```text
+example-project/
+├── .gitmodules
+├── AGENTS.md                            # Routes to adopted project instructions
+├── TODO.md
+├── docs/                                # This project's actual working history
+└── project-workflows/                   # Submodule pinned to the adopted commit
+    ├── README.md
+    ├── workflow.toml                    # Tracked on the project's branch
+    ├── .workflow.env.example            # Tracked configuration contract
+    ├── .workflow.env                    # Ignored local/private values
+    ├── .gitignore
+    └── skills/
+        └── …
+```
+
+Keep workflow configuration inside the submodule, not scattered across the parent root. Real project documentation stays in the parent; reusable templates stay in `setup-project-workflows/assets/templates/`. The parent still needs its own routing instructions and Git submodule metadata. A workflow branch must never accumulate the actual document history of unrelated adopting projects.
+
+## Project and general skill breakdown
+| Current source | Target | Intended change |
+| --- | --- | --- |
+| `skills/setup-project-docs` and `skills/setup-local-skills` | `project-workflows/skills/setup-project-workflows` | Combine documentation adoption, skill distribution, initial project branch, configuration, templates, and agent routing in one setup procedure. |
+| `skills/update-local-skills` | `project-workflows/skills/update-project-workflows` | Replace copy-versus-seed reconciliation with explicit submodule ancestry and project-branch reconciliation, preserving semantic judgment. |
+| `skills/run-project-spike` | Same skill in `project-workflows/skills/` | Preserve conceptual/task pairing, scope, history, QA, and closure conventions. |
+| `skills/triage-project-misc` | Same skill in `project-workflows/skills/` | Preserve scratch routing without requiring unrelated global skills. |
+| `skills/draft-approval-slate` | Same skill in `project-workflows/skills/` | Keep concrete review of proposed writes in the project operating package. |
+| `skills/commit-work` | Same skill in `project-workflows/skills/` | Preserve scoped commits and local authority; audit references to installed/global paths. |
+| `skills/pin-issue`, `skills/log-future-idea` | Same skills in `project-workflows/skills/` | Preserve the distinction between unresolved issues and future infrastructure ideas. |
+| `skills/lifeos-handoff` | `general-skills/operate-lifeos` | Broaden into a thin configured entry point; discover the vault and follow its authoritative instructions. Preserve useful handoff behavior through the vault's owning procedures rather than embedding its private structure. |
+| `skills/write-skills` | `general-skills/write-skills` | Keep skill-authoring guidance available independently of ordinary project operations. |
+| `skills/track-changes` | `general-skills/track-changes` | Preserve the locally adapted review workflow and explicit upstream provenance. |
+| No dedicated companion today | `general-skills/update-derived-skills` | Proposed maintenance procedure for upstream-derived skills, with track-changes as the concrete first case. |
+| `skills/kaizen` | `general-skills/log-kaizen` and `general-skills/improve-agent-workflows` | Separate incident capture from review and improvement work; both remain outside the project package. Preserve explicit user authority over standing-rule changes. |
+| `skills/log-skills-feedback` | Retire | Remove the compatibility entry and repair its references; do not carry an alias indefinitely. |
+
+Kaizen placement is settled; the detailed division of current-concern maintenance, incident schemas, configuration discovery, and review between the two skills remains to be designed. `log-kaizen` must not claim to improve a workflow merely by logging an incident. `improve-agent-workflows` consumes evidence and prepares or executes changes only within user authorization. Both use private configured destinations, with public-safe examples.
+
+The project package must function when none of these general skills is installed. Existing mandatory Kaizen references in project skills and exported guidance need deliberate treatment during migration; simply moving files does not make the dependency optional. Do not silently remove the user's current global preferences or project-specific rules.
+
+## Agent-hands service breakdown and dependencies
+These are preservation targets and operation boundaries, not claims that every API operation is currently implemented. `use-*` means “the supported operations in this domain,” not full write/delete coverage. Audit current commands and guardrails before extraction, including work in active spikes and uncommitted changes.
+
+| Provider/domain | Target use skills | Shared support and capability boundary |
+| --- | --- | --- |
+| Google mail | `use-gmail` | `authorize-google`; existing reads, labels, filing/archive behavior, filters, and other implemented mail operations. No new sending capability implied. |
+| Google files | `use-google-drive` | `authorize-google`; file discovery, metadata, reading/export/download, and supported file operations. Personal bounded-index selection and destinations move to LifeOS. |
+| Google documents | `use-google-docs` | `authorize-google`; native document reads and supported content changes, including comments in the same skill. |
+| Google spreadsheets | `use-google-sheets` | `authorize-google`; preserve currently implemented spreadsheet reading/rendering. New spreadsheet writes require their own capability decision. |
+| Google calendar | `use-google-calendar` | `authorize-google`; supported calendar/event reads and writes, time zones, attendees, recurrence, and event settings. No implicit Microsoft call. |
+| Google contacts | `use-google-contacts` | `authorize-google`; explicit Google provider scope, preserving supported lookup/contact operations. Personal cross-service aliases remain caller context. |
+| Microsoft mail, calendar, contacts | `use-outlook-mail`, `use-outlook-calendar`, `use-outlook-contacts` | `authorize-microsoft`; retain existing domain operations and bounded permissions. |
+| Microsoft files | `use-microsoft-files` | `authorize-microsoft`; OneDrive/SharePoint file transport, metadata, and supported file operations. Uploading a DOCX is not native Word document editing. |
+| Excel | `use-excel-workbooks` | `authorize-microsoft`; worksheet/table/range semantics and supported edits warrant a separate skill from generic file transport. |
+| Planner | `use-planner` | `authorize-microsoft`; supported plan/bucket/task reads and task writes, metadata, labels, and comments. |
+| Trello | `use-trello` | `authorize-trello`; boards/lists/cards, labels, checklists, comments, and neutral bidirectional linking/chain inspection. |
+| Slack | `use-slack-messages`, `use-slack-lists` | `authorize-slack`; messaging/conversation operations and Lists operations respectively. Preserve identity checks, discovery limits, and known comment/link limitations. |
+| Odoo | `use-odoo-projects` | `authorize-odoo`; project/stage/task reads and currently supported task writes/comments. |
+| GitHub | `use-github-issues`, `use-github-projects`, `use-github-pull-requests`, `use-github-discussions` | `authorize-github`, building on the existing `gh` route where appropriate; supported reads/writes only. Discussion writing is explicitly deferred. |
+| Local document rendering | `render-markdown-pdf` | No service authorization; explicit Markdown input, theme, output, and renderer dependencies. Generalization beyond the existing résumé pipeline must be demonstrated. |
+
+Existing entry points for extraction are `lifeos-tools/lifeos.sh`, `lib/common.sh`, `lib/google.sh` and Google helpers, `lib/m365*.sh`/`lib/m365*.py`/`lib/m365-graph.ps1`, `lib/trello.sh`, `lib/slack.sh`/`lib/slack.py`, `lib/odoo.sh`, `lib/github.sh`/`lib/github-render.py`, and `lib/resume.sh` with its theme assets. The current tool skills live under `lifeos-tools/skills/`. These paths identify current owners, not a requirement to preserve the dispatcher or directory shape.
+
+### Shared authorization, setup, and runtime
+Provider authorization is the main intended inter-skill dependency. `authorize-google` owns Google credential/token handling and refresh; `authorize-microsoft` owns the corresponding Microsoft authentication/cache mechanics. Other providers own their actual shared account support, using established clients where that avoids duplicating authentication.
+
+Setup and authorization have different triggers. `setup-agent-hands` helps a new user select and bootstrap capabilities; provider setup skills guide obtaining the needed application/account configuration; authorization skills maintain usable account access. Ordinary service use should not rerun onboarding or load all setup instructions.
+
+Skill instructions are the discoverable interface, not a substitute for code dependency declarations. Put supporting code and needed assets with the owning skill. Declare real Python/package dependencies, entrypoints, and configuration lookup explicitly. Prefer a service skill depending on its provider authorization support over one use skill importing another use skill just to acquire tokens.
+
+Do not force every common function into authorization to satisfy a slogan. HTTP transport, pagination, response normalization, error handling, or domain-specific helpers may be genuine additional sharing. First keep small helpers local; duplicate trivial code where that is simpler. Extract a narrow support library only when concrete overlap justifies it, document it, and avoid a central runtime that installs unrelated providers. Shared Gmail message parsing is not automatically a separate agent-facing skill; it may simply belong inside `use-gmail`.
+
+Limited shared provider support may carry a Python library while retaining a skill-facing setup/auth interface. The exact package names, import layout, lockfile boundaries, and invocation paths are still open. Do not implement a giant workspace environment just because everything ships in one repository.
+
+### Deterministic behavior versus guidance
+Tool code owns its actual restrictions: implemented operation set, bounded reads, explicit targets, ambiguity checks, applicable revision guards, identity checks, allowlists, existing preview/execute behavior, and honest partial-failure reporting. Skill text explains those mechanics. LifeOS selects targets and workflows. Preserve the actual per-command safety model; do not assume all existing tools share the same dry-run behavior.
+
+For Trello, the neutral capability is to link two items bidirectionally with explicit inputs and idempotent recovery/reporting. LifeOS supplies task-boundary meaning and successor conventions. “An atomic task” as a work unit is different from an all-or-nothing API transaction: two remote writes can partially complete. Preserve the useful compound operation without promising transactional behavior that the service does not provide.
+
+## Configuration and onboarding
+Keep configuration adjacent to the skill that owns it. Use tailored tracked examples, ignored real values, and structured token/cache files where their native format requires them. Do not add a `local/` or `tool-configuration/` layer solely to hold a few files.
+
+Illustrative provider folder, not a finalized schema:
+
+```text
+authorize-google/
+├── SKILL.md
+├── scripts/
+├── pyproject.toml
+├── uv.lock
+├── .env.example
+├── .env                         # Ignored
+├── oauth-client.example.json
+├── oauth-client.json            # Ignored
+├── token.json                   # Ignored, generated
+└── .gitignore
+```
+
+The examples must match the actual owning skill's needs, support configured account/profile names, and contain no real account identifiers. Never force structured Google tokens or Microsoft caches into environment-variable strings just to use one file format. Exact filenames, multi-account layout, and credential lookup precedence remain implementation choices. Add ignore rules before creating or moving real configuration; ignored does not mean previously tracked history disappears.
+
+Projects normally select a configured account/target without copying provider credentials into every project. Co-located per-skill credentials remain the user-facing default design; explicitly needed project-specific configuration remains possible. Load configuration for the invoked capability, not from global shell startup.
+
+`workflow.toml` contains public-safe project-wide choices and is tracked on the adopting project's branch. `.workflow.env` holds ignored local/private values; `.workflow.env.example` defines the local contract. Specify path resolution relative to the owning project/skill, not the caller's incidental working directory. Exact keys and discovery rules remain open.
+
+The current CLI already has a uv project and lockfile, with MSAL as a direct dependency and Python >=3.11 declared. The migration extends that into a modular distribution; it does not start from no environment management.
+
+`setup-agent-hands` should let a nondeveloper give the repository to an agent and proceed through a clear setup route:
+1. Detect the operating system, available tools, and requested capabilities.
+2. Explain and install uv when needed under the user's setup authorization; do not assume Python or Bash already exists.
+3. Provision a compatible Python version and locked dependencies for the selected capabilities.
+4. Check external executables required by those capabilities, such as shell utilities, `gh`, PowerShell, or PDF renderers; uv does not supply every external program.
+5. Run only the relevant provider setup and authorization procedure.
+6. Verify identity and a bounded read or local render, then expose the selected skills to the chosen agent client.
+
+A small native bootstrap for macOS/Linux and Windows is a proposed way to start when uv is absent. Exact supported OS matrix and whether remaining Bash glue is supplied or ported must be decided before promising Windows support. Keep Python; a Rust rewrite and compiled-binary distribution are deferred. Do not install every service dependency for a person who wants one service.
+
+## Submodules and project-specific branches
+Use two shareable repositories, one for `agent-hands` and one for `project-workflows`, rather than a repository/submodule per skill. Their source folders remain separable within each collection. `general-skills` stays an ordinary configs folder initially. No additional flattening symlink layer inside configs is necessary merely to make unlike source collections appear under one `skills/` directory.
+
+An adopting project gets its own project-specific branch from initial adoption, even when it initially points to the same commit as the shared default branch. Do not create an artificial localization commit just to establish the branch. The parent records the exact adopted submodule commit. The branch provides a place to develop project-specific history; it does not replace the parent's pin.
+
+`setup-project-workflows` combines the current docs and skill setup procedures. It must document the initial branch, submodule placement at the project root, configuration inside that submodule, reusable templates, existing-doc adaptation, parent routing, and reproducible cloning.
+
+`update-project-workflows` must document:
+- checking the current pin and branch, including selecting/creating the intended branch before edits when a submodule checkout has detached HEAD;
+- comparing shared upstream changes, project changes, and their shared ancestor;
+- preserving intentional local procedure changes, not restricting customization to TOML or environment values;
+- reconciling nonconflicting and conflicting behavior with agent/human judgment rather than treating text merge success as semantic agreement;
+- offering reusable local improvements upstream as focused changes, keeping project-only changes on the project's branch;
+- updating templates deliberately without overwriting existing project document history;
+- recording the accepted child commit by updating the parent's submodule pointer.
+
+A configured remote called `origin` is not sufficient by itself: the referenced child commits must actually be published to a remote collaborators can access. Parent-repository publication does not publish child history. Branch metadata in `.gitmodules` can identify an update target but is not a substitute for the exact commit pin or attached development branch. Under current policy, agents prepare changes and the human handles pushes.
+
+Repository ownership, remote URLs, branch naming, public/private visibility of project-specific branches, and license choices remain open. A public upstream must not receive private project configuration or sensitive local adaptations; use a suitable accessible remote if a project branch cannot be public.
+
+## General skill maintenance and global installation
+`operate-lifeos` is a workspace entry point. Its ignored configuration may identify the vault, potentially retaining `LIFEOS_VAULT_PATH` there. The reusable service tools must no longer require that variable. The entry skill reads the vault's actual instructions rather than copying private context or policies into public configs. It is not included with project-workflows.
+
+`track-changes` derives from the public Obsidian Track Changes reviewer skill. Its current Source Note records upstream commit `9d7a799`, dated 2026-09-23, plugin 2.2.0; this is recorded provenance, not a claim that the current upstream was audited during this capture. Preserve upstream attribution/license obligations and intentional local behavior.
+
+The proposed `update-derived-skills` companion maintains a known upstream baseline, compares new upstream changes and local adaptations against it, reconciles intentionally, checks compatibility with the relevant tool, and updates provenance. A short record of intentional local differences may help. It does not need to be installed in every project or loaded to review a document. This has a different trigger from updating a project's branch of an entire workflow collection.
+
+Both Kaizen skills are independently installable general procedures. Private store contents and actual routing values stay out of these shareable collections. Their optional use in a project must not secretly depend on access to LifeOS.
+
+Global installation is a separate unresolved selection, not implied by the taxonomy. Preserve existing useful access during migration, then explicitly decide which source folders are exposed to each client. Repo-local adopted procedures retain local authority. Use the existing simple symlink installation style unless actual complexity justifies a different mechanism. No new manifest engine is required merely to reorganize directories.
+
+## MCP catalog and installation selections
+`agent-hands/mcp-integrations.md` travels with the shareable package. It covers relevant service/tool MCPs, including useful capabilities without custom CLI equivalents: official sources, capability scope, supported clients, transport/install method, version information where meaningful, setup/authentication requirements, and overlap with CLI operations. Mark optional integrations clearly. A catalog entry is not a claim that the integration is installed, connected, authorized, or equivalent to the CLI's deterministic restrictions.
+
+`configs/agents/integrations.md` records the user's client selections and additional integrations outside that package's scope, referring to catalog entries rather than duplicating their instructions. Do not turn installation inventory into miscellaneous skill folders. Keep private endpoints and account values in ignored configuration.
+
+Distinguish standalone MCP servers from client-managed plugins that can bundle skills, tools, and connection flows. Listing an integration should not silently enable it or change the preferred route. A machine-readable manifest can be considered if a concrete installer needs one; a readable source/setup catalog is the initial plan. This spike does not reopen the wholesale MCP-replacement audit.
+
+## What moves into LifeOS
+| Concern currently coupled to tooling | Reusable capability retained | LifeOS ownership |
+| --- | --- | --- |
+| Vault opening, context suggestions, “sync everything,” and default snapshot paths | Explicit commands and caller-selected inputs/outputs | Workspace discovery, source selection, orchestration, refresh habits, and private destinations. |
+| Combined Google/Microsoft agenda | Independent provider reads and neutral data normalization/rendering helpers where justified | Which calendars to combine, presentation choices, missing-source expectations, and when to refresh the combined view. |
+| Bounded Drive/source orientation indexes | Bounded listing/search/export/render primitives | Which material matters to the workspace, index placement, curation, and refresh procedure. |
+| Task chains and successor conventions | Neutral bidirectional item links, chain inspection, metadata operations, and honest partial-failure recovery | Meaning of task boundaries, gates, successor criteria, preferred labels/lists, and workflow-specific text. |
+| Account/repository/calendar choices and local contact aliases | Explicit account profiles and target parameters | Personal mappings, cross-service identity preferences, chosen resources, and project context. |
+| Résumé source/content/destination conventions | General Markdown-to-PDF rendering with caller-supplied theme and output | Content selection, career evidence, output destinations, and résumé workflow. |
+| Approval preferences and operating policies | Actual command restrictions plus an accurate description of them | When the user's workflow permits a supported action and how the proposal is approved. |
+
+Keep useful deterministic compound helpers with the capability they help when the inputs and behavior can be neutral. The vault's prohibition on executable scripts remains: do not solve separation by copying Python or shell helpers into LifeOS. For example, a neutral Trello linking helper can stay with `use-trello`; a calendar normalization/rendering helper can operate on explicitly supplied data without choosing personal accounts. The precise home of any genuinely cross-provider renderer must be settled before removing the working combined-agenda path.
+
+Public document themes can stay with `render-markdown-pdf/assets/themes/`, including generalized résumé/letter/compact themes. Audit the existing theme assets and their relationship to the public theme repository before reuse; refreshing the résumé theme and selecting an academic-paper theme are follow-on design choices, not approved theme redesigns. Renaming the renderer alone does not prove arbitrary Markdown works.
+
+LifeOS skill names and divisions can be reconsidered when that migration is authorized; current ad hoc groupings are not sacred. This spike defines the boundary, not a new private-vault taxonomy.
+
+## Migration sequence after explicit go-ahead
+1. **Inventory and preservation baseline.** Map current commands, imports, configuration, credentials/cache locations, safety behavior, clients, symlinks, consumers, tests, and active work. Reconcile documented capability with implementation; avoid losing recently added Excel, Planner, Slack, calendar, or Trello behavior. Capture a recovery plan without moving anything.
+2. **Resolve extraction details.** Decide remote ownership/licensing, exact service/setup boundaries, independent dependency declarations, supported operating systems, configuration discovery, and the neutral helper homes. Finalize what is private versus distributable before copying material into new repositories.
+3. **Create modular service packages.** Extract provider support and service implementations with adjacent tailored examples and ignores. Replace vault requirements with explicit inputs. Preserve command behavior and guardrails while changing ownership. Add the setup entry and capability-specific environment provisioning.
+4. **Establish the project-workflow package.** Move the agreed eight skills, combine the two setup sources, implement the update procedure, and add templates/configuration. Remove mandatory dependencies on Kaizen/general skills while preserving explicit per-project adoption. Establish submodule/branch workflows.
+5. **Establish general skills.** Move review and authoring skills, create the thin configured LifeOS entry, split Kaizen capture/review, and add the bounded derived-skill maintenance procedure. Retire the old feedback compatibility entry and repair references.
+6. **Move personal conventions to their owners.** Update LifeOS procedures and neutral helper callers together under an authorized scope. Maintain usable calendar, task, snapshot, and résumé workflows throughout the transition. Do not put executable scripts or credentials in the vault.
+7. **Wire distribution and consumers.** Install chosen source skills through the existing client-linking approach; update configs documentation and current consumers. Pilot a project-specific branch in a designated project after approval. Do not require all existing projects to migrate in one sweep.
+8. **Verify and review privacy before commits/publication.** Inspect proposed content and history, examples, file paths, aliases, account references, templates, documentation, and real ignore behavior. Separate actual secrets from incidental identifiers when assessing exposure; determine whether any published material needs action. Do not rewrite history or force-push automatically. Earlier uncommitted work is separate scope.
+9. **Prepare reviewed release/cutover.** Confirm clean installation, dependency independence, project cloneability, recovery, and the selected global installation list. Prepare scoped commits only after the privacy hold is satisfied; publication and remote operations retain their own authorization. Retire obsolete entrypoints only after affected callers are repaired and verified.
+
+The sequence is a dependency order, not a promise of a single large cutover. A temporary compatibility route may be useful while consumers migrate, but its scope/retirement must be explicit. The user already wants `log-skills-feedback` retired; do not invent indefinite compatibility requirements for it.
+
+## Validation and non-goals
+Use meaningful checks tied to the migration risk: selected-service setup without unrelated providers, imports and help paths without vault access, existing guardrail behavior, parser/output compatibility, neutral rendering examples, idempotent setup, ignored real configuration with tracked examples, and project-submodule ancestry/pin/clone behavior. Reuse relevant existing checks. There are already tool-specific tests in this repository; the plan is not to add a ceremonial suite or a test for every trivial rename.
+
+Live writes require the relevant authorization and a concrete reviewable target; prefer bounded reads, dry runs where supported, and isolated/local validation until that exists. Do not claim a dry run proves a live write. Human QA is needed for actual first-machine onboarding, client skill discovery, document appearance, and real project update ergonomics.
+
+Non-goals: implement during this capture; replace all CLIs with MCPs; rewrite in Rust; add GitHub Discussion writes or native Word editing by implication; restore the retired Loop tool; create a repository per skill; add mandatory global dependencies to adopting projects; expose private account/workspace information; force every project into identical procedures; perform automatic history rewriting or push.
+
+## Open decisions
+- Exact repository owners/URLs, licenses, branch naming, and visibility for localized branches.
+- The global skill selection for each client; source placement does not settle installation.
+- Precise per-provider setup skill names, package/lockfile boundaries, executable interfaces, and supported OS/bootstrap matrix.
+- Kaizen split details and configuration contract, while preserving its settled general-skills placement.
+- The minimum provenance/adaptation record and exact scope for `update-derived-skills`.
+- Placement of any nontrivial shared transport or cross-provider rendering code without rebuilding a monolith.
+- Which existing project becomes the first migration pilot and how its current local procedures are retained.
+- Which MCPs belong in the portable catalog, installation/version tracking details, and actual client capabilities.
+- Theme provenance, possible academic theme, and generalized renderer acceptance examples.
+- Findings of the separate privacy/history pass; no decision that a force push or history removal is needed has been made.
+
+## Privacy review and implementation authorization, 2026-10-24
+A custom local, redacted scan examined 300 current tracked/nonignored files and all 3,708 reachable historical blobs across local refs (about 502 MB), including legacy binary IDE caches. No blob was skipped for size. It checked recognizable credential patterns and exact matches against 16 current secret values, without printing those values. No current-file credential-pattern hits or current-secret matches were found. All 18 inspected local tool-configuration files were ignored. This does not certify every possible secret format or private fact; submodule repositories, unreachable objects, image interpretation, and full semantic review of every historical file were outside scope.
+
+Historical caches under the retired WebStorm runtime tree contain 41 distinct Google API-key-shaped strings. The three key-bearing blobs are reachable from the locally cached origin/master history; no fresh remote publication check or key-validity test was performed. Ownership, restrictions, and current validity are unknown. Other credential-in-URL hits include synthetic negative tests and unclassified historical cache material. Do not copy the values into public records. The old cache tree is absent from the current working tree; an explicit ignore rule now prevents reintroducing that runtime directory.
+
+Targeted current review found public Git identity configuration, synthetic examples, and LifeOS-specific workflow/path references. Those references are not authentication secrets, but their coupling and unnecessary personal assumptions belong in the planned separation. The pending Slack edits remove private-conversation framing and named-account associations. The new spike records contain architecture and public-safe examples rather than private source content.
+
+The scan's detailed redacted findings remain outside this repository. Historical cleanup is an unresolved follow-up: determine ownership and desired remediation before considering rotation or a separately authorized history rewrite. No push or rewrite is authorized by this review. New package repositories should begin from reviewed source rather than importing the unrelated configs history.
+
+After the clean baseline, the first implementation slice is the general-skills review/authoring boundary: relocate track-changes and write-skills with compatibility for existing installed links, add the derived-skill update procedure, and update source routing. Kaizen/provider extraction and new remote repositories remain subsequent slices, so existing service tools stay usable during the initial cutover.
+
+## Current evidence and related work
+Read-only inspection during capture found the existing `skills/` library and `lifeos-tools/` implementation, the uv manifest, current spike/index conventions, and existing uncommitted changes. The Loop retirement is already present in the working tree with archived notes; it must not be reintroduced. Existing Slack and tool-skill changes also remain outside this documentation capture. The TODO index is shared and already modified; add only this spike's entry.
+
+Current owners and relevant work:
+- [Skill authoring guidance](../../skills/write-skills/SKILL.md), [project adoption](../../skills/setup-local-skills/SKILL.md), [project updates](../../skills/update-local-skills/SKILL.md), and [project documentation setup](../../skills/setup-project-docs/SKILL.md).
+- [Track Changes provenance](../../skills/track-changes/SKILL.md) and [current Kaizen procedure](../../skills/kaizen/SKILL.md).
+- [Tool README](../../lifeos-tools/README.md), [uv project](../../lifeos-tools/pyproject.toml), [secret/configuration hygiene](../policies/0001-secrets-and-local-env.md), and [client symlink installer](../../install-script/functions/symlinks.sh).
+- [Excel](lifeos-m365-excel.md), [Planner labels/comments](lifeos-planner-labels-comments.md), [Slack conversation reads](lifeos-slack-conversation-reads.md), [Slack List comments](lifeos-slack-list-comments.md), [calendar settings](lifeos-calendar-event-settings.md), and [Trello checklists](lifeos-trello-checklists.md) are capability-preservation inputs; consult their current task records before extraction.
+- [Loop retirement](../archive/lifeos-loop-headless.md), [earlier skill taxonomy](../archive/skill-taxonomy.md), and [earlier workflow refinement](../archive/project-workflow-refinement.md) supply history, not substitute operating rules.
+
+Reference sources for later implementation verification:
+- [Git submodule workflow](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and [gitmodules reference](https://git-scm.com/docs/gitmodules).
+- [uv installation](https://docs.astral.sh/uv/getting-started/installation/) and [Python provisioning](https://docs.astral.sh/uv/guides/install-python/).
+- [Track Changes upstream skill](https://github.com/philphilphil/obsidian-track-changes/blob/main/docs/SKILL.md).
+- [Existing public résumé theme repository](https://github.com/jcklpe/typora-resume-theme), supplied in the discussion; current correspondence with local assets remains unverified.
+

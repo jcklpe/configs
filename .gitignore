@@ -195,3 +195,6 @@ lifeos-tools/qa/
 
 # Retired public incident log; private records belong outside this repository.
 /agents/skills-feedback-log.md
+
+# IDE runtime caches can retain private source content and credentials.
+/jet-brains/**/system/
