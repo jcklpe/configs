@@ -1,3 +1,1 @@
-interface:
-  display_name: "Write Skills"
-  short_description: "Create or revise reusable agent skills with concise triggers and clear scope."
+../../../general-skills/write-skills/agents/openai.yaml
