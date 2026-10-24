@@ -81,7 +81,7 @@ lifeos trello delete-label --label NAME_OR_ID [--board B]             # board-wi
 
 - `--label` accepts a 24-hex label id or an exact label name (resolved on the board; ambiguous names error, use the id).
 - **Retirement:** at semester end, `delete-label` the course labels once their cards are Done. It removes the label from any card still carrying it — durable context lives in the card body, so this is lossless. Course labels use plain names (`Quant`, `HAI`, `Perspectives`, `DataWrangling`); Aslan does this manually.
-- Card title/label format is specified in the vault's `templates/trello-card.md`.
+- Card title/label format is specified in `$LIFEOS_VAULT_PATH/skills/map-work-to-trello/SKILL.md#card-format-and-labels`.
 
 Run `lifeos trello sync` after label writes to refresh the snapshot.
 
