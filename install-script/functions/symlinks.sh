@@ -24,6 +24,16 @@ create_symlink_if_needed() {
     echo "✓ Created symlink: $target → $source"
 }
 
+# Remove only installer-owned retired links; preserve user-managed files and other link targets.
+remove_symlink_if_owned() {
+    local source="$1"
+    local target="$2"
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+        rm -- "$target" || return 1
+        echo "✓ Removed retired symlink: $target"
+    fi
+}
+
 # Helper function to create directory if needed
 ensure_dir() {
     if [ ! -d "$1" ]; then
@@ -72,8 +82,10 @@ create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.codex/s
 create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.codex/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/skills/log-future-idea" "${HOME}/.codex/skills/log-future-idea"
 create_symlink_if_needed "${CONFIGS}/skills/pin-issue" "${HOME}/.codex/skills/pin-issue"
-create_symlink_if_needed "${CONFIGS}/skills/kaizen" "${HOME}/.codex/skills/kaizen"
-create_symlink_if_needed "${CONFIGS}/skills/log-skills-feedback" "${HOME}/.codex/skills/log-skills-feedback"
+create_symlink_if_needed "${CONFIGS}/general-skills/log-kaizen" "${HOME}/.codex/skills/log-kaizen"
+create_symlink_if_needed "${CONFIGS}/general-skills/improve-agent-workflows" "${HOME}/.codex/skills/improve-agent-workflows"
+remove_symlink_if_owned "${CONFIGS}/skills/kaizen" "${HOME}/.codex/skills/kaizen"
+remove_symlink_if_owned "${CONFIGS}/skills/log-skills-feedback" "${HOME}/.codex/skills/log-skills-feedback"
 create_symlink_if_needed "${CONFIGS}/general-skills/write-skills" "${HOME}/.codex/skills/write-skills"
 create_symlink_if_needed "${CONFIGS}/skills/draft-approval-slate" "${HOME}/.codex/skills/draft-approval-slate"
 create_symlink_if_needed "${CONFIGS}/general-skills/track-changes" "${HOME}/.codex/skills/track-changes"
@@ -101,8 +113,10 @@ create_symlink_if_needed "${CONFIGS}/skills/run-project-spike" "${HOME}/.claude/
 create_symlink_if_needed "${CONFIGS}/skills/triage-project-misc" "${HOME}/.claude/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/skills/log-future-idea" "${HOME}/.claude/skills/log-future-idea"
 create_symlink_if_needed "${CONFIGS}/skills/pin-issue" "${HOME}/.claude/skills/pin-issue"
-create_symlink_if_needed "${CONFIGS}/skills/kaizen" "${HOME}/.claude/skills/kaizen"
-create_symlink_if_needed "${CONFIGS}/skills/log-skills-feedback" "${HOME}/.claude/skills/log-skills-feedback"
+create_symlink_if_needed "${CONFIGS}/general-skills/log-kaizen" "${HOME}/.claude/skills/log-kaizen"
+create_symlink_if_needed "${CONFIGS}/general-skills/improve-agent-workflows" "${HOME}/.claude/skills/improve-agent-workflows"
+remove_symlink_if_owned "${CONFIGS}/skills/kaizen" "${HOME}/.claude/skills/kaizen"
+remove_symlink_if_owned "${CONFIGS}/skills/log-skills-feedback" "${HOME}/.claude/skills/log-skills-feedback"
 create_symlink_if_needed "${CONFIGS}/general-skills/write-skills" "${HOME}/.claude/skills/write-skills"
 create_symlink_if_needed "${CONFIGS}/skills/draft-approval-slate" "${HOME}/.claude/skills/draft-approval-slate"
 create_symlink_if_needed "${CONFIGS}/general-skills/track-changes" "${HOME}/.claude/skills/track-changes"

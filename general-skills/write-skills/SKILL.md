@@ -18,7 +18,7 @@ Start from observed need. A good skill usually comes from:
 
 Prefer updating an existing skill when the user-facing trigger is the same. Create a new skill when the trigger, workflow, or authority boundary is genuinely distinct.
 
-Before revising a skill, consult relevant private Kaizen concerns when the `kaizen` workflow and its designated store are available. A consequential observed failure can be captured and analyzed there even if the remedy is uncertain. If unavailable, report the evidence in the current authorized conversation; do not use a public scratch file as a private-incident fallback.
+Before revising a skill, consult relevant private Kaizen concerns through `improve-agent-workflows` when that optional procedure and its designated store are available. A consequential observed failure can be captured through `log-kaizen` even if the remedy is uncertain. If unavailable, report the evidence in the current authorized conversation; do not use a public scratch file as a private-incident fallback. Authoring does not require installing either companion skill.
 
 Incident capture and analysis do not authorize a skill change. Bring proposed standing-guidance changes to the user with exact scope and wording, and apply only what the user has approved. An explicit request to create or revise the skill already supplies approval within that request; Kaizen adds no repeated permission gate. After implementation, update the private concern with what changed and what remains untested.
 

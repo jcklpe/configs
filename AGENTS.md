@@ -75,7 +75,7 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Rough or historical notes | [docs/scratch/](docs/scratch/) (not authoritative), [docs/archive/](docs/archive/) (historical, not current rules) |
 | Unresolved issue to revisit later | [docs/pinned-issues.md](docs/pinned-issues.md) |
 | Conceptual future idea | [docs/scratch/future-ideas.md](docs/scratch/future-ideas.md) |
-| Kaizen incident learning | [skills/kaizen/SKILL.md](skills/kaizen/SKILL.md); records live in configured private stores, never this public repo |
+| Kaizen incident learning | [log-kaizen](general-skills/log-kaizen/SKILL.md) for capture and [improve-agent-workflows](general-skills/improve-agent-workflows/SKILL.md) for review; records live in configured private stores, never this public repo |
 
 ## Docs workflow
 Policies describe current rules, defaults, procedures, exceptions, and useful rationale. Revise them directly; Git preserves their evolution. Keep development chronology and abandoned alternatives in Git or archived spike notes rather than accumulating immutable ADRs. No fixed Context / Decision / Consequences format is required.

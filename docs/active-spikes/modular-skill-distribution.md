@@ -35,7 +35,7 @@ The final placement is explicit: **both `log-kaizen` and `improve-agent-workflow
 `project-workflows` is the settled collection name for this proposal, replacing earlier working labels `workflow-skills` and `project-management-skills`. Accordingly, the setup/update pair is `setup-project-workflows` and `update-project-workflows`. `improve-agent-workflows` retains the plural spelling used in the detailed proposal; its final trigger text and precise scope remain to be written.
 
 ## Target folder structure
-This is the target structure. The first implemented slice contains `general-skills/track-changes`, `general-skills/write-skills`, and `general-skills/update-derived-skills`; the other new collection/skill paths remain proposed. The initial documentation capture did not create implementation files.
+This is the target structure. Implemented general skills are `track-changes`, `write-skills`, `update-derived-skills`, `log-kaizen`, and `improve-agent-workflows`; the other new collection/skill paths remain proposed. The initial documentation capture did not create implementation files.
 
 ```text
 configs/
@@ -148,7 +148,7 @@ Keep workflow configuration inside the submodule, not scattered across the paren
 | `skills/kaizen` | `general-skills/log-kaizen` and `general-skills/improve-agent-workflows` | Separate incident capture from review and improvement work; both remain outside the project package. Preserve explicit user authority over standing-rule changes. |
 | `skills/log-skills-feedback` | Retire | Remove the compatibility entry and repair its references; do not carry an alias indefinitely. |
 
-Kaizen placement is settled; the detailed division of current-concern maintenance, incident schemas, configuration discovery, and review between the two skills remains to be designed. `log-kaizen` must not claim to improve a workflow merely by logging an incident. `improve-agent-workflows` consumes evidence and prepares or executes changes only within user authorization. Both use private configured destinations, with public-safe examples.
+Kaizen placement and the first implementation contract are settled. `log-kaizen` owns capture, dated follow-up evidence, and immediate concern links; `improve-agent-workflows` owns broader review, proposals, approved interventions, outcome tracking, and retention review. They use the same two-record data contract without requiring each other to be installed. `log-kaizen` does not claim to improve a workflow merely by logging an incident. Both use private configured destinations, with blank public configuration templates.
 
 The project package must function when none of these general skills is installed. Existing mandatory Kaizen references in project skills and exported guidance need deliberate treatment during migration; simply moving files does not make the dependency optional. Do not silently remove the user's current global preferences or project-specific rules.
 
@@ -307,7 +307,6 @@ Non-goals: implement during this capture; replace all CLIs with MCPs; rewrite in
 - Exact repository owners/URLs, licenses, branch naming, and visibility for localized branches.
 - The global skill selection for each client; source placement does not settle installation.
 - Precise per-provider setup skill names, package/lockfile boundaries, executable interfaces, and supported OS/bootstrap matrix.
-- Kaizen split details and configuration contract, while preserving its settled general-skills placement.
 - The minimum provenance/adaptation record and exact scope for `update-derived-skills`.
 - Placement of any nontrivial shared transport or cross-provider rendering code without rebuilding a monolith.
 - Which existing project becomes the first migration pilot and how its current local procedures are retained.
@@ -324,7 +323,7 @@ Targeted current review found public Git identity configuration, synthetic examp
 
 The scan's detailed redacted findings remain outside this repository. Historical cleanup is an unresolved follow-up: determine ownership and desired remediation before considering rotation or a separately authorized history rewrite. No push or rewrite is authorized by this review. New package repositories should begin from reviewed source rather than importing the unrelated configs history.
 
-After the clean baseline, the first implementation slice is the general-skills review/authoring boundary: relocate track-changes and write-skills with compatibility for existing installed links, add the derived-skill update procedure, and update source routing. Kaizen/provider extraction and new remote repositories remain subsequent slices, so existing service tools stay usable during the initial cutover.
+After the clean baseline, the first implementation slice is the general-skills review/authoring boundary: relocate track-changes and write-skills with compatibility for existing installed links, add the derived-skill update procedure, and update source routing. The Kaizen split was completed in the subsequent slice recorded below. Provider extraction and new remote repositories remain later work, so existing service tools stay usable during the initial cutover.
 
 ## First implementation slice, 2026-10-24
 The privacy review and scoped baseline checkpoints are complete, and the working tree was verified clean before implementation. Loop retirement, Slack privacy corrections, a Trello guidance-link correction, the spike records, and shared coordination updates were checkpointed according to their actual scope.
@@ -336,13 +335,15 @@ The privacy review and scoped baseline checkpoints are complete, and the working
 Validation covered YAML frontmatter for all three skills, TOML parsing, installed and compatibility-link resolution, preservation of moved content, installer syntax under Bash and Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run because PyYAML was absent from the checked runtimes; frontmatter was parsed with the available Ruby YAML parser instead. No test suite, live service operation, full installer run, or new global installation was introduced. Runtime discovery in a newly started client and eventual bridge removal remain cutover checks.
 
 ## Current evidence and related work
+The Kaizen split is implemented in `general-skills`. Each skill has an adjacent `.env.example` and explicit ignore rules. The configuration contract selects an explicit `KAIZEN_ENV_FILE`, otherwise the skill's `.env`, with legacy JSON discovery only when neither env source applies; invalid selected configuration never silently redirects capture. The existing private pointers were copied into ignored, owner-readable local files without moving records or changing legacy configuration. Public files contain no actual destinations. Global routing and the installer now select both replacement skills; targeted Codex/Claude links were updated and verified. The feedback compatibility entry is removed. A short `skills/kaizen` source route remains only for old private references until those consumers migrate.
+
 The continued implementation corrected the installer's directory-link replacement before further cutover. Existing symlinks are replaced without following their destination; real files and directories are preserved with an explicit refusal. Temporary Bash and Zsh fixtures verified relinking, repeated invocation, dangling/fresh links, and preservation of existing contents. No full installer or live service operation was run for this check.
 
 Read-only inspection during capture found the existing `skills/` library and `lifeos-tools/` implementation, the uv manifest, current spike/index conventions, and existing uncommitted changes. Those changes were preserved during capture, then reviewed and checkpointed under the later clean-baseline authorization. Loop retirement is committed with archived notes and must not be reintroduced. Current implementation state is recorded above; the remaining migration checklist is still active.
 
 Current owners and relevant work:
 - [Skill authoring guidance](../../general-skills/write-skills/SKILL.md), [project adoption](../../skills/setup-local-skills/SKILL.md), [project updates](../../skills/update-local-skills/SKILL.md), and [project documentation setup](../../skills/setup-project-docs/SKILL.md).
-- [Track Changes provenance](../../general-skills/track-changes/upstream.toml), [derived-skill updates](../../general-skills/update-derived-skills/SKILL.md), and [current Kaizen procedure](../../skills/kaizen/SKILL.md).
+- [Track Changes provenance](../../general-skills/track-changes/upstream.toml), [derived-skill updates](../../general-skills/update-derived-skills/SKILL.md), [Kaizen capture](../../general-skills/log-kaizen/SKILL.md), and [workflow review](../../general-skills/improve-agent-workflows/SKILL.md).
 - [Tool README](../../lifeos-tools/README.md), [uv project](../../lifeos-tools/pyproject.toml), [secret/configuration hygiene](../policies/0001-secrets-and-local-env.md), and [client symlink installer](../../install-script/functions/symlinks.sh).
 - [Excel](lifeos-m365-excel.md), [Planner labels/comments](lifeos-planner-labels-comments.md), [Slack conversation reads](lifeos-slack-conversation-reads.md), [Slack List comments](lifeos-slack-list-comments.md), [calendar settings](lifeos-calendar-event-settings.md), and [Trello checklists](lifeos-trello-checklists.md) are capability-preservation inputs; consult their current task records before extraction.
 - [Loop retirement](../archive/lifeos-loop-headless.md), [earlier skill taxonomy](../archive/skill-taxonomy.md), and [earlier workflow refinement](../archive/project-workflow-refinement.md) supply history, not substitute operating rules.

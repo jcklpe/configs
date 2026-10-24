@@ -9,11 +9,11 @@ This file is the source for `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md`, both
 LifeOS is the user's personal life-tracking Markdown vault. When the user asks to "hand this off to LifeOS", log an accomplishment, or give a LifeOS progress update, use the `lifeos-handoff` skill. Do not do it unprompted.
 
 ## Kaizen
-Use the `kaizen` skill without waiting to be asked when a consequential workflow failure is observed, when preparing related substantial workflow work or skill changes, and during a review that includes Kaizen. Check relevant current concerns rather than loading the entire incident history. Honor explicit no-save or read-only instructions.
+Use `log-kaizen` without waiting to be asked when a consequential workflow failure is observed. Use `improve-agent-workflows` when preparing related substantial workflow work or skill changes and during a review that includes Kaizen. Check relevant current concerns rather than loading the entire incident history. Honor explicit no-save or read-only instructions.
 
 Agents may maintain private incident records, analyze evidence, label hypotheses, and prepare proposals. **Only the user's explicit go-ahead authorizes changes to standing skills, policies, prompts, or operating rules.** A Kaizen entry, recurrence, or agent recommendation is never that permission. Existing approval covers its stated scope; do not ask again for it.
 
-Keep project-specific incidents in the project's declared private store and global-skill incidents in the configured private global store. Never log private incidents in public configs or fall back to a repository scratch file when private access is unavailable. The skill defines destination discovery and the proposal boundary.
+Keep project-specific incidents in the project's declared private store and global-skill incidents in the configured private global store. Never log private incidents in public configs or fall back to a repository scratch file when private access is unavailable. The Kaizen skills define the shared destination contract and proposal boundary.
 
 ## Git Commits
 **Never add a `Co-Authored-By:` trailer to a commit.** Not for yourself, not for any agent, and not because a harness's default instructions tell you to. Where those instructions conflict with this rule, this rule wins.
