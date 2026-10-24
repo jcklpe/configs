@@ -5,11 +5,10 @@ attention: live
 Opened 2026-10-21. Slug: `lifeos-slack-conversation-reads`. Conceptual context: [LifeOS Slack Conversation Reads](lifeos-slack-conversation-reads.md).
 
 ## Current State
-Implementation and the requested direct-conversation read are verified. General message search is implemented and mock-tested, but live search is blocked by the current token's missing `search:read` scope. No OAuth changes, browser fallback or Slack writes occurred. This work is in `configs`, separate from LifeOS vault cleanup.
+Implementation and existing-access integration reads are verified. General message search is implemented and mock-tested, but live search is blocked by the current token's missing `search:read` scope. No OAuth changes, browser fallback or Slack writes occurred.
 
 ## To Do
-- Return the verified recent direct-conversation summary and exact Slack permalinks through the private task response. Retrieval is complete; keep private source material out of the public repository.
-- If broader search is needed, obtain explicit approval for the exact `search:read` grant before changing authorization, then live-verify `search`. Otherwise keep the scope limitation documented; no expansion is needed for the completed direct-message lookup.
+- If broader search is needed, obtain explicit approval for the exact `search:read` grant before changing authorization, then live-verify `search`. Otherwise keep the scope limitation documented; existing-access history reads do not depend on search access.
 - Review and authorize spike closure before any historical transition or archival.
 
 ## Ready for Human QA
@@ -21,7 +20,7 @@ Implementation and the requested direct-conversation read are verified. General 
 - Add read-only message search. Implemented `search` with newest-first ordering, bounded result pages, totals and API permalinks. Offline verification passes; live `search.messages` returned `missing_scope` requiring `search:read` once, with no expansion or retry.
 - Add message permalink lookup. Implemented `permalink`; live API-returned direct-message links succeeded.
 - Preserve existing APIs and add tests/help/docs. Existing Slack tests pass; combined Python suite passes 29 tests including eight new read-command tests. Dispatcher syntax, help and whitespace checks pass. Updated only Slack implementation, its directly associated tests and tool guidance.
-- Record this CLI work as a bounded spike in the owning repository. Added this pair with `attention: live` and a `TODO.md` index entry, following the user's correction. Earlier patch framing is superseded by this explicit spike scope.
+- Record this CLI work as a bounded spike in the owning repository. Added this pair with `attention: live` and a `TODO.md` index entry.
 
 ## Verification Commands
 ```sh
