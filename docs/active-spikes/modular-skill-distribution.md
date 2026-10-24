@@ -32,10 +32,10 @@ Separate three questions: where a skill's source lives, which collection someone
 
 The final placement is explicit: **both `log-kaizen` and `improve-agent-workflows` belong in `general-skills`, not `project-workflows`.** Their procedures can be adopted separately when wanted. `draft-approval-slate` belongs in `project-workflows`. `track-changes` and `write-skills` remain in `general-skills`.
 
-`project-workflows` is the settled collection name for this proposal, replacing earlier working labels `workflow-skills` and `project-management-skills`. Accordingly, the setup/update pair is `setup-project-workflows` and `update-project-workflows`. `improve-agent-workflows` retains the plural spelling used in the detailed proposal; its final trigger text and precise scope remain to be written.
+`project-workflows` is the settled collection name for this proposal, replacing earlier working labels `workflow-skills` and `project-management-skills`. Accordingly, the setup/update pair is `setup-project-workflows` and `update-project-workflows`. `improve-agent-workflows` retains the plural spelling used in the detailed proposal; its capture/review scope and trigger text are now implemented.
 
 ## Target folder structure
-This is the target structure. All six `general-skills` entries now exist. The new `agent-hands` and `project-workflows` collection/skill paths remain proposed. The initial documentation capture did not create implementation files.
+This is the target structure. All six `general-skills` entries and the independent local `project-workflows` repository now exist. The `agent-hands` paths remain proposed; neither new GitHub repository has been created or published. The initial documentation capture did not create implementation files.
 
 ```text
 configs/
@@ -246,7 +246,7 @@ An adopting project gets its own project-specific branch from initial adoption, 
 
 A configured remote called `origin` is not sufficient by itself: the referenced child commits must actually be published to a remote collaborators can access. Parent-repository publication does not publish child history. Branch metadata in `.gitmodules` can identify an update target but is not a substitute for the exact commit pin or attached development branch. Under current policy, agents prepare changes and the human handles pushes.
 
-Repository ownership, remote URLs, branch naming, public/private visibility of project-specific branches, and license choices remain open. A public upstream must not receive private project configuration or sensitive local adaptations; use a suitable accessible remote if a project branch cannot be public.
+The user selected public repositories under `jcklpe` with AGPL licensing on 2026-10-24: `https://github.com/jcklpe/agent-hands.git` and `https://github.com/jcklpe/project-workflows.git`. New packages use AGPL-3.0-only and preserve applicable source notices. Shared branches start at `main`; local project branches use `codex/project-<slug>`. These destination choices do not create or publish the repositories. A public upstream must not receive private project configuration or sensitive local adaptations; use a suitable accessible remote if a project branch cannot be public.
 
 ## General skill maintenance and global installation
 `operate-lifeos` is a workspace entry point. Its ignored configuration may identify the vault, potentially retaining `LIFEOS_VAULT_PATH` there. The reusable service tools must no longer require that variable. The entry skill reads the vault's actual instructions rather than copying private context or policies into public configs. It is not included with project-workflows.
@@ -301,15 +301,15 @@ Use meaningful checks tied to the migration risk: selected-service setup without
 
 Live writes require the relevant authorization and a concrete reviewable target; prefer bounded reads, dry runs where supported, and isolated/local validation until that exists. Do not claim a dry run proves a live write. Human QA is needed for actual first-machine onboarding, client skill discovery, document appearance, and real project update ergonomics.
 
-Non-goals: implement during this capture; replace all CLIs with MCPs; rewrite in Rust; add GitHub Discussion writes or native Word editing by implication; restore the retired Loop tool; create a repository per skill; add mandatory global dependencies to adopting projects; expose private account/workspace information; force every project into identical procedures; perform automatic history rewriting or push.
+Non-goals: replace all CLIs with MCPs; rewrite in Rust; add GitHub Discussion writes or native Word editing by implication; restore the retired Loop tool; create a repository per skill; add mandatory global dependencies to adopting projects; expose private account/workspace information; force every project into identical procedures; perform automatic history rewriting or push.
 
 ## Open decisions
-- Exact repository owners/URLs, licenses, branch naming, and visibility for localized branches.
+- Private project adaptations need an appropriately accessible private remote; public project branches must contain only public-safe configuration and procedures.
 - The global skill selection for each client; source placement does not settle installation.
 - Precise per-provider setup skill names, package/lockfile boundaries, executable interfaces, and supported OS/bootstrap matrix.
 - The minimum provenance/adaptation record and exact scope for `update-derived-skills`.
 - Placement of any nontrivial shared transport or cross-provider rendering code without rebuilding a monolith.
-- Which existing project becomes the first migration pilot and how its current local procedures are retained.
+- Configs is the initial local workflow adopter. A later real upstream reconciliation and fresh collaborator clone remain to be verified after publication.
 - Which MCPs belong in the portable catalog, installation/version tracking details, and actual client capabilities.
 - Theme provenance, possible academic theme, and generalized renderer acceptance examples.
 - Findings of the separate privacy/history pass; no decision that a force push or history removal is needed has been made.
@@ -344,7 +344,7 @@ The continued implementation corrected the installer's directory-link replacemen
 Read-only inspection during capture found the existing `skills/` library and `lifeos-tools/` implementation, the uv manifest, current spike/index conventions, and existing uncommitted changes. Those changes were preserved during capture, then reviewed and checkpointed under the later clean-baseline authorization. Loop retirement is committed with archived notes and must not be reintroduced. Current implementation state is recorded above; the remaining migration checklist is still active.
 
 Current owners and relevant work:
-- [Skill authoring guidance](../../general-skills/write-skills/SKILL.md), [project adoption](../../skills/setup-local-skills/SKILL.md), [project updates](../../skills/update-local-skills/SKILL.md), and [project documentation setup](../../skills/setup-project-docs/SKILL.md).
+- [Skill authoring guidance](../../general-skills/write-skills/SKILL.md), [project adoption/documentation setup](../../project-workflows/skills/setup-project-workflows/SKILL.md), and [project updates](../../project-workflows/skills/update-project-workflows/SKILL.md).
 - [Track Changes provenance](../../general-skills/track-changes/upstream.toml), [derived-skill updates](../../general-skills/update-derived-skills/SKILL.md), [Kaizen capture](../../general-skills/log-kaizen/SKILL.md), and [workflow review](../../general-skills/improve-agent-workflows/SKILL.md).
 - [Tool README](../../lifeos-tools/README.md), [uv project](../../lifeos-tools/pyproject.toml), [secret/configuration hygiene](../policies/0001-secrets-and-local-env.md), and [client symlink installer](../../install-script/functions/symlinks.sh).
 - [Excel](lifeos-m365-excel.md), [Planner labels/comments](lifeos-planner-labels-comments.md), [Slack conversation reads](lifeos-slack-conversation-reads.md), [Slack List comments](lifeos-slack-list-comments.md), [calendar settings](lifeos-calendar-event-settings.md), and [Trello checklists](lifeos-trello-checklists.md) are capability-preservation inputs; consult their current task records before extraction.
@@ -356,3 +356,10 @@ Reference sources for later implementation verification:
 - [Track Changes upstream skill](https://github.com/philphilphil/obsidian-track-changes/blob/main/docs/SKILL.md).
 - [Existing public résumé theme repository](https://github.com/jcklpe/typora-resume-theme), supplied in the discussion; current correspondence with local assets remains unverified.
 
+
+## Project workflow extraction
+The collection is now an independent local Git repository, registered as a configs submodule with the selected public origin and a `codex/project-configs` branch. Shared `main` contains the reusable seed; the project branch records real configs adoption metadata in `workflow.toml`. No old configs history was imported. The original MIT notice is retained with the AGPL-3.0-only package license.
+
+Six existing procedures preserve their bodies and assets, with local precedence updated for adopted collections. The combined setup and replacement update procedures cover branch-from-adoption, templates, config, manual copied-skill migration, shared ancestry, semantic reconciliation, and exact parent pins. Real project documents stay in the parent. No general/service skill, Python environment, or credentials are required. Temporary source bridges preserve old callers while the installer and selected client links use the new owners.
+
+Ruby YAML, TOML, preserved body/asset comparison, relative references, Bash/Zsh syntax, privacy patterns, and standalone ignore checks passed. An isolated local Git fixture verified an initial same-commit project branch, divergent project configuration plus upstream changes, shared-ancestor merging, parent pinning, and a fresh recursive local clone. This does not establish GitHub reachability or real collaborator access. Neither new remote repository has been created or pushed; publishing the parent before its child commits are available would leave the submodule unavailable to fresh clones. The spike stays active for service extraction, publication preparation, and remaining QA.

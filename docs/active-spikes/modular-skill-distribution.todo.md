@@ -13,6 +13,7 @@ Concept: [modular-skill-distribution.md](modular-skill-distribution.md).
 Capture the agreed three-collection architecture and a reviewable migration plan. The initial 2026-10-24 request was documentation-only. The user's subsequent instruction authorizes the privacy review, scoped local checkpoints to a clean working tree, and then beginning implementation. Start with the general-skills review/authoring boundary after that baseline. Remote publication, historical rewriting, credential changes, and unresolved external choices are not implied.
 
 ## Current state
+- Public GitHub destinations and AGPL-3.0-only are selected. Project-workflows is an independent local submodule with a configs branch, combined setup/update skills, templates, and private-config ignores. Neither new remote repository has been created or published.
 - Architecture agreed: `agent-hands`, `project-workflows`, and `general-skills`; the first two are intended shareable submodules, and the third remains an ordinary configs folder initially.
 - Both `log-kaizen` and `improve-agent-workflows` belong in `general-skills`, alongside `operate-lifeos`, `write-skills`, `track-changes`, and its proposed update companion.
 - Service use combines supported read/write/comment operations by coherent domain; provider authorization is the main shared dependency, with further sharing justified by actual code.
@@ -34,7 +35,7 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Establish a recovery/cutover plan that preserves existing working tools and ignored local configuration; do not disturb unrelated work.
 
 ### Resolve implementation choices
-- [ ] Select repository ownership, remote URLs, licenses, default/project branch conventions, and visibility for project-specific changes.
+- [x] Select public `jcklpe/agent-hands` and `jcklpe/project-workflows` repositories with AGPL-3.0-only, shared `main`, and `codex/project-<slug>` branches. Keep sensitive project variants on separately accessible private remotes; remote creation/publication has not occurred.
 - [ ] Finalize provider setup/authorization boundaries, code import layout, entrypoints, lockfile boundaries, and narrow shared helpers.
 - [ ] Define supported platforms and onboarding prerequisites, including machines without uv, Python, or Bash.
 - [ ] Define adjacent configuration schemas, per-skill examples, account selection, path resolution, and exact ignore rules.
@@ -53,12 +54,12 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Write the relevant MCP catalog with official sources, client/plugin distinctions, optional setup, capability overlap, and verification status.
 
 ### Project-workflows distribution
-- [ ] Establish the project-workflows repository with the agreed project skills and no required general-skills or agent-hands dependency.
-- [ ] Combine setup-project-docs and setup-local-skills into setup-project-workflows with templates, branch-from-adoption, configuration, parent routing, and clone instructions.
-- [ ] Replace update-local-skills with update-project-workflows covering shared ancestry, semantic reconciliation, upstreamable changes, project-only divergence, and parent pointer updates.
-- [ ] Add workflow.toml, .workflow.env.example, and ignore rules for .workflow.env inside the submodule; keep real project docs in the parent.
-- [ ] Review mandatory Kaizen/authoring/general-skill references in project procedures and templates; make any adoption explicit without changing unrelated current policies.
-- [ ] Pilot initial adoption and a subsequent upstream/local reconciliation in an explicitly selected project, preserving its existing documents and conventions.
+- [x] Establish the project-workflows repository with the agreed project skills and no required general-skills or agent-hands dependency.
+- [x] Combine setup-project-docs and setup-local-skills into setup-project-workflows with templates, branch-from-adoption, configuration, parent routing, and clone instructions.
+- [x] Replace update-local-skills with update-project-workflows covering shared ancestry, semantic reconciliation, upstreamable changes, project-only divergence, and parent pointer updates.
+- [x] Add workflow.toml, .workflow.env.example, and ignore rules for .workflow.env inside the submodule; keep real project docs in the parent.
+- [x] Review mandatory Kaizen/authoring/general-skill references in project procedures and templates; make any adoption explicit without changing unrelated current policies.
+- [ ] Complete a subsequent real upstream/local reconciliation in the configs pilot. Initial local adoption is implemented; the isolated fixture verified ancestry/merge behavior, not a published upstream update.
 - [ ] Verify the branch/pin procedure and that required child commits are reachable by collaborators before any parent reference is published.
 
 ### General skills and LifeOS ownership
@@ -72,7 +73,7 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Verify the LifeOS adaptations use public neutral helpers without copying executable scripts, tokens, or private configuration into the vault.
 
 ### Installation, privacy, and cutover
-- [ ] Wire the two collections as submodules in configs and update approved client skill links; do not create an unnecessary flattening layer.
+- [ ] Finish wiring both collections as submodules in configs. Project-workflows is registered locally and its selected client links are updated; agent-hands extraction remains. Retire temporary source bridges after remaining consumers migrate.
 - [ ] Add configs/agents/integrations.md for client selections and extras, referencing the portable MCP catalog instead of duplicating it.
 - [ ] Update README, AGENTS routing, installer documentation, and affected consumers when the implementation actually changes their behavior.
 - [ ] Perform the privacy pass over proposed files and relevant Git history before committing/publishing this work; inspect examples, identifiers, paths, caches, private defaults, and real ignore behavior.
@@ -99,6 +100,7 @@ The initial capture checks established paired frontmatter, relative links to exi
 The first implementation slice checks YAML frontmatter with the available Ruby parser, TOML provenance, moved content, compatibility and installed-client link resolution, installer syntax under Bash/Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run without PyYAML; do not report that validator as passed. No upstream synchronization, live service write, full installer run, or new test suite was performed.
 
 ## Done
+- [x] Prepare and adopt the project-workflows collection locally. Preserve six procedure bodies/assets, add two adoption/update procedures and templates, retain source notices, configure the project branch and parent pin, and repair global routing. Verified frontmatter, TOML, links, shell syntax, privacy/ignore behavior, and an isolated branch/merge/recursive-clone fixture. Real remote availability and fresh client discovery remain unverified.
 - [x] Replace lifeos-handoff with a thin operate-lifeos entry using ignored workspace pointers and vault-owned instructions. Preserved the four prior handoff/attribution sections in the private owner, added private routing, verified YAML and links, and installed the replacement in Codex/Claude. Real pointers are ignored and owner-readable; the public example contains no private location. Unrelated vault edits remain untouched.
 - [x] Define Kaizen capture/review responsibilities and shared data/configuration contracts with both skills in general-skills. Independent procedures share current-concerns/incident Markdown records and literal env keys; legacy JSON discovery remains for existing consumers. Invalid selected configuration does not fall back to another destination.
 - [x] Split the current Kaizen procedure into log-kaizen and improve-agent-workflows in general-skills; retain private routing and explicit approval for standing-rule changes. Verified YAML, private-file ignores, blank templates, existing destination access, owner-only local config permissions, installer syntax, and targeted client link resolution. No incident records or private paths were added to tracked files.
