@@ -62,15 +62,15 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | `PATH` edit / env-manager init | [path.sh](path.sh) |
 | Package to install | [install-script/functions/brew-installs.sh](install-script/functions/brew-installs.sh) (mac/linuxbrew) or [dnf-installs.sh](install-script/functions/dnf-installs.sh) (Fedora) |
 | New dotfile symlinked into `$HOME` | [install-script/functions/symlinks.sh](install-script/functions/symlinks.sh) |
-| Project workflow seed during migration | `skills/<skill-name>/SKILL.md` |
+| Project workflow procedure | `project-workflows/skills/<skill-name>/SKILL.md`, with tracked choices in `project-workflows/workflow.toml` |
 | General review, authoring, or skill-maintenance procedure | `general-skills/<skill-name>/SKILL.md`; see [current collection](general-skills/README.md) |
 | Cross-repo agent preference | [agents/AGENTS.global.md](agents/AGENTS.global.md) — never repo-specific facts |
 | Tool-specific skill | beside the tool, e.g. `lifeos-tools/skills/<skill-name>/SKILL.md` |
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
 | Active work coordination | [TODO.md](TODO.md) |
-| Spike process / active spike docs | `skills/run-project-spike/SKILL.md`, then [docs/active-spikes/](docs/active-spikes/)`<topic>.md` + `<topic>.todo.md` |
-| Committing work as an agent | `skills/commit-work/SKILL.md`, policy in [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) |
+| Spike process / active spike docs | `project-workflows/skills/run-project-spike/SKILL.md`, then [docs/active-spikes/](docs/active-spikes/)`<topic>.md` + `<topic>.todo.md` |
+| Committing work as an agent | `project-workflows/skills/commit-work/SKILL.md`, policy in [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) |
 | Current durable policy | [docs/policies/](docs/policies/) |
 | Rough or historical notes | [docs/scratch/](docs/scratch/) (not authoritative), [docs/archive/](docs/archive/) (historical, not current rules) |
 | Unresolved issue to revisit later | [docs/pinned-issues.md](docs/pinned-issues.md) |
@@ -84,12 +84,12 @@ Use [TODO.md](TODO.md) as the short coordination map. Use active spike docs when
 
 Spikes earn their keep here because `configs/` is both personal and portable. A change often has to answer more than "does it work?" — it has to fit the shell load order, stay safe for a public repo, avoid secrets, remain idempotent across machines, and not slow down startup. That is more context than a ticket carries.
 
-Authority ladder: `AGENTS.md`, `README.md`, and current policies define durable repo rules; `skills/run-project-spike/SKILL.md` defines the spike process; active spike docs guide the current theme of work; `TODO.md` coordinates what is active and what is next.
+Authority ladder: `AGENTS.md`, `README.md`, and current policies define durable repo rules; `project-workflows/skills/run-project-spike/SKILL.md` defines the spike process; active spike docs guide the current theme of work; `TODO.md` coordinates what is active and what is next.
 
 ## Skills workflow
-Project workflow seeds remain in [skills/](skills/) during the staged migration. General review, authoring, and derived-skill maintenance live in [general-skills/](general-skills/README.md). Keep source ownership distinct from client installation and project adoption; general skills are not automatically dependencies of every project. Temporary links for the moved review/authoring skills preserve existing installations and references until those consumers are repointed.
+Project workflows live in the independent [project-workflows/](project-workflows/README.md) submodule. This checkout uses its configs project branch; the parent Git pin records the exact adopted revision. Read [workflow.toml](project-workflows/workflow.toml) for this project's document locations. Use [setup-project-workflows](project-workflows/skills/setup-project-workflows/SKILL.md) for adoption/docs setup and [update-project-workflows](project-workflows/skills/update-project-workflows/SKILL.md) for ancestry-aware updates that preserve local differences.
 
-Until the project-workflows submodule adoption procedure is implemented, use the existing setup-local-skills/update-local-skills procedures for authorized project copies, including complete supporting files. Repo-local skills are project authority; global skills are fallback seed material. The [modular distribution spike](docs/active-spikes/modular-skill-distribution.md) records the intended submodule transition; a proposed layout is not evidence that it is already installed.
+General procedures live independently in [general-skills/](general-skills/README.md). Source ownership, global client installation, and project adoption are separate. Temporary old source routes preserve existing references; new routing should use the actual owners. The [modular distribution spike](docs/active-spikes/modular-skill-distribution.md) tracks remaining service extraction and remote publication. Until the new child commits are published by the user, fresh remote recursive cloning cannot reproduce this local migration.
 
 The installer exposes selected global Codex skills with explicit symlink calls in
 [symlinks.sh](install-script/functions/symlinks.sh). Keep that list as simple direct
@@ -97,7 +97,7 @@ The installer exposes selected global Codex skills with explicit symlink calls i
 allowlist parser unless the manual list becomes genuinely painful.
 
 ## Git and commits
-Agents may commit in this repo. Agents may never push. The line is reversibility: an unpushed commit costs nothing to undo, a push cannot be taken back. See [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) for the full rule and `skills/commit-work/SKILL.md` for how.
+Agents may commit in this repo. Agents may never push. The line is reversibility: an unpushed commit costs nothing to undo, a push cannot be taken back. See [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) for the full rule and `project-workflows/skills/commit-work/SKILL.md` for how.
 
 **Never add a `Co-Authored-By:` trailer.** Commits here are the user's alone — they are the one who answers for them. This holds even when a harness's default instructions say otherwise. The same rule is stated in [agents/AGENTS.global.md](agents/AGENTS.global.md), because it applies in every repo, not just this one.
 

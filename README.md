@@ -26,7 +26,7 @@ All install scripts are **idempotent** - safe to run multiple times.
 - **Shell:** [zsh](https://www.zsh.org/) (primary), bash (fallback)
 - **Terminal:** [Tabby](https://tabby.sh/), [WezTerm](https://wezfurlong.org/wezterm/)
 - **Editor:** [VS Code](https://code.visualstudio.com/), [Micro](https://micro-editor.github.io/)
-- **Agent skills:** project workflow seeds currently live in `skills/`; independently usable review, authoring, and derived-skill maintenance procedures live in [general-skills/](general-skills/README.md). Selected skills are symlinked into Codex and Claude by `symlinks.sh`.
+- **Agent skills:** project procedures live in the [project-workflows submodule](project-workflows/README.md); independently usable review, authoring, and derived-skill maintenance procedures live in [general-skills/](general-skills/README.md). Selected skills are symlinked into Codex and Claude by `symlinks.sh`.
 
 ## Windows Tabby
 Windows Tabby reads `%APPDATA%\tabby\config.yaml`, separately from the Linux config inside WSL. Close Tabby, then run this in an administrator PowerShell from the Windows configs checkout:
@@ -54,3 +54,8 @@ The `log-skills-feedback` entry is removed. A temporary `skills/kaizen` route pr
 
 ### Homebrew not found after install
 Run `source ~/.zshrc` or open a new terminal session.
+
+## Workflow package checkout
+This repository pins `project-workflows/` independently. Its configuration stays inside that folder; actual configs documentation remains here. Use [setup-project-workflows](project-workflows/skills/setup-project-workflows/SKILL.md) and [update-project-workflows](project-workflows/skills/update-project-workflows/SKILL.md) for adoption and reconciliation. Global client links select these procedures without installing general or service skills into every adopting project.
+
+The new public GitHub destination is selected, but its repository and commits have not been published. A fresh remote clone cannot yet initialize this new submodule. After publication, `git submodule update --init --recursive` restores recorded revisions; select the intended project branch before editing the child. Publication is a separate human step, and the local parent pin does not make child commits remotely accessible.
