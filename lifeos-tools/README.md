@@ -3,6 +3,11 @@ Small local helpers for pulling external source data into the private LifeOS vau
 
 The vault and real secrets are local-only. This folder commits public-safe scripts and fake example files.
 
+## Staged modular extraction
+Odoo now delegates to the independent [Agent Hands collection](../agent-hands/README.md). Existing `lifeos odoo` calls retain their current env/account paths; new standalone users can configure only [authorize-odoo](../agent-hands/skills/authorize-odoo/SKILL.md) and [use-odoo-projects](../agent-hands/skills/use-odoo-projects/SKILL.md), without the vault or other providers. Existing private configuration has not been copied or rewritten. Other service implementations remain here until their own extraction checks pass.
+
+The local submodule is prepared but not published. A fresh remote checkout cannot yet obtain it; the parent repository must not be published ahead of its child commits.
+
 ## Setup
 Copy the example env file and fill in local values:
 
