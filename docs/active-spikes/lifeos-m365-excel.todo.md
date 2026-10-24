@@ -5,7 +5,7 @@ attention: live
 Concept: [lifeos-m365-excel](lifeos-m365-excel.md).
 
 ## Current state
-The command group is implemented. Managed-account worksheet, table and four-cell range reads passed on October 22, 2026, as did a dry-run sheet-creation preview. No authentication change or live workbook mutation was made. Public records intentionally omit workbook IDs, source data and tenant identity. The shared root `TODO.md` also contains unrelated in-progress changes; leave that mixed index out of this spike's implementation commit.
+The command group is implemented and its live QA passed on October 24, 2026. All six mutation commands completed with verified readback in a user-selected test workbook while the user kept it open in Excel in the browser. The user confirmed that the initial cell/formula edit appeared without refreshing. Existing authentication was reused unchanged. Public records intentionally omit workbook IDs, source data and tenant identity. Ready for closure review; the pair remains active until archival is authorized. Shared coordination and tool-documentation files contain unrelated in-progress changes, so do not sweep their full diffs into this spike's checkpoint.
 
 ## Done
 - Add bounded worksheet/table discovery and range reads using the existing Graph transport. Implemented `sheets`, `tables`, `read-range` and `table-range`; incomplete/paginated collections and oversized ranges fail rather than silently truncate.
@@ -14,9 +14,12 @@ The command group is implemented. Managed-account worksheet, table and four-cell
 - Document commands, existing-auth requirements, coauthoring limits and recovery behavior. CLI help, README and the M365 tool skill describe the surface and honest verification limits. README file scopes corrected to the existing implementation's `Files.ReadWrite.All`; no requested-scope code was changed.
 - Probe workbook read access using existing account consent; preserve tenant-specific results privately. The first attempt hit local sandbox access to the existing authentication cache; the same read succeeded through the approved execution path. Successful file access was not assumed to prove workbook access. All live probes were reads or dry runs.
 
-## Ready for human QA
-- Verify an authorized live edit appears in Excel in the browser while it remains open. Do not equate a successful read or offline test with this result.
-- Verify Graph mutation behavior for the six supported write commands in real work, especially formula normalization, table append and format units. No live mutation is claimed yet.
+## Completed live QA — October 24, 2026
+- Verify an authorized live edit appears in Excel in the browser while it remains open. Do not equate a successful read or offline test with this result. Completed: the user explicitly confirmed the edit appeared without refreshing. The server readback separately verified the written values, formula and its calculated result.
+- Verify Graph mutation behavior for the six supported write commands in real work, especially formula normalization, table append and format units. Completed for representative inputs: `write-range` saved mixed values, a formula calculating 42 and two-decimal number formats; `add-table` preserved the source values/formula; `update-table` renamed the table and verified it through its stable ID; `append-rows` added one row while preserving existing values/formula; `format-range` read back column width 180, row height 24 and wrapping; `add-sheet` created the named worksheet. Every mutation used a reviewed dry run and fingerprint. These checks do not establish every formula-normalization case, every font/fill property, or same-cell simultaneous-edit safety.
+
+## Closure review
+No remaining implementation or live-QA blocker was found. The maintained command reference is [Direct Excel edits](../../lifeos-tools/README.md#direct-excel-edits), with operating guidance in the [M365 skill](../../lifeos-tools/skills/lifeos-m365/SKILL.md#direct-excel-workbook-operations). No successor spike is needed. Prepare the archival summary for user review before moving the pair or marking it historical.
 
 ## Constraints
-No delete, clear, move, sharing, generic Graph surface, new credentials, consent change, automatic mutation retry, or production workbook rewrite. Use synthetic data in public examples and tests. Keep this spike active pending live write/browser QA and explicit closure.
+No delete, clear, move, sharing, generic Graph surface, new credentials, consent change, automatic mutation retry, or production workbook rewrite. Use synthetic data in public examples and tests. The open-browser result verifies this session; preflight checks are still not atomic locks. Keep this spike active pending explicit closure.
