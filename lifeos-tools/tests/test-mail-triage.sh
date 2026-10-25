@@ -19,8 +19,8 @@ LIFEOS_DAYS_AHEAD=30
 
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-mail-triage-test.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
-LIFEOS_MAIL_AUDIT_LOG="${WORK}/audit.jsonl"
-export LIFEOS_MAIL_AUDIT_LOG
+M365_MAIL_AUDIT_LOG="${WORK}/audit.jsonl"
+export M365_MAIL_AUDIT_LOG
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 expect_fail() { if "$@" > "${WORK}/out.txt" 2> "${WORK}/err.txt"; then fail "expected failure: $*"; fi; }
@@ -111,7 +111,7 @@ M365_ACCOUNTS_PATH="${WORK}/m365-write.json"
 _m365_mail_archive ut --message msg-inbox --execute > "${WORK}/moved.txt"
 grep -F "new message_id: new-msg-inbox" "${WORK}/moved.txt" >/dev/null || fail "move prints the new ID"
 grep -F "confirmed by readback" "${WORK}/moved.txt" >/dev/null || fail "move is confirmed by readback"
-jq -e -s 'length == 1 and .[0].action == "archive" and .[0].new_message_id == "new-msg-inbox" and .[0].verified == true' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null || fail "move is written to the audit log"
+jq -e -s 'length == 1 and .[0].action == "archive" and .[0].new_message_id == "new-msg-inbox" and .[0].verified == true' "$M365_MAIL_AUDIT_LOG" >/dev/null || fail "move is written to the audit log"
 
 printf 'msg-inbox\n\n# comment\nmsg-inbox\n' > "${WORK}/ids.txt"
 _m365_mail_move ut --ids-file "${WORK}/ids.txt" --folder receipts > "${WORK}/ids-plan.txt"
@@ -161,7 +161,7 @@ _m365_mail_category_cmd uncategorize ut --category HAI --message msg-a --execute
 jq -e '.["msg-a"] == ["Existing"]' "${WORK}/cats.json" >/dev/null || fail "uncategorize removes only that category, case-insensitively"
 expect_fail _m365_mail_category_cmd uncategorize ut --category hai --message msg-a
 grep -F "already lack" "${WORK}/err.txt" >/dev/null || fail "removing an absent category is refused"
-jq -e -s '[.[] | select(.action == "categorize" or .action == "uncategorize")] | length == 3 and all(.verified)' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null || fail "category changes are audit-logged"
+jq -e -s '[.[] | select(.action == "categorize" or .action == "uncategorize")] | length == 3 and all(.verified)' "$M365_MAIL_AUDIT_LOG" >/dev/null || fail "category changes are audit-logged"
 
 bash "${SCRIPT_DIR}/../agent-hands/skills/use-gmail/tests/test-triage.sh"
 
