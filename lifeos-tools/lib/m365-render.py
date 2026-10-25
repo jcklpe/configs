@@ -2,6 +2,8 @@
 """Render bounded Microsoft Graph mail, calendar, contact, and Planner snapshots, and single mail messages."""
 
 import argparse
+from pathlib import Path
+import runpy
 import html
 import json
 import re
@@ -214,63 +216,9 @@ def render_message(args, message):
     return "\n".join(lines).rstrip() + "\n"
 
 
-def event_start(event):
-    start = event.get("start") or {}
-    return start.get("dateTime") or ""
 
-
-def render_calendar(args, data):
-    lines = [
-        f"# Microsoft 365 Calendar - {args.alias}",
-        "",
-        f"Last refreshed: {args.refreshed}",
-        "",
-        f"Account email: `{args.email}`",
-        "",
-        f"Window: {args.start} to {args.end}",
-        "",
-        f"Response time zone: `{args.timezone}`",
-        "",
-        "## Events",
-        "",
-    ]
-    flattened = []
-    for calendar in data.get("calendars") or []:
-        for event in calendar.get("events") or []:
-            flattened.append((calendar, event))
-    flattened.sort(key=lambda item: event_start(item[1]))
-    if not flattened:
-        lines.append("_No events matched this calendar window._")
-        return "\n".join(lines) + "\n"
-    for calendar, event in flattened:
-        start = event.get("start") or {}
-        end = event.get("end") or {}
-        body = event.get("body") or {}
-        description = truncate(clean_text(body.get("content") or event.get("bodyPreview") or "", body.get("contentType")), args.description_limit)
-        attendees = [address(item) for item in event.get("attendees") or []]
-        lines.extend(
-            [
-                f"### {start.get('dateTime') or 'unknown time'} - {event.get('subject') or '(untitled event)'}",
-                "",
-                f"- Calendar: {calendar.get('name') or calendar.get('id') or 'Calendar'}",
-                f"- Calendar ID: `{calendar.get('id') or ''}`",
-                f"- Event ID: `{event.get('id') or ''}`",
-                f"- Start: {start.get('dateTime') or ''} ({start.get('timeZone') or args.timezone})",
-                f"- End: {end.get('dateTime') or ''} ({end.get('timeZone') or args.timezone})",
-                f"- All day: {'yes' if event.get('isAllDay') else 'no'}",
-                f"- Location: {(event.get('location') or {}).get('displayName') or ''}",
-                f"- Organizer: {address(event.get('organizer'))}",
-                f"- Attendees: {', '.join(filter(None, attendees))}",
-                f"- Online meeting: {'yes' if event.get('isOnlineMeeting') else 'no'}",
-            ]
-        )
-        if event.get("webLink"):
-            lines.append(f"- Outlook: {event['webLink']}")
-        if description:
-            lines.extend(["- Description:", "", quote(description), ""])
-        else:
-            lines.append("")
-    return "\n".join(lines).rstrip() + "\n"
+_calendar = runpy.run_path(str(Path(__file__).resolve().parents[2] / "agent-hands/skills/use-outlook-calendar/scripts/render.py"))
+render_calendar = _calendar["render_calendar"]
 
 
 from pathlib import Path
