@@ -175,7 +175,7 @@ Usage:
   ./lifeos.sh slack lists comment ALIAS LIST_ID ITEM_ID [--channel ID | --url COMMENT_URL] (--text TEXT | --text-file FILE) [--execute]
   ./lifeos.sh slack lists create ALIAS LIST_ID --field NAME=VALUE... [--parent ITEM_ID] [--execute]
   ./lifeos.sh slack lists update ALIAS LIST_ID ITEM_ID --field NAME=VALUE... [--execute]
-  ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--open]
+  ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--asset-dir DIR] [--open]
   ./lifeos.sh github list-repos
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
   ./lifeos.sh github create-issue --repo ALIAS_OR_OWNER/REPO --title TITLE [--body TEXT | --body-file FILE] [--label NAME]... [--assignee LOGIN]... [--assign-me] [--execute]
@@ -220,9 +220,8 @@ _doctor() {
     _check_command jq || issues=$((issues + 1))
     _check_command python3 || issues=$((issues + 1))
 
-    # Resume render pipeline (optional feature): pandoc + weasyprint.
+    # Optional PDF renderer: Pandoc plus the capability-local uv environment and native Pango.
     _check_command pandoc
-    _check_command weasyprint
 
     # Python env for lib/*.py: uv-managed venv preferred, system python3 as fallback.
     _check_command uv
