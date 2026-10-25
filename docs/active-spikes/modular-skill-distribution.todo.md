@@ -13,6 +13,7 @@ Concept: [modular-skill-distribution.md](modular-skill-distribution.md).
 Capture the agreed three-collection architecture and a reviewable migration plan. The initial 2026-10-24 request was documentation-only. The user's subsequent instruction authorizes the privacy review, scoped local checkpoints to a clean working tree, and then beginning implementation. Start with the general-skills review/authoring boundary after that baseline. Remote publication, historical rewriting, credential changes, and unresolved external choices are not implied.
 
 ## Current state
+- Slack messaging and Lists now have independent Python entrypoints sharing only provider support, tailored ignored configuration, setup guidance, and per-capability uv locks. Existing commands retain their old private configuration and snapshot routing. Existing offline checks and isolated capability checks passed; no live write or credential migration occurred.
 - Agent Hands now has an independent local repository with Odoo provider support, bounded operations, and setup skills. The old command delegates to extracted code without migrating private config. Offline checks passed in isolation; no live service operation or remote publication occurred.
 - Public GitHub destinations and AGPL-3.0-only are selected. Project-workflows is an independent local submodule with a configs branch, combined setup/update skills, templates, and private-config ignores. Neither new remote repository has been created or published.
 - Architecture agreed: `agent-hands`, `project-workflows`, and `general-skills`; the first two are intended shareable submodules, and the third remains an ordinary configs folder initially.
@@ -47,11 +48,11 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Extract Google authorization/setup support and Gmail, Drive, Docs, Sheets, Calendar, and Contacts skills with their existing supported capabilities.
 - [ ] Extract Microsoft authorization/setup support and Outlook Mail, Calendar, Contacts, Files, Excel, and Planner skills with their existing supported capabilities.
 - [ ] Extract Trello setup/authorization/use behavior, including neutral linking, checklists, and honest partial-failure handling.
-- [ ] Extract Slack setup/authorization and separate messaging/Lists capabilities, preserving current access limits and known limitations.
+- [x] Extract Slack setup/authorization and separate messaging/Lists capabilities, preserving current access limits and known limitations.
 - [x] Extract Odoo setup/authorization/project-task capabilities with current bounds and rate handling.
 - [ ] Extract GitHub setup/authorization and Issues, Projects, Pull Requests, and Discussions skills; do not add deferred Discussion writes.
 - [ ] Generalize the Markdown-to-PDF pipeline with explicit inputs/themes/output; keep theme assets with the renderer and verify non-résumé use.
-- [ ] Implement capability-selective uv provisioning as Python services are extracted. The setup-agent-hands entry now exists and routes the implemented Odoo capability without installing Python or unrelated providers.
+- [x] Implement capability-selective uv provisioning for the extracted Slack services; continue applying that pattern as other Python services are extracted. The setup entry routes Odoo without Python and Slack through independent standard-library Python manifests/locks; no all-provider environment is required.
 - [ ] Write the relevant MCP catalog with official sources, client/plugin distinctions, optional setup, capability overlap, and verification status.
 
 ### Project-workflows distribution
@@ -101,6 +102,7 @@ The initial capture checks established paired frontmatter, relative links to exi
 The first implementation slice checks YAML frontmatter with the available Ruby parser, TOML provenance, moved content, compatibility and installed-client link resolution, installer syntax under Bash/Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run without PyYAML; do not report that validator as passed. No upstream synchronization, live service write, full installer run, or new test suite was performed.
 
 ## Done
+- [x] Extract Slack messaging/Lists/provider/setup skills, preserve existing request/identity/discussion checks, and retain legacy CLI routing. Literal env parsing, fixed API destination, safe account aliases, and adjacent credential ignores are checked. Documentation distinguishes response-based message confirmation from exact List-comment verification; no private account observations were carried into package docs.
 - [x] Extract the first neutral service capability and register Agent Hands locally. Odoo preserves its operation bounds and legacy caller configuration, while the standalone route uses literal env parsing and adjacent ignored files. Retained request fixtures plus configuration/isolation checks pass; no live account/write or real credentials were carried into the new history.
 - [x] Prepare and adopt the project-workflows collection locally. Preserve six procedure bodies/assets, add two adoption/update procedures and templates, retain source notices, configure the project branch and parent pin, and repair global routing. Verified frontmatter, TOML, links, shell syntax, privacy/ignore behavior, and an isolated branch/merge/recursive-clone fixture. Real remote availability and fresh client discovery remain unverified.
 - [x] Replace lifeos-handoff with a thin operate-lifeos entry using ignored workspace pointers and vault-owned instructions. Preserved the four prior handoff/attribution sections in the private owner, added private routing, verified YAML and links, and installed the replacement in Codex/Claude. Real pointers are ignored and owner-readable; the public example contains no private location. Unrelated vault edits remain untouched.
