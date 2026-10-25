@@ -3,6 +3,7 @@
 ##- Sourced by lifeos.sh after common.sh and google.sh; uses the shared people alias map for deterministic attendee resolution.
 
 source "${LIB_DIR}/../../agent-hands/skills/authorize-microsoft/scripts/client.sh"
+source "${LIB_DIR}/../../agent-hands/skills/use-outlook-calendar/scripts/operations.sh"
 source "${LIB_DIR}/../../agent-hands/skills/use-microsoft-files/scripts/operations.sh"
 source "${LIB_DIR}/../../agent-hands/skills/use-outlook-contacts/scripts/operations.sh"
 
@@ -132,26 +133,6 @@ _m365_mail_sync() {
     _say "Updated $out"
 }
 
-_m365_calendar_ids() {
-    local alias="$1"
-    _m365_account_value "$alias" '.calendar.calendar_ids // ["primary"] | .[]' 2>/dev/null || printf 'primary\n'
-}
-
-_m365_calendar_writable_ids() {
-    local alias="$1"
-    _m365_account_value "$alias" '.calendar.writable_calendar_ids // ["primary"] | .[]' 2>/dev/null || printf 'primary\n'
-}
-
-_m365_calendar_is_writable() {
-    local alias="$1" requested="$2" value
-    while IFS= read -r value || [ -n "$value" ]; do
-        [ "$value" = "$requested" ] && return 0
-    done <<EOF
-$(_m365_calendar_writable_ids "$alias")
-EOF
-    return 1
-}
-
 _m365_calendar_timezone() {
     local alias="$1"
     _m365_account_value "$alias" '.calendar.timezone // "Central Standard Time"' 2>/dev/null || printf 'Central Standard Time'
@@ -159,72 +140,6 @@ _m365_calendar_timezone() {
 
 _m365_calendar_window() {
     "$LIFEOS_PY" -c 'from datetime import datetime, timedelta, timezone; import sys; now=datetime.now(timezone.utc); start=(now-timedelta(days=int(sys.argv[1]))).replace(hour=0,minute=0,second=0,microsecond=0); end=(now+timedelta(days=int(sys.argv[2])+1)).replace(hour=0,minute=0,second=0,microsecond=0); print(start.isoformat().replace("+00:00","Z")); print(end.isoformat().replace("+00:00","Z"))' "$LIFEOS_DAYS_BACK" "$LIFEOS_DAYS_AHEAD"
-}
-
-_m365_calendar_list() {
-    local alias="${1:-}" json
-    [ -n "$alias" ] || { _err "m365 calendar list-calendars requires ALIAS"; return 1; }
-    _m365_require_enabled "$alias" calendar || return 1
-    json="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-calendars.XXXXXX")" || return 1
-    _m365_get_paginated "$alias" 500 "$json" "$(_m365_graph_base "$alias")/me/calendars" \
-        --data-urlencode "\$top=500" \
-        --data-urlencode "\$select=id,name,isDefaultCalendar,canEdit,canShare,owner" || return 1
-    jq -r '
-      (.value // [])[] |
-      "- " + (.name // "Untitled calendar") +
-      " | id: " + (.id // "") +
-      " | default: " + ((.isDefaultCalendar // false) | tostring) +
-      " | editable: " + ((.canEdit // false) | tostring)
-    ' "$json"
-}
-
-_m365_calendar_path() {
-    local alias="$1" calendar_id="$2" suffix="$3" encoded
-    if [ "$calendar_id" = "primary" ]; then
-        printf '%s/me/calendar/%s\n' "$(_m365_graph_base "$alias")" "$suffix"
-    else
-        encoded="$(_urlencode "$calendar_id")" || return 1
-        printf '%s/me/calendars/%s/%s\n' "$(_m365_graph_base "$alias")" "$encoded" "$suffix"
-    fi
-}
-
-_m365_calendar_fetch() {
-    local alias="$1" from="$2" to="$3" calendar_ids="$4" out="$5" timezone calendar_id meta events item dir endpoint encoded
-    local items=()
-    # Optional 6th argument overrides the response time zone; the unified agenda fetches in UTC and converts to the Google calendar's IANA zone.
-    timezone="${6:-$(_m365_calendar_timezone "$alias")}"
-    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-calendar.XXXXXX")" || return 1
-    for calendar_id in $calendar_ids; do
-        calendar_id="$(_trim "$calendar_id")"
-        [ -n "$calendar_id" ] || continue
-        meta="${dir}/${#items[@]}-meta.json"
-        events="${dir}/${#items[@]}-events.json"
-        item="${dir}/${#items[@]}-item.json"
-        if [ "$calendar_id" = "primary" ]; then
-            _m365_get "$alias" "$(_m365_graph_base "$alias")/me/calendar" \
-                --data-urlencode "\$select=id,name,isDefaultCalendar,canEdit,owner" > "$meta" || return 1
-        else
-            encoded="$(_urlencode "$calendar_id")" || return 1
-            _m365_get "$alias" "$(_m365_graph_base "$alias")/me/calendars/${encoded}" \
-                --data-urlencode "\$select=id,name,isDefaultCalendar,canEdit,owner" > "$meta" || return 1
-        fi
-        endpoint="$(_m365_calendar_path "$alias" "$calendar_id" 'calendarView')" || return 1
-        _say "Syncing Microsoft 365 calendar: $(jq -r '.name // .id // "Calendar"' "$meta")" >&2
-        _m365_get_paginated "$alias" 1000 "$events" "$endpoint" \
-            --data-urlencode "startDateTime=${from}" \
-            --data-urlencode "endDateTime=${to}" \
-            --data-urlencode "\$top=1000" \
-            --data-urlencode "\$select=id,iCalUId,subject,body,bodyPreview,start,end,isAllDay,isCancelled,isOnlineMeeting,onlineMeeting,location,organizer,attendees,webLink,type,seriesMasterId" \
-            -H "Prefer: outlook.timezone=\"${timezone}\"" \
-            -H 'Prefer: outlook.body-content-type="text"' || return 1
-        jq -n --arg requested "$calendar_id" --slurpfile meta "$meta" --slurpfile events "$events" '{id: $requested, graphId: ($meta[0].id // ""), name: ($meta[0].name // $requested), events: ($events[0].value // [])}' > "$item" || return 1
-        items+=("$item")
-    done
-    if [ "${#items[@]}" -eq 0 ]; then
-        jq -n '{calendars: []}' > "$out"
-    else
-        jq -s '{calendars: .}' "${items[@]}" > "$out"
-    fi
 }
 
 _m365_calendar_enabled_aliases() {
@@ -252,72 +167,10 @@ _m365_calendar_sync() {
     _m365_require_enabled "$alias" calendar || return 1
     if [ -n "$custom_out" ]; then out="$custom_out"; elif [ "$qa" -eq 1 ]; then out="$(_m365_output "$alias" calendar 1)"; else _vault_ready || return 1; _ensure_sources_dir || return 1; out="$(_m365_output "$alias" calendar 0)"; fi
     _ensure_parent_dir "$out" || return 1
-    tmp="$(mktemp "$(dirname "$out")/.$(basename "$out").XXXXXX")" || return 1
-    _register_temp_file "$tmp"
-    json="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-calendar-render.XXXXXX")" || return 1
-    window="$(_m365_calendar_window)" || return 1
-    from="$(printf '%s\n' "$window" | sed -n '1p')"
-    to="$(printf '%s\n' "$window" | sed -n '2p')"
-    ids="$(printf '%s\n' "$(_m365_calendar_ids "$alias")" | tr '\n' ' ')"
-    _m365_calendar_fetch "$alias" "$from" "$to" "$ids" "$json" || return 1
-    profile_email="$(_m365_profile_email "$alias")" || return 1
+    _m365_calendar_export "$alias" --output "$out" || return 1
     refreshed="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-    timezone="$(_m365_calendar_timezone "$alias")"
-    limit="$(_m365_account_value "$alias" '.calendar.description_character_limit // 8000')" || limit=8000
-    _m365_render_helper calendar --alias "$alias" --email "$profile_email" --refreshed "$refreshed" --start "$from" --end "$to" --timezone "$timezone" --description-limit "$limit" --input "$json" > "$tmp" || return 1
-    mv "$tmp" "$out"
     dir="$(dirname "$out")"
     case "$out" in */m365/*.md) _m365_write_index "$dir" "$refreshed" ;; esac
-    _say "Updated $out"
-}
-
-_m365_calendar_find_human() {
-    jq -r '
-      (.items // [])[] |
-      [
-        ("- " + (.subject // "Untitled event")),
-        ("calendar: " + (._calendar_name // ._calendar_id // "")),
-        ("calendar_id: " + (._calendar_id // "")),
-        ("event_id: " + (.id // "")),
-        ("start: " + (.start.dateTime // "")),
-        ("end: " + (.end.dateTime // "")),
-        (if ((.location.displayName // "") != "") then "location: " + .location.displayName else empty end),
-        (if ((.webLink // "") != "") then .webLink else empty end)
-      ] | join(" | ")
-    '
-}
-
-_m365_calendar_find() {
-    local alias="${1:-}" query="" from="" to="" calendar_id="" json_mode=0 window ids data results
-    [ -n "$alias" ] || { _err "m365 calendar find requires ALIAS"; return 1; }
-    shift || true
-    while [ "$#" -gt 0 ]; do
-        case "$1" in
-            --from) [ -n "${2:-}" ] || { _err "--from requires YYYY-MM-DD"; return 1; }; from="${2}T00:00:00Z"; shift 2 ;;
-            --to) [ -n "${2:-}" ] || { _err "--to requires YYYY-MM-DD"; return 1; }; to="${2}T23:59:59Z"; shift 2 ;;
-            --calendar) [ -n "${2:-}" ] || { _err "--calendar requires ID"; return 1; }; calendar_id="$2"; shift 2 ;;
-            --json) json_mode=1; shift ;;
-            -*) _err "Unknown m365 calendar find option: $1"; return 1 ;;
-            *) if [ -z "$query" ]; then query="$1"; shift; else _err "Unexpected argument: $1"; return 1; fi ;;
-        esac
-    done
-    [ -n "$query" ] || { _err "m365 calendar find requires QUERY"; return 1; }
-    _m365_require_enabled "$alias" calendar || return 1
-    window="$(_m365_calendar_window)" || return 1
-    [ -n "$from" ] || from="$(printf '%s\n' "$window" | sed -n '1p')"
-    [ -n "$to" ] || to="$(printf '%s\n' "$window" | sed -n '2p')"
-    if [ -n "$calendar_id" ]; then ids="$calendar_id"; else ids="$(printf '%s\n' "$(_m365_calendar_ids "$alias")" | tr '\n' ' ')"; fi
-    data="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-calendar-find.XXXXXX")" || return 1
-    results="$(mktemp "${TMPDIR:-/tmp}/lifeos-m365-calendar-results.XXXXXX")" || return 1
-    _m365_calendar_fetch "$alias" "$from" "$to" "$ids" "$data" || return 1
-    jq --arg q "$(printf '%s' "$query" | tr '[:upper:]' '[:lower:]')" '{items: [(.calendars // [])[] as $calendar | ($calendar.events // [])[] | select((((.subject // "") + " " + (.bodyPreview // "") + " " + (.location.displayName // "")) | ascii_downcase | contains($q))) | . + {_calendar_id: $calendar.id, _calendar_name: $calendar.name}]}' "$data" > "$results" || return 1
-    if [ "$json_mode" -eq 1 ]; then
-        cat "$results"
-    elif [ "$(jq '(.items // []) | length' "$results")" -eq 0 ]; then
-        _say "No matching Microsoft 365 events found."
-    else
-        _m365_calendar_find_human < "$results"
-    fi
 }
 
 _m365_resolve_attendees() {
@@ -337,147 +190,6 @@ _m365_resolve_attendees() {
         _RESOLVED_EMAILS+=("$email")
         if [ "$raw" = "$email" ]; then _RESOLVED_DISPLAY+=("$email"); else _RESOLVED_DISPLAY+=("$raw -> $email"); fi
     done
-}
-
-_m365_calendar_event_url() {
-    local alias="$1" calendar_id="$2" event_id="${3:-}" encoded event_encoded base
-    base="$(_m365_graph_base "$alias")"
-    if [ "$calendar_id" = "primary" ]; then
-        if [ -n "$event_id" ]; then event_encoded="$(_urlencode "$event_id")" || return 1; printf '%s/me/events/%s\n' "$base" "$event_encoded"; else printf '%s/me/calendar/events\n' "$base"; fi
-    else
-        encoded="$(_urlencode "$calendar_id")" || return 1
-        if [ -n "$event_id" ]; then event_encoded="$(_urlencode "$event_id")" || return 1; printf '%s/me/calendars/%s/events/%s\n' "$base" "$encoded" "$event_encoded"; else printf '%s/me/calendars/%s/events\n' "$base" "$encoded"; fi
-    fi
-}
-
-_m365_calendar_create() {
-    local alias="${1:-}" calendar_id="primary" title="" start="" end="" tz="" location="" desc="" desc_file="" notify=0 execute=0 body created
-    local attendees_raw=() build_args=()
-    [ -n "$alias" ] || { _err "m365 calendar create-event requires ALIAS"; return 1; }
-    shift || true
-    while [ "$#" -gt 0 ]; do
-        case "$1" in
-            --calendar) [ -n "${2:-}" ] || { _err "--calendar requires ID"; return 1; }; calendar_id="$2"; shift 2 ;;
-            --title) [ -n "${2:-}" ] || { _err "--title requires TEXT"; return 1; }; title="$2"; shift 2 ;;
-            --start) [ -n "${2:-}" ] || { _err "--start requires DATE or DATETIME"; return 1; }; start="$2"; shift 2 ;;
-            --end) [ -n "${2:-}" ] || { _err "--end requires DATE or DATETIME"; return 1; }; end="$2"; shift 2 ;;
-            --tz) [ -n "${2:-}" ] || { _err "--tz requires ZONE"; return 1; }; tz="$2"; shift 2 ;;
-            --location) [ -n "${2+x}" ] || { _err "--location requires TEXT"; return 1; }; location="$2"; shift 2 ;;
-            --desc) [ -n "${2+x}" ] || { _err "--desc requires TEXT"; return 1; }; desc="$2"; shift 2 ;;
-            --desc-file) [ -n "${2:-}" ] || { _err "--desc-file requires FILE"; return 1; }; desc_file="$2"; shift 2 ;;
-            --attendee) [ -n "${2:-}" ] || { _err "--attendee requires NAME or EMAIL"; return 1; }; attendees_raw+=("$2"); shift 2 ;;
-            --notify) notify=1; shift ;;
-            --execute) execute=1; shift ;;
-            --dry-run) execute=0; shift ;;
-            *) _err "Unknown m365 calendar create-event option: $1"; return 1 ;;
-        esac
-    done
-    _m365_require_enabled "$alias" calendar || return 1
-    [ -n "$title" ] || { _err "create-event requires --title"; return 1; }
-    [ -n "$start" ] || { _err "create-event requires --start"; return 1; }
-    _m365_calendar_is_writable "$alias" "$calendar_id" || { _err "Calendar '$calendar_id' is not writable for alias '$alias'"; return 1; }
-    if [ "${#attendees_raw[@]}" -gt 0 ] && [ "$notify" -ne 1 ]; then
-        _err "Microsoft may email invitations when an event has attendees. Re-run with --notify to acknowledge that blast radius."
-        return 1
-    fi
-    if [ -n "$desc_file" ]; then [ -f "$desc_file" ] || { _err "Description file does not exist: $desc_file"; return 1; }; desc="$(cat "$desc_file")"; fi
-    [ -n "$tz" ] || tz="$(_m365_calendar_timezone "$alias")"
-    if [ "${#attendees_raw[@]}" -gt 0 ]; then _m365_resolve_attendees "${attendees_raw[@]}" || return 1; else _RESOLVED_EMAILS=(); _RESOLVED_DISPLAY=(); fi
-    build_args=(event --title "$title" --start "$start")
-    [ -n "$end" ] && build_args+=(--end "$end")
-    [ -n "$tz" ] && build_args+=(--tz "$tz")
-    [ -n "$location" ] && build_args+=(--location "$location")
-    [ -n "$desc" ] && build_args+=(--description "$desc")
-    local email
-    for email in "${_RESOLVED_EMAILS[@]}"; do build_args+=(--attendee "$email"); done
-    body="$(_m365_write_helper "${build_args[@]}")" || return 1
-    _say "Microsoft 365 event create plan:"
-    _say "Account: $alias"
-    _say "Calendar: $calendar_id"
-    _say "Title: $title"
-    _say "Start: $start"
-    _say "End: ${end:-<default>}"
-    [ -n "$tz" ] && _say "Time zone: $tz"
-    _say "Location: ${location:-<none>}"
-    if [ "${#_RESOLVED_DISPLAY[@]}" -gt 0 ]; then _say "Attendees: ${_RESOLVED_DISPLAY[*]}"; else _say "Attendees: <none>"; fi
-    _say "Microsoft invitation/update email acknowledged: $([ "$notify" -eq 1 ] && echo yes || echo no)"
-    if [ "$execute" -ne 1 ]; then _say "DRY RUN: no event was created. Re-run with --execute to create it."; return 0; fi
-    created="$(_m365_write POST "$alias" "$(_m365_calendar_event_url "$alias" "$calendar_id")" "$body")" || return 1
-    _say "Created event: $(printf '%s' "$created" | jq -r '.webLink // .id // "(unknown)"')"
-}
-
-_m365_calendar_update() {
-    local alias="${1:-}" calendar_id="primary" event_id="" title="" start="" end="" tz="" location="" desc="" desc_file=""
-    local set_title=0 set_location=0 set_desc=0 notify=0 execute=0 replace_attendees=0 body current updated attendee_count
-    local attendees_raw=() final_emails=() build_args=()
-    [ -n "$alias" ] || { _err "m365 calendar update-event requires ALIAS"; return 1; }
-    shift || true
-    while [ "$#" -gt 0 ]; do
-        case "$1" in
-            --calendar) [ -n "${2:-}" ] || { _err "--calendar requires ID"; return 1; }; calendar_id="$2"; shift 2 ;;
-            --event) [ -n "${2:-}" ] || { _err "--event requires ID"; return 1; }; event_id="$2"; shift 2 ;;
-            --title) [ -n "${2+x}" ] || { _err "--title requires TEXT"; return 1; }; title="$2"; set_title=1; shift 2 ;;
-            --start) [ -n "${2:-}" ] || { _err "--start requires DATE or DATETIME"; return 1; }; start="$2"; shift 2 ;;
-            --end) [ -n "${2:-}" ] || { _err "--end requires DATE or DATETIME"; return 1; }; end="$2"; shift 2 ;;
-            --tz) [ -n "${2:-}" ] || { _err "--tz requires ZONE"; return 1; }; tz="$2"; shift 2 ;;
-            --location) [ -n "${2+x}" ] || { _err "--location requires TEXT"; return 1; }; location="$2"; set_location=1; shift 2 ;;
-            --desc) [ -n "${2+x}" ] || { _err "--desc requires TEXT"; return 1; }; desc="$2"; set_desc=1; shift 2 ;;
-            --desc-file) [ -n "${2:-}" ] || { _err "--desc-file requires FILE"; return 1; }; desc_file="$2"; set_desc=1; shift 2 ;;
-            --attendee) [ -n "${2:-}" ] || { _err "--attendee requires NAME or EMAIL"; return 1; }; attendees_raw+=("$2"); shift 2 ;;
-            --replace-attendees) replace_attendees=1; shift ;;
-            --notify) notify=1; shift ;;
-            --execute) execute=1; shift ;;
-            --dry-run) execute=0; shift ;;
-            *) _err "Unknown m365 calendar update-event option: $1"; return 1 ;;
-        esac
-    done
-    _m365_require_enabled "$alias" calendar || return 1
-    [ -n "$event_id" ] || { _err "update-event requires --event"; return 1; }
-    _m365_calendar_is_writable "$alias" "$calendar_id" || { _err "Calendar '$calendar_id' is not writable for alias '$alias'"; return 1; }
-    if [ -n "$desc_file" ]; then [ -f "$desc_file" ] || { _err "Description file does not exist: $desc_file"; return 1; }; desc="$(cat "$desc_file")"; fi
-    current="$(_m365_get "$alias" "$(_m365_calendar_event_url "$alias" "$calendar_id" "$event_id")" -H 'Prefer: outlook.body-content-type="text"')" || return 1
-    attendee_count="$(printf '%s' "$current" | jq '(.attendees // []) | length')"
-    if { [ "$attendee_count" -gt 0 ] || [ "${#attendees_raw[@]}" -gt 0 ]; } && [ "$notify" -ne 1 ]; then
-        _err "This meeting has or will have attendees, and Microsoft may send an update. Re-run with --notify to acknowledge that blast radius."
-        return 1
-    fi
-    if [ "$set_desc" -eq 1 ] && printf '%s' "$current" | jq -e '.isOnlineMeeting == true' >/dev/null 2>&1; then
-        _err "Description updates are blocked for online meetings because replacing the body can remove the Teams meeting blob."
-        return 1
-    fi
-    if [ -n "$start" ]; then [ -n "$tz" ] || tz="$(_m365_calendar_timezone "$alias")"; fi
-    if [ "${#attendees_raw[@]}" -gt 0 ] || [ "$replace_attendees" -eq 1 ]; then
-        if [ "${#attendees_raw[@]}" -gt 0 ]; then _m365_resolve_attendees "${attendees_raw[@]}" || return 1; else _RESOLVED_EMAILS=(); fi
-        if [ "$replace_attendees" -ne 1 ]; then
-            local existing
-            while IFS= read -r existing || [ -n "$existing" ]; do [ -n "$existing" ] && final_emails+=("$existing"); done <<EOF
-$(printf '%s' "$current" | jq -r '(.attendees // [])[] | .emailAddress.address // empty')
-EOF
-        fi
-        final_emails+=("${_RESOLVED_EMAILS[@]}")
-    fi
-    build_args=(event)
-    [ "$set_title" -eq 1 ] && build_args+=(--title "$title")
-    [ -n "$start" ] && build_args+=(--start "$start")
-    [ -n "$end" ] && build_args+=(--end "$end")
-    [ -n "$tz" ] && build_args+=(--tz "$tz")
-    [ "$set_location" -eq 1 ] && build_args+=(--location "$location")
-    [ "$set_desc" -eq 1 ] && build_args+=(--description "$desc")
-    local email
-    for email in "${final_emails[@]}"; do build_args+=(--attendee "$email"); done
-    body="$(_m365_write_helper "${build_args[@]}")" || return 1
-    if printf '%s' "$body" | jq -e '.attendees' >/dev/null 2>&1; then body="$(printf '%s' "$body" | jq -c '.attendees |= unique_by(.emailAddress.address | ascii_downcase)')"; fi
-    _say "Microsoft 365 event update plan:"
-    _say "Account: $alias"
-    _say "Calendar: $calendar_id"
-    _say "Event: $event_id"
-    _say "Current title: $(printf '%s' "$current" | jq -r '.subject // "(none)"')"
-    _say "Changes:"
-    printf '%s' "$body" | jq .
-    _say "Microsoft invitation/update email acknowledged: $([ "$notify" -eq 1 ] && echo yes || echo no)"
-    if [ "$execute" -ne 1 ]; then _say "DRY RUN: no event was updated. Re-run with --execute to apply."; return 0; fi
-    updated="$(_m365_write PATCH "$alias" "$(_m365_calendar_event_url "$alias" "$calendar_id" "$event_id")" "$body")" || return 1
-    _say "Updated event: $(printf '%s' "$updated" | jq -r '.webLink // .id // "(unknown)"')"
 }
 
 _m365_contacts_sync() {
