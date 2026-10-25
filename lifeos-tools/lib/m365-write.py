@@ -85,28 +85,10 @@ def build_event(args):
     return body
 
 
-def build_contact(args):
-    body = {}
-    fields = {
-        "displayName": args.display_name,
-        "givenName": args.given_name,
-        "surname": args.surname,
-        "companyName": args.company,
-        "jobTitle": args.job_title,
-        "mobilePhone": args.mobile,
-        "personalNotes": args.notes,
-    }
-    for key, value in fields.items():
-        if value is not None:
-            body[key] = value
-    if args.emails:
-        label = args.display_name or ""
-        body["emailAddresses"] = [{"address": address, "name": label or address} for address in args.emails]
-    if args.phones:
-        body["businessPhones"] = args.phones
-    if not body:
-        fail("nothing to build: supply a contact field")
-    return body
+from pathlib import Path
+import runpy
+_contacts = runpy.run_path(str(Path(__file__).resolve().parents[2] / "agent-hands/skills/use-outlook-contacts/scripts/write.py"))
+build_contact = _contacts["build_contact"]
 
 
 def main(argv):
