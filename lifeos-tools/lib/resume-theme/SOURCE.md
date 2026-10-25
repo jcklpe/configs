@@ -1,9 +1,2 @@
-# Vendored resume theme
-
-`aslan-resume.css` is a vendored copy of the Typora resume theme:
-https://github.com/jcklpe/typora-resume-theme
-
-It is used by `lifeos resume render` to reproduce the Typora look in a headless
-(app-free) Markdown → PDF pipeline. When the upstream theme changes, re-copy
-`aslan-resume.css` here. The same file can stay installed in Typora for
-interactive editing/preview; this copy keeps the CLI render self-contained.
+# Compatibility theme paths
+These CSS paths now link to the portable [render-markdown-pdf themes](../../../agent-hands/skills/render-markdown-pdf/assets/themes/SOURCE.md). The résumé theme is unchanged; the old letter and compact names both retain the existing 0.6-inch-margin variant. Edit the new owner, not a duplicate here. Keep these paths until their callers have migrated.
