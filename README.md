@@ -46,7 +46,7 @@ The [log-kaizen](general-skills/log-kaizen/SKILL.md) skill captures private work
 
 Keep records outside this public repository. Each skill's adjacent `.env.example` defines `KAIZEN_GLOBAL_CURRENT` and `KAIZEN_GLOBAL_INCIDENTS`; actual values belong in an ignored `.env`. `KAIZEN_ENV_FILE` can select a shared env file explicitly. Existing `KAIZEN_CONFIG`/XDG JSON configuration remains a migration fallback when no env source is selected or present. See either skill for exact precedence, privacy checks, and connector-only access. The installer does not create private records or copy configuration. Missing access is reported rather than replaced with a public fallback.
 
-The `log-skills-feedback` entry is removed. A temporary `skills/kaizen` route preserves old source links while consumers migrate. Removing current files does not remove past Git versions. Proposed rule changes still require user approval.
+The `log-skills-feedback` and `skills/kaizen` compatibility entries are removed; current callers use the capture/review owners in `general-skills`. Removing current files does not remove past Git versions. Proposed rule changes still require user approval.
 
 ## Troubleshooting
 ### Prompts look broken

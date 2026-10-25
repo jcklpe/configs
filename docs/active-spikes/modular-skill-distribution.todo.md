@@ -66,9 +66,9 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Verify the branch/pin procedure and that required child commits are reachable by collaborators before any parent reference is published.
 
 ### General skills and LifeOS ownership
-- [ ] Repoint remaining live references and existing client installations to the moved general-skills owners, verify fresh client discovery, then remove the temporary compatibility links.
-- [ ] Retire the temporary lifeos-handoff source route after remaining source consumers have migrated to operate-lifeos.
-- [ ] Retire the temporary skills/kaizen source route after remaining private references have been repointed. Existing vault-local Kaizen copies retain local authority until deliberately migrated.
+- [ ] Repoint remaining live references and existing client installations to the moved general-skills owners, verify fresh client discovery, then remove the temporary compatibility links. Source migration and the existing Codex/Claude symlinks are complete; the bridges are removed and filesystem resolution is verified. Fresh client-process discovery remains QA.
+- [x] Retire the temporary lifeos-handoff source route after remaining source consumers have migrated to operate-lifeos.
+- [x] Retire the temporary skills/kaizen source route after remaining private references have been repointed. Existing vault-local Kaizen copies retain local authority until deliberately migrated.
 - [ ] Move personal task-chain choices, account/resource mappings, snapshot/index destinations, combined-agenda orchestration, and résumé content/destination conventions into appropriate LifeOS procedures.
   - Résumé ownership is complete. Calendar source selection, availability interpretation, refresh windows/destinations, and failure handling now have a private LifeOS owner, with retrospective/source-map routing updated. The private source-refresh owner now covers scoped source/index outputs and freshness; Trello task choices remain in their private owner with accurate partial-link recovery. Remaining work is verification/migration of actual account/resource bindings and retirement of legacy defaults/callers.
 - [ ] Verify the LifeOS adaptations use public neutral helpers without copying executable scripts, tokens, or private configuration into the vault.
@@ -95,6 +95,7 @@ As subsequent slices become ready, prepare concrete checks for:
 - Existing LifeOS operations after ownership moves, with live writes only for specifically authorized targets.
 
 ## Validation
+- [x] Repoint installed review/authoring links directly to general-skills and retire unused general source bridges. Check current callers, owned symlink targets, unchanged skill/provenance resolution, and private attribution routing. Fresh-client catalog reload remains unverified.
 - [x] Remove private Trello list and Drive exclusion defaults after migrating private callers to explicit choices. Add neutral additive exclusion flags; verify query suppression, invalid-config failure, old-output preservation, explicit scheduling arguments, and retained renderer/checklist behavior offline. No credentials or live records changed.
 - [x] Migrate live aggregate/combined-calendar callers and retire the old orchestration before configuration loading. Offline checks cover no-dependency diagnostics, poisoned config nonexecution, unchanged snapshots, remaining provider operations, and neutral/legacy render behavior. No live refresh or credential change occurred.
 - [x] Establish private source-refresh ownership and remove hard-coded context-file recommendations from the public CLI. Correct the folder-exclusion boundary with a neutral `--recent 0` request control supplied by the private workflow. Synthetic request suppression, legacy pass-through, context-entrypoint success/failure, private links/frontmatter, and selected privacy checks pass; no live source refresh or credential change occurred.
