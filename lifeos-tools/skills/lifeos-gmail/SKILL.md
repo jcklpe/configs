@@ -1,11 +1,10 @@
 ---
 name: lifeos-gmail
-description: "Use the legacy lifeos Gmail route while its callers migrate to the portable use-gmail capability. Covers existing snapshot routing and retained private account configuration."
+description: "Use the legacy lifeos Gmail command with provider-owned configuration and explicit export destinations."
 ---
+# Legacy Gmail Route
+Read [use-gmail](../../../agent-hands/skills/use-gmail/SKILL.md) for operations, limits, preview/execute controls, readback, and partial failures. Both entrypoints use [authorize-google](../../../agent-hands/skills/authorize-google/SKILL.md)'s adjacent ignored configuration and the capability's runtime and audit log.
 
-# LifeOS Gmail Compatibility Route
-Read [use-gmail](../../../agent-hands/skills/use-gmail/SKILL.md) for supported operations, bounds, preview/execute controls, readback limits, and partial failures. The legacy `lifeos gmail` command delegates to that implementation while keeping its existing private Google accounts and shared mail audit path. Use `lifeos google auth ALIAS` for this route's configured credentials; do not accidentally authorize the portable route's separate default config.
+`lifeos gmail sync ALIAS --output FILE` forwards to `gmail export`. Optional `--query` and `--max-results` work with that explicit destination. `--all`, `--qa`, implicit private paths, and automatic indexes are retired. The consuming workflow selects accounts, preserves its maintained query/window, chooses separate outputs for broader one-off searches, and reports each failed refresh. Failed retrieval preserves the previous account output.
 
-`lifeos gmail sync ALIAS` and `--all` retain the existing workspace snapshot destination, per-account query, index, and QA routing. The fallback query remains `in:inbox newer_than:30d -label:Newsletters`. Query/count overrides require `--output FILE` or `--qa`, preserving the ordinary snapshot contract. Failed retrieval leaves the prior account output intact; all-account sync continues and reports failed accounts. `LIFEOS_GMAIL_MAX_RETRIES` retains the legacy backoff setting.
-
-Other subcommands keep their existing `lifeos gmail` syntax. Real account selection, snapshot destinations, triage decisions, and approval rules belong to ignored configuration and the calling workspace. This bridge does not migrate credentials, regenerate snapshots, install global skills, or grant mail-write permission.
+Other subcommands retain their existing syntax and gates. Private fallback query choices must be explicit account settings; no private label exclusion is built into this compatibility route. `GOOGLE_GMAIL_MAX_RETRIES` is the provider-owned retry setting. Authentication is not approval to read another account or write mail. No send or message-delete capability is introduced.
