@@ -24,8 +24,8 @@ Implementation and existing-access integration reads are verified. General messa
 
 ## Verification Commands
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python3 lifeos-tools/tests/test-slack-comments.py
-bash lifeos-tools/tests/test-slack.sh
-bash -n lifeos-tools/lifeos.sh
+PYTHONDONTWRITEBYTECODE=1 python3 agent-hands/compat/lifeos/tests/test-slack-comments.py
+bash agent-hands/compat/lifeos/tests/test-slack.sh
+bash -n agent-hands/compat/lifeos/lifeos.sh
 git diff --check
 ```

@@ -41,7 +41,7 @@ brew_install_if_needed jump
 brew_install_if_needed fnm
 brew_install_if_needed jq
 brew_install_if_needed python
-# uv: Python env/dependency manager for lifeos-tools (creates its .venv from pyproject/uv.lock).
+# uv: selected Agent Hands capabilities own independent Python environments.
 brew_install_if_needed uv
 # trash: on Fedora, trash-cli is installed via dnf instead
 if [ "${OS_TYPE}" != "fedora" ]; then

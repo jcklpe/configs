@@ -22,9 +22,9 @@ Free/Busy and one-popup settings are implemented for Google Calendar create/upda
 
 ## Validation
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python3 lifeos-tools/tests/test-calendar-settings.py
-bash lifeos-tools/tests/test-calendar-tz.sh
-bash -n lifeos-tools/lib/google.sh
-bash -n lifeos-tools/lifeos.sh
+PYTHONDONTWRITEBYTECODE=1 python3 agent-hands/compat/lifeos/tests/test-calendar-settings.py
+bash agent-hands/compat/lifeos/tests/test-calendar-tz.sh
+bash -n agent-hands/compat/lifeos/lib/google.sh
+bash -n agent-hands/compat/lifeos/lifeos.sh
 git diff --check
 ```

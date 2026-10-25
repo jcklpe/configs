@@ -33,6 +33,14 @@ The conceptual document owns decisions, rationale, boundaries, proposed folder s
 Future work spans configs, two new package repositories, and selected consumers. The LifeOS boundary work belongs with its actual vault instructions when authorized; do not create executable helpers or credentials in the vault. Existing project-local instructions remain authoritative until deliberately migrated.
 
 ## To Do
+### Authorized cutover and reversible retirement — 2026-10-25
+- [ ] Move public compatibility behavior to Agent Hands with preserved dispatch, explicit export semantics, aggregate GitHub behavior, retirement diagnostics, and appropriate regression checks; keep original material in recovery. Implementation is committed in Agent Hands `dbf1aa1`; complete-tree recovery remains behind the private-path gate.
+- [ ] Verify active provider configuration and recovery paths have no old-tree dependency; preserve credential/configuration and audit/recovery bytes and report any access-boundary blocker.
+- [ ] Retire the old tree into the ignored local recovery root only after active dependencies are resolved; verify a complete private manifest and document exact restore steps without overwriting live work.
+- [ ] Review full selected diffs and record scoped local commits with child pins; do not push. Keep fresh-client/platform QA and any remaining exceptions explicit.
+
+Acceptance: no active dependency on the old tree or recovery archive in the inspected configs, installed client links, launchers, and LifeOS procedures; all original old-tree entries preserved; active provider credentials and recovery data unchanged; compatibility commands and failure behavior verified. Historical mentions and the recovery instructions are allowed references, not active dependencies. Live service access is not inferred from local fixtures or help output.
+
 ### Gate and preservation baseline
 - [ ] Inventory current command behavior and map every supported operation to its target use skill, including active/uncommitted capability changes.
 - [ ] Map current code imports, shared helpers, executables, Python dependencies, configuration reads, credentials/caches, client symlinks, and known consumers.
@@ -149,3 +157,17 @@ The first implementation slice checks YAML frontmatter with the available Ruby p
 - [x] Create a separate operational checklist and add the spike to the root TODO index. Saved 2026-10-24 with only planning records in that initial scope.
 - [x] Verify the documentation capture. Frontmatter, relative links, fenced blocks, agreed general-skill placement, index uniqueness, and whitespace checks passed. The TODO delta is exactly one added entry; pre-existing modified files were preserved. Additional edits appeared in the existing Excel spike files during capture and were left alone. No implementation, commit, or push was performed.
 
+
+## Cutover checkpoint — 2026-10-25
+- [x] Record the bounded audit, current revisions, explicit scope, acceptance checks, and local recovery plan before implementation.
+- [x] Repoint shell launch, installers, and installer-owned Codex/Claude skill links; retire dangling Open Austin links without creating new access or changing unrelated installations.
+- [x] Repair active public and private consumer references, distinguishing historical material and preserving concurrent LifeOS Loop retirement edits.
+- [x] Verify shell/CLI resolution, installer idempotency logic, client target resolution, representative local read-only CLI behavior, compatibility failure/aggregate checks, and reference coverage.
+
+The optional compatibility package is implemented under `agent-hands/compat/lifeos/`, with `agent-hands/bin/lifeos` on the shell path. Native provider files remain in their original locations. All 31 compatibility checks pass; two retained tests needed current helper stubs to isolate synthetic Calendar permissions and Excel audit output. The initial Excel test attempt to use the real audit destination was sandbox-blocked; no real audit update was permitted. A source-only installation passes help, provider-selection, retired-route, and aggregate partial-failure checks. Fresh Bash/zsh resolve the new launcher. Both clients resolve 35 native owners and 10 compatibility routers; their dangling retired adapter links were moved into ignored recovery. This is filesystem discovery, not a fresh client catalog reload.
+
+The safer preservation manifest records metadata for 7,923 original-tree entries and 29 ignored provider/config/audit files; only tracked public non-secret source files were hashed. Provider metadata remained unchanged after the checks. Originals of changed legacy client links are retained under `.local-retired/2026-10-25/client-links/`. The full old tree remains at its original location; it has not yet been renamed into recovery. Original QA exports, credentials, audit/recovery files, browser state, and runtimes remain intact.
+
+Retirement is pending a narrowly scoped approval gate: automatic approval review denied a proposed scan that would read/hash credential-bearing files. That scan did not execute. A safer metadata-only manifest succeeded. Path-only inspection of existing provider configuration was requested separately; no credential-file read or indirect workaround is authorized by this checkpoint. Until configured path dependencies are verified, do not claim the old tree retired or move it. No remote service operations, grant changes, publication, or unrelated project edits were performed. Concurrent private Loop retirement edits were preserved and now identify those obsolete procedures as historical.
+
+Agent Hands local checkpoint: `dbf1aa1`. It is not pushed; any future containing pin publication requires this child checkpoint to be available first. The existing nested Project Workflows pins are unchanged.

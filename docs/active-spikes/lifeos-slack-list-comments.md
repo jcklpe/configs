@@ -2,6 +2,9 @@
 attention: live
 ---
 # LifeOS Slack List Comments
+
+Current ownership (2026-10-25): Agent Hands owns native service code and `compat/lifeos/` owns the optional legacy command. Remaining references to the former `lifeos-tools/` tree describe original scope or completed historical work, not an active tool location.
+
 ## Purpose and boundaries
 Add bounded List item discussion reads and comments to the existing user-token CLI. The interface must prove the discussion belongs to the requested List and record, retain dry-run-first writes and identity checks, and obtain real API permalinks. No new credentials, scope expansion, browser automation, live test messages, or changes to List task completion state are part of this implementation.
 

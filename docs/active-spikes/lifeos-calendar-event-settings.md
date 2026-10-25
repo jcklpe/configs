@@ -2,12 +2,15 @@
 attention: live
 ---
 # LifeOS Calendar Event Settings
+
+Current ownership (2026-10-25): Agent Hands owns native service code and `compat/lifeos/` owns the optional legacy command. Remaining references to the former `lifeos-tools/` tree describe original scope or completed historical work, not an active tool location.
+
 Opened 2026-10-22. Slug: `lifeos-calendar-event-settings`.
 
 ## Problem and scope
 The Google Calendar writer could create and update events, but it could not explicitly mark an event Free or set a personal popup reminder. A calendar entry used as a reminder therefore could block availability unintentionally or depend on calendar-default notifications. Add these two narrowly bounded settings to the existing create/update path without changing omitted-option behavior.
 
-Scope: `lifeos-tools/lib/google-calendar-write.py`, the Google Calendar writer functions in `lifeos-tools/lib/google.sh`, dispatcher help, tool README, tool-local Calendar skill, synthetic offline tests, this spike pair and its index entry. No changes to shared spike guidance, authentication, credentials, scopes, attendee resolution, Microsoft 365, calendar visibility, or real event records. This public spike contains generic implementation details only; no source calendar data or private workflow context.
+Original implementation scope (historical): `lifeos-tools/lib/google-calendar-write.py`, the Google Calendar writer functions in `lifeos-tools/lib/google.sh`, dispatcher help, tool README, tool-local Calendar skill, synthetic offline tests, this spike pair and its index entry. No changes to shared spike guidance, authentication, credentials, scopes, attendee resolution, Microsoft 365, calendar visibility, or real event records. This public spike contains generic implementation details only; no source calendar data or private workflow context.
 
 ## Field model
 `--transparency transparent` marks time Free; `--transparency opaque` marks it Busy. Omission preserves Google's default Busy behavior for create and leaves the stored field unchanged on update. Availability and visibility are independent; this option does not make event details private.
@@ -27,4 +30,4 @@ Sixteen new offline tests cover helper serialization, defaults, validation, recu
 The installed `lifeos` wrapper invokes this repository's files directly, so no reinstall or shell restart is required. Live settings storage and client popup delivery remain unverified until a separately authorized event workflow uses the capability. This spike remains active; implementation is not authorization to close it.
 
 ## Maintained guidance
-Usage lives in `lifeos-tools/README.md`, dispatcher help and `lifeos-tools/skills/lifeos-calendar/SKILL.md`. API semantics are documented in [Google's Events resource](https://developers.google.com/workspace/calendar/api/v3/reference/events), including transparency, reminder overrides and reminder minutes.
+Current usage lives in `agent-hands/skills/use-google-calendar/SKILL.md`, `agent-hands/bin/lifeos help`, and the compatibility Calendar guide under `agent-hands/compat/lifeos/skills/`. API semantics are documented in [Google's Events resource](https://developers.google.com/workspace/calendar/api/v3/reference/events), including transparency, reminder overrides and reminder minutes.

@@ -29,11 +29,11 @@ The Microsoft 365 mailbox can contain both forwarded UTmail and Microsoft-native
 - The initial M365 calendar surface does not mutate recurring series as a unit and blocks description replacement on online meetings to avoid damaging embedded Teams meeting data.
 
 ## Source and History
-[Microsoft 365 implementation](../archive/lifeos-m365.md) and [unified calendar implementation](../archive/unified-calendar.md) retain the development history. Current operational mechanics live in the [Microsoft 365 skill](../../lifeos-tools/skills/lifeos-m365/SKILL.md) and [calendar skill](../../lifeos-tools/skills/lifeos-calendar/SKILL.md).
+[Microsoft 365 implementation](../archive/lifeos-m365.md) and [unified calendar implementation](../archive/unified-calendar.md) retain the development history. Current operational mechanics live in the [Microsoft 365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md) and [calendar skill](../../agent-hands/compat/lifeos/skills/lifeos-calendar/SKILL.md).
 
 ## Links
-- [LifeOS Microsoft 365 skill](../../lifeos-tools/skills/lifeos-m365/SKILL.md)
-- [LifeOS Tools README](../../lifeos-tools/README.md)
+- [LifeOS Microsoft 365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md)
+- [LifeOS Tools README](../../agent-hands/compat/lifeos/README.md)
 - [LifeOS Microsoft 365 spike](../archive/lifeos-m365.md)
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md)
 - [0002 LifeOS Calendar Writes And Attendee Resolution](0002-lifeos-calendar-writes.md)

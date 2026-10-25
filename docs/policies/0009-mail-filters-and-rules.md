@@ -24,5 +24,5 @@ Source: [Microsoft Graph rule predicates](https://learn.microsoft.com/en-us/grap
 ## Links
 - [0007 Mail Archive, Folders, And Labels](0007-mail-archive-and-labels.md)
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
-- [LifeOS Gmail skill](../../lifeos-tools/skills/lifeos-gmail/SKILL.md)
-- [LifeOS Microsoft 365 skill](../../lifeos-tools/skills/lifeos-m365/SKILL.md)
+- [LifeOS Gmail skill](../../agent-hands/compat/lifeos/skills/lifeos-gmail/SKILL.md)
+- [LifeOS Microsoft 365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md)
