@@ -122,6 +122,7 @@ CONFIGS="$(cd "${TOOL_DIR}/.." && pwd)"; SECRETS_DIR="$WORK"; ENV_FILE="$WORK/.e
 export CONFIGS SECRETS_DIR ENV_FILE LIB_DIR QA_DIR
 . "${LIB_DIR}/common.sh"
 . "${LIB_DIR}/google.sh"
+_calendar_max_pages() { printf 3; }
 _calendar_get() {
     case "$*" in
         *pageToken=p2*) printf '{"items": [{"id": "e3"}]}' ;;
@@ -131,6 +132,6 @@ _calendar_get() {
 _calendar_fetch_events cal 2026-10-01T00:00:00Z 2026-12-01T00:00:00Z "${WORK}/paged.json" "items(id),nextPageToken" || fail "paged fetch failed"
 [ "$(jq '.items | length' "${WORK}/paged.json")" -eq 3 ] || fail "paging should merge all 3 items across 2 pages"
 _calendar_get() { printf '{"items": [], "nextPageToken": "again"}'; }
-if LIFEOS_CALENDAR_MAX_PAGES=3 _calendar_fetch_events cal a b "${WORK}/runaway.json" "items(id),nextPageToken" 2>/dev/null; then fail "a runaway fetch must fail loudly, not truncate"; fi
+if _calendar_fetch_events cal a b "${WORK}/runaway.json" "items(id),nextPageToken" 2>/dev/null; then fail "a runaway fetch must fail loudly, not truncate"; fi
 
 printf 'unified calendar tests passed\n'

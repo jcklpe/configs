@@ -20,14 +20,14 @@ LIFEOS_DAYS_AHEAD=30
 
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-files-test.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
-LIFEOS_MAIL_AUDIT_LOG="${WORK}/audit.jsonl"
-export LIFEOS_MAIL_AUDIT_LOG
+M365_FILES_AUDIT_LOG="${WORK}/audit.jsonl"
+export M365_FILES_AUDIT_LOG
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 expect_fail() { if "$@" > "${WORK}/out.txt" 2> "${WORK}/err.txt"; then fail "expected failure: $*"; fi; }
 
-jq '(.accounts[] | select(.alias == "ut") | .files) = {enabled: true, write_enabled: false}' "${SECRETS_DIR}/m365-accounts.example.json" > "${WORK}/read.json"
-jq '(.accounts[] | select(.alias == "ut") | .files) = {enabled: true, write_enabled: true}' "${SECRETS_DIR}/m365-accounts.example.json" > "${WORK}/write.json"
+jq '(.accounts[] | .expected_account) = "fixture@example.invalid" | (.accounts[] | select(.alias == "ut") | .files) = {enabled: true, write_enabled: false}' "${SECRETS_DIR}/m365-accounts.example.json" > "${WORK}/read.json"
+jq '(.accounts[] | .expected_account) = "fixture@example.invalid" | (.accounts[] | select(.alias == "ut") | .files) = {enabled: true, write_enabled: true}' "${SECRETS_DIR}/m365-accounts.example.json" > "${WORK}/write.json"
 M365_ACCOUNTS_PATH="${WORK}/read.json"
 export M365_ACCOUNTS_PATH
 
@@ -100,6 +100,6 @@ printf '%s\n' "$out" | grep -F -- "Now: 5 bytes, modified 2026-10-01T00:00:00Z b
 out="$(_m365_files_replace ut file-1 --file "${WORK}/notes.md" --execute)"
 printf '%s\n' "$out" | grep -F -- "Replaced (confirmed by readback): plan.md | 12 bytes" >/dev/null || fail "replace execute"
 grep -F -- 'items/file-1/content' "${WORK}/writes.log" | grep -F -- 'If-Match: "etag-7"' >/dev/null || fail "replace If-Match"
-jq -e 'select(.action == "replace") | .verified == true and .service == "m365-files"' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null || fail "audit"
+jq -e 'select(.action == "replace") | .verified == true and .service == "m365-files"' "$M365_FILES_AUDIT_LOG" >/dev/null || fail "audit"
 
 printf 'm365 file write tests passed\n'

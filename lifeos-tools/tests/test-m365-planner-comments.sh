@@ -9,7 +9,7 @@ WORK="$(mktemp -d "${TMPDIR:-/tmp}/planner-comments-test.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 . "$LIB_DIR/common.sh"
 . "$LIB_DIR/m365-planner.sh"
-LIFEOS_MAIL_AUDIT_LOG="$WORK/audit.jsonl"
+M365_PLANNER_AUDIT_LOG="$WORK/audit.jsonl"
 refute() { if "$@"; then printf 'Expected failure: %s\n' "$*" >&2; exit 1; fi; }
 _m365_require_enabled() { :; }
 _m365_planner_require_plan_allowed() { [ "$2" = plan-1 ]; }
@@ -18,8 +18,6 @@ _m365_auth_provider() { printf graph-powershell; }
 _m365_powershell_auth() { printf '%s' "$SCOPES"; }
 _m365_graph_base() { printf https://graph.microsoft.com/v1.0; }
 _m365_uri_encode() { jq -rn --arg x "$1" '$x|@uri'; }
-_mail_audit_log_path() { printf '%s' "$LIFEOS_MAIL_AUDIT_LOG"; }
-_mail_audit_append() { cat >> "$LIFEOS_MAIL_AUDIT_LOG"; }
 WRITE_ENABLED=1 FAIL_CREATE=0 FAIL_REPLY=0 FAIL_LINK=0 READ_FAIL=0 PAGING=0
 SCOPES='{"effective_scopes":["Group.ReadWrite.All"]}'
 reset_fixture() {
@@ -135,7 +133,7 @@ READ_FAIL=1
 refute _m365_planner_dispatch comments ut --task task-1 --json >/dev/null 2>&1
 # Literal angle brackets in text/plain bodies are preserved.
 printf 'Literal <tag> &amp; text' > "$WORK/literal"
-printf '%s' '{"value":[{"id":"literal","body":{"contentType":"text","content":"Literal <tag> &amp; text"}}]}' | "$LIFEOS_PY" "$LIB_DIR/m365-planner-comments.py" match "$WORK/literal" | jq -e '. == ["literal"]' >/dev/null
+printf '%s' '{"value":[{"id":"literal","body":{"contentType":"text","content":"Literal <tag> &amp; text"}}]}' | "${M365_PYTHON:-python3}" "$LIB_DIR/m365-planner-comments.py" match "$WORK/literal" | jq -e '. == ["literal"]' >/dev/null
 printf '   \n' > "$WORK/blank"
 refute _m365_planner_dispatch comment ut --task task-1 --file "$WORK/blank" --execute >/dev/null 2>&1
 printf 'm365 planner comment tests passed\n' 

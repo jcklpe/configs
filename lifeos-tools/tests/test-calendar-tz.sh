@@ -28,11 +28,11 @@ fail() {
 
 ##- Rung 3: the machine's zone must be a real IANA identifier, not an abbreviation.
 # `date +%Z` would give CDT here, which Google rejects. Guard against a regression to it.
-system_tz="$(_system_tz || true)"
-[ -n "$system_tz" ] || fail "_system_tz returned nothing; no /etc/timezone, no /etc/localtime symlink, no \$TZ"
+system_tz="$(_calendar_system_tz || true)"
+[ -n "$system_tz" ] || fail "_calendar_system_tz returned nothing; no /etc/timezone, no /etc/localtime symlink, no \$TZ"
 case "$system_tz" in
     [A-Z][A-Z]|[A-Z][A-Z][A-Z]|[A-Z][A-Z][A-Z][A-Z]|[A-Z][A-Z][A-Z][A-Z][A-Z])
-        fail "_system_tz returned '${system_tz}', which looks like a zone abbreviation rather than an IANA name" ;;
+        fail "_calendar_system_tz returned '${system_tz}', which looks like a zone abbreviation rather than an IANA name" ;;
 esac
 
 ##- Rung 2: a successful metadata read wins, and is silent.
@@ -65,7 +65,7 @@ fi
 
 ##- With no machine zone to suggest, it still fails and still names an IANA example.
 _calendar_get() { return 1; }
-_system_tz() { return 1; }
+_calendar_system_tz() { return 1; }
 if _calendar_default_tz primary >/dev/null 2>"$WARN_OUT"; then
     fail "no lookup and no machine zone must still fail"
 fi

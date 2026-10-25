@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-##- Test the mail-sync additions for triage offline: HTML-only bodies render as text, Gmail web links, unsubscribe headers (Gmail and Microsoft 365), Gmail rate-limit backoff, --all continuing past a failing account, and the one-off --query guard. Network calls are stubbed.
+##- Test the mail-sync additions for triage offline: HTML-only bodies render as text, Gmail web links, unsubscribe headers (Gmail and Microsoft 365), Gmail rate-limit backoff, retired --all behavior, and explicit one-off --query routing. Network calls are stubbed.
 
 set -eu
 
@@ -40,32 +40,14 @@ grep -F "Hello readers." "${WORK}/m365.md" >/dev/null || fail "M365 HTML body re
 grep -F "color: red" "${WORK}/m365.md" >/dev/null && fail "M365 style content must not render"
 grep -F -- "- Unsubscribe: <https://example.com/m365/u> (one-click supported)" "${WORK}/m365.md" >/dev/null || fail "M365 unsubscribe header"
 [ "$(grep -c -- '- Unsubscribe:' "${WORK}/m365.md")" -eq 1 ] || fail "M365 unsubscribe only when present"
-grep -F "internetMessageHeaders" "${LIB_DIR}/m365.sh" >/dev/null || fail "M365 mail sync requests internetMessageHeaders"
+grep -F "internetMessageHeaders" "${SCRIPT_DIR}/../agent-hands/skills/use-outlook-mail/scripts/operations.sh" >/dev/null || fail "M365 mail export requests internetMessageHeaders"
 
-##- --all continues past a failing account
-jq '.accounts += [.accounts[0] + {alias:"secondary", token_path:"google-secondary-token.json"}]' "${SECRETS_DIR}/google-accounts.example.json" > "$WORK/two-accounts.json"
-GOOGLE_ACCOUNTS_PATH="$WORK/two-accounts.json"
-export GOOGLE_ACCOUNTS_PATH
-_vault_ready() { return 0; }
-_ensure_sources_dir() { return 0; }
-_gmail_sources_dir() { printf '%s\n' "${WORK}/gmail"; }
-mkdir -p "${WORK}/gmail"
-_gmail_sync_alias() {
-    printf '%s|%s|%s\n' "$1" "${3:-}" "${4:-}" >> "${WORK}/synced.log"
-    [ "$1" = "personal" ] && { _err "simulated failure"; return 1; }
-    printf 'ok\n' > "$2"
-}
-if _gmail_sync --all > "${WORK}/all.out" 2> "${WORK}/all.err"; then fail "--all reports failure when one account fails"; fi
-grep -F "secondary|" "${WORK}/synced.log" >/dev/null || fail "--all keeps going after a failing account"
-grep -F "failed for: personal" "${WORK}/all.err" >/dev/null || fail "--all names the failing account"
-[ -f "${WORK}/gmail/secondary.md" ] || fail "the healthy account's snapshot is written"
-
-##- --query is for one-off output only
-if _gmail_sync personal --query "in:inbox" > /dev/null 2> "${WORK}/err.txt"; then fail "--query without --output is refused"; fi
-grep -F "one-off" "${WORK}/err.txt" >/dev/null || fail "--query refusal explains why"
-: > "${WORK}/synced.log"
-_gmail_sync secondary --query "in:inbox" --max-results 500 --output "${WORK}/oneoff.md" > /dev/null
-grep -F "secondary|in:inbox|500" "${WORK}/synced.log" >/dev/null || fail "--query and --max-results reach the sync"
-if _gmail_sync --all --query "in:inbox" > /dev/null 2>&1; then fail "--all with --query needs --qa"; fi
-
-printf 'OK: mail sync triage tests passed\n'
+##- Retired aggregation stops before any provider export.
+_gmail_export() { printf '%s\n' "$@" > "$WORK/export-args"; }
+if _gmail_sync --all > "$WORK/out" 2> "$WORK/err"; then fail "--all must be retired"; fi
+[ ! -e "$WORK/export-args" ] || fail "retired --all must not invoke an export"
+grep -F 'retired' "$WORK/err" >/dev/null || fail "retirement needs a diagnostic"
+_gmail_sync secondary --query "in:inbox" --max-results 500 --output "$WORK/oneoff.md"
+printf '%s\n' secondary --query "in:inbox" --max-results 500 --output "$WORK/oneoff.md" > "$WORK/expected"
+cmp "$WORK/export-args" "$WORK/expected" || fail "explicit query/count/output arguments must reach the owning export unchanged"
+printf 'OK: mail compatibility and triage renderer checks passed\n'

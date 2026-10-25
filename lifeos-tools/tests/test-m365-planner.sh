@@ -13,8 +13,8 @@ QA_DIR="${SCRIPT_DIR}/qa"
 LIFEOS_DAYS_BACK=14
 LIFEOS_DAYS_AHEAD=30
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-planner-test.XXXXXX")"
-LIFEOS_MAIL_AUDIT_LOG="${WORK}/audit.jsonl"
-export LIFEOS_MAIL_AUDIT_LOG
+M365_PLANNER_AUDIT_LOG="${WORK}/audit.jsonl"
+export M365_PLANNER_AUDIT_LOG
 
 . "${LIB_DIR}/common.sh"
 . "${LIB_DIR}/google.sh"
@@ -113,7 +113,7 @@ _m365_get() {
 out="$(_m365_planner_update ut --task task-1 --progress done --due 2026-10-16 --execute)"
 printf '%s\n' "$out" | grep -F -- "Updated task (confirmed by readback): Mine open" >/dev/null
 grep -F -- 'PATCH' "${WORK}/writes.log" | grep -F -- 'If-Match: W/"etag-1"' >/dev/null
-jq -e 'select(.action == "update-task") | .verified == true and .service == "m365-planner"' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null
+jq -e 'select(.action == "update-task") | .verified == true and .service == "m365-planner"' "$M365_PLANNER_AUDIT_LOG" >/dev/null
 
 # A readback that does not match fails loudly.
 : > "${WORK}/calls"
@@ -177,7 +177,7 @@ out="$(_m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute)"
 printf '%s\n' "$out" | grep -F 'Moved task (confirmed by readback)' >/dev/null
 [ "$(wc -l < "${WORK}/move-writes.log" | tr -d ' ')" = 1 ]
 grep -F 'PATCH https://graph.microsoft.com/beta/planner/tasks/task-1 {"planId":"plan-2","bucketId":"b2"} If-Match: W/"etag-1"' "${WORK}/move-writes.log" >/dev/null
-jq -se 'any(.[]; .action == "move-task" and .verified == true and .changes.from.planId == "plan-1")' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null
+jq -se 'any(.[]; .action == "move-task" and .verified == true and .changes.from.planId == "plan-1")' "$M365_PLANNER_AUDIT_LOG" >/dev/null
 # Refused/ambiguous writes never retry; data loss and unavailable readback never report success.
 rm "${WORK}/moved"
 MOVE_FAIL=1
@@ -186,7 +186,7 @@ refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute >
 MOVE_FAIL=0
 MOVE_LOSS=1
 refute _m365_planner_move ut --task task-1 --plan plan-2 --bucket b2 --execute >/dev/null 2>&1
-jq -se 'any(.[]; .action == "move-task" and .verified == false)' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null
+jq -se 'any(.[]; .action == "move-task" and .verified == false)' "$M365_PLANNER_AUDIT_LOG" >/dev/null
 rm "${WORK}/moved"
 MOVE_LOSS=0
 MOVE_READ_FAIL=1
@@ -248,7 +248,7 @@ printf '%s' "$out" | grep -F 'confirmed by readback' >/dev/null
 jq -e '. == {appliedCategories:{category1:true,category2:true}}' "${WORK}/label-patch" >/dev/null
 grep -F 'If-Match: W/"label-etag"' "${WORK}/label-writes" >/dev/null
 [ "$(wc -l < "${WORK}/label-writes" | tr -d ' ')" = 1 ]
-jq -se 'any(.[]; .action == "label" and .verified == true)' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null
+jq -se 'any(.[]; .action == "label" and .verified == true)' "$M365_PLANNER_AUDIT_LOG" >/dev/null
 # Duplicate application reads current state and performs no second PATCH.
 out="$(_m365_planner_dispatch label ut --task task-1 --label Blocked --execute)"
 printf '%s' "$out" | grep -F 'No change' >/dev/null
