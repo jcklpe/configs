@@ -7,14 +7,14 @@ description: "Use when starting to operate the lifeos CLI, running lifeos doctor
 ## Local Precedence
 If the current repo already has `lifeos-tools/skills/lifeos-cli/SKILL.md`, read and follow the repo-local skill first. Treat this as fallback seed material.
 
-Use the local `lifeos` command to refresh LifeOS source context and make deliberate, bounded writes to Trello, Google Calendar, and Open Austin GitHub. This is the entry point; per-service detail lives in the service skills below.
+This is the compatibility entry for existing `lifeos` commands. New portable tools live in Agent Hands; per-service compatibility routes are listed below. `lifeos context` returns only the configured workspace entrypoint. Use `operate-lifeos` and the workspace's own instructions for context selection, source-refresh orchestration, and personal workflow rules.
 
 ## Core Rule
 Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the rest) are context, not write-back databases. Read them to understand external state; never edit them to change the external system. Use explicit `lifeos <service> ...` commands for writes, then refresh the snapshot.
 
 ## Service Skills
 - **`lifeos-trello`** — Trello reads, writes, and task-chain links.
-- **`lifeos-calendar`** — Google Calendar reads/writes, attendee resolution, availability reading.
+- **`lifeos-calendar`** — Google Calendar reads/writes, attendee resolution, explicit data exports, and compatibility sync.
 - **`lifeos-gmail`** — bounded Gmail snapshots, plus dry-run-gated archive, unarchive, and user-label changes (no delete or send).
 - **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import (creating a Doc).
 - **`lifeos-docs`** — editing a Google Doc that already exists: one exact replacement, dry-run by default, revision-guarded.
@@ -72,7 +72,7 @@ Most `sync` commands write a snapshot into `$LIFEOS_VAULT_PATH/sources/`. Passin
 
 ## Cross-Cutting Safety
 - Do not print or inspect `~/configs/lifeos-tools/secrets/.env`, Google or Microsoft token files, API keys, `google-accounts.json`, `m365-accounts.json`, or `odoo-accounts.json`.
-- Actions that touch real people or public state are gated per service — calendar `--notify` sends live invites, and Open Austin writes are handled through the public org repo. See the service skills.
+- Actions that touch real people or public state are gated per service — calendar `--notify` sends live invites, and repository writes follow the target repository's own rules. See the service skills.
 - Per-service safety notes live in each service skill.
 
 ## Changing A Command's Behavior
