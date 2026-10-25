@@ -30,7 +30,7 @@ Configured team plans need to be ordinary local context, with bounded task updat
 The experimental extension provides dry-run-first `move-task --task ID --plan ID --bucket ID` using the [documented Graph beta task update](https://learn.microsoft.com/en-us/graph/api/plannertask-update?view=graph-rest-beta). The current implementation limits moves to two allowlisted plans in the same Microsoft 365 group, validates bucket membership, refuses active labels, recurrence and externally sourced tasks, and uses one ETag-guarded PATCH. It audits the attempt and verifies the destination and supported preserved fields. It never clones or deletes tasks and never retries an ambiguous write. Goals, custom columns and linked meeting notes remain outside verification. Offline tests are available. Same-group moves were validated live on 2026-10-11 with readback confirming task IDs, descriptions, assignments, dates, progress, priority and destinations. Nonempty checklist/reference and conversation preservation remains unverified live.
 
 ## Links
-- [LifeOS Microsoft 365 skill](../../lifeos-tools/skills/lifeos-m365/SKILL.md)
+- [LifeOS Microsoft 365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md)
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md)
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
 - [0007 Mail Archive, Folders, And Labels](0007-mail-archive-and-labels.md)

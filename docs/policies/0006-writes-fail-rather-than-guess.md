@@ -18,4 +18,4 @@ A plausible guessed value can silently corrupt a real write: a wrong time zone p
 - A metadata-read outage now stops timed-event writes instead of producing wrong-hour events. This is the intended trade: a visible stop with a one-flag remedy beats an invisible corruption.
 - Warnings are not an acceptable substitute for a failure on any correctness-critical value. Where a `WARN:` currently guards one, it should be re-examined.
 - Dry-run-by-default (0002) is reinforced rather than replaced. It caught this bug, but it is a *review* gate that depends on a human reading the plan; it is not a correctness guarantee. Both layers are wanted.
-- The offline test for a correctness-critical default should assert the **failure** path, not just the happy path — including that nothing is emitted on stdout and that the remedy appears in the error. See `lifeos-tools/tests/test-calendar-tz.sh`.
+- The offline test for a correctness-critical default should assert the **failure** path, not just the happy path — including that nothing is emitted on stdout and that the remedy appears in the error. See `agent-hands/compat/lifeos/tests/test-calendar-tz.sh`.

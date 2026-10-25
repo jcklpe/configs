@@ -198,3 +198,6 @@ lifeos-tools/qa/
 
 # IDE runtime caches can retain private source content and credentials.
 /jet-brains/**/system/
+
+# Inert local retirement archives and private preservation manifests.
+/.local-retired/

@@ -26,4 +26,4 @@ Direct writes allow delivery into shared OneDrive or SharePoint folders that loc
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md)
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
 - [0008 LifeOS Microsoft 365 Planner](0008-lifeos-m365-planner.md)
-- [LifeOS Microsoft 365 skill](../../lifeos-tools/skills/lifeos-m365/SKILL.md)
+- [LifeOS Microsoft 365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md)
