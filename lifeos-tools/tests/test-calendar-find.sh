@@ -16,7 +16,7 @@ EVENTS="${TMPDIR:-/tmp}/lifeos-calendar-find-events.json"
 . "${LIB_DIR}/google.sh"
 
 jq '.items |= map(. + {_calendar_id: "primary", _calendar_summary: "Test Calendar"})' \
-    "${SCRIPT_DIR}/fixtures/events.json" > "$EVENTS"
+    "${TOOL_DIR}/../agent-hands/skills/use-google-calendar/tests/fixtures/events.json" > "$EVENTS"
 
 _calendar_find_human < "$EVENTS" > "$OUT"
 
