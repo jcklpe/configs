@@ -3,10 +3,13 @@ schema_version = 1
 [upstream]
 repository = "https://github.com/philphilphil/obsidian-track-changes"
 path = "docs/SKILL.md"
-revision = "9d7a799"
-release = "2.2.0"
-last_synced = "2026-09-23"
-evidence = "Carried forward from the existing Source Note. The upstream baseline was not independently retrieved or synchronized during this folder relocation."
+revision = "30bdd927c824fd018ad4533583fdd47fe048f3d7"
+release = "2.3.0"
+last_synced = "2026-10-24"
+previous_revision = "9d7a799"
+skill_blob = "558c44b089864f91469e29459422a7c43a9862eb"
+parser_blob = "1dbcdef2459e8787966fd8f1c33b62cf7ffc8f8c"
+evidence = "Retrieved the recorded baseline and current upstream. SKILL.md, parser.ts, and operations.ts are byte-identical across those revisions. Compared the local adaptation with that unchanged baseline; no upstream workflow additions were needed."
 
 [local]
 # These are preservation requirements, not a claim that every item differs from upstream.
@@ -16,3 +19,16 @@ preserve = [
   "Use consistent reviewer attribution and distinguish human marks and replies from agent proposals.",
   "Preserve local project authority and the established inline-comment/reply workflow.",
 ]
+adaptations = [
+  "Retain the track-changes skill name, concise trigger description, repository-local precedence, source attribution, and maintenance routing.",
+  "Use Codex in examples while allowing each reviewer to choose a consistent model name.",
+  "Attribute the highlight in the anchoring example, consistent with the requirement to attribute every agent-created mark.",
+  "State explicitly that even one newline separates threads, matching parser behavior.",
+  "Retain local heading, paragraph, and example formatting without changing review-only behavior.",
+]
+
+[verification]
+checked = "2026-10-24"
+plugin_manifest_version = "2.2.0"
+checks = "Synthetic temporary examples passed against the upstream parser and source-edit operations shared by the recorded 2.2.0 baseline and examined 2.3.0 source: six forms, attribution, anchors, human replies, newline separation, accept/reject rationale cleanup, finalize metadata removal, malformed prefixes, and code examples."
+limits = "The installed plugin manifest was inspected; the plugin was not upgraded and its live Obsidian panel was not exercised. Human documents and project-local skill copies were not modified."
