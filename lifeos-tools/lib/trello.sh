@@ -6,8 +6,7 @@ TRELLO_AUTH_DIR="$(cd "${TRELLO_USE_DIR}/../authorize-trello" && pwd)" || return
 . "${TRELLO_USE_DIR}/scripts/operations.sh"
 . "${TRELLO_USE_DIR}/scripts/export.sh"
 
-_trello_snooze() { TRELLO_SNOOZE_DEFAULT_LIST="${TRELLO_SNOOZE_DEFAULT_LIST:-Snoozed}" _trello_schedule_card "$@"; }
-_trello_snooze_lists() { printf '%s\n' "${TRELLO_SNOOZE_LISTS:-Snoozed}"; }
+_trello_snooze() { _trello_schedule_card "$@"; }
 
 _trello_sync() {
     local output=""

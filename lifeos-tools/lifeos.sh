@@ -52,7 +52,7 @@ Usage:
   ./lifeos.sh trello sync [--qa | --output FILE]
   ./lifeos.sh trello add-card --list LIST --name NAME [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
   ./lifeos.sh trello move-card --card CARD_ID_OR_URL --list LIST [--board BOARD_ID]
-  ./lifeos.sh trello snooze --card CARD_ID_OR_URL --until YYYY-MM-DD [--list LIST] [--board BOARD_ID]
+  ./lifeos.sh trello snooze --card CARD_ID_OR_URL --until YYYY-MM-DD --list LIST [--board BOARD_ID]
   ./lifeos.sh trello rename-card --card CARD_ID_OR_URL --name NAME
   ./lifeos.sh trello set-desc --card CARD_ID_OR_URL --file FILE
   ./lifeos.sh trello comment --card CARD_ID_OR_URL (--text TEXT | --file FILE)
@@ -99,7 +99,7 @@ Usage:
   ./lifeos.sh drive meta ALIAS FILE_URL_OR_ID [--json]
   ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
   ./lifeos.sh drive download ALIAS FILE_URL_OR_ID [--out PATH] [--mime EXPORT_MIME] [--force]
-  ./lifeos.sh drive sync ALIAS [--folders N] [--recent N] [--recent-days N] [--qa | --output FILE]
+  ./lifeos.sh drive sync ALIAS [--folders N] [--recent N] [--recent-days N] [--exclude-folder NAME]... [--qa | --output FILE]
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
   ./lifeos.sh docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
   ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--markdown] [--execute]   # --markdown formats the replacement (headings, bullets, bold, links) in place
