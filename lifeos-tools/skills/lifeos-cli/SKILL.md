@@ -14,7 +14,7 @@ Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the 
 
 ## Service Skills
 - **`lifeos-trello`** — Trello reads, writes, and task-chain links.
-- **`lifeos-calendar`** — Google Calendar reads/writes, attendee resolution, explicit data exports, and compatibility sync.
+- **`lifeos-calendar`** — Google Calendar reads/writes, attendee resolution, explicit data exports, and combined-renderer routing.
 - **`lifeos-gmail`** — bounded Gmail snapshots, plus dry-run-gated archive, unarchive, and user-label changes (no delete or send).
 - **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import (creating a Doc).
 - **`lifeos-docs`** — editing a Google Doc that already exists: one exact replacement, dry-run by default, revision-guarded.
@@ -68,7 +68,7 @@ lifeos odoo projects list ALIAS
 See `lifeos-odoo` for the plan/API boundary and supported read commands.
 
 ## Snapshot And QA Pattern
-Most `sync` commands write a snapshot into `$LIFEOS_VAULT_PATH/sources/`. Passing `--qa` instead writes a local copy under `~/configs/lifeos-tools/qa/` (gitignored) for inspection without touching the vault. After any write, re-run that service's `sync` to refresh the snapshot.
+Individual service sync adapters retain their existing configuration and destination conventions during migration; prefer explicit `--output` paths. `lifeos sync` and `lifeos calendar sync` are retired and exit 2 without loading credentials or changing snapshots. After writes, follow the calling workspace's scoped refresh procedure. Combined calendars require explicit provider data exports and the neutral `render-calendar-agenda` skill; a single-provider export does not establish full coverage.
 
 ## Cross-Cutting Safety
 - Do not print or inspect `~/configs/lifeos-tools/secrets/.env`, Google or Microsoft token files, API keys, `google-accounts.json`, `m365-accounts.json`, or `odoo-accounts.json`.
