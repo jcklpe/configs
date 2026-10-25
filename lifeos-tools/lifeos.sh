@@ -49,7 +49,7 @@ Usage:
   ./lifeos.sh trello list-boards
   ./lifeos.sh trello list-lists [board_id]
   ./lifeos.sh trello list-labels [board_id]
-  ./lifeos.sh trello sync [--qa | --output FILE]
+  ./lifeos.sh trello sync --output FILE
   ./lifeos.sh trello add-card --list LIST --name NAME [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
   ./lifeos.sh trello move-card --card CARD_ID_OR_URL --list LIST [--board BOARD_ID]
   ./lifeos.sh trello snooze --card CARD_ID_OR_URL --until YYYY-MM-DD --list LIST [--board BOARD_ID]
@@ -178,7 +178,7 @@ Usage:
   ./lifeos.sh slack thread ALIAS (MESSAGE_URL | --channel ID --ts TS)
   ./lifeos.sh slack post ALIAS (--channel ID [--thread-ts TS] | --url MESSAGE_URL) (--text TEXT | --text-file FILE) [--execute]   # as the user; dry-run by default
   ./lifeos.sh slack dm ALIAS --user USER_ID (--text TEXT | --text-file FILE) [--execute]
-  ./lifeos.sh slack sync [ALIAS] [--qa | --output DIR]   # snapshot configured Lists into sources/slack/<alias>/list-<name>.md
+  ./lifeos.sh slack sync [ALIAS] --output DIR   # export configured Lists to <DIR>/<alias>/list-<name>.md
   ./lifeos.sh slack lists schema ALIAS LIST_ID
   ./lifeos.sh slack lists items ALIAS LIST_ID [--limit N] [--archived]
   ./lifeos.sh slack lists get ALIAS LIST_ID ITEM_ID
@@ -188,7 +188,7 @@ Usage:
   ./lifeos.sh slack lists update ALIAS LIST_ID ITEM_ID --field NAME=VALUE... [--execute]
   ./lifeos.sh resume render INPUT.md [--output PATH] [--theme CSS] [--asset-dir DIR] [--open]
   ./lifeos.sh github list-repos
-  ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
+  ./lifeos.sh github sync [ALIAS] [--all] --output DIR
   ./lifeos.sh github create-issue --repo ALIAS_OR_OWNER/REPO --title TITLE [--body TEXT | --body-file FILE] [--label NAME]... [--assignee LOGIN]... [--assign-me] [--execute]
   ./lifeos.sh github move-card --repo ALIAS --issue NUMBER --status COLUMN [--execute]
   # aggregate sync is retired: the calling workspace selects individual service exports
@@ -465,7 +465,14 @@ _context() {
     printf 'Workspace entrypoint: %s/AGENTS.md\nRead its role and task routes before selecting further context.\n' "$vault"
 }
 
-_load_env
+# Migrated providers load only their own literal configuration, never the legacy shared env.
+case "${1:-help}" in
+    trello) _trello_load_env || exit 1 ;;
+    odoo) _odoo_load_env || exit 1 ;;
+    github) _github_load_env || exit 1 ;;
+    slack|help|-h|--help) ;;
+    *) _load_env ;;
+esac
 
 case "${1:-help}" in
     help|-h|--help)
