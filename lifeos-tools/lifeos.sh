@@ -451,28 +451,9 @@ _context() {
     local vault
     _require_var LIFEOS_VAULT_PATH || return 1
     vault="$(_vault_path)"
-    cat <<EOF
-Recommended LifeOS context files:
-
-$vault/README.md
-$vault/now.md
-$vault/weekly-review.md
-$vault/sources/trello.md
-$vault/sources/calendar.md
-$vault/sources/gmail/
-$vault/sources/m365/
-
-For Open Austin GitHub/org work, also read:
-
-$vault/open-austin/repo.md
-$vault/sources/github/open-austin-org/issues.md
-$vault/sources/github/open-austin-org/board-org-kanban.md
-$vault/sources/slack/open-austin/list-org.md
-
-Then add the relevant focus-thread file, such as:
-
-$vault/open-austin/index.open-austin.md
-EOF
+    # The workspace entrypoint owns context selection; do not duplicate its private paths here.
+    [ -f "$vault/AGENTS.md" ] || { _err "Configured workspace has no AGENTS.md entrypoint"; return 1; }
+    printf 'Workspace entrypoint: %s/AGENTS.md\nRead its role and task routes before selecting further context.\n' "$vault"
 }
 
 # Retained compatibility entrypoint. New compositions use explicit provider exports and the neutral agenda renderer; workspace policy belongs to the caller.
