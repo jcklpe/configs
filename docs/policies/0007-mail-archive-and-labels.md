@@ -7,7 +7,7 @@ Mail mutations are limited to **reversible filing and metadata changes**, the ou
 
 Each write surface is **off unless the account opts in**: `mail.write_enabled` in `m365-accounts.json` (which switches the requested scope from `Mail.Read` to `Mail.ReadWrite`) and `gmail.write_enabled` in `google-accounts.json` (which adds `gmail.modify`). Both scopes technically permit more than the CLI exposes (`gmail.modify` can trash; `Mail.ReadWrite` can delete). As in 0004, the control is the deliberately narrow command surface, not the token.
 
-All writes follow the existing write discipline: dry-run by default with `--execute` to apply; exact message or thread IDs only; unknown IDs, wrong-source messages, and ambiguous folder or label names fail the whole call ([0006](0006-writes-fail-rather-than-guess.md)); a per-call cap of 50; readback after every executed change; and a local audit log (`lifeos-tools/secrets/logs/mail-writes.jsonl`, ignored) of every executed change, including the new ID Microsoft assigns a moved message.
+All writes follow the existing write discipline: dry-run by default with `--execute` to apply; exact message or thread IDs only; unknown IDs, wrong-source messages, and ambiguous folder or label names fail the whole call ([0006](0006-writes-fail-rather-than-guess.md)); a per-call cap of 50; readback after every executed change; and a local audit log (`mail-writes.jsonl` beside the owning `use-gmail` or `use-outlook-mail` skill, ignored) of every executed change, including the new ID Microsoft assigns a moved message.
 
 This repository supplies the capability only. What counts as noise, and whether an agent may archive without asking, is policy for the calling vault's skills.
 
@@ -40,6 +40,6 @@ Reversible filing removes repeated manual work while keeping sending and deletio
 ## Links
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md) — delegated access and transport boundary.
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
-- [lifeos-m365 skill](../../lifeos-tools/skills/lifeos-m365/SKILL.md)
-- [lifeos-gmail skill](../../lifeos-tools/skills/lifeos-gmail/SKILL.md)
+- [lifeos-m365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md)
+- [lifeos-gmail skill](../../agent-hands/compat/lifeos/skills/lifeos-gmail/SKILL.md)
 - [LifeOS mail archive spike](../active-spikes/lifeos-m365-mail-archive.md)

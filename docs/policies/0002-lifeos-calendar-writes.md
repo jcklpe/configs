@@ -20,8 +20,8 @@ Creating and editing events, including invitations, is useful enough to justify 
 - `people-aliases.json` is local and gitignored, so it does not travel with the repo; a LifeOS agent on another machine starts with an empty alias map.
 
 ## Links
-- [lifeos-cli skill](../../lifeos-tools/skills/lifeos-cli/SKILL.md) — operational guidance and the disambiguation flow.
-- [lifeos-tools/README.md](../../lifeos-tools/README.md)
+- [lifeos-cli skill](../../agent-hands/compat/lifeos/skills/lifeos-cli/SKILL.md) — operational guidance and the disambiguation flow.
+- [lifeos-tools/README.md](../../agent-hands/compat/lifeos/README.md)
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md) — the alias-file ignore pattern.
 - [lifeos-tools-v2 archive](../archive/lifeos-tools-v2.md) — superseded Calendar V2 ideas.
-- Implementation: `lifeos-tools/lifeos.sh`, `google-calendar-write.py`, `google-people.py`, `google-calendar-auth.py`.
+- Implementation: `agent-hands/bin/lifeos`, `google-calendar-write.py`, `google-people.py`, `google-calendar-auth.py`.

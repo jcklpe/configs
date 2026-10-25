@@ -65,7 +65,7 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Project workflow procedure | `project-workflows/skills/<skill-name>/SKILL.md`, with tracked choices in `project-workflows/workflow.toml` |
 | General review, authoring, or skill-maintenance procedure | `general-skills/<skill-name>/SKILL.md`; see [current collection](general-skills/README.md) |
 | Cross-repo agent preference | [agents/AGENTS.global.md](agents/AGENTS.global.md) — never repo-specific facts |
-| Portable service/tool capability | `agent-hands/skills/<skill-name>/SKILL.md`; old command spellings route through `lifeos-tools/skills/` |
+| Portable service/tool capability | `agent-hands/skills/<skill-name>/SKILL.md`; old command spellings route through `agent-hands/compat/lifeos/skills/` |
 | OS-conditional logic | branch on `OS_TYPE` (`mac \| fedora \| nixos \| wsl \| linux \| unknown`) |
 | NixOS packages | [nixos/configuration.nix](nixos/configuration.nix) |
 | Active work coordination | [TODO.md](TODO.md) |
@@ -89,7 +89,7 @@ Authority ladder: `AGENTS.md`, `README.md`, and current policies define durable 
 ## Skills workflow
 Project workflows live in the independent [project-workflows/](project-workflows/README.md) submodule. The workflow submodule uses `project/configs`; this is separate from the containing configs repository's own branch, currently `master`. The parent Git pin records the exact adopted revision. Read [workflow.toml](project-workflows/workflow.toml) for this project's document locations. Use [setup-project-workflows](project-workflows/skills/setup-project-workflows/SKILL.md) for adoption/docs setup and [update-project-workflows](project-workflows/skills/update-project-workflows/SKILL.md) for ancestry-aware updates that preserve local differences.
 
-General procedures live independently in [general-skills/](general-skills/README.md). Source ownership, global client installation, and project adoption are separate. Temporary old source routes preserve existing references; new routing should use the actual owners. The [modular distribution spike](docs/active-spikes/modular-skill-distribution.md) tracks remaining client/platform QA and adoption work. Both child repositories and the configs project branch are public; their current pinned commits are remotely available. Parent-repository publication remains separate.
+General procedures live independently in [general-skills/](general-skills/README.md). Source ownership, global client installation, and project adoption are separate. Temporary old source routes preserve existing references; new routing should use the actual owners. The [modular distribution spike](docs/active-spikes/modular-skill-distribution.md) tracks remaining client/platform QA and adoption work. Both child repositories and the configs project branch have public baselines. The current compatibility cutover includes a new local Agent Hands checkpoint; publish that child separately before publishing a containing pin. Parent-repository publication remains separate.
 
 The installer exposes selected global Codex skills with explicit symlink calls in
 [symlinks.sh](install-script/functions/symlinks.sh). Keep that list as simple direct

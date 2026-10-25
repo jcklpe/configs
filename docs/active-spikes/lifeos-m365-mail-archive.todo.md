@@ -1,4 +1,7 @@
 # LifeOS Microsoft 365 Mail Archive — To Do
+
+Current ownership (2026-10-25): Agent Hands owns native service code and `compat/lifeos/` owns the optional legacy command. Remaining references to the former `lifeos-tools/` tree describe original scope or completed historical work, not an active tool location.
+
 Concept and design: [lifeos-m365-mail-archive.md](lifeos-m365-mail-archive.md). Scope widened 2026-09-29 to Gmail archive and labels plus M365 folders.
 
 ## Current State
