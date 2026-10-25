@@ -215,6 +215,7 @@ _m365_dispatch() {
                 list-calendars) shift 2; _m365_calendar_list "$@" ;;
                 find) shift 2; _m365_calendar_find "$@" ;;
                 sync) shift 2; _m365_calendar_sync "$@" ;;
+                export-data) shift 2; _m365_calendar_export_data "$@" ;;
                 create-event) shift 2; _m365_calendar_create "$@" ;;
                 update-event) shift 2; _m365_calendar_update "$@" ;;
                 *) _err "Unknown m365 calendar command: ${2:-}"; return 1 ;;
