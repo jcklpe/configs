@@ -109,7 +109,7 @@ lifeos m365 calendar sync ALIAS --qa
 lifeos m365 calendar sync ALIAS
 ```
 
-Microsoft 365 calendar events already appear in the unified agenda written by `lifeos calendar sync` (see `lifeos-calendar`); that is the file to read for availability. `m365 calendar sync` separately writes a per-alias snapshot and is kept for debugging or Graph-specific detail; the combined sync no longer writes it. It uses a bounded Graph calendar view so recurring instances and exceptions are expanded across the normal LifeOS date window. `calendar find` returns exact calendar and event IDs for later updates.
+`m365 calendar sync` remains a single-account compatibility export for inspection; it does not refresh a combined agenda. For combined views, use `m365 calendar export-data ALIAS --from INSTANT --to INSTANT --output FILE` and [render-calendar-agenda](../../../agent-hands/skills/render-calendar-agenda/SKILL.md) with every source explicitly declared. The calling workspace owns selection and refresh policy; LifeOS callers reach theirs through `operate-lifeos`. `calendar find` returns exact calendar and event IDs for updates.
 
 ## Calendar Writes
 ```sh
@@ -136,7 +136,7 @@ lifeos m365 contacts update ALIAS --contact CONTACT_ID --company "Organization"
 
 These commands operate on the signed-in user's default Outlook Contacts folder, not the institutional organization directory. Reads are bounded and do not recurse through additional contact folders. Create/update writes are dry-run by default and require `--execute`; updates require the exact Graph contact ID. Passing `--email` or `--phone` during an update replaces that complete field array, which the dry-run plan displays. There are no contact or folder delete commands.
 
-After any successful calendar or contact write, re-run the corresponding `sync` command to refresh the LifeOS snapshot.
+After a successful calendar or contact write, follow the calling workspace's scoped refresh procedure. A single-account calendar export is not a refresh of a combined agenda.
 
 ## Planner
 Before any write the user has not already approved item by item, present the proposed changes as an approval slate using the `draft-approval-slate` skill.
@@ -156,9 +156,9 @@ lifeos m365 planner create-task ALIAS --plan PLAN_ID --bucket BUCKET_ID --title 
 lifeos m365 planner update-task ALIAS --task TASK_ID [--title TEXT] [--bucket BUCKET_ID] [--due YYYY-MM-DD|none] [--progress ...] [--assign WHO]... [--unassign WHO]... [--desc TEXT | --desc-file FILE] [--execute]
 lifeos m365 planner move-task ALIAS --task TASK_ID --plan PLAN_ID --bucket BUCKET_ID [--execute]
 ```
-Enable per alias with a `planner` block in `m365-accounts.json`: `enabled`, `write_enabled` (default false), `sync` (default true), `max_tasks`, `description_character_limit`, and `plans`, a list of `{id, name, context}`. `plans` names the plans to snapshot, and the only plans writes may touch; find their IDs with `planner plans`. Enabling Planner adds `Tasks.ReadWrite` and `User.ReadBasic.All` to the requested scopes (always `Tasks.ReadWrite`, because UT blocks user consent and only that scope is pre-approved; `write_enabled` is the write gate). After changing scopes, run `lifeos m365 auth ALIAS` once in a real terminal (`--no-browser` prints a device code); until then, Planner calls stall waiting for sign-in.
+Enable per alias with a `planner` block in `m365-accounts.json`: `enabled`, `write_enabled` (default false), `max_tasks`, `description_character_limit`, and `plans`, a list of `{id, name, context}`. `plans` names the plans to snapshot, and the only plans writes may touch; find their IDs with `planner plans`. Enabling Planner adds `Tasks.ReadWrite` and `User.ReadBasic.All` to the requested scopes (always `Tasks.ReadWrite`, because UT blocks user consent and only that scope is pre-approved; `write_enabled` is the write gate). After changing scopes, run `lifeos m365 auth ALIAS` once in a real terminal (`--no-browser` prints a device code); until then, Planner calls stall waiting for sign-in.
 
-`planner sync` writes `sources/m365/<alias>-planner.md`: open tasks grouped by bucket in Planner's order, with status, due date, priority, assignee names, labels, description, and checklist, then a compact list of completed tasks. `lifeos sync` runs it for every alias with Planner enabled and plans configured, unless `planner.sync` is false. Only the basic Planner plans Graph exposes are reachable; Planner Premium plans are not.
+`planner sync` writes `sources/m365/<alias>-planner.md`: open tasks grouped by bucket in Planner's order, with status, due date, priority, assignee names, labels, description, and checklist, then a compact list of completed tasks. Callers select each alias explicitly; the retired aggregate command no longer schedules Planner exports. The old `planner.sync` flag has no effect. Only the basic Planner plans Graph exposes are reachable; Planner Premium plans are not.
 
 Writes are dry-run by default and print the current task beside the change. They are limited to plans in `planner.plans`, refuse to run while `write_enabled` is false, and send `If-Match` with the etag read in the same run, so a task changed in between is refused rather than overwritten. Each executed write is read back and logged to `secrets/logs/mail-writes.jsonl` with service `m365-planner`. Due dates are stored at noon UTC to keep the calendar date stable across US time zones; progress has Planner's three states. `--desc` replaces the whole description.
 

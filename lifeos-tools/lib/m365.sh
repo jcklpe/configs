@@ -120,17 +120,6 @@ _m365_calendar_window() {
     "$LIFEOS_PY" -c 'from datetime import datetime, timedelta, timezone; import sys; now=datetime.now(timezone.utc); start=(now-timedelta(days=int(sys.argv[1]))).replace(hour=0,minute=0,second=0,microsecond=0); end=(now+timedelta(days=int(sys.argv[2])+1)).replace(hour=0,minute=0,second=0,microsecond=0); print(start.isoformat().replace("+00:00","Z")); print(end.isoformat().replace("+00:00","Z"))' "$LIFEOS_DAYS_BACK" "$LIFEOS_DAYS_AHEAD"
 }
 
-_m365_calendar_enabled_aliases() {
-    local accounts_path
-    accounts_path="$(_m365_accounts_path)"
-    [ -f "$accounts_path" ] || return 0
-    jq -r '(.accounts // [])[] | select((.calendar.enabled // false) == true) | .alias' "$accounts_path" 2>/dev/null
-}
-
-_m365_calendar_normalize_helper() {
-    "$LIFEOS_PY" "${LIB_DIR}/m365-calendar-normalize.py" "$@"
-}
-
 _m365_calendar_sync() {
     local alias="${1:-}" qa=0 custom_out="" out tmp json profile_email refreshed window from to timezone ids limit dir
     [ -n "$alias" ] || { _err "m365 calendar sync requires ALIAS"; return 1; }

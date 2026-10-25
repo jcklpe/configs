@@ -86,8 +86,7 @@ lifeos calendar auth
 lifeos calendar list-calendars
 lifeos calendar find "Dinner"
 lifeos calendar find "Dinner" --from 2026-07-01 --to 2026-07-31 --json
-lifeos calendar sync
-lifeos calendar sync --qa
+lifeos calendar export-data google --from 2026-10-01T00:00:00Z --to 2026-11-01T00:00:00Z --output /tmp/google-calendar.json
 lifeos calendar create-event --title "Dinner" --start 2026-06-25T18:00 --attendee lindsey --execute
 lifeos calendar update-event --event EVENT_ID --location "New venue" --execute
 lifeos calendar update-event --event EVENT_ID --series --location "New venue" --execute
@@ -174,7 +173,6 @@ lifeos odoo tasks get example 42
 lifeos open-austin-org path
 lifeos open-austin-org sync
 lifeos open-austin-org sync --qa
-lifeos sync   # Trello, Calendar, GitHub, and Slack Lists; unconfigured sources are skipped with a warning
 ```
 
 `conversations` discovers existing channels, DMs and group DMs without opening or joining them. `history` reads one bounded page, reports a next cursor/end marker, and supports timestamp bounds; use `thread` for replies. `search` returns one newest-first result page and requires the existing `search:read` scope. Missing scopes are reported without modifying OAuth grants. See the [Slack skill](skills/lifeos-slack/SKILL.md#read-only-conversation-lookup) for pagination and visibility limits.
@@ -243,19 +241,21 @@ This command does not copy the full repo, `.env`, `.git`, `.github`, tools, work
 
 Public Open Austin writes are implemented in `$OPEN_AUSTIN_ORG_REPO_PATH` rather than this private adapter. Use `tools/issues/create.sh` in that repo for dry-run-first issue creation and follow its `AGENTS.md` and repo-local skills. After approved public writes, run `lifeos open-austin-org sync` to refresh LifeOS context.
 
-Google Calendar auth/list/sync plus event create/update is implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them. The calendar token carries the `calendar.events` (read+write) and Contacts read scopes; re-run `lifeos calendar auth` after pulling this change to re-consent, and enable the People API for the same Google project so attendee-name lookups work.
+Google Calendar auth, discovery, explicit data exports, and event create/update are implemented. `google-credentials.json` stores the downloaded desktop-app OAuth client, and `google-token.json` stores generated access/refresh token data. Both real files are ignored; fake examples are tracked beside them. The calendar token carries the `calendar.events` (read+write) and Contacts read scopes; re-run `lifeos calendar auth` after pulling this change to re-consent, and enable the People API for the same Google project so attendee-name lookups work.
 
 `lifeos calendar create-event` and `update-event` are **dry-run by default** and only write with `--execute`. Writes are restricted to the calendars in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`); there is no delete. Attendees are not emailed unless `--notify` is passed (`sendUpdates=none` by default). `--attendee VALUE` resolves in order: a literal `email@host`, then the local `people-aliases.json` map (case-insensitive short names for frequent invitees), then Google Contacts via the People API; ambiguous or unmatched People API names fail with candidates rather than guessing. Copy `people-aliases.example.json` to the ignored `people-aliases.json` to set up aliases like `lindsey`. `update-event` merges new attendees into the existing list unless `--replace-attendees` is given, and edits only the single occurrence of a recurring event unless `--series` is passed (which retargets the series master). Create recurring events with repeatable `--recurrence "RRULE:..."`. When an attendee name is ambiguous or unmatched, the write stops with candidates; `lifeos people resolve NAME --json` lists them and `lifeos people add-alias NAME EMAIL` records a pick in the gitignored `people-aliases.json`. See the `lifeos-calendar` skill for the full safety model.
 
 Both writers accept `--transparency transparent` (Free) or `--transparency opaque` (Busy), leaving defaults/current settings alone when omitted. `--popup-minutes 0` requests a popup at event start; values `0..40320` replace the event's reminder overrides with one popup and disable calendar-default reminders. This personal reminder is separate from attendee-email `--notify`. Explicit availability/reminder settings are shown in the plan and verified by fetching the saved event after execution; failed readback reports `PARTIAL` and must not trigger an automatic repeated write. See the [Calendar skill](skills/lifeos-calendar/SKILL.md#writes) for details.
 
-Calendar sync uses comma-separated `GOOGLE_CALENDAR_IDS`, with `primary` as the default. `lifeos calendar sync` writes a combined date-grouped agenda to `$LIFEOS_VAULT_PATH/sources/calendar.md` that also includes every Microsoft 365 account with `calendar.enabled` (times converted to the Google primary calendar's zone; a header states whether each account was included or is MISSING), plus `sources/calendar-long-horizon.md`, a compact one-line-per-event agenda from where `calendar.md` ends to `LIFEOS_LONG_HORIZON_DAYS` (default 180) days out, with recurring series collapsed to one line each. `--google-only` leaves Microsoft 365 out. `lifeos calendar sync --qa` writes ignored local snapshots to `lifeos-tools/calendar-qa.md` and `calendar-qa-long-horizon.md`.
+`lifeos calendar sync` and aggregate `lifeos sync` are retired. They exit 2 before loading credentials or refreshing anything, including when old `--qa`, `--output`, or `--google-only` flags are supplied. There is no automatic replacement that chooses accounts or writes workspace snapshots. LifeOS callers enter their private instructions through `operate-lifeos` and follow the private refresh procedures.
+
+For explicit composition, `lifeos calendar export-data SOURCE_LABEL --from INSTANT --to INSTANT --output FILE` exports the existing standalone Google credential source and configured `GOOGLE_CALENDAR_IDS` (default `primary`). The label does not switch accounts. `lifeos m365 calendar export-data ALIAS` exports the selected Microsoft account. Both emit complete provider bundles for [render-calendar-agenda](../agent-hands/skills/render-calendar-agenda/SKILL.md). Callers choose expected sources, timezone, windows, description omissions, and destinations. Individual service sync adapters remain available during configuration migration; their success establishes only their own stated coverage.
 
 `lifeos calendar find QUERY` searches the configured calendars over the normal sync window and prints calendar ID, event ID, title, start/end, location, and link. Use it before `update-event` when you need the exact event ID. Narrow with `--from YYYY-MM-DD`, `--to YYYY-MM-DD`, `--calendar CALENDAR_ID`, or pass `--json` for machine-readable output.
 
 Event lines include `calendar: <calendar name>`, inline `location: ...` when present, direct meeting links when available, and cleaned bounded descriptions. Multi-day all-day events and timed events crossing midnight are expanded under every affected date so agents do not mistake continuation days as free.
 
-Descriptions for noisy calendars can be omitted via `LIFEOS_CALENDAR_NO_DESCRIPTION` in `.env` (comma-separated calendar names, matched against the calendar summary, case-insensitive). All other calendars keep their descriptions. An event shared with a high-signal calendar keeps its description. Verify exact names with `lifeos calendar list-calendars`.
+For new combined output, use the neutral renderer's explicit `--omit-description` option with exact displayed calendar labels. The old `LIFEOS_CALENDAR_NO_DESCRIPTION` preference and long-horizon setting no longer schedule or configure combined sync; preserve intended values in the calling workspace's rendering procedure when migrating.
 
 Google Gmail/Drive alias config lives in ignored `google-accounts.json`, copied from tracked `google-accounts.example.json`. Each alias has its own ignored token file, such as `google-personal-token.json`.
 

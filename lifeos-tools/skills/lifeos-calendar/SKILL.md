@@ -1,6 +1,6 @@
 ---
 name: lifeos-calendar
-description: "Use when reading or writing Google Calendar through the lifeos CLI: syncing the calendar snapshot, answering availability questions, or creating/updating events (dry-run by default). Covers the write-safety model (allowlisted calendars, no delete, --notify blast radius, layered attendee resolution via the people commands) and how to read availability."
+description: "Use when reading or writing Google Calendar through the lifeos CLI: exporting calendar data or creating/updating events (dry-run by default). Covers the write-safety model (allowlisted calendars, no delete, --notify blast radius, layered attendee resolution via the people commands) and explicit export coverage."
 ---
 
 # LifeOS Calendar
@@ -15,7 +15,6 @@ lifeos calendar auth
 lifeos calendar list-calendars
 lifeos calendar find "Dinner"
 lifeos calendar find "Dinner" --from 2026-07-01 --to 2026-07-31
-lifeos calendar sync
 ```
 
 `calendar find QUERY` is read-only and returns update-ready event IDs across the configured calendars and normal sync window by default. Use `--from YYYY-MM-DD`, `--to YYYY-MM-DD`, `--calendar CALENDAR_ID`, or `--json` when narrowing or scripting the lookup. Prefer `calendar find` over grepping `sources/calendar.md` when you need an event ID for `update-event`.
@@ -25,7 +24,7 @@ lifeos calendar sync
 
 For new compositions, the calling workflow explicitly selects providers, expected sources, calendars, windows, timezone, and output paths. Personal availability meaning and workspace refresh procedures belong in that workspace, reached through `operate-lifeos` when relevant. This public guide does not define them.
 
-`calendar sync` remains a temporary compatibility route with its existing configuration, two output files, and enabled-account composition. Its missing-source headers must be checked; it can publish a partial agenda, and successful command completion is not proof that every intended account was included. `--google-only` is a diagnostic subset, not a complete combined agenda. Final retirement waits for callers to migrate; new workflows should use explicit data exports and the neutral renderer.
+`calendar sync` and aggregate `lifeos sync` are retired and exit 2 without loading credentials or writing snapshots. Use the explicit exports and neutral renderer above. For LifeOS, follow the private refresh procedure reached through `operate-lifeos`; this guide does not choose sources, windows, availability meaning, or destinations.
 
 ## Writes
 Before any write the user has not already approved item by item, present the proposed changes as an approval slate using the `draft-approval-slate` skill.
