@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-##- Test the unified Google + Microsoft 365 agenda: normalization, cross-provider merge, and the loud failure line. Offline; all data is invented.
+##- Check legacy renderer compatibility: normalization, cross-provider merge, and compact boundaries. Offline; all data is invented.
 
 set -eu
 
@@ -7,6 +7,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TOOL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-unified-test.XXXXXX")"
 OUT="${WORK}/agenda.md"
+trap 'rm -rf "$WORK"' EXIT
 
 fail() {
     printf 'FAIL: %s\n\nAgenda:\n' "$*" >&2
@@ -64,22 +65,7 @@ if grep -F 'For assistance with Teams' "$OUT" >/dev/null; then fail "Teams boile
 if grep -F 'Cancelled review' "$OUT" >/dev/null; then fail "cancelled events should be omitted"; fi
 grep -A2 '^### 2026-12-24' "$OUT" | grep -F -- '- all day - Campus closed' >/dev/null || fail "all-day event should stay on its calendar date"
 
-##- Failure paths print a MISSING line and return non-zero instead of silently shrinking the agenda.
-CONFIGS="$(cd "${TOOL_DIR}/.." && pwd)"; SECRETS_DIR="${WORK}"; ENV_FILE="${WORK}/.env"; LIB_DIR="${TOOL_DIR}/lib"; QA_DIR="${WORK}"
-export CONFIGS SECRETS_DIR ENV_FILE LIB_DIR QA_DIR
-# shellcheck source=/dev/null
-. "${LIB_DIR}/common.sh"
-# shellcheck source=/dev/null
-. "${LIB_DIR}/google.sh"
-# shellcheck source=/dev/null
-. "${LIB_DIR}/m365.sh"
-render_args=()
-_m365_calendar_ids() { printf 'primary\n'; }
-_m365_calendar_fetch() { return 1; }
-if line="$(_calendar_add_m365 school 2026-10-01T00:00:00Z 2026-11-01T00:00:00Z America/Chicago)"; then fail "fetch failure should return non-zero"; fi
-case "$line" in *"school: MISSING"*"does not include school"*) ;; *) fail "fetch failure line was: $line" ;; esac
-if line="$(_calendar_add_m365 school 2026-10-01T00:00:00Z 2026-11-01T00:00:00Z "")"; then fail "missing time zone should return non-zero"; fi
-case "$line" in *"school: MISSING"*"time zone"*) ;; *) fail "missing time zone line was: $line" ;; esac
+# Source-coverage and missing-input failures are checked by render-calendar-agenda/tests/test_render.py.
 
 ##- Long horizon: compact lines, and the boundary rule that keeps it disjoint from the near-term file.
 cat > "${WORK}/lh-events.json" <<'EOF'
@@ -132,6 +118,10 @@ grep -Fx -- '- Gym — Mon, Wed, 12:00-13:00 — 4 occurrences, 2026-11-02 to 20
 grep -A1 '^### 2026-11-17' "$MV" | grep -Fx -- '- 15:00-16:00 - Gym (moved; this series is usually Mon 12:00-13:00; Wed 12:00-13:00) | calendar: Personal' >/dev/null || { cat "$MV"; fail "the moved occurrence should be listed on its date with the usual slots"; }
 
 ##- Paging: every page is fetched and merged.
+CONFIGS="$(cd "${TOOL_DIR}/.." && pwd)"; SECRETS_DIR="$WORK"; ENV_FILE="$WORK/.env"; LIB_DIR="${TOOL_DIR}/lib"; QA_DIR="$WORK"
+export CONFIGS SECRETS_DIR ENV_FILE LIB_DIR QA_DIR
+. "${LIB_DIR}/common.sh"
+. "${LIB_DIR}/google.sh"
 _calendar_get() {
     case "$*" in
         *pageToken=p2*) printf '{"items": [{"id": "e3"}]}' ;;

@@ -16,7 +16,7 @@ PowerShell owns its protected CurrentUser authentication cache. A dedicated publ
 
 Microsoft 365 attendee-bearing event writes require `--notify` as acknowledgement that Microsoft may send invitations or meeting updates. This flag does not provide Google's server-side notification suppression. Bare attendee names resolve only through the deterministic local alias map; the tool does not search or guess from UT's directory.
 
-Mail and Planner snapshots remain distinct under `sources/m365/`. Configured Planner plans participate in aggregate `lifeos sync` under [0008](0008-lifeos-m365-planner.md). Enabled Microsoft 365 calendars join the combined `sources/calendar.md` agenda through `lifeos calendar sync`; the separate per-alias calendar snapshot is produced only on request. Other Microsoft 365 snapshots are not silently added to aggregate sync.
+Service exports remain independent. Callers select aliases, domains, windows, and destinations explicitly; the legacy aggregate and combined-calendar sync commands are retired. Provider calendar data exports feed the neutral `render-calendar-agenda` skill. Private workspace procedures own combined agenda selection and snapshot destinations; the public tools do not decide which accounts matter for availability.
 
 ## Rationale
 The Microsoft 365 mailbox can contain both forwarded UTmail and Microsoft-native messages, making it the canonical UT mailbox source. Keeping that source separate from Gmail avoids missing archived forwarded copies or creating forwarding loops. The shared Graph PowerShell client is usable where direct student-owned tenant registration is unavailable; a deliberately narrow command surface bounds the broader effective delegated context.

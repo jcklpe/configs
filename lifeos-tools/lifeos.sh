@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 ##- LifeOS helper CLI
-##- Pulls source data into the private LifeOS vault and supports bounded, explicit writes.
+##- Compatibility service commands; workflow selection belongs to the calling workspace.
+
+# Retired orchestration must fail before loading modules, credentials, or configuration. Keep this diagnostic for old callers rather than silently doing a narrower refresh.
+case "${1:-}:${2:-}" in
+    sync:*|calendar:sync)
+        printf '%s\n' 'ERROR: Combined calendar sync and aggregate sync are retired; no sources were refreshed.' >&2
+        printf '%s\n' 'For LifeOS, enter its current instructions through operate-lifeos and follow its private refresh procedures.' >&2
+        printf '%s\n' 'For other callers, select individual service exports explicitly. Combine calendar export-data bundles with the render-calendar-agenda skill.' >&2
+        exit 2
+        ;;
+esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIGS="${CONFIGS:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
@@ -11,7 +21,6 @@ QA_DIR="${SCRIPT_DIR}/qa"
 
 LIFEOS_DAYS_BACK="${LIFEOS_DAYS_BACK:-14}"
 LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
-LIFEOS_LONG_HORIZON_DAYS="${LIFEOS_LONG_HORIZON_DAYS:-180}"
 
 # Shared helpers live in lib/. common.sh must load first — the feature modules use its functions.
 . "${LIB_DIR}/common.sh"
@@ -62,7 +71,7 @@ Usage:
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar find QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
   ./lifeos.sh calendar export-data SOURCE_LABEL --from INSTANT --to INSTANT --output FILE [--calendar ID]
-  ./lifeos.sh calendar sync [--google-only] [--qa | --output FILE]   # one agenda: Google calendars plus enabled Microsoft 365 calendars
+  # calendar sync is retired: use explicit export-data bundles and render-calendar-agenda
   ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
   ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
   ./lifeos.sh people resolve NAME [--json]
@@ -182,7 +191,7 @@ Usage:
   ./lifeos.sh github sync [ALIAS] [--qa | --output DIR]
   ./lifeos.sh github create-issue --repo ALIAS_OR_OWNER/REPO --title TITLE [--body TEXT | --body-file FILE] [--label NAME]... [--assignee LOGIN]... [--assign-me] [--execute]
   ./lifeos.sh github move-card --repo ALIAS --issue NUMBER --status COLUMN [--execute]
-  ./lifeos.sh sync      # Trello, Calendar, GitHub, Slack Lists, and Microsoft 365 Planner; each skipped with a warning when not configured
+  # aggregate sync is retired: the calling workspace selects individual service exports
 
 Real config lives in .env, copied from .env.example.
 EOF
@@ -456,71 +465,6 @@ _context() {
     printf 'Workspace entrypoint: %s/AGENTS.md\nRead its role and task routes before selecting further context.\n' "$vault"
 }
 
-# Retained compatibility entrypoint. New compositions use explicit provider exports and the neutral agenda renderer; workspace policy belongs to the caller.
-_calendar_sync_combined() {
-    local status=0 google_only=0 passthrough=() scoped=0
-    for arg in "$@"; do
-        case "$arg" in
-            --google-only) google_only=1 ;;
-            --qa|--output) scoped=1; passthrough+=("$arg") ;;
-            *) passthrough+=("$arg") ;;
-        esac
-    done
-    # Microsoft 365 calendars are merged into the one agenda inside _calendar_sync; the separate per-alias M365 calendar snapshot is no longer written here (`lifeos m365 calendar sync` still writes it on request).
-    if [ "$google_only" -eq 1 ]; then
-        LIFEOS_CALENDAR_GOOGLE_ONLY=1 _calendar_sync "${passthrough[@]}" || status=$?
-    else
-        _calendar_sync "${passthrough[@]}" || status=$?
-    fi
-    : "$scoped"
-    return "$status"
-}
-
-_sync() {
-    local status=0
-
-    if _var_is_set TRELLO_API_KEY && _var_is_set TRELLO_TOKEN && _var_is_set TRELLO_BOARD_IDS; then
-        _trello_sync || status=$?
-    else
-        _warn "Skipping Trello sync: Trello env values are incomplete."
-    fi
-
-    if _var_is_set GOOGLE_CALENDAR_CREDENTIALS_PATH || _var_is_set GOOGLE_CALENDAR_TOKEN_PATH; then
-        _calendar_sync || status=$?
-    else
-        _warn "Skipping Calendar sync: Google Calendar is not configured."
-    fi
-
-    if [ -f "$(_github_repos_config)" ]; then
-        _github_sync || status=$?
-    else
-        _warn "Skipping GitHub sync: no $(_github_repos_config)."
-    fi
-
-    if [ -f "${SLACK_ACCOUNTS_PATH:-${SECRETS_DIR}/slack-accounts.json}" ] && jq -e '[.accounts[]?.lists[]?] | length > 0' "${SLACK_ACCOUNTS_PATH:-${SECRETS_DIR}/slack-accounts.json}" >/dev/null 2>&1; then
-        _slack_sync || status=$?
-    else
-        _warn "Skipping Slack Lists sync: no Slack account names any lists."
-    fi
-
-    # Planner joins the aggregate sync per alias (planner.sync, default true) once plans are configured; see docs/decisions/0008-lifeos-m365-planner.md.
-    local planner_alias planner_aliases=""
-    if [ -f "$(_m365_accounts_path)" ]; then
-        planner_aliases="$(jq -r '(.accounts // [])[] | select((.planner.enabled // false) == true and (.planner.sync // true) == true and ((.planner.plans // []) | length) > 0) | .alias' "$(_m365_accounts_path)" 2>/dev/null)"
-    fi
-    if [ -n "$planner_aliases" ]; then
-        while IFS= read -r planner_alias || [ -n "$planner_alias" ]; do
-            [ -n "$planner_alias" ] && { _m365_planner_sync "$planner_alias" || status=$?; }
-        done <<EOF
-$planner_aliases
-EOF
-    else
-        _warn "Skipping Microsoft 365 Planner sync: no account has planner enabled with configured plans."
-    fi
-
-    return "$status"
-}
-
 _load_env
 
 case "${1:-help}" in
@@ -570,10 +514,6 @@ case "${1:-help}" in
             list-calendars) shift 2; _calendar_list_calendars "$@" ;;
             find) shift 2; _calendar_find "$@" ;;
             export-data) shift 2; _calendar_export_data "$@" ;;
-            sync)
-                shift 2
-                _calendar_sync_combined "$@"
-                ;;
             create-event) shift 2; _calendar_create_event "$@" ;;
             update-event) shift 2; _calendar_update_event "$@" ;;
             *) _err "Unknown Calendar command: ${2:-}"; _usage; exit 1 ;;
@@ -661,9 +601,6 @@ case "${1:-help}" in
             move-card) shift 2; _github_move_card "$@" ;;
             *) _err "Unknown GitHub command: ${2:-}"; _usage; exit 1 ;;
         esac
-        ;;
-    sync)
-        _sync
         ;;
     *)
         _err "Unknown command: $1"
