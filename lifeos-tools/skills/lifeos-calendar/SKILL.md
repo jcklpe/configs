@@ -20,24 +20,25 @@ lifeos calendar sync
 
 `calendar find QUERY` is read-only and returns update-ready event IDs across the configured calendars and normal sync window by default. Use `--from YYYY-MM-DD`, `--to YYYY-MM-DD`, `--calendar CALENDAR_ID`, or `--json` when narrowing or scripting the lookup. Prefer `calendar find` over grepping `sources/calendar.md` when you need an event ID for `update-event`.
 
-`calendar sync` is read-only and writes to `$LIFEOS_VAULT_PATH/sources/calendar.md` (or `~/configs/lifeos-tools/qa/calendar-qa.md` with `--qa`). It uses comma-separated `GOOGLE_CALENDAR_IDS` from the `.env`, defaulting to `primary`; run `list-calendars` to inspect IDs before expanding the set.
+### Explicit data exports and compatibility
+`lifeos calendar export-data SOURCE_LABEL --from INSTANT --to INSTANT --output FILE [--calendar ID]` uses the existing standalone Google calendar credentials and calendar selection. `SOURCE_LABEL` identifies that credential source in the export; it does not choose a different account. The Microsoft counterpart is `lifeos m365 calendar export-data ALIAS` with the same options. Bounds require offsets or `Z`, with an exclusive end. Outputs are complete schema-versioned JSON for [render-calendar-agenda](../../../agent-hands/skills/render-calendar-agenda/SKILL.md); failed or capped retrieval preserves old output. Use fresh private temporary filenames per refresh.
 
-The snapshot is one date-grouped `## Combined Agenda` across all synced calendars, **including every enabled Microsoft 365 calendar** (labeled `<alias> (Microsoft 365): <name>`, times converted to the Google primary calendar's zone). A header block, `Microsoft 365 calendars:`, says per alias whether it was included or is `MISSING` and why; a MISSING line means the agenda is incomplete for that account, so do not answer availability from it without saying so. The same invitation delivered to both providers merges into one line with both calendar labels only when the iCalendar UIDs match; look-alike events stay as separate lines. `--google-only` skips Microsoft 365.
+For new compositions, the calling workflow explicitly selects providers, expected sources, calendars, windows, timezone, and output paths. Personal availability meaning and workspace refresh procedures belong in that workspace, reached through `operate-lifeos` when relevant. This public guide does not define them.
 
-**Long horizon.** The same sync also writes `sources/calendar-long-horizon.md`: from where `calendar.md` ends to `LIFEOS_LONG_HORIZON_DAYS` (default 180) days out, same calendars including Microsoft 365, one line per event with no location, links, or descriptions. Recurring series with three or more occurrences collapse to one summary line each under `## Recurring Series` (weekdays, time, count, first and last date), grouped by recurrence ID rather than title; one-off events are listed by date under `## Long-Horizon Agenda`. An occurrence whose weekday-and-time slot appears only once in its series is treated as moved: it keeps its own dated line marked `(moved; this series is usually ...)`, and the series line says how many moved occurrences are listed below. A slot that recurs at least twice is part of the pattern, so a Mon/Wed series is not mistaken for moves. The near-term `calendar.md` always lists every occurrence in full. Nothing appears in both files: a timed event belongs to the long-horizon file only if it starts at or after the boundary, and an all-day event only if its date is after the boundary's local date. Read it for planning beyond the near-term window, deadlines, and "is anything already scheduled that far out"; use `calendar.md` for detail and conflicts. Google events are fetched with full paging; a fetch that exceeds `LIFEOS_CALENDAR_MAX_PAGES` (default 40) fails loudly instead of truncating. Every event line carries `calendar: <name>` and inline `location: ...`. Calendars listed in `LIFEOS_CALENDAR_NO_DESCRIPTION` have descriptions omitted as noise (case-insensitive summary match); an event also appearing on a non-listed calendar keeps its description. Multi-day all-day events appear under every blocked date with the covered range and the exclusive Google end date; timed events crossing midnight appear under every affected date.
+`calendar sync` remains a temporary compatibility route with its existing configuration, two output files, and enabled-account composition. Its missing-source headers must be checked; it can publish a partial agenda, and successful command completion is not proof that every intended account was included. `--google-only` is a diagnostic subset, not a complete combined agenda. Final retirement waits for callers to migrate; new workflows should use explicit data exports and the neutral renderer.
 
 ## Writes
 Before any write the user has not already approved item by item, present the proposed changes as an approval slate using the `draft-approval-slate` skill.
 
 ```sh
-lifeos calendar create-event --title "Dinner" --start 2026-06-25T18:00 --attendee lindsey
+lifeos calendar create-event --title "Dinner" --start 2026-06-25T18:00 --attendee person@example.com
 lifeos calendar create-event --title "Trip" --start 2026-07-01 --execute
-lifeos calendar update-event --event EVENT_ID --location "New place" --attendee mom --execute
+lifeos calendar update-event --event EVENT_ID --location "New place" --attendee person@example.com --execute
 ```
 
 Writes are **dry-run by default** — the command prints the full plan and changes nothing without `--execute`. Before `--execute`, the user should have approved the exact title, time, calendar, attendees, and whether to notify. Safety model, all tool-enforced:
 
-- **Allowlisted calendars only.** Writes are rejected unless `--calendar` is in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`). Reads still see every calendar; writes cannot touch shared/work/partner calendars. There is no `delete-event`.
+- **Allowlisted calendars only.** Writes are rejected unless `--calendar` is in `LIFEOS_CALENDAR_WRITABLE_IDS` (default `primary`). Read selection is separate; writes cannot touch a calendar outside the configured writable list. There is no `delete-event`.
 - **No attendee email-out by default.** `sendUpdates=none` unless `--notify` is passed. This is the real blast radius — adding an attendee with `--notify` sends a live invite. Pass it only when the user explicitly wants real people emailed.
 - **Attendee resolution never guesses.** `--attendee VALUE` resolves as: (1) a value with `@` is a literal email; (2) otherwise the local alias map `people-aliases.json` (case-insensitive); (3) otherwise Google Contacts (People API). Ambiguous or unmatched People API names stop the write and list candidates rather than picking. Confirm the resolved name → email in the plan before `--execute`.
 - **update-event merges attendees** by default; pass `--replace-attendees` to replace the list.
@@ -54,7 +55,7 @@ lifeos calendar create-event --title "Example event" --start 2030-01-02T09:00 --
 lifeos calendar update-event --event EVENT_ID --transparency opaque
 ```
 
-Times: `YYYY-MM-DD` makes an all-day event, `YYYY-MM-DDTHH:MM` a timed one (zoned to the calendar's time zone unless `--tz`). Missing `--end` defaults to +1 day (all-day, exclusive) or +1 hour (timed). Run `lifeos calendar sync` after a write.
+Times: `YYYY-MM-DD` makes an all-day event, `YYYY-MM-DDTHH:MM` a timed one (zoned to the calendar's time zone unless `--tz`). Missing `--end` defaults to +1 day (all-day, exclusive) or +1 hour (timed). Refresh the affected caller's agenda after a write, following its owning workflow.
 
 The zone for a timed event comes from `--tz` if given, otherwise from the target calendar. **If it cannot be read, the command fails rather than guessing** — a wrong zone writes a real event at the wrong hour and looks entirely normal afterward, so there is no safe default (policy `docs/policies/0006-writes-fail-rather-than-guess.md`). The error names the exact `--tz` value to pass, so a failure is one flag from resolved; it also points at the likely cause, which is worth fixing rather than routing around forever. Zones are IANA names (`America/Chicago`), never abbreviations (`CDT`). Still read the plan's `Time zone:` line before `--execute`.
 
@@ -69,13 +70,5 @@ lifeos people list-aliases          # show the current alias map
 
 Flow: `people resolve NAME --json`, show candidates to the user, let them pick, then re-run with the chosen email (or the alias once saved). Offer to `add-alias` so the same bare name resolves next time. Aliases live in the gitignored `people-aliases.json`; a value with `@` skips lookup.
 
-## Availability Questions
-Read `sources/calendar.md` in this order:
-
-1. Check `## Combined Agenda` for the date or range.
-2. Treat `My Schedule` as primary availability.
-3. Treat Lindsey's calendar as important planning context, not automatically a conflict.
-4. Treat Open Austin, work, and Partiful calendars as likely obligations unless context says otherwise.
-   Treat Microsoft 365 calendars (school or work accounts) the same way. If the `Microsoft 365 calendars:` header marks an alias `MISSING`, say that the agenda is incomplete for that account before answering.
-5. Treat Austin Design Hub as social/discovery context unless the event is also on `My Schedule` or the user says they plan to attend.
-6. If an event is ambiguous, say so rather than assuming it blocks the date.
+## Availability interpretation
+The tool returns events and source-coverage evidence. Whether a shared calendar blocks time, represents tentative plans, or provides discovery context belongs to the caller's private workflow. Do not infer attendance or a free day from event presence/absence alone, and disclose missing sources before making schedule claims.

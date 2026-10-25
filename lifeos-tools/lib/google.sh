@@ -463,6 +463,14 @@ _system_tz() {
 # is silent. Do not "simplify" this back to /calendars/{id} without re-verifying scope.
 
 
+# Compatibility credential routing for explicit provider exports; composition belongs to the caller.
+_calendar_export_data() (
+    GOOGLE_CALENDAR_ALIAS="${1:-}"
+    [ -n "$GOOGLE_CALENDAR_ALIAS" ] || { _err "export-data requires SOURCE_LABEL"; return 1; }
+    shift
+    _calendar_export --data "$@"
+)
+
 _calendar_window() {
     _calendar_helper date-window "$LIFEOS_DAYS_BACK" "$LIFEOS_DAYS_AHEAD"
 }
