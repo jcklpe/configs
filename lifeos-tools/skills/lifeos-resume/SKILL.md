@@ -1,47 +1,17 @@
 ---
 name: lifeos-resume
-description: "Use when rendering a Markdown resume to a themed PDF through the lifeos CLI (`lifeos resume render`): the command and options, the pandoc + WeasyPrint pipeline (YAML frontmatter is stripped automatically), dependencies and setup, and where the theme lives."
+description: "Use the legacy lifeos resume render entrypoint to export a Markdown resume to PDF. Delegates rendering and themes to render-markdown-pdf while preserving the existing output and theme defaults."
 ---
 
-# LifeOS Resume Render
-## Local Precedence
-If the current repo already has `lifeos-tools/skills/lifeos-resume/SKILL.md`, read and follow the repo-local skill first. Treat this as fallback seed material. See `lifeos-cli` for the shared rules.
-
-This skill covers the render **mechanics** only. Vault-side conventions — which resume is canonical, where PDFs belong, references handling, the frontmatter schema — live in the LifeOS vault skill `resume-management`.
-
-## Command
-```sh
-lifeos resume render INPUT.md [--output PATH] [--theme CSS] [--open]
-```
-- `INPUT.md` — the Markdown resume source (source of truth).
-- `--output PATH` — output PDF. Default: `<name>.pdf` next to the source.
-- `--theme CSS` — override the theme CSS. Default: the vendored `lib/resume-theme/aslan-resume.css`.
-- `--open` — open the PDF after rendering (macOS `open`).
+# Legacy Resume Render
+Rendering mechanics, setup, asset restrictions, and visual verification now belong to [render-markdown-pdf](../../../agent-hands/skills/render-markdown-pdf/SKILL.md). Source selection, résumé content, and destination conventions remain with the calling private workflow. This compatibility entry does not grant publication permission.
 
 ```sh
-lifeos resume render aslan-french-resume.md --output public-resumes/aslan-french-resume.pdf
+lifeos resume render resume.md --output exports/resume.pdf
 ```
 
-## Pipeline
-Markdown → PDF, no app in the loop:
-1. Strips a leading YAML frontmatter block, so resume metadata never reaches the PDF.
-2. `pandoc` converts Markdown → HTML (inline HTML like `<span class="date">` passes through).
-3. Wraps the HTML in Typora's `#write` container + the theme CSS, so element rules and `#write`-scoped rules both apply.
-4. `weasyprint` renders HTML → PDF (letter, 0.7" margins per the theme's `@page`).
+The wrapper defaults to the bundled résumé theme and `<source-name>.pdf` beside the input. It creates the requested output directory and preserves the existing overwrite behavior by passing `--force`; failed rendering leaves the previous PDF untouched. `--theme CSS` still accepts an explicit stylesheet; the previous `lib/resume-theme/` paths remain compatibility links. `--open` opens a successful result using macOS `open` when available.
 
-Fonts resolve from installed system fonts (Merriweather headings, Arial body) — no network.
+Use repeatable `--asset-dir DIR` for a dedicated local image/style/font directory when necessary. Remote resources are refused, and PDF attachments/local-file hyperlinks are omitted. Relative images and CSS imports now resolve against their actual source locations. The bundled compact theme retains the prior letter/compact margins. Do not grant a directory containing private unrelated files.
 
-## Markdown conventions the theme expects
-- Name = `#` (H1); contact line = `######` (H6, right-aligned).
-- Section title = `##`; role = `###`; company + date = `####` with the date in `<span class="date">…</span>` (a flex rule pushes it right).
-- Bullets = `-` lists.
-
-## Dependencies & setup
-- `pandoc` and `weasyprint` — system tools, installed via the configs installer (`brew-installs.sh` on mac, `dnf-installs.sh` on Fedora). `weasyprint` needs native libs (pango/cairo) that brew bundles; it is deliberately a system dep, not a Python package.
-- Theme vendored at `lib/resume-theme/aslan-resume.css` (source: https://github.com/jcklpe/typora-resume-theme). Re-copy it there when the upstream theme changes.
-- `lifeos doctor` reports whether pandoc + weasyprint are present.
-
-## Notes
-- Pure renderer: it does not decide which resume to render or where PDFs belong — that is the vault skill's job.
-- Re-run after any source edit; the PDF is a regenerable artifact.
-- Failures print WeasyPrint's stderr; a common cause is a missing dep (run `lifeos doctor`).
+Dependencies are now Pandoc, native Pango/fonts, and the renderer's own locked uv environment. The global `weasyprint` executable is no longer used by this entry. See the owning skill for setup and platform limits. No credentials are needed by the renderer.
