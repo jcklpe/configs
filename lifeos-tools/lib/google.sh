@@ -77,15 +77,15 @@ _urlencode() {
     jq -rn --arg value "$1" '$value | @uri'
 }
 
+# Shared authorization now lives in Agent Hands. The legacy caller retains its private configuration locations.
+source "${LIB_DIR}/../../agent-hands/skills/authorize-google/scripts/client.sh"
 _google_accounts_path() {
-    if _var_is_set GOOGLE_ACCOUNTS_PATH; then
-        _path_value GOOGLE_ACCOUNTS_PATH
-    else
-        printf '%s/google-accounts.json\n' "$SECRETS_DIR"
+    if _var_is_set GOOGLE_ACCOUNTS_PATH; then _path_value GOOGLE_ACCOUNTS_PATH
+    else printf '%s/google-accounts.json\n' "$SECRETS_DIR"
     fi
 }
-
-_tool_path() {
+_google_python() { shift; "$LIFEOS_PY" "$@"; }
+_google_config_path() {
     local value="$1"
     case "$value" in
         '') return 1 ;;
@@ -97,181 +97,12 @@ _tool_path() {
     esac
 }
 
-_google_accounts_ready() {
-    local config
-    config="$(_google_accounts_path)"
-    _check_command curl >/dev/null || { _err "curl is required"; return 1; }
-    _check_command jq >/dev/null || { _err "jq is required"; return 1; }
-    _check_command python3 >/dev/null || { _err "python3 is required"; return 1; }
-    if [ ! -f "$config" ]; then
-        _err "Google account config does not exist: $config"
-        _say "NEXT: cp ${SECRETS_DIR}/google-accounts.example.json $config"
-        return 1
-    fi
-    return 0
-}
-
-_google_account_exists() {
-    local alias="$1"
-    _google_accounts_ready || return 1
-    jq -e --arg alias "$alias" 'any(.accounts[]?; .alias == $alias)' "$(_google_accounts_path)" >/dev/null
-}
-
-_google_account_value() {
-    local alias="$1"
-    local filter="$2"
-    jq -er --arg alias "$alias" "(.accounts[]? | select(.alias == \$alias) | ${filter}) // empty" "$(_google_accounts_path)"
-}
-
-_google_account_path() {
-    local alias="$1"
-    local filter="$2"
-    local value
-    value="$(_google_account_value "$alias" "$filter")" || return 1
-    _tool_path "$value"
-}
-
-_google_account_email() {
-    local alias="$1"
-    _google_account_value "$alias" '.email // ""' 2>/dev/null || printf ''
-}
-
-_google_accounts_list() {
-    _google_accounts_ready || return 1
-    jq -r '
-      (.accounts // [])[] |
-      "- " + (.alias // "missing-alias") +
-      " | email: " + (.email // "") +
-      " | gmail: " + (((.gmail.enabled // false) == true) | tostring) +
-      " | gmail labels: " + (((.gmail.write_enabled // false) == true) | tostring) +
-      " | gmail filters: " + (((.gmail.filters_enabled // false) == true) | tostring) +
-      " | drive: " + (((.drive.enabled // false) == true) | tostring)
-    ' "$(_google_accounts_path)"
-}
-
-_google_enabled_aliases() {
-    local service="$1"
-    _google_accounts_ready || return 1
-    jq -r --arg service "$service" '
-      (.accounts // [])[] |
-      select((.[$service].enabled // false) == true) |
-      .alias
-    ' "$(_google_accounts_path)"
-}
-
-_google_account_scopes() {
-    local alias="$1"
-    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
-    jq -r --arg alias "$alias" '
-      (.accounts[]? | select(.alias == $alias)) as $account |
-      [
-        (if (($account.gmail.enabled // false) == true) then
-          "https://www.googleapis.com/auth/gmail.readonly",
-          (if (($account.gmail.write_enabled // false) == true) then
-            "https://www.googleapis.com/auth/gmail.modify"
-          else empty end),
-          (if (($account.gmail.filters_enabled // false) == true) then
-            "https://www.googleapis.com/auth/gmail.settings.basic"
-          else empty end)
-        else empty end),
-        (if (($account.drive.enabled // false) == true) then
-          "https://www.googleapis.com/auth/drive.metadata.readonly",
-          "https://www.googleapis.com/auth/drive.readonly",
-          "https://www.googleapis.com/auth/spreadsheets.readonly",
-          (if (($account.drive.write_enabled // false) == true) then
-            "https://www.googleapis.com/auth/drive.file"
-          else empty end)
-        else empty end)
-      ] | .[]
-    ' "$(_google_accounts_path)"
-}
-
-_google_oauth_helper() {
-    "$LIFEOS_PY" "${LIB_DIR}/google-oauth.py" "$@"
-}
-
-_google_auth() {
-    local alias="${1:-}" credentials_path token_path no_browser="" docs_write="" docs_comment=""
-    local scopes=() scope
-
-    [ -n "$alias" ] || { _err "google auth requires ALIAS"; return 1; }
-    shift || true
-    while [ "$#" -gt 0 ]; do
-        case "$1" in
-            --no-browser) no_browser="--no-browser"; shift ;;
-            --docs-write) docs_write="1"; shift ;;
-            --docs-comment) docs_comment="1"; shift ;;
-            *) _err "Unknown google auth option: $1"; return 1 ;;
-        esac
-    done
-
-    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
-    credentials_path="$(_google_account_path "$alias" '.credentials_path // "google-credentials.json"')" || return 1
-    token_path="$(_google_account_path "$alias" '.token_path')" || { _err "Google account '$alias' needs token_path"; return 1; }
-    if [ ! -f "$credentials_path" ]; then
-        _err "Google credentials file does not exist: $credentials_path"
-        return 1
-    fi
-
-    while IFS= read -r scope || [ -n "$scope" ]; do
-        [ -n "$scope" ] || continue
-        scopes+=( "$scope" )
-    done <<EOF
-$(_google_account_scopes "$alias")
-EOF
-
-    if [ "$docs_write" = "1" ]; then
-        scopes+=( "https://www.googleapis.com/auth/documents" )
-    fi
-    # Drive comments on files this app did not create need the full Drive scope; drive.file cannot reach them.
-    if [ "$docs_comment" = "1" ]; then
-        scopes+=( "https://www.googleapis.com/auth/drive" )
-    fi
-
-    if [ "${#scopes[@]}" -eq 0 ]; then
-        _err "Google account '$alias' has no enabled Gmail or Drive scopes"
-        return 1
-    fi
-
-    if [ -n "$no_browser" ]; then
-        _google_oauth_helper auth "$credentials_path" "$token_path" "${scopes[@]}" "$no_browser"
-    else
-        _google_oauth_helper auth "$credentials_path" "$token_path" "${scopes[@]}"
-    fi
-}
-
-_google_access_token() {
-    local alias="$1" credentials_path token_path
-    _google_account_exists "$alias" || { _err "Unknown Google account alias: $alias"; return 1; }
-    credentials_path="$(_google_account_path "$alias" '.credentials_path // "google-credentials.json"')" || return 1
-    token_path="$(_google_account_path "$alias" '.token_path')" || { _err "Google account '$alias' needs token_path"; return 1; }
-    if [ ! -f "$token_path" ]; then
-        _err "Google token file does not exist for alias '$alias': $token_path"
-        _say "NEXT: run './lifeos.sh google auth $alias'" >&2
-        return 1
-    fi
-    _google_oauth_helper access-token "$credentials_path" "$token_path"
-}
-
-_google_get_url() {
-    local alias="$1"
-    local url="$2"
-    local token
-    shift 2
-    token="$(_google_access_token "$alias")" || return 1
-    curl -fsS --get "$url" \
-        -H "Authorization: Bearer ${token}" \
-        "$@"
-}
 
 _docs_helper() {
-    "$LIFEOS_PY" "${LIB_DIR}/google-docs.py" "$@"
+    "$LIFEOS_PY" "${LIB_DIR}/../../agent-hands/skills/use-google-docs/scripts/docs.py" "$@"
 }
 
-# _docs_run SUBCOMMAND ALIAS DOC_URL_OR_ID [extra python args...]
-# General-purpose Google Docs read + one-exact-replacement. Ported into
-# lifeos-tools from the org repo's tool so doc editing does not require an
-# Open Austin checkout (see docs/decisions/docs-editing-in-lifeos-tools.md).
+# Legacy Docs route retains the existing arguments and account settings.
 _docs_run() {
     local sub="${1:-}" alias="${2:-}" raw="${3:-}" doc_id token
     [ -n "$sub" ] || { _err "docs requires a subcommand (read|replace-once|set-body|comments|comment)"; return 1; }
@@ -280,7 +111,7 @@ _docs_run() {
     shift 3
     doc_id="$(_drive_file_id "$raw")" || return 1
     token="$(_google_access_token "$alias")" || return 1
-    GOOGLE_ACCESS_TOKEN="$token" LIFEOS_DOCS_ALIAS="$alias" _docs_helper "$sub" --document-id "$doc_id" "$@"
+    GOOGLE_ACCESS_TOKEN="$token" GOOGLE_DOCS_ALIAS="$alias" _docs_helper "$sub" --document-id "$doc_id" "$@"
 }
 
 _gmail_query() {
