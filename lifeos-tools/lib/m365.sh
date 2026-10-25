@@ -3,6 +3,7 @@
 ##- Sourced by lifeos.sh after common.sh and google.sh; uses the shared people alias map for deterministic attendee resolution.
 
 source "${LIB_DIR}/../../agent-hands/skills/authorize-microsoft/scripts/client.sh"
+source "${LIB_DIR}/../../agent-hands/skills/authorize-microsoft/scripts/batch.sh"
 source "${LIB_DIR}/../../agent-hands/skills/use-outlook-calendar/scripts/operations.sh"
 source "${LIB_DIR}/../../agent-hands/skills/use-microsoft-files/scripts/operations.sh"
 source "${LIB_DIR}/../../agent-hands/skills/use-outlook-contacts/scripts/operations.sh"
@@ -226,24 +227,6 @@ _m365_mail_move_cap() {
 }
 
 # _m365_batch ALIAS REQUESTS_FILE OUT_FILE: REQUESTS_FILE holds a JSON array of {method, url, body?} with URLs relative to the Graph version root. OUT_FILE receives the responses as an array in request order.
-_m365_batch() {
-    local alias="$1" requests="$2" out="$3" dir total start=0 n=0 chunk
-    local files=()
-    dir="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-m365-batch.XXXXXX")" || return 1
-    total="$(jq 'length' "$requests")" || return 1
-    while [ "$start" -lt "$total" ]; do
-        chunk="$(jq -c --argjson s "$start" '{requests: [.[$s:($s + 20)] | to_entries[] | {id: (($s + .key) | tostring)} + .value + (if .value.body then {headers: {"Content-Type": "application/json"}} else {} end)]}' "$requests")" || return 1
-        _m365_write POST "$alias" "$(_m365_graph_base "$alias")/\$batch" "$chunk" > "${dir}/${n}.json" || return 1
-        files+=("${dir}/${n}.json")
-        n=$((n + 1))
-        start=$((start + 20))
-    done
-    if [ "${#files[@]}" -eq 0 ]; then
-        printf '[]\n' > "$out"
-    else
-        jq -s '[.[].responses[]?] | sort_by(.id | tonumber)' "${files[@]}" > "$out"
-    fi
-}
 
 # Write the mailbox's folder tree to OUT as a JSON array of folders, each carrying path, depth, wellKnown (or null), and moveTarget.
 _m365_mail_folder_tree() {
