@@ -36,7 +36,7 @@ Guidance:
 - Don't modify the surrounding text. Insert markup only.
 - **Comments are the default.** Use `++`, `--`, and `~~` only for short, obvious fixes. Anything that warrants explanation goes in a comment.
 - Use `==` sparingly, only when you can't form a useful comment. A bare suggestion or highlight without rationale is noise.
-- To point a comment at an exact span, put a highlight **directly** before it: `{==the span==}{author="Codex">>why<<}`, with nothing between them but spaces. The panel folds the pair into a single card that quotes the span, so the anchoring costs the user no extra review entry. Any gap, such as prose or a newline, splits them back into two cards.
+- To point a comment at an exact span, put an attributed highlight **directly** before it: `{author="Codex"==the span==}{author="Codex">>why<<}`, with nothing between them but spaces. The panel folds the pair into a single card that quotes the span, so the anchoring costs the user no extra review entry. Any gap, such as prose or a newline, splits them back into two cards.
 - To give a suggestion its rationale, put the comment **directly** after it: `{author="Codex"~~old~>new~~}{author="Codex">>why<<}`. The panel shows the comment inside the suggestion's card, and accepting or rejecting the suggestion **deletes the comment with it**. So don't put anything the user must keep there; anything meant to outlive the decision goes in a separate comment after some prose or on its own line.
 
 ### AI-Added Text (`{=+ ... +=}`) Is Not A Review Mark
@@ -74,7 +74,7 @@ The prefix sits **outside** the payload delimiters, so accept, reject, and final
 ## Replies And Threads
 Effective author resolves: `author="..."` -> host's configured local-author name -> `You`.
 
-Adjacent `{>>...<<}` blocks with no blank line between them, in the same paragraph, form one thread. The prefix lives outside the `>>` and `<<` delimiters, so it doesn't affect threading. A `{==...==}` highlight or a `++`, `--`, or `~~` suggestion directly before the root is the thread's **anchor**, not a thread member; replies still attach after the last comment.
+Adjacent `{>>...<<}` blocks separated only by spaces or tabs form one thread. Even a single newline starts a separate thread; keep replies on the same source line as the last comment. The prefix lives outside the `>>` and `<<` delimiters, so it doesn't affect threading. A `{==...==}` highlight or a `++`, `--`, or `~~` suggestion directly before the root is the thread's **anchor**, not a thread member; replies still attach after the last comment.
 
 **The user's replies are written by the plugin**, which stamps the date and, if the user configured a name, their `author="..."`. Treat any reply with **no `author=`**, or one carrying the user's configured name, as the **user's**, not yours. Never stamp the user's name or invent dates yourself.
 
@@ -97,8 +97,8 @@ The host plugin lets the user create any of the five reviewable marks themselves
 - If the note looks fine, say so briefly. No empty praise.
 
 ## Source Note
-This skill adapts the CriticMarkup reviewer workflow from the MIT-licensed Obsidian Track Changes project: https://github.com/philphilphil/obsidian-track-changes/blob/main/docs/SKILL.md
+This skill adapts the CriticMarkup reviewer workflow from the [MIT-licensed Obsidian Track Changes project](https://github.com/philphilphil/obsidian-track-changes/blob/main/docs/SKILL.md). Its copyright and permission notice are retained in [LICENSE.upstream](LICENSE.upstream).
 
-Last synced with upstream commit `9d7a799` (2026-09-23, plugin 2.2.0).
+Reconciled on 2026-10-24 against upstream plugin 2.3.0. The upstream skill, parser, and source-edit operations are unchanged from the recorded 2.2.0 baseline. The local skill retains project precedence, review-only behavior, chat-only requests, and consistent attribution. It clarifies attributed highlight examples and same-line threading to match the parser.
 
-The adjacent [upstream.toml](upstream.toml) preserves that recorded baseline and local requirements. Moving this folder does not establish a newer upstream sync. For an explicitly requested update, use `update-derived-skills` if available to reconcile upstream changes with the local adaptation; ordinary document review does not require that companion skill.
+The adjacent [upstream.toml](upstream.toml) records exact source identities, local adaptations, and verification limits. For an explicitly requested update, use `update-derived-skills` if available to reconcile upstream changes with the local adaptation; ordinary document review does not require that companion skill.
