@@ -273,47 +273,10 @@ def render_calendar(args, data):
     return "\n".join(lines).rstrip() + "\n"
 
 
-def render_contacts(args, data):
-    lines = [
-        f"# Microsoft 365 Contacts - {args.alias}",
-        "",
-        f"Last refreshed: {args.refreshed}",
-        "",
-        f"Account email: `{args.email}`",
-        "",
-        f"Max results: {args.max_results}",
-        "",
-        "## Contacts",
-        "",
-    ]
-    contacts = sorted(data.get("value") or [], key=lambda item: (item.get("displayName") or "").lower())
-    if not contacts:
-        lines.append("_No Outlook contacts were found._")
-        return "\n".join(lines) + "\n"
-    for contact in contacts:
-        emails = [item.get("address") or "" for item in contact.get("emailAddresses") or []]
-        phones = list(contact.get("businessPhones") or [])
-        if contact.get("mobilePhone"):
-            phones.append(contact["mobilePhone"])
-        notes = truncate(clean_text(contact.get("personalNotes") or ""), args.notes_limit)
-        lines.extend(
-            [
-                f"### {contact.get('displayName') or contact.get('givenName') or '(unnamed contact)'}",
-                "",
-                f"- Contact ID: `{contact.get('id') or ''}`",
-                f"- Given name: {contact.get('givenName') or ''}",
-                f"- Surname: {contact.get('surname') or ''}",
-                f"- Email: {', '.join(filter(None, emails))}",
-                f"- Phone: {', '.join(filter(None, phones))}",
-                f"- Company: {contact.get('companyName') or ''}",
-                f"- Job title: {contact.get('jobTitle') or ''}",
-            ]
-        )
-        if notes:
-            lines.extend(["- Notes:", "", quote(notes), ""])
-        else:
-            lines.append("")
-    return "\n".join(lines).rstrip() + "\n"
+from pathlib import Path
+import runpy
+_contacts = runpy.run_path(str(Path(__file__).resolve().parents[2] / "agent-hands/skills/use-outlook-contacts/scripts/render.py"))
+render_contacts = _contacts["render_contacts"]
 
 
 PLANNER_PRIORITY = [(1, "urgent"), (4, "important"), (7, "medium"), (10, "low")]
