@@ -71,7 +71,7 @@ lifeos trello sync --qa
 lifeos trello sync --output /tmp/trello.md
 lifeos trello add-card --list "On Deck" --name "Call dentist"
 lifeos trello move-card --card https://trello.com/c/abc123 --list Done
-lifeos trello snooze --card https://trello.com/c/abc123 --until 2026-09-09
+lifeos trello snooze --card https://trello.com/c/abc123 --until 2026-09-09 --list "Later"
 lifeos trello rename-card --card https://trello.com/c/abc123 --name "New title"
 lifeos trello set-desc --card https://trello.com/c/abc123 --file /tmp/card-desc.md
 lifeos trello comment --card https://trello.com/c/abc123 --text "Called today."
@@ -325,3 +325,7 @@ for test in tests/test-*.sh; do bash "$test" || exit; done
 ```
 
 These tests use synthetic data and do not require live Google, Microsoft, Trello, or GitHub credentials.
+
+
+## Explicit workflow choices in compatibility commands
+`trello snooze` no longer supplies a list name; pass `--list` or configure `TRELLO_SNOOZE_DEFAULT_LIST`. Missing-start-date warnings in Trello exports use only explicit `TRELLO_SNOOZE_LISTS`. `drive sync` requires caller `--exclude-folder NAME` flags or an explicit `drive.index_exclude` array before fetching; `[]` deliberately permits all top-level child samples. Flags add to existing configured exclusions. These choices belong to the consuming workspace; ignored account configuration is not rewritten by migration.
