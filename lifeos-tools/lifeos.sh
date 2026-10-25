@@ -10,17 +10,24 @@ case "${1:-}:${2:-}" in
         printf '%s\n' 'For other callers, select individual service exports explicitly. Combine calendar export-data bundles with the render-calendar-agenda skill.' >&2
         exit 2
         ;;
+    people:list-aliases|people:add-alias)
+        printf '%s\n' 'ERROR: Private nickname storage is retired from this CLI. Resolve names in the consuming workspace and pass full attendee emails.' >&2
+        exit 2
+        ;;
+    setup:*|doctor:*)
+        printf '%s\n' 'ERROR: Shared setup/doctor is retired. Use setup-agent-hands and the selected service setup/authorization skill for configuration and checks.' >&2
+        exit 2
+        ;;
+    open:*|context:*)
+        printf '%s\n' 'ERROR: Workspace routing belongs to operate-lifeos and the private workspace entrypoint; this service CLI no longer loads a vault path.' >&2
+        exit 2
+        ;;
 esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIGS="${CONFIGS:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 LIB_DIR="${SCRIPT_DIR}/lib"
-SECRETS_DIR="${SCRIPT_DIR}/secrets"
-ENV_FILE="${SECRETS_DIR}/.env"
-QA_DIR="${SCRIPT_DIR}/qa"
 
-LIFEOS_DAYS_BACK="${LIFEOS_DAYS_BACK:-14}"
-LIFEOS_DAYS_AHEAD="${LIFEOS_DAYS_AHEAD:-30}"
 
 # Shared helpers live in lib/. common.sh must load first — the feature modules use its functions.
 . "${LIB_DIR}/common.sh"
@@ -42,10 +49,6 @@ LifeOS helper
 
 Usage:
   ./lifeos.sh help
-  ./lifeos.sh doctor
-  ./lifeos.sh setup
-  ./lifeos.sh open
-  ./lifeos.sh context
   ./lifeos.sh trello list-boards
   ./lifeos.sh trello list-lists [board_id]
   ./lifeos.sh trello list-labels [board_id]
@@ -67,20 +70,17 @@ Usage:
   ./lifeos.sh trello supersede --from CARD_ID_OR_URL --to CARD_ID_OR_URL [--board BOARD_ID]
   ./lifeos.sh trello supersede --create --from CARD_ID_OR_URL --list LIST --name NAME [--board BOARD_ID] [--desc TEXT | --desc-file FILE]
   ./lifeos.sh trello chain --card CARD_ID_OR_URL [--json]
-  ./lifeos.sh calendar auth
-  ./lifeos.sh calendar list-calendars
-  ./lifeos.sh calendar find QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
-  ./lifeos.sh calendar export-data SOURCE_LABEL --from INSTANT --to INSTANT --output FILE [--calendar ID]
+  ./lifeos.sh calendar auth ALIAS
+  ./lifeos.sh calendar list-calendars ALIAS
+  ./lifeos.sh calendar find ALIAS QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
+  ./lifeos.sh calendar export-data ALIAS --from INSTANT --to INSTANT --output FILE [--calendar ID]
   # calendar sync is retired: use explicit export-data bundles and render-calendar-agenda
-  ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
-  ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
-  ./lifeos.sh people resolve NAME [--json]
-  ./lifeos.sh people list-aliases
-  ./lifeos.sh people add-alias NAME EMAIL
+  ./lifeos.sh calendar create-event ALIAS --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee EMAIL]... [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
+  ./lifeos.sh calendar update-event ALIAS --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
+  ./lifeos.sh people resolve ALIAS NAME
   ./lifeos.sh google accounts
   ./lifeos.sh google auth ALIAS [--docs-write] [--docs-comment] [--no-browser]
-  ./lifeos.sh gmail sync ALIAS [--qa | --output FILE] [--query GMAIL_SEARCH] [--max-results N]   # overrides need --qa or --output
-  ./lifeos.sh gmail sync --all [--qa [--query GMAIL_SEARCH] [--max-results N]]   # continues past a failing account, then reports it
+  ./lifeos.sh gmail sync ALIAS --output FILE [--query GMAIL_SEARCH] [--max-results N]
   ./lifeos.sh gmail labels ALIAS [--json]
   ./lifeos.sh gmail list ALIAS (--label NAME_OR_ID | --query GMAIL_SEARCH) [--limit N] [--json]
   ./lifeos.sh gmail archive ALIAS (--message ID | --thread ID | --ids-file FILE)... [--execute]   # remove from Inbox; Inbox mail only
@@ -99,7 +99,7 @@ Usage:
   ./lifeos.sh drive meta ALIAS FILE_URL_OR_ID [--json]
   ./lifeos.sh drive read ALIAS FILE_URL_OR_ID [--range RANGE]
   ./lifeos.sh drive download ALIAS FILE_URL_OR_ID [--out PATH] [--mime EXPORT_MIME] [--force]
-  ./lifeos.sh drive sync ALIAS [--folders N] [--recent N] [--recent-days N] [--exclude-folder NAME]... [--qa | --output FILE]
+  ./lifeos.sh drive sync ALIAS [--folders N] [--recent N] [--recent-days N] [--exclude-folder NAME]... --output FILE
   ./lifeos.sh drive import-doc ALIAS SOURCE_FILE --title TITLE [--folder FOLDER_ID] [--execute]
   ./lifeos.sh docs read ALIAS DOC_URL_OR_ID [--tab-id ID]... [--show-links]
   ./lifeos.sh docs replace-once ALIAS DOC_URL_OR_ID (--old TEXT | --old-file FILE) (--new TEXT | --new-file FILE) [--tab-id ID]... [--link "TEXT=URL"]... [--markdown] [--execute]   # --markdown formats the replacement (headings, bullets, bold, links) in place
@@ -197,299 +197,20 @@ Real config lives in .env, copied from .env.example.
 EOF
 }
 
-_setup() {
-    if ! command -v uv >/dev/null 2>&1; then
-        _err "uv is required for setup — install it (brew install uv), then re-run"
-        return 1
-    fi
-    _say "Syncing lifeos-tools Python env (uv sync)..."
-    ( cd "${SCRIPT_DIR}" && uv sync ) || { _err "uv sync failed"; return 1; }
-    _say "OK: .venv ready ($(${SCRIPT_DIR}/.venv/bin/python --version 2>&1))"
-}
-
-_doctor_file() {
-    if [ -f "$1" ]; then
-        _say "OK: $1"
-        return 0
-    fi
-    _say "MISSING: $1"
-    return 1
-}
-
-_doctor() {
-    local issues=0 vault sources file google_accounts google_aliases google_alias google_token m365_accounts m365_aliases m365_alias m365_provider m365_token pwsh odoo_accounts odoo_aliases odoo_alias odoo_key_env odoo_key_value slack_accounts slack_alias slack_token_env slack_token_value
-
-    if [ -f "$ENV_FILE" ]; then
-        _say "OK: ${ENV_FILE}"
-    else
-        _say "MISSING: ${ENV_FILE}"
-        _say "NEXT: cp ${SECRETS_DIR}/.env.example ${ENV_FILE}"
-        issues=$((issues + 1))
-    fi
-
-    _check_command curl || issues=$((issues + 1))
-    _check_command jq || issues=$((issues + 1))
-    _check_command python3 || issues=$((issues + 1))
-
-    # Optional PDF renderer: Pandoc plus the capability-local uv environment and native Pango.
-    _check_command pandoc
-
-    # Python env for lib/*.py: uv-managed venv preferred, system python3 as fallback.
-    _check_command uv
-    if [ -x "${SCRIPT_DIR}/.venv/bin/python" ]; then
-        _say "OK: uv venv present ($(${SCRIPT_DIR}/.venv/bin/python --version 2>&1))"
-    else
-        _say "OPTIONAL: uv venv (.venv) not set up; using system python3. Run './lifeos.sh setup' to create it."
-    fi
-
-    if _var_is_set LIFEOS_VAULT_PATH; then
-        vault="$(_vault_path)"
-        _say "OK: LIFEOS_VAULT_PATH is set: $vault"
-        if _vault_ready; then
-            sources="$(_sources_dir)"
-            if [ -d "$sources" ]; then
-                _say "OK: ${sources}"
-            else
-                _say "MISSING: ${sources}"
-                _say "NEXT: sync commands will create ${sources}"
-            fi
-
-            for file in README.md now.md weekly-review.md; do
-                _doctor_file "$vault/$file" || issues=$((issues + 1))
-            done
-        else
-            issues=$((issues + 1))
-        fi
-    else
-        _say "MISSING: LIFEOS_VAULT_PATH"
-        issues=$((issues + 1))
-    fi
-
-    _redacted_status TRELLO_API_KEY || issues=$((issues + 1))
-    _redacted_status TRELLO_TOKEN || issues=$((issues + 1))
-    if _var_is_set TRELLO_WRITE_TOKEN; then
-        _say "OK: TRELLO_WRITE_TOKEN is set (redacted)"
-    else
-        _say "OPTIONAL: TRELLO_WRITE_TOKEN is not set; Trello write commands will be disabled"
-    fi
-    if _var_is_set TRELLO_BOARD_IDS; then
-        _say "OK: TRELLO_BOARD_IDS is set"
-    else
-        _say "MISSING: TRELLO_BOARD_IDS"
-        _say "NEXT: run './lifeos.sh trello list-boards' after Trello auth is configured"
-    fi
-
-    if _var_is_set GOOGLE_CALENDAR_CREDENTIALS_PATH; then
-        _say "OK: GOOGLE_CALENDAR_CREDENTIALS_PATH is configured"
-        if [ -f "$(_path_value GOOGLE_CALENDAR_CREDENTIALS_PATH)" ]; then
-            _say "OK: Google Calendar credentials file exists"
-        else
-            _say "MISSING: Google Calendar credentials file"
-        fi
-    else
-        _say "MISSING: GOOGLE_CALENDAR_CREDENTIALS_PATH"
-    fi
-
-    if _var_is_set GOOGLE_CALENDAR_TOKEN_PATH; then
-        _say "OK: GOOGLE_CALENDAR_TOKEN_PATH is configured"
-        if [ -f "$(_path_value GOOGLE_CALENDAR_TOKEN_PATH)" ]; then
-            _say "OK: Google Calendar token file exists"
-        else
-            _say "MISSING: Google Calendar token file"
-            _say "NEXT: run './lifeos.sh calendar auth'"
-        fi
-    else
-        _say "MISSING: GOOGLE_CALENDAR_TOKEN_PATH"
-    fi
-
-    google_accounts="$(_google_accounts_path)"
-    if [ -f "$google_accounts" ]; then
-        if jq -e '.accounts | type == "array"' "$google_accounts" >/dev/null 2>&1; then
-            _say "OK: Google account alias config exists"
-            google_aliases="$(jq -r '(.accounts // [])[] | select((.gmail.enabled // false) == true or (.drive.enabled // false) == true) | .alias' "$google_accounts")"
-            for google_alias in $google_aliases; do
-                google_token="$(_google_account_path "$google_alias" '.token_path')" || google_token=""
-                if [ -n "$google_token" ] && [ -f "$google_token" ]; then
-                    _say "OK: Google token exists for alias '$google_alias'"
-                else
-                    _say "MISSING: Google token for alias '$google_alias'"
-                    _say "NEXT: run './lifeos.sh google auth $google_alias'"
-                fi
-            done
-        else
-            _say "MISSING: Google account alias config is not valid JSON shape"
-        fi
-    else
-        _say "OPTIONAL: Google account alias config is not set up for Gmail/Drive"
-        _say "NEXT: cp ${SECRETS_DIR}/google-accounts.example.json $google_accounts"
-    fi
-
-    m365_accounts="$(_m365_accounts_path)"
-    if [ -f "$m365_accounts" ]; then
-        if jq -e '.accounts | type == "array"' "$m365_accounts" >/dev/null 2>&1; then
-            _say "OK: Microsoft 365 account alias config exists"
-            m365_aliases="$(jq -r '(.accounts // [])[] | select((.mail.enabled // false) == true or (.calendar.enabled // false) == true or (.contacts.enabled // false) == true) | .alias' "$m365_accounts")"
-            for m365_alias in $m365_aliases; do
-                m365_provider="$(_m365_auth_provider "$m365_alias")" || m365_provider=""
-                case "$m365_provider" in
-                    graph-powershell)
-                        pwsh="$(_m365_powershell_bin)"
-                        if command -v "$pwsh" >/dev/null 2>&1 && "$pwsh" -NoLogo -NoProfile -Command 'if (-not (Get-Module -ListAvailable -Name Microsoft.Graph.Authentication)) { exit 1 }' >/dev/null 2>&1; then
-                            _say "OK: Microsoft Graph PowerShell provider is ready for alias '$m365_alias'"
-                        else
-                            _say "MISSING: PowerShell or Microsoft.Graph.Authentication for alias '$m365_alias'"
-                            _say "NEXT: install PowerShell, then run 'Install-Module Microsoft.Graph.Authentication -Scope CurrentUser'"
-                            issues=$((issues + 1))
-                        fi
-                        ;;
-                    msal)
-                        if "$LIFEOS_PY" -c 'import msal' >/dev/null 2>&1; then
-                            _say "OK: MSAL is installed for alias '$m365_alias'"
-                        else
-                            _say "MISSING: MSAL Python dependency for alias '$m365_alias'"
-                            _say "NEXT: run './lifeos.sh setup'"
-                            issues=$((issues + 1))
-                        fi
-                        m365_token="$(_m365_account_path "$m365_alias" '.token_path')" || m365_token=""
-                        if [ -n "$m365_token" ] && [ -f "$m365_token" ]; then
-                            _say "OK: Microsoft token cache exists for alias '$m365_alias'"
-                        else
-                            _say "MISSING: Microsoft token cache for alias '$m365_alias'"
-                            _say "NEXT: run './lifeos.sh m365 auth $m365_alias'"
-                        fi
-                        ;;
-                    *)
-                        _say "MISSING: supported Microsoft auth_provider for alias '$m365_alias'"
-                        issues=$((issues + 1))
-                        ;;
-                esac
-            done
-        else
-            _say "MISSING: Microsoft 365 account alias config is not valid JSON shape"
-            issues=$((issues + 1))
-        fi
-    else
-        _say "OPTIONAL: Microsoft 365 account alias config is not set up"
-        _say "NEXT: cp ${SECRETS_DIR}/m365-accounts.example.json $m365_accounts"
-    fi
-
-    odoo_accounts="$(_odoo_accounts_path)"
-    if [ -f "$odoo_accounts" ]; then
-        if jq -e '.accounts | type == "array"' "$odoo_accounts" >/dev/null 2>&1; then
-            _say "OK: Odoo account alias config exists"
-            odoo_aliases="$(jq -r '(.accounts // [])[] | .alias' "$odoo_accounts")"
-            for odoo_alias in $odoo_aliases; do
-                odoo_key_env="$(_odoo_account_value "$odoo_alias" '.api_key_env')" || odoo_key_env=""
-                case "$odoo_key_env" in
-                    ''|*[!A-Za-z0-9_]*)
-                        _say "MISSING: valid Odoo api_key_env for alias '$odoo_alias'"
-                        issues=$((issues + 1))
-                        ;;
-                    *)
-                        eval "odoo_key_value=\${${odoo_key_env}:-}"
-                        if [ -n "$odoo_key_value" ]; then
-                            _say "OK: Odoo API key is set for alias '$odoo_alias' (redacted)"
-                        else
-                            _say "MISSING: $odoo_key_env for Odoo alias '$odoo_alias'"
-                            issues=$((issues + 1))
-                        fi
-                        ;;
-                esac
-            done
-        else
-            _say "MISSING: Odoo account alias config is not valid JSON shape"
-            issues=$((issues + 1))
-        fi
-    else
-        _say "OPTIONAL: Odoo account alias config is not set up"
-        _say "NEXT: cp ${SECRETS_DIR}/odoo-accounts.example.json $odoo_accounts"
-    fi
-
-    slack_accounts="${SLACK_ACCOUNTS_PATH:-${SECRETS_DIR}/slack-accounts.json}"
-    if [ -f "$slack_accounts" ]; then
-        if jq -e '.accounts | type == "array"' "$slack_accounts" >/dev/null 2>&1; then
-            _say "OK: Slack account alias config exists"
-            while IFS=$'\t' read -r slack_alias slack_token_env; do
-                [ -n "$slack_alias" ] || continue
-                case "$slack_token_env" in
-                    ''|*[!A-Za-z0-9_]*)
-                        _say "MISSING: valid Slack token_env for alias '$slack_alias'"
-                        issues=$((issues + 1))
-                        ;;
-                    *)
-                        eval "slack_token_value=\${${slack_token_env}:-}"
-                        if [ -n "$slack_token_value" ]; then
-                            _say "OK: Slack token is set for alias '$slack_alias' (redacted; run 'lifeos slack whoami $slack_alias' to verify identity)"
-                        else
-                            _say "MISSING: $slack_token_env for Slack alias '$slack_alias'"
-                            issues=$((issues + 1))
-                        fi
-                        ;;
-                esac
-            done <<EOF_SLACK
-$(jq -r '(.accounts // [])[] | [(.alias // ""), (.token_env // "")] | @tsv' "$slack_accounts")
-EOF_SLACK
-        else
-            _say "MISSING: Slack account alias config is not valid JSON shape"
-            issues=$((issues + 1))
-        fi
-    else
-        _say "OPTIONAL: Slack account alias config is not set up"
-        _say "NEXT: cp ${SECRETS_DIR}/slack-accounts.example.json $slack_accounts"
-    fi
-
-    if [ "$issues" -eq 0 ]; then
-        _say "OK: doctor found no blocking issues for the implemented commands"
-        return 0
-    fi
-
-    _say "Doctor found $issues issue(s)"
-    return 1
-}
-
-_open_vault() {
-    _vault_ready || return 1
-    if command -v code >/dev/null 2>&1; then
-        code "$(_vault_path)"
-    else
-        _say "$(_vault_path)"
-    fi
-}
-
-_context() {
-    local vault
-    _require_var LIFEOS_VAULT_PATH || return 1
-    vault="$(_vault_path)"
-    # The workspace entrypoint owns context selection; do not duplicate its private paths here.
-    [ -f "$vault/AGENTS.md" ] || { _err "Configured workspace has no AGENTS.md entrypoint"; return 1; }
-    printf 'Workspace entrypoint: %s/AGENTS.md\nRead its role and task routes before selecting further context.\n' "$vault"
-}
-
 # Migrated providers load only their own literal configuration, never the legacy shared env.
 case "${1:-help}" in
     trello) _trello_load_env || exit 1 ;;
     odoo) _odoo_load_env || exit 1 ;;
     github) _github_load_env || exit 1 ;;
     m365) _m365_load_env || exit 1 ;;
+    google|calendar|gmail|drive|docs|people) _google_load_env || exit 1 ;;
     slack|help|-h|--help) ;;
-    *) _load_env ;;
+    *) ;;
 esac
 
 case "${1:-help}" in
     help|-h|--help)
         _usage
-        ;;
-    doctor)
-        _doctor
-        ;;
-    setup)
-        _setup
-        ;;
-    open)
-        _open_vault
-        ;;
-    context)
-        _context
         ;;
     trello)
         case "${2:-}" in
@@ -517,15 +238,10 @@ case "${1:-help}" in
         esac
         ;;
     calendar)
-        case "${2:-}" in
-            auth) shift 2; _calendar_auth "$@" ;;
-            list-calendars) shift 2; _calendar_list_calendars "$@" ;;
-            find) shift 2; _calendar_find "$@" ;;
-            export-data) shift 2; _calendar_export_data "$@" ;;
-            create-event) shift 2; _calendar_create_event "$@" ;;
-            update-event) shift 2; _calendar_update_event "$@" ;;
-            *) _err "Unknown Calendar command: ${2:-}"; _usage; exit 1 ;;
-        esac
+        command="${2:-}"; shift 2
+        if [ "$command" = auth ]; then _google_auth "$@"
+        else bash "${GOOGLE_CALENDAR_DIR}/scripts/calendar" "$command" "$@"
+        fi
         ;;
     google)
         case "${2:-}" in
@@ -537,8 +253,6 @@ case "${1:-help}" in
     people)
         case "${2:-}" in
             resolve) shift 2; _people_resolve "$@" ;;
-            list-aliases) shift 2; _people_list_aliases "$@" ;;
-            add-alias) shift 2; _people_add_alias "$@" ;;
             *) _err "Unknown People command: ${2:-}"; _usage; exit 1 ;;
         esac
         ;;

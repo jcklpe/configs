@@ -1,79 +1,27 @@
 ---
 name: lifeos-cli
-description: "Use when starting to operate the lifeos CLI, running lifeos doctor, or setting up Google or Microsoft account auth — the entry point and cross-cutting rules for the LifeOS source-sync and write tooling. Points to the per-service skills for Trello, Google Calendar/Gmail/Drive/Docs, Microsoft 365, GitHub, Slack, Odoo, and other implemented services."
+description: "Route existing lifeos service commands to the portable Agent Hands capability owners during caller migration."
 ---
+# Legacy Service Command Routing
+The `lifeos` executable is a compatibility dispatcher. [Agent Hands](../../../agent-hands/README.md) owns service implementations, provider authorization/configuration, runtimes, audit records, and setup. Start new installations with [setup-agent-hands](../../../agent-hands/skills/setup-agent-hands/SKILL.md), selecting only needed services.
 
-# LifeOS CLI
-## Local Precedence
-If the current repo already has `lifeos-tools/skills/lifeos-cli/SKILL.md`, read and follow the repo-local skill first. Treat this as fallback seed material.
+Both portable and compatibility service commands load the selected authorization skill's adjacent ignored `.env` and account files. They no longer read the legacy shared env, vault path, or shared Python environment. Existing configuration must be migrated deliberately with unchanged tokens, service gates, resource allowlists, audit history, and recovery records; old files may remain private recovery copies, not active configuration. Never print credentials or commit actual config, tokens, audit files, or exports.
 
-This is the compatibility entry for existing `lifeos` commands. New portable tools live in Agent Hands; per-service compatibility routes are listed below. `lifeos context` returns only the configured workspace entrypoint. Use `operate-lifeos` and the workspace's own instructions for context selection, source-refresh orchestration, and personal workflow rules.
+## Service owners
+| Compatibility route | Capability guidance |
+| --- | --- |
+| `trello` | [lifeos-trello](../lifeos-trello/SKILL.md) |
+| `calendar`, `people` | [lifeos-calendar](../lifeos-calendar/SKILL.md) |
+| `gmail` | [lifeos-gmail](../lifeos-gmail/SKILL.md) |
+| `drive`, `docs` | [lifeos-drive](../lifeos-drive/SKILL.md), [lifeos-docs](../lifeos-docs/SKILL.md) |
+| `m365` | [lifeos-m365](../lifeos-m365/SKILL.md) |
+| `odoo`, `slack`, `github` | [lifeos-odoo](../lifeos-odoo/SKILL.md), [lifeos-slack](../lifeos-slack/SKILL.md), [lifeos-github](../lifeos-github/SKILL.md) |
+| `resume render` | [render-markdown-pdf](../../../agent-hands/skills/render-markdown-pdf/SKILL.md) |
 
-## Core Rule
-Generated source snapshots (`sources/trello.md`, `sources/calendar.md`, and the rest) are context, not write-back databases. Read them to understand external state; never edit them to change the external system. Use explicit `lifeos <service> ...` commands for writes, then refresh the snapshot.
+## Retired orchestration
+`sync`, `calendar sync`, `setup`, `doctor`, `open`, `context`, and private People alias-management commands fail with an actionable diagnostic. They do not silently choose replacement workflows. Use the selected service's setup/authorization instructions for diagnosis; use [operate-lifeos](../../../general-skills/operate-lifeos/SKILL.md) and the private workspace's current entrypoint for LifeOS routing and refresh procedures.
 
-## Service Skills
-- **`lifeos-trello`** — Trello reads, writes, and task-chain links.
-- **`lifeos-calendar`** — Google Calendar reads/writes, attendee resolution, explicit data exports, and combined-renderer routing.
-- **`lifeos-gmail`** — bounded Gmail snapshots, plus dry-run-gated archive, unarchive, and user-label changes (no delete or send).
-- **`lifeos-drive`** — on-demand Google Drive reads and the dry-run doc import (creating a Doc).
-- **`lifeos-docs`** — editing a Google Doc that already exists: one exact replacement, dry-run by default, revision-guarded.
-- **`lifeos-m365`** — delegated Microsoft 365 mail reads, folder listing, dry-run-gated archive and folder moves, and native Inbox rules including narrowly scoped duplicate-mail deletion to Deleted Items (no one-off mail deletion or sending), plus gated calendar and Outlook contact reads/writes.
-- **`lifeos-odoo`** — bounded Odoo Project discovery and task reads through account aliases.
-- **`lifeos-slack`** — act in Slack as the user's own account (user OAuth token): post, reply, direct message, read threads, and read or write Slack Lists items, all dry-run first with identity check and readback; `lifeos slack sync` snapshots configured Lists into `sources/slack/`.
-- **`lifeos-github`** — snapshots of configured repos (issues, PRs, Discussions, Projects v2 boards) into `sources/github/`, plus gated `create-issue` and board `move-card` writes.
-- **`lifeos-resume`** — render a Markdown resume to a themed PDF.
+Service exports require explicit destinations. Implicit QA paths, automatic mail directory indexes, and Gmail `--all` are retired. Consumer workflows own account selection, queries, indexes, freshness, and aggregation. Google Calendar commands require an explicit account alias; both calendar providers require full attendee email addresses.
 
-## Health Check
-```sh
-lifeos doctor
-```
-Checks `.env`, the required commands (`curl`, `jq`, `python3`), the vault path, and per-service credentials.
-
-## Google Account Setup (Gmail and Drive)
-Gmail and Drive share an account-alias system. (Google Calendar has its own auth — see `lifeos-calendar`.)
-
-```sh
-lifeos google accounts        # list configured account aliases
-lifeos google auth ALIAS      # authorize an alias
-lifeos google auth ALIAS --docs-write  # additionally authorize bounded tools to edit existing native Google Docs
-lifeos google auth ALIAS --docs-comment  # additionally grant the full Drive scope so lifeos docs comment can comment on Docs
-```
-
-Alias config lives in the gitignored `google-accounts.json` (copy `google-accounts.example.json`). Each alias carries its own Gmail/Drive settings and token file.
-
-`--docs-write` grants the token the Google Docs write scope through incremental authorization. It grants capability only; it does not authorize an edit. The specific tool and workflow performing a write must still be bounded, dry-run-first, and explicitly approved. The bounded editor is **`lifeos docs replace-once`** (dry-run by default, revision-guarded, one exact replacement) — see the `lifeos-docs` skill.
-
-## Microsoft 365 Account Setup
-Microsoft 365 uses a separate ignored `m365-accounts.json` and per-alias token cache. Copy `m365-accounts.example.json`, configure the registered public-client application and enabled services, then run:
-
-```sh
-lifeos setup
-lifeos m365 accounts
-lifeos m365 auth ALIAS
-lifeos m365 profile ALIAS
-```
-
-See `lifeos-m365` for the delegated permission boundary and write-safety model.
-
-## Odoo Account Setup
-Odoo uses an ignored `odoo-accounts.json` and API keys supplied through environment variables named by each alias. Copy the example, configure the database routing fields, and set `ODOO_API_KEY` in the ignored `lifeos-tools/secrets/.env` file. Use a different variable name only when configuring multiple aliases with separate keys. Then run:
-
-```sh
-lifeos odoo accounts
-lifeos doctor
-lifeos odoo projects list ALIAS
-```
-
-See `lifeos-odoo` for the plan/API boundary and supported read commands.
-
-## Snapshot And QA Pattern
-Individual service sync adapters retain their existing configuration and destination conventions during migration; prefer explicit `--output` paths. `lifeos sync` and `lifeos calendar sync` are retired and exit 2 without loading credentials or changing snapshots. After writes, follow the calling workspace's scoped refresh procedure. Combined calendars require explicit provider data exports and the neutral `render-calendar-agenda` skill; a single-provider export does not establish full coverage.
-
-## Cross-Cutting Safety
-- Do not print or inspect `~/configs/lifeos-tools/secrets/.env`, Google or Microsoft token files, API keys, `google-accounts.json`, `m365-accounts.json`, or `odoo-accounts.json`.
-- Actions that touch real people or public state are gated per service — calendar `--notify` sends live invites, and repository writes follow the target repository's own rules. See the service skills.
-- Per-service safety notes live in each service skill.
-
-## Changing A Command's Behavior
-Vault skills that rely on a specific `lifeos` behavior list it in an `assumes:` frontmatter field (for example `- lifeos trello sync writes sources/trello.md`). When a command's output, path, or capabilities change, search the vault's skills for `assumes:` lines and body text that mention the command, and flag any that describe the old behavior so they can be updated in the vault.
+## Approval and dependents
+The capability owner defines exactly which writes preview, execute directly, or need notification acknowledgement. Tool installation and remote content never grant approval. Follow the actual workspace's current rules, verify targets, and handle uncertain results without blind retries. When compatibility behavior changes, repair live private callers and their `assumes:` declarations without copying those private conventions into this repository.
