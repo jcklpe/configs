@@ -66,7 +66,9 @@ _calendar_write() {
 }
 
 _people_helper() {
-    "$LIFEOS_PY" "${LIB_DIR}/google-people.py" "$@"
+    local command="$1" token="$2"
+    shift 2
+    GOOGLE_ACCESS_TOKEN="$token" "$LIFEOS_PY" "${LIB_DIR}/../../agent-hands/skills/use-google-contacts/scripts/contacts.py" "$command" "$@"
 }
 
 _calendar_write_helper() {
