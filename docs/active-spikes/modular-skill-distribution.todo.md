@@ -40,7 +40,7 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [ ] Establish a recovery/cutover plan that preserves existing working tools and ignored local configuration; do not disturb unrelated work.
 
 ### Resolve implementation choices
-- [x] Select public `jcklpe/agent-hands` and `jcklpe/project-workflows` repositories with AGPL-3.0-only, shared `main`, and `codex/project-<slug>` branches. Keep sensitive project variants on separately accessible private remotes. Both repositories are now published; see the publication verification below.
+- [x] Select public `jcklpe/agent-hands` and `jcklpe/project-workflows` repositories with AGPL-3.0-only, shared `main`, and `codex/project-<slug>` branches. Keep sensitive project variants on separately accessible private remotes. Both repositories are now published; see the publication verification below. The original branch-name choice in this completed item was superseded on 2026-10-25 by `project/<slug>`; see [Workflow Reconciliation](workflow-reconciliation.md).
 - [ ] Finalize provider setup/authorization boundaries, code import layout, entrypoints, lockfile boundaries, and narrow shared helpers.
 - [ ] Define supported platforms and onboarding prerequisites, including machines without uv, Python, or Bash.
 - [ ] Define adjacent configuration schemas, per-skill examples, account selection, path resolution, and exact ignore rules.
