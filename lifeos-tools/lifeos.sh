@@ -61,6 +61,7 @@ Usage:
   ./lifeos.sh calendar auth
   ./lifeos.sh calendar list-calendars
   ./lifeos.sh calendar find QUERY [--calendar CALENDAR_ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
+  ./lifeos.sh calendar export-data SOURCE_LABEL --from INSTANT --to INSTANT --output FILE [--calendar ID]
   ./lifeos.sh calendar sync [--google-only] [--qa | --output FILE]   # one agenda: Google calendars plus enabled Microsoft 365 calendars
   ./lifeos.sh calendar create-event --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar CALENDAR_ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
   ./lifeos.sh calendar update-event --event EVENT_ID [--series | --instance] [--calendar CALENDAR_ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--recurrence RRULE]... [--transparency transparent|opaque] [--popup-minutes 0..40320] [--notify] [--execute]
@@ -117,6 +118,7 @@ Usage:
   ./lifeos.sh m365 mail delete-rule ALIAS --rule RULE_ID [--execute]   # removes the rule only
   ./lifeos.sh m365 calendar list-calendars ALIAS
   ./lifeos.sh m365 calendar find ALIAS QUERY [--calendar ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
+  ./lifeos.sh m365 calendar export-data ALIAS --from INSTANT --to INSTANT --output FILE [--calendar ID]
   ./lifeos.sh m365 calendar sync ALIAS [--qa | --output FILE]
   ./lifeos.sh m365 calendar create-event ALIAS --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--notify] [--execute]
   ./lifeos.sh m365 calendar update-event ALIAS --event ID [--calendar ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--notify] [--execute]
@@ -473,12 +475,7 @@ $vault/open-austin/index.open-austin.md
 EOF
 }
 
-# Sync every configured M365 account that has calendar enabled. Google-only setups
-# skip silently; a missing/!ready M365 config is a warning, not a failure.
-# `lifeos calendar sync` means "refresh my calendar", and UT meetings live in M365.
-# Syncing only Google silently hides every Teams meeting, so fan out by default.
-# --google-only restores the old behaviour; --qa/--output stay Google-scoped since
-# the M365 renderer writes its own per-account file.
+# Retained compatibility entrypoint. New compositions use explicit provider exports and the neutral agenda renderer; workspace policy belongs to the caller.
 _calendar_sync_combined() {
     local status=0 google_only=0 passthrough=() scoped=0
     for arg in "$@"; do
@@ -591,6 +588,7 @@ case "${1:-help}" in
             auth) shift 2; _calendar_auth "$@" ;;
             list-calendars) shift 2; _calendar_list_calendars "$@" ;;
             find) shift 2; _calendar_find "$@" ;;
+            export-data) shift 2; _calendar_export_data "$@" ;;
             sync)
                 shift 2
                 _calendar_sync_combined "$@"
