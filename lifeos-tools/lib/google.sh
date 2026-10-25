@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 ##- lifeos Google ecosystem: Calendar, Gmail, Drive, Sheets, and People, plus the shared Google OAuth and account-alias layer they all authenticate through. Includes the Google-local _urlencode helper.
-##- Compatibility caller: retains private routing and combined agenda orchestration while delegating service operations to Agent Hands.
+##- Compatibility caller: retains existing credential routing while delegating service operations to Agent Hands.
 
-# Portable mechanics load first; legacy configuration/credentials and composition override their hooks below.
+# Portable mechanics load first; legacy configuration and credential routing override their hooks below.
 source "${LIB_DIR}/../../agent-hands/skills/authorize-google/scripts/client.sh"
 source "${LIB_DIR}/../../agent-hands/skills/use-google-calendar/scripts/operations.sh"
 _calendar_max_pages() { printf '%s' "${LIFEOS_CALENDAR_MAX_PAGES:-40}"; }
@@ -241,23 +241,25 @@ _gmail_sync() {
     _gmail_sync_alias "$alias" "$out" "$query_override" "$max_override"
 }
 
-# Portable Drive mechanics; the legacy sync route keeps the private destination and exclusion choices.
+# Portable Drive mechanics; legacy callers must declare exclusions rather than inherit a private default.
 source "${LIB_DIR}/../../agent-hands/skills/use-google-drive/scripts/operations.sh"
-_drive_sync_excludes() {
-    _google_account_value "$1" '(.drive.index_exclude // ["journal"]) | join("\n")' 2>/dev/null || printf 'journal'
-}
 _drive_sync() {
-    local alias="" out="" arguments=()
+    local alias="" out="" explicit_exclusion=0 exclusion_type arguments=()
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --qa) out="${QA_DIR}/drive.md"; shift ;;
             --output) [ -n "${2:-}" ] || return 1; out="$2"; shift 2 ;;
+            --exclude-folder) [ -n "${2:-}" ] || { _err '--exclude-folder requires NAME'; return 1; }; explicit_exclusion=1; arguments+=( "$1" "$2" ); shift 2 ;;
             --folders|--recent|--recent-days) [ -n "${2:-}" ] || return 1; arguments+=( "$1" "$2" ); shift 2 ;;
             -*) _err "Unknown drive sync option: $1"; return 1 ;;
             *) alias="$1"; shift ;;
         esac
     done
     [ -n "$alias" ] || { _err 'drive sync requires ALIAS'; return 1; }
+    if [ "$explicit_exclusion" -eq 0 ]; then
+        exclusion_type="$(_google_account_value "$alias" '.drive.index_exclude | type')" || return 1
+        [ "$exclusion_type" = array ] || { _err 'Legacy implicit exclusions are retired: supply --exclude-folder NAME or configure drive.index_exclude explicitly (an empty array deliberately permits all child samples).'; return 1; }
+    fi
     if [ -z "$out" ]; then _vault_ready || return 1; _ensure_sources_dir || return 1; out="$(_sources_dir)/drive.md"; fi
     if [ "${#arguments[@]}" -gt 0 ]; then _drive_export_index "$alias" --output "$out" "${arguments[@]}"
     else _drive_export_index "$alias" --output "$out"
