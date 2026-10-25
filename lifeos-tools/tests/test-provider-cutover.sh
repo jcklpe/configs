@@ -23,4 +23,14 @@ for service in trello github slack; do
     fi
     grep -F -- '--output' "$WORK/fail.out" >/dev/null
  done
+printf 'M365_ACCOUNTS_PATH="accounts.json"\n' > "$WORK/.env"
+printf '{"accounts":[{"alias":"fixture","auth_provider":"graph-powershell","expected_account":"reader@example.invalid","mail":{"enabled":true},"calendar":{"enabled":true},"contacts":{"enabled":true},"planner":{"enabled":true,"plans":[{"id":"plan-1"}]}}]}\n' > "$WORK/accounts.json"
+M365_CONFIG_DIR="$WORK" bash "$ROOT/lifeos-tools/lifeos.sh" m365 accounts > "$WORK/microsoft.out"
+grep -F 'fixture' "$WORK/microsoft.out" >/dev/null
+for domain in mail calendar contacts planner; do
+    if M365_CONFIG_DIR="$WORK" M365_PYTHON=python3 bash "$ROOT/lifeos-tools/lifeos.sh" m365 "$domain" sync fixture > "$WORK/fail.out" 2>&1; then
+        echo "Unexpected Microsoft export success without destination: $domain" >&2; exit 1
+    fi
+    grep -F -- 'output' "$WORK/fail.out" >/dev/null || { cat "$WORK/fail.out" >&2; exit 1; }
+done
 printf 'PASS: selected provider configuration and explicit export destinations\n'

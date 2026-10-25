@@ -109,7 +109,7 @@ Usage:
   ./lifeos.sh m365 accounts
   ./lifeos.sh m365 auth ALIAS [--no-browser]
   ./lifeos.sh m365 profile ALIAS [--json]
-  ./lifeos.sh m365 mail sync ALIAS [--qa | --output FILE]
+  ./lifeos.sh m365 mail sync ALIAS --output FILE
   ./lifeos.sh m365 mail folders ALIAS [--json]
   ./lifeos.sh m365 mail list ALIAS (--folder NAME_PATH_OR_ID | --search KQL)... [--limit N] [--json]   # metadata and web link; a search without --folder skips Junk Email
   ./lifeos.sh m365 mail read ALIAS --message ID [--full] [--json]   # one message from any folder: recipients, text body, attachment names
@@ -128,12 +128,12 @@ Usage:
   ./lifeos.sh m365 calendar list-calendars ALIAS
   ./lifeos.sh m365 calendar find ALIAS QUERY [--calendar ID] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--json]
   ./lifeos.sh m365 calendar export-data ALIAS --from INSTANT --to INSTANT --output FILE [--calendar ID]
-  ./lifeos.sh m365 calendar sync ALIAS [--qa | --output FILE]
-  ./lifeos.sh m365 calendar create-event ALIAS --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--notify] [--execute]
-  ./lifeos.sh m365 calendar update-event ALIAS --event ID [--calendar ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee NAME_OR_EMAIL]... [--replace-attendees] [--notify] [--execute]
+  ./lifeos.sh m365 calendar sync ALIAS --output FILE
+  ./lifeos.sh m365 calendar create-event ALIAS --title TITLE --start DATE_OR_DATETIME [--end ...] [--calendar ID] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee EMAIL]... [--notify] [--execute]
+  ./lifeos.sh m365 calendar update-event ALIAS --event ID [--calendar ID] [--title TEXT] [--start ...] [--end ...] [--tz ZONE] [--location TEXT] [--desc TEXT | --desc-file FILE] [--attendee EMAIL]... [--replace-attendees] [--notify] [--execute]
   ./lifeos.sh m365 contacts list ALIAS [--json]
   ./lifeos.sh m365 contacts find ALIAS QUERY [--json]
-  ./lifeos.sh m365 contacts sync ALIAS [--qa | --output FILE]
+  ./lifeos.sh m365 contacts sync ALIAS --output FILE
   ./lifeos.sh m365 contacts create ALIAS [--display-name TEXT] [--given-name TEXT] [--surname TEXT] [--email ADDRESS]... [--phone NUMBER]... [--mobile NUMBER] [--company TEXT] [--job-title TEXT] [--notes TEXT | --notes-file FILE] [--execute]
   ./lifeos.sh m365 contacts update ALIAS --contact ID [contact fields...] [--execute]
   ./lifeos.sh m365 files search ALIAS QUERY [--drive DRIVE_ID] [--json]
@@ -153,7 +153,7 @@ Usage:
   ./lifeos.sh m365 planner buckets ALIAS --plan PLAN_ID [--json]
   ./lifeos.sh m365 planner tasks ALIAS --plan PLAN_ID [--bucket BUCKET_ID] [--mine] [--open] [--json]
   ./lifeos.sh m365 planner task ALIAS --task TASK_ID [--json]   # includes description and checklist
-  ./lifeos.sh m365 planner sync ALIAS [--qa | --output FILE]   # snapshot configured plans to sources/m365/<alias>-planner.md
+  ./lifeos.sh m365 planner sync ALIAS --output FILE   # export configured plans to the requested file
   ./lifeos.sh m365 planner create-task ALIAS --plan PLAN_ID --bucket BUCKET_ID --title TEXT [--due YYYY-MM-DD] [--progress not-started|in-progress|done] [--assign me|EMAIL|USER_ID]... [--desc TEXT | --desc-file FILE] [--execute]
   ./lifeos.sh m365 planner update-task ALIAS --task TASK_ID [--title TEXT] [--bucket BUCKET_ID] [--due YYYY-MM-DD|none] [--progress ...] [--assign WHO]... [--unassign WHO]... [--desc TEXT | --desc-file FILE] [--execute]   # configured plans only; no delete
   ./lifeos.sh m365 planner move-task ALIAS --task TASK_ID --plan PLAN_ID --bucket BUCKET_ID [--execute]   # experimental beta; same group, both plans configured
@@ -470,6 +470,7 @@ case "${1:-help}" in
     trello) _trello_load_env || exit 1 ;;
     odoo) _odoo_load_env || exit 1 ;;
     github) _github_load_env || exit 1 ;;
+    m365) _m365_load_env || exit 1 ;;
     slack|help|-h|--help) ;;
     *) _load_env ;;
 esac
