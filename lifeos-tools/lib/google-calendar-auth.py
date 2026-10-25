@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Legacy Calendar OAuth/date-window adapter; no credential migration."""
+"""Legacy positional OAuth/date-window adapter; callers supply credential paths explicitly."""
 import runpy
 import sys
 from pathlib import Path

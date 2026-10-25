@@ -20,8 +20,8 @@ LIFEOS_DAYS_AHEAD=30
 
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/lifeos-mail-filters-test.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
-LIFEOS_MAIL_AUDIT_LOG="${WORK}/audit.jsonl"
-export LIFEOS_MAIL_AUDIT_LOG
+M365_MAIL_AUDIT_LOG="${WORK}/audit.jsonl"
+export M365_MAIL_AUDIT_LOG
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 expect_fail() { if "$@" > "${WORK}/out.txt" 2> "${WORK}/err.txt"; then fail "expected failure: $*"; fi; }
@@ -77,7 +77,7 @@ M365_ACCOUNTS_PATH="${WORK}/m-on.json"
 out="$(_m365_mail_create_rule ut --name Workday --sender-contains myworkday.com --category work --folder archive --execute)"
 printf '%s\n' "$out" | grep -F -- "Created rule (confirmed by readback): Workday | rule_id: r-new" >/dev/null || fail "m365 create"
 grep -F -- '"sequence":4' "${WORK}/m365-writes.log" >/dev/null || fail "rule sequence"
-jq -e 'select(.action == "create-rule") | .verified == true' "$LIFEOS_MAIL_AUDIT_LOG" >/dev/null || fail "m365 audit"
+jq -e 'select(.action == "create-rule") | .verified == true' "$M365_MAIL_AUDIT_LOG" >/dev/null || fail "m365 audit"
 
 out="$(_m365_mail_create_rule ut --name Duplicates --from newsletter@example.org --recipient-contains alias@example.org --delete --stop)"
 printf '%s\n' "$out" | grep -F -- "recipientContains=alias@example.org" >/dev/null || fail "recipient plan rendering"

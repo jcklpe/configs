@@ -39,10 +39,12 @@ _m365_get() {
 _m365_get_paginated ut 2 "$PAGES_OUT" page-one
 jq -e '(.value | length) == 2 and .value[0].id == "one" and .value[1].id == "two"' "$PAGES_OUT" >/dev/null
 
+_m365_expected_account() { printf 'fixture@example.invalid'; }
 _m365_prepare_powershell_request GET ut 'https://graph.microsoft.com/v1.0/me' '' "$REQUEST_OUT" \
     --data-urlencode '$select=id,displayName' \
     -H 'Prefer: outlook.body-content-type="text"'
 jq -e '
+  .expected_account == "fixture@example.invalid" and
   .method == "GET" and
   (.uri | contains("%24select=id%2CdisplayName")) and
   .headers.Prefer == "outlook.body-content-type=\"text\"" and
