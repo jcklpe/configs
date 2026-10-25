@@ -13,6 +13,7 @@ Concept: [modular-skill-distribution.md](modular-skill-distribution.md).
 Capture the agreed three-collection architecture and a reviewable migration plan. The initial 2026-10-24 request was documentation-only. The user's subsequent instruction authorizes the privacy review, scoped local checkpoints to a clean working tree, and then beginning implementation. Start with the general-skills review/authoring boundary after that baseline. Remote publication, historical rewriting, credential changes, and unresolved external choices are not implied.
 
 ## Current state
+- Planner is extracted with provider-only support, preserved task/comment gates and journals, explicit exports, and batch-response completeness checks. Outlook Mail is the remaining service migration.
 - Outlook Calendar is extracted with provider-only dependencies; private timezone/window defaults, nicknames, and combined agendas remain in compatibility composition. Empty writable lists and attendee replacement are handled explicitly. Remaining service migrations: Outlook Mail and Planner.
 - Excel Workbooks is extracted independently of Microsoft Files, preserving preview fingerprints, pre-write audit, bounds, and readback. Shared provider source-path resolution now works in Bash and Zsh. Remaining Microsoft capabilities: Mail, Calendar, and Planner.
 - Microsoft Files is extracted with provider-only support, its own audit route, safe downloads, and preserved write gates/readback. Excel and other Microsoft services remain to migrate.
