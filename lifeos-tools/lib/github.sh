@@ -5,8 +5,7 @@ GITHUB_AUTH_DIR="$(cd "${LIB_DIR}/../../agent-hands/skills/authorize-github" && 
 for github_domain in issues pull-requests discussions projects; do
     . "${GITHUB_AUTH_DIR}/../use-github-${github_domain}/scripts/operations.sh"
 done
-_github_repos_config() { printf '%s/github-repos.json\n' "$SECRETS_DIR"; }
-_github_render_file() { "$LIFEOS_PY" "$@"; }
+GITHUB_USE_DIR="${GITHUB_AUTH_DIR}/../use-github-issues"
 
 _github_sync_repo() {
     local entry="$1" dest_root="$2"
@@ -38,7 +37,6 @@ _github_sync() {
 
     while [ "$#" -gt 0 ]; do
         case "$1" in
-            --qa) custom_out="${QA_DIR}/github-qa"; shift ;;
             --output)
                 [ -n "${2:-}" ] || { _github_error "--output requires DIR"; return 1; }
                 custom_out="$2"; shift 2 ;;
@@ -48,16 +46,10 @@ _github_sync() {
         esac
     done
 
+    [ -n "$custom_out" ] || { _github_error 'github sync requires --output DIRECTORY'; return 1; }
     _github_ready || return 1
     _github_config_ready || return 1
-
-    if [ -n "$custom_out" ]; then
-        dest="$custom_out"
-    else
-        _vault_ready || return 1
-        _ensure_sources_dir || return 1
-        dest="$(_sources_dir)/github"
-    fi
+    dest="$custom_out"
     mkdir -p "$dest" || return 1
 
     if [ -n "$only_alias" ]; then

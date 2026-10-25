@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-##- Compatibility route preserving existing credentials, snapshot destinations, and consumer defaults.
+##- Compatibility commands using provider-owned configuration and explicit export destinations.
 TRELLO_USE_DIR="$(cd "${LIB_DIR}/../../agent-hands/skills/use-trello" && pwd)" || return 1
 TRELLO_AUTH_DIR="$(cd "${TRELLO_USE_DIR}/../authorize-trello" && pwd)" || return 1
 . "${TRELLO_AUTH_DIR}/scripts/client.sh"
@@ -8,19 +8,4 @@ TRELLO_AUTH_DIR="$(cd "${TRELLO_USE_DIR}/../authorize-trello" && pwd)" || return
 
 _trello_snooze() { _trello_schedule_card "$@"; }
 
-_trello_sync() {
-    local output=""
-    while [ "$#" -gt 0 ]; do
-        case "$1" in
-            --qa) output="${QA_DIR}/trello-qa.md"; shift ;;
-            --output) [ -n "${2:-}" ] || { _err '--output requires FILE'; return 1; }; output="$2"; shift 2 ;;
-            *) _err "Unknown trello sync option: $1"; return 1 ;;
-        esac
-    done
-    if [ -z "$output" ]; then
-        _vault_ready || return 1
-        _ensure_sources_dir || return 1
-        output="$(_sources_dir)/trello.md"
-    fi
-    _trello_export --output "$output"
-}
+_trello_sync() { _trello_export "$@"; }
