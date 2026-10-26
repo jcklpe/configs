@@ -1,9 +1,11 @@
 # 0009 Mail Filters And Inbox Rules
 ## Current Approach
+Run the documented native entrypoint in [use-gmail](../../agent-hands/skills/use-gmail/SKILL.md) or [use-outlook-mail](../../agent-hands/skills/use-outlook-mail/SKILL.md); command names below are relative to that entrypoint and take an explicit account alias.
+
 Rule management covers filing actions on both mail surfaces, with the narrow Microsoft 365 duplicate-mail exception below.
 
-- **Gmail filters:** `gmail filters` lists them (read scope). `gmail create-filter` matches on `--from`, `--to`, `--subject`, and `--query`, and may only add one user label and skip the Inbox. `gmail delete-filter` removes a filter by ID. Changes need `gmail.filters_enabled`, which adds the `gmail.settings.basic` scope at the next `lifeos google auth ALIAS`.
-- **Microsoft 365 Inbox rules:** `m365 mail rules` lists them. `m365 mail create-rule` matches on `--from`, `--sender-contains`, `--subject-contains`, and `--recipient-contains`, and may assign an Outlook category, move to an allowed folder (the same refused targets as mail moves: Deleted Items, Junk, Drafts, Sent, Outbox and their subfolders), and stop processing further rules. The duplicate-mail exception below adds a bounded `--delete` action. `m365 mail delete-rule` removes a rule by ID. Changes need `mail.rules_enabled`, which adds `MailboxSettings.ReadWrite` at the next `lifeos m365 auth ALIAS`.
+- **Gmail filters:** `filters` lists them (read scope). `create-filter` matches on `--from`, `--to`, `--subject`, and `--query`, and may only add one user label and skip the Inbox. `delete-filter` removes a filter by ID. Changes need `gmail.filters_enabled`, which adds the `gmail.settings.basic` scope at the next `bash agent-hands/skills/authorize-google/scripts/authorize auth ALIAS`.
+- **Microsoft 365 Inbox rules:** `rules` lists them. `create-rule` matches on `--from`, `--sender-contains`, `--subject-contains`, and `--recipient-contains`, and may assign an Outlook category, move to an allowed folder (the same refused targets as mail moves: Deleted Items, Junk, Drafts, Sent, Outbox and their subfolders), and stop processing further rules. The duplicate-mail exception below adds a bounded `--delete` action. `delete-rule` removes a rule by ID. Changes need `mail.rules_enabled`, which adds `MailboxSettings.ReadWrite` at the next `bash agent-hands/skills/authorize-microsoft/scripts/authorize auth ALIAS`.
 - **No forward, redirect, permanent-delete, mark-read, or reply action** can be expressed. Listing still shows such actions on rules made elsewhere, so they stay visible.
 - Creates and deletes are dry-run by default and need `--execute`. A Gmail dry run also searches recent mail with the equivalent query and shows what the filter would have caught. Every executed change is read back (a created rule must match its enabled state, sequence, complete conditions, exceptions, and complete actions; a deleted one must be gone) and appended to the mail audit log. Readback accepts Graph default empty/false fields and case-insensitive condition normalization, but refuses omitted or broadened predicates and unexpected actions.
 - Deleting a rule is allowed, unlike deleting mail, because it removes only the rule and can be recreated; without it a mistaken filter would be stuck until someone found it in the web settings.
@@ -24,5 +26,5 @@ Source: [Microsoft Graph rule predicates](https://learn.microsoft.com/en-us/grap
 ## Links
 - [0007 Mail Archive, Folders, And Labels](0007-mail-archive-and-labels.md)
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
-- [LifeOS Gmail skill](../../agent-hands/compat/lifeos/skills/lifeos-gmail/SKILL.md)
-- [LifeOS Microsoft 365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md)
+- [Gmail skill](../../agent-hands/skills/use-gmail/SKILL.md)
+- [use-outlook-mail skill](../../agent-hands/skills/use-outlook-mail/SKILL.md)

@@ -1,12 +1,12 @@
 # 0010 LifeOS Microsoft 365 File Writes
 ## Current Approach
-`lifeos m365 files` exposes three write commands behind a per-alias `files.write_enabled` flag:
+`bash agent-hands/skills/use-microsoft-files/scripts/files` (path relative to configs) exposes three write commands behind a per-alias `files.write_enabled` flag:
 
 - **`upload`** puts a new local file into a folder (item ID or `root`, with `--drive` for SharePoint or another user's drive). It refuses when the name already exists (`conflictBehavior=fail`), so it can never overwrite.
 - **`replace`** changes an existing file's contents. It sends `If-Match` with the eTag read in the same run, so a file someone changed in between is refused rather than overwritten. OneDrive and SharePoint version history keeps the previous version restorable.
 - **`create-folder`** makes a new folder, refusing an existing name.
 
-Every command is dry-run by default and prints the destination path, its current state, and a reminder that others with access will see the change. Executed writes are read back (name and size must match the local file) and appended to the audit log (`secrets/logs/mail-writes.jsonl`, service `m365-files`). Uploads use Graph's simple upload, capped at 250 MB.
+Every command is dry-run by default and prints the destination path, its current state, and a reminder that others with access will see the change. Executed writes are read back (name and size must match the local file) and appended to the audit log (ignored `file-writes.jsonl` beside the owning Microsoft Files skill, service `m365-files`). Uploads use Graph's simple upload, capped at 250 MB.
 
 Files mode now requests `Files.ReadWrite.All`, the scope UT has approved; the CLI's own surface is the narrower boundary.
 
@@ -20,10 +20,10 @@ Direct writes allow delivery into shared OneDrive or SharePoint folders that loc
 ## Operating Notes
 - Agents can deliver files straight into shared institutional folders, such as a team deliverable into a SharePoint library or an edited document back into OneDrive, without depending on local sync.
 - Shared files are other people's records too. Vault skills treat every executed file write as outward-facing and approval-gated per change, and the shared-record permissions in the LifeOS vault still govern documents registered there.
-- Changing the requested scope set requires one interactive `lifeos m365 auth ALIAS`.
+- Changing the requested scope set requires one interactive `bash agent-hands/skills/authorize-microsoft/scripts/authorize auth ALIAS`.
 
 ## Links
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md)
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
 - [0008 LifeOS Microsoft 365 Planner](0008-lifeos-m365-planner.md)
-- [LifeOS Microsoft 365 skill](../../agent-hands/compat/lifeos/skills/lifeos-m365/SKILL.md)
+- [use-microsoft-files skill](../../agent-hands/skills/use-microsoft-files/SKILL.md)
