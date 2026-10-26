@@ -72,3 +72,8 @@ The packaged validator still cannot import PyYAML. Existing Ruby YAML parsing an
 - [x] Verify seven shared skills, resources/frontmatter, fresh and repeated installation, managed legacy-link removal, unrelated-file protection, exact shared publication, and the scoped local configs pin. Preserve Agent Hands and other project copies; do not publish configs history.
 
 The installed filesystem has only the seven canonical workflow skills, with 14 links across both clients. This session's skill catalog still reports the original pre-cutover descriptions for the removed names and does not include the new capture name. Its result disagrees with verified filesystem paths and appears to be a retained session snapshot; no catalog-refresh tool is exposed. Fresh-session discovery remains unverified, rather than a completed client check.
+
+## Residual future-idea disposition
+- [x] Check Agent Hands notes and current local capability limits, then capture only Trello write previews/readback, Slides reading, and richer Sheets extraction as three concise subject notes. Each uses `status: captured`; no implementation plan, task list, or active spike is created.
+- [x] Remove the tracked configs future-ideas list and current routing expectations, preserving historical references through Git and existing historical prose. Keep unrelated Agent Hands files and its nested workflow pin unchanged.
+- [x] Verify note frontmatter, relative links, readback, scoped diffs, and separate local commits. Leave the containing Agent Hands gitlink unchanged because its checkout also contains earlier unpublished work; no Agent Hands or configs publication is part of this disposition.
