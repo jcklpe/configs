@@ -20,7 +20,7 @@ Direct writes allow delivery into shared OneDrive or SharePoint folders that loc
 ## Operating Notes
 - Agents can deliver files straight into shared institutional folders, such as a team deliverable into a SharePoint library or an edited document back into OneDrive, without depending on local sync.
 - Shared files are other people's records too. Vault skills treat every executed file write as outward-facing and approval-gated per change, and the shared-record permissions in the LifeOS vault still govern documents registered there.
-- Changing the requested scope set requires one interactive `bash agent-hands/authorize-microsoft/scripts/authorize auth ALIAS`.
+- Changing the requested scope set requires one interactive `bash agent-hands/setup-microsoft-services/scripts/authorize auth ALIAS`.
 
 ## Links
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md)
