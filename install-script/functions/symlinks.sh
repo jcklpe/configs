@@ -81,6 +81,8 @@ remove_symlink_if_owned "${CONFIGS}/skills/setup-project-docs" "${HOME}/.codex/s
 remove_symlink_if_owned "${CONFIGS}/skills/setup-local-skills" "${HOME}/.codex/skills/setup-local-skills"
 create_symlink_if_needed "${CONFIGS}/project-workflows/run-project-spike" "${HOME}/.codex/skills/run-project-spike"
 create_symlink_if_needed "${CONFIGS}/project-workflows/triage-project-misc" "${HOME}/.codex/skills/triage-project-misc"
+create_symlink_if_needed "${CONFIGS}/project-workflows/capture-for-later" "${HOME}/.codex/skills/capture-for-later"
+# Compatibility names load thin routes to capture-for-later, not separate procedures.
 create_symlink_if_needed "${CONFIGS}/project-workflows/log-future-idea" "${HOME}/.codex/skills/log-future-idea"
 create_symlink_if_needed "${CONFIGS}/project-workflows/pin-issue" "${HOME}/.codex/skills/pin-issue"
 create_symlink_if_needed "${CONFIGS}/general-skills/log-kaizen" "${HOME}/.codex/skills/log-kaizen"
@@ -152,6 +154,8 @@ remove_symlink_if_owned "${CONFIGS}/skills/setup-project-docs" "${HOME}/.claude/
 remove_symlink_if_owned "${CONFIGS}/skills/setup-local-skills" "${HOME}/.claude/skills/setup-local-skills"
 create_symlink_if_needed "${CONFIGS}/project-workflows/run-project-spike" "${HOME}/.claude/skills/run-project-spike"
 create_symlink_if_needed "${CONFIGS}/project-workflows/triage-project-misc" "${HOME}/.claude/skills/triage-project-misc"
+create_symlink_if_needed "${CONFIGS}/project-workflows/capture-for-later" "${HOME}/.claude/skills/capture-for-later"
+# Compatibility names load thin routes to capture-for-later, not separate procedures.
 create_symlink_if_needed "${CONFIGS}/project-workflows/log-future-idea" "${HOME}/.claude/skills/log-future-idea"
 create_symlink_if_needed "${CONFIGS}/project-workflows/pin-issue" "${HOME}/.claude/skills/pin-issue"
 create_symlink_if_needed "${CONFIGS}/general-skills/log-kaizen" "${HOME}/.claude/skills/log-kaizen"

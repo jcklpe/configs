@@ -25,8 +25,7 @@ Incident capture and analysis do not authorize a skill change. Bring proposed st
 ## Naming
 Use lowercase hyphenated names. Prefer short imperative verb-noun names when the skill is an action:
 
-- `pin-issue`
-- `log-future-idea`
+- `capture-for-later`
 - `update-local-skills`
 - `triage-project-misc`
 
@@ -84,8 +83,7 @@ Every skill should make its non-goals discoverable:
 For project workflow skills, coordinate with the shared taxonomy:
 
 ```text
-docs/pinned-issues.md        unresolved things intentionally preserved for later
-docs/scratch/future-ideas.md conceptual someday material
+docs/scratch/<subject>.md   individual captured possibilities or deliberately parked subjects
 docs/scratch/misc.md         raw observed friction / issue intake
 docs/policies/               current durable rules, defaults, and procedures
 docs/active-spikes/          active scoped work
