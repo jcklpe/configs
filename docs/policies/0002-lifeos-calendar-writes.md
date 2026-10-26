@@ -1,6 +1,6 @@
 # 0002 LifeOS Calendar Writes And Attendee Resolution
 ## Current Approach
-The Google Calendar write surface is `bash agent-hands/skills/use-google-calendar/scripts/calendar create-event ALIAS` and `update-event ALIAS`. Use `bash agent-hands/skills/use-google-contacts/scripts/contacts resolve ALIAS NAME` for candidate lookup; the consuming workflow selects exact attendee addresses. Paths in this policy are relative to the configs root. The capability is real (guests and attendee-list edits included), but constrained by tool-enforced safety properties:
+The Google Calendar write surface is `bash agent-hands/use-google-calendar/scripts/calendar create-event ALIAS` and `update-event ALIAS`. Use `bash agent-hands/use-google-contacts/scripts/contacts resolve ALIAS NAME` for candidate lookup; the consuming workflow selects exact attendee addresses. Paths in this policy are relative to the configs root. The capability is real (guests and attendee-list edits included), but constrained by tool-enforced safety properties:
 
 - **Dry-run by default; `--execute` to write.** Every write prints the full plan/diff and changes nothing without `--execute`. Execution remains separate from planning.
 - **Writable-calendar allowlist.** Writes are rejected unless the target calendar is in the selected account’s `calendar.writable_ids`. Reads still span every configured read calendar; writes cannot touch a target absent from the writable list. There is no `delete-event`.
@@ -20,8 +20,8 @@ Creating and editing events, including invitations, is useful enough to justify 
 - Private nickname preferences travel only with their consuming workspace; the public tool neither distributes nor edits a personal alias map.
 
 ## Links
-- [Google Calendar skill](../../agent-hands/skills/use-google-calendar/SKILL.md) — operational guidance and the disambiguation flow.
+- [Google Calendar skill](../../agent-hands/use-google-calendar/SKILL.md) — operational guidance and the disambiguation flow.
 - [Agent Hands README](../../agent-hands/README.md)
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md) — the alias-file ignore pattern.
 - [lifeos-tools-v2 archive](../archive/lifeos-tools-v2.md) — superseded Calendar V2 ideas.
-- Implementation: `agent-hands/skills/use-google-calendar/scripts/`, `use-google-contacts/scripts/`, and `authorize-google/scripts/`.
+- Implementation: `agent-hands/use-google-calendar/scripts/`, `use-google-contacts/scripts/`, and `authorize-google/scripts/`.
