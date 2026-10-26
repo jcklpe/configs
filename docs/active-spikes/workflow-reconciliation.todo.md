@@ -77,3 +77,9 @@ The installed filesystem has only the seven canonical workflow skills, with 14 l
 - [x] Check Agent Hands notes and current local capability limits, then capture only Trello write previews/readback, Slides reading, and richer Sheets extraction as three concise subject notes. Each uses `status: captured`; no implementation plan, task list, or active spike is created.
 - [x] Remove the tracked configs future-ideas list and current routing expectations, preserving historical references through Git and existing historical prose. Keep unrelated Agent Hands files and its nested workflow pin unchanged.
 - [x] Verify note frontmatter, relative links, readback, scoped diffs, and separate local commits. Leave the containing Agent Hands gitlink unchanged because its checkout also contains earlier unpublished work; no Agent Hands or configs publication is part of this disposition.
+
+## Local multi-project rollout
+- [x] Reconcile the authorized project branches with current local shared guidance; preserve custom procedures, unrelated skills/resources, private boundaries, and external Git metadata where required.
+- [x] Complete the separately authorized capture-list conversion without creating active work, preserve source reasoning and uncertain material, and repair incoming links. Consumer records own counts and content dispositions.
+- [x] Advance configs' canonical workflow and Agent Hands pins locally, retaining the separate Agent Hands README checkpoint. Validate exact parent/index/child agreement without publishing outer history.
+- [ ] Review the remaining uncommitted parent scaffolds/index boundaries in their owning workstreams; run fresh-client checks and security/privacy review before separately authorized publication. Private adaptation history is never a public contribution.
