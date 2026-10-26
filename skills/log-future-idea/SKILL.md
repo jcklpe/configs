@@ -1,1 +1,0 @@
-../../project-workflows/skills/log-future-idea/SKILL.md

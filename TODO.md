@@ -2,7 +2,7 @@
 This file is the coordination map for active work in this repo. Keep detailed thinking in spike docs, policies, or scratch notes; keep this file short enough to scan.
 
 ## Active Spikes
-- Workflow Reconciliation (slug `workflow-reconciliation`, opened 2026-10-25): shared skills are flattened and published; configs now uses canonical workflow `main`, with installers/global links updated and the retired adaptation archived. `capture-for-later` now owns saved possibilities and parked subjects, with compatibility routes for the former two skills and existing notes preserved. Six selected consumers have no workflow-env dependency. Agent Hands and other consumers retain their existing workflow pins; unrelated outer history remains unpublished. Client QA and outer publication remain separate. [Reasoning](docs/active-spikes/workflow-reconciliation.md); [tasks](docs/active-spikes/workflow-reconciliation.todo.md).
+- Workflow Reconciliation (slug `workflow-reconciliation`, opened 2026-10-25): shared skills are flattened and published; configs now uses canonical workflow `main`, with installers/global links updated and the retired adaptation archived. `capture-for-later` now owns saved possibilities and parked subjects, with the former skill names retired. The obsolete pinned-issues document is deleted; the future-ideas list awaits a separate disposition decision. Six selected consumers have no workflow-env dependency. Agent Hands and other consumers retain their existing workflow pins; unrelated outer history remains unpublished. Client QA and outer publication remain separate. [Reasoning](docs/active-spikes/workflow-reconciliation.md); [tasks](docs/active-spikes/workflow-reconciliation.todo.md).
 - Modular Skill Distribution (slug `modular-skill-distribution`, opened 2026-10-24): both local submodules, all planned service extractions, general skills, Markdown/PDF themes, and neutral agenda rendering are implemented. Private résumé/calendar/source-refresh workflows own their choices in LifeOS. Provider-owned configuration and explicit-output caller cutover are implemented without live account operations. The compatibility surface now lives in Agent Hands, with shell and selected client routing updated; the old tree and obsolete installer are removed after private/audit reconciliation, with source recoverable through Git and untracked material in local Trash. Thirty-one offline compatibility checks pass. Both child repositories have public AGPLv3 baselines with anonymous cloning verified; the new compatibility checkpoint is local and requires separate child publication. Fresh-client/platform QA, remaining account-access issues, and historical privacy remediation remain open. The parent configs repository has not been pushed. [Reasoning](docs/active-spikes/modular-skill-distribution.md); [tasks](docs/active-spikes/modular-skill-distribution.todo.md).
 - LifeOS Calendar Event Settings (slug `lifeos-calendar-event-settings`, opened 2026-10-22): explicit Free/Busy and popup reminder overrides implemented for Google Calendar create/update, with saved-settings readback and 16 offline tests. No live calendar write performed; live settings/client delivery remain for authorized use. [Reasoning](docs/active-spikes/lifeos-calendar-event-settings.md); [tasks](docs/active-spikes/lifeos-calendar-event-settings.todo.md).
 - LifeOS Microsoft 365 Excel (slug `lifeos-m365-excel`, opened 2026-10-22): implemented; representative live checks of all six write commands passed October 24, with user-confirmed browser updates without refresh. Ready for closure review. [Reasoning](docs/active-spikes/lifeos-m365-excel.md); [tasks](docs/active-spikes/lifeos-m365-excel.todo.md).
@@ -52,7 +52,6 @@ This file is the coordination map for active work in this repo. Keep detailed th
 
 ## Next
 - Decide when a `docs/runbooks/` folder is useful enough to create.
-- Promote a LifeOS Tools future idea from `docs/scratch/future-ideas.md` only when one concrete theme becomes active work.
 
 ## Waiting For Human QA
 - None.
@@ -69,7 +68,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 - Use `project-workflows/run-project-spike/SKILL.md` for active bounded workstreams.
 - Use `docs/active-spikes/` for the conceptual + to-do pair of each active spike.
 - Use `project-workflows/capture-for-later/SKILL.md` for individual saved or parked scratch notes. A sentence and `status: captured` or `status: parked` suffice; capture adds no automatic tasks or spike.
-- Existing `docs/pinned-issues.md` and `docs/scratch/future-ideas.md` entries remain in place; update an existing match rather than duplicating it.
+- The existing `docs/scratch/future-ideas.md` list is retained pending review; do not automatically migrate its LifeOS/service ideas or turn them into configs work.
 - Use `docs/scratch/` for rough, non-authoritative notes.
 - Use `docs/archive/` for finished spike history.
 - Use `docs/policies/` for current durable rules, defaults, procedures, and useful rationale; revise them directly while Git preserves their history.

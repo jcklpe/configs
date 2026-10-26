@@ -1,1 +1,0 @@
-../../project-workflows/skills/pin-issue/SKILL.md
