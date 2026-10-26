@@ -92,9 +92,7 @@ configs/
 │   ├── triage-project-misc/
 │   ├── draft-approval-slate/
 │   ├── commit-work/
-│   ├── capture-for-later/
-│   ├── pin-issue/                       # Compatibility route
-│   └── log-future-idea/                 # Compatibility route
+│   └── capture-for-later/
 ├── general-skills/
 │   ├── operate-lifeos/
 │   ├── write-skills/
@@ -137,7 +135,7 @@ Keep workflow configuration inside the submodule, not scattered across the paren
 | `skills/triage-project-misc` | Same skill in `project-workflows/` | Preserve scratch routing without requiring unrelated global skills. |
 | `skills/draft-approval-slate` | Same skill in `project-workflows/` | Keep concrete review of proposed writes in the project operating package. |
 | `skills/commit-work` | Same skill in `project-workflows/` | Preserve scoped commits and local authority; audit references to installed/global paths. |
-| `skills/pin-issue`, `skills/log-future-idea` | `project-workflows/capture-for-later` with thin old-name compatibility routes | Save possibilities and deliberately parked subjects as individual scratch notes; status describes intent, with no infrastructure-only restriction or automatic work commitment. Existing notes remain in place. |
+| `skills/pin-issue`, `skills/log-future-idea` | `project-workflows/capture-for-later`; old entrypoints removed | Save possibilities and deliberately parked subjects as individual scratch notes; status describes intent, with no infrastructure-only restriction or automatic work commitment. Existing notes remain in place. |
 | `skills/lifeos-handoff` | `general-skills/operate-lifeos` | Broaden into a thin configured entry point; discover the vault and follow its authoritative instructions. Preserve useful handoff behavior through the vault's owning procedures rather than embedding its private structure. |
 | `skills/write-skills` | `general-skills/write-skills` | Keep skill-authoring guidance available independently of ordinary project operations. |
 | `skills/track-changes` | `general-skills/track-changes` | Preserve the locally adapted review workflow and explicit upstream provenance. |

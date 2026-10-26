@@ -61,7 +61,14 @@ Remote readback and an independent fresh clone both resolve shared `main` to `33
 
 ## Capture for Later replacement
 - [x] Replace the two competing capture procedures with one short `capture-for-later` skill, individual subject notes, and minimal captured/parked state. Include natural-language triggers for pinning, circling back, future ideas, deferred decisions, and saving for later.
-- [x] Keep `pin-issue` and `log-future-idea` as thin compatibility routes; preserve existing notes and other project copies. Update only canonical shared guidance, directly affected configs routing/authoring guidance, and the installer/live links.
+- [x] Initially retain thin compatibility routes for the former names; superseded by the clean-cutover decision below. Preserve other project copies.
 - [x] Check frontmatter, supporting metadata, local links, neutral configuration, behavioral examples, and fresh/repeated installation including upgrade from old link paths. Publish the scoped shared change, verify the remote commit, and update the local configs workflow pin without publishing unrelated outer history.
 
 The packaged validator still cannot import PyYAML. Existing Ruby YAML parsing and direct resource, link, TOML, and installer checks provide bounded validation without changing tools. Client interaction QA and explicit migration of other project copies or existing notes remain separate.
+
+## Capture clean cutover
+- [x] Remove the canonical old-name skill folders, tracked configs wrappers, and managed global links; retain natural-language triggers in `capture-for-later`. Update installer cleanup for the known flat, nested, and old configs source paths without removing unrelated files or links.
+- [x] Delete the tracked pinned-issues document without creating a scratch note or task; Git retains its history. Review the future-ideas list against current capability docs, leave it unchanged, and report suggested dispositions for a separate decision.
+- [x] Verify seven shared skills, resources/frontmatter, fresh and repeated installation, managed legacy-link removal, unrelated-file protection, exact shared publication, and the scoped local configs pin. Preserve Agent Hands and other project copies; do not publish configs history.
+
+The installed filesystem has only the seven canonical workflow skills, with 14 links across both clients. This session's skill catalog still reports the original pre-cutover descriptions for the removed names and does not include the new capture name. Its result disagrees with verified filesystem paths and appears to be a retained session snapshot; no catalog-refresh tool is exposed. Fresh-session discovery remains unverified, rather than a completed client check.
