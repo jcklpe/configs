@@ -82,9 +82,13 @@ remove_symlink_if_owned "${CONFIGS}/skills/setup-local-skills" "${HOME}/.codex/s
 create_symlink_if_needed "${CONFIGS}/project-workflows/run-project-spike" "${HOME}/.codex/skills/run-project-spike"
 create_symlink_if_needed "${CONFIGS}/project-workflows/triage-project-misc" "${HOME}/.codex/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/project-workflows/capture-for-later" "${HOME}/.codex/skills/capture-for-later"
-# Compatibility names load thin routes to capture-for-later, not separate procedures.
-create_symlink_if_needed "${CONFIGS}/project-workflows/log-future-idea" "${HOME}/.codex/skills/log-future-idea"
-create_symlink_if_needed "${CONFIGS}/project-workflows/pin-issue" "${HOME}/.codex/skills/pin-issue"
+# Retire only links to known installer-owned sources; preserve real files and unrelated links.
+remove_symlink_if_owned "${CONFIGS}/project-workflows/log-future-idea" "${HOME}/.codex/skills/log-future-idea"
+remove_symlink_if_owned "${CONFIGS}/project-workflows/skills/log-future-idea" "${HOME}/.codex/skills/log-future-idea"
+remove_symlink_if_owned "${CONFIGS}/skills/log-future-idea" "${HOME}/.codex/skills/log-future-idea"
+remove_symlink_if_owned "${CONFIGS}/project-workflows/pin-issue" "${HOME}/.codex/skills/pin-issue"
+remove_symlink_if_owned "${CONFIGS}/project-workflows/skills/pin-issue" "${HOME}/.codex/skills/pin-issue"
+remove_symlink_if_owned "${CONFIGS}/skills/pin-issue" "${HOME}/.codex/skills/pin-issue"
 create_symlink_if_needed "${CONFIGS}/general-skills/log-kaizen" "${HOME}/.codex/skills/log-kaizen"
 create_symlink_if_needed "${CONFIGS}/general-skills/improve-agent-workflows" "${HOME}/.codex/skills/improve-agent-workflows"
 remove_symlink_if_owned "${CONFIGS}/skills/kaizen" "${HOME}/.codex/skills/kaizen"
@@ -155,9 +159,13 @@ remove_symlink_if_owned "${CONFIGS}/skills/setup-local-skills" "${HOME}/.claude/
 create_symlink_if_needed "${CONFIGS}/project-workflows/run-project-spike" "${HOME}/.claude/skills/run-project-spike"
 create_symlink_if_needed "${CONFIGS}/project-workflows/triage-project-misc" "${HOME}/.claude/skills/triage-project-misc"
 create_symlink_if_needed "${CONFIGS}/project-workflows/capture-for-later" "${HOME}/.claude/skills/capture-for-later"
-# Compatibility names load thin routes to capture-for-later, not separate procedures.
-create_symlink_if_needed "${CONFIGS}/project-workflows/log-future-idea" "${HOME}/.claude/skills/log-future-idea"
-create_symlink_if_needed "${CONFIGS}/project-workflows/pin-issue" "${HOME}/.claude/skills/pin-issue"
+# Retire only links to known installer-owned sources; preserve real files and unrelated links.
+remove_symlink_if_owned "${CONFIGS}/project-workflows/log-future-idea" "${HOME}/.claude/skills/log-future-idea"
+remove_symlink_if_owned "${CONFIGS}/project-workflows/skills/log-future-idea" "${HOME}/.claude/skills/log-future-idea"
+remove_symlink_if_owned "${CONFIGS}/skills/log-future-idea" "${HOME}/.claude/skills/log-future-idea"
+remove_symlink_if_owned "${CONFIGS}/project-workflows/pin-issue" "${HOME}/.claude/skills/pin-issue"
+remove_symlink_if_owned "${CONFIGS}/project-workflows/skills/pin-issue" "${HOME}/.claude/skills/pin-issue"
+remove_symlink_if_owned "${CONFIGS}/skills/pin-issue" "${HOME}/.claude/skills/pin-issue"
 create_symlink_if_needed "${CONFIGS}/general-skills/log-kaizen" "${HOME}/.claude/skills/log-kaizen"
 create_symlink_if_needed "${CONFIGS}/general-skills/improve-agent-workflows" "${HOME}/.claude/skills/improve-agent-workflows"
 remove_symlink_if_owned "${CONFIGS}/skills/kaizen" "${HOME}/.claude/skills/kaizen"
