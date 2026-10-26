@@ -58,3 +58,10 @@ Remote readback and an independent fresh clone both resolve shared `main` to `33
 
 ## Spike definition clarification
 - [x] Make explicit that a spike is a bounded workstream through which project work progresses, including implementation and delivery. The existing process already covers these activities; this adds the definition without changing its steps, introducing research-only constraints, or changing speculative scratch/idea terminology. The one-paragraph shared change is published on canonical main; this checkpoint advances only its configs pin and records the clarification.
+
+## Capture for Later replacement
+- [x] Replace the two competing capture procedures with one short `capture-for-later` skill, individual subject notes, and minimal captured/parked state. Include natural-language triggers for pinning, circling back, future ideas, deferred decisions, and saving for later.
+- [x] Keep `pin-issue` and `log-future-idea` as thin compatibility routes; preserve existing notes and other project copies. Update only canonical shared guidance, directly affected configs routing/authoring guidance, and the installer/live links.
+- [x] Check frontmatter, supporting metadata, local links, neutral configuration, behavioral examples, and fresh/repeated installation including upgrade from old link paths. Publish the scoped shared change, verify the remote commit, and update the local configs workflow pin without publishing unrelated outer history.
+
+The packaged validator still cannot import PyYAML. Existing Ruby YAML parsing and direct resource, link, TOML, and installer checks provide bounded validation without changing tools. Client interaction QA and explicit migration of other project copies or existing notes remain separate.
