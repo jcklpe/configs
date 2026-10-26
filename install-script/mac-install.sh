@@ -3,10 +3,14 @@
 # Note: CONFIGS is set by sourcing init.sh
 source ~/configs/init.sh
 
-# Init all submodules recursively
-echo "Initializing git submodules..."
-git submodule init
-git submodule update --recursive
+# Initialize other submodules; missing Agent Hands is deferred to its opt-in prompt.
+echo "Initializing other git submodules..."
+git -C "$CONFIGS" submodule init -- . ':(exclude)agent-hands'
+git -C "$CONFIGS" submodule update --recursive -- . ':(exclude)agent-hands'
+# Preserve normal updates for an already-populated checkout, without initializing a missing one.
+if [ -e "$CONFIGS/agent-hands/.git" ]; then
+    git -C "$CONFIGS" submodule update --recursive -- agent-hands
+fi
 
 # Install Xcode Command Line Tools (required by git, brew, and compiler toolchain)
 if ! xcode-select -p &>/dev/null; then
@@ -43,6 +47,6 @@ source ${CONFIGS}/install-script/functions/symlinks.sh
 source ${CONFIGS}/install-script/functions/git-config.sh
 
 # Check Agent Hands; provision only selected capabilities through their setup guides
-source ${CONFIGS}/install-script/functions/agent-hands-setup.sh
+source "${CONFIGS}/install-script/functions/agent-hands-setup.sh"
 
 echo "✓ Mac installation complete!"
