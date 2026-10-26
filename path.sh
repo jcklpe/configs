@@ -2,7 +2,7 @@
 ##- PATH modifications and tool environment initialization
 ##- Source this after init.sh in your shell RC files
 
-# Remove only the retired entry from an inherited shell PATH. Preserve empty elements.
+# Remove retired tool entrypoints from an inherited PATH. Native skills use explicit paths; preserve empty elements.
 _configs_path_rest="$PATH"
 _configs_path_clean=""
 _configs_path_separator=""
@@ -11,7 +11,7 @@ while :; do
         *:*) _configs_path_item="${_configs_path_rest%%:*}"; _configs_path_rest="${_configs_path_rest#*:}"; _configs_path_more=1 ;;
         *) _configs_path_item="$_configs_path_rest"; _configs_path_more=0 ;;
     esac
-    if [ "$_configs_path_item" != "${CONFIGS}/lifeos-tools" ]; then
+    if [ "$_configs_path_item" != "${CONFIGS}/lifeos-tools" ] && [ "$_configs_path_item" != "${CONFIGS}/agent-hands/bin" ]; then
         _configs_path_clean="${_configs_path_clean}${_configs_path_separator}${_configs_path_item}"
         _configs_path_separator=:
     fi
@@ -19,12 +19,6 @@ while :; do
 done
 export PATH="$_configs_path_clean"
 unset _configs_path_rest _configs_path_clean _configs_path_separator _configs_path_item _configs_path_more
-if [ -d "${CONFIGS}/agent-hands/bin" ]; then
-    case ":$PATH:" in
-        *":${CONFIGS}/agent-hands/bin:"*) ;;
-        *) export PATH="${CONFIGS}/agent-hands/bin:$PATH" ;;
-    esac
-fi
 
 # fnm (Fast Node Manager)
 if command -v fnm >/dev/null 2>&1; then
