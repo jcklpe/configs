@@ -13,6 +13,7 @@ Concept: [modular-skill-distribution.md](modular-skill-distribution.md).
 Capture the agreed three-collection architecture and a reviewable migration plan. The initial 2026-10-24 request was documentation-only. The user's subsequent instruction authorizes the privacy review, scoped local checkpoints to a clean working tree, and then beginning implementation. Start with the general-skills review/authoring boundary after that baseline. Remote publication, historical rewriting, credential changes, and unresolved external choices are not implied.
 
 ## Current state
+- Flat native layout completed locally on 2026-10-26: all 39 Agent Hands skill directories are at its root. The completed pending Penpot/integration docs are reconciled; current callers and installed paths follow the flat tree. This supersedes earlier mixed-file and layout checkpoints.
 - Native interface cutover completed locally on 2026-10-26: the launcher and compatibility package are removed; callers use native skills and private orchestration. The paired concept’s latest result supersedes the dated compatibility checkpoints below. No pushes; publication remains on hold.
 - All planned service extractions are present: Odoo; Slack messaging/Lists; Trello; GitHub Issues/Pull Requests/Discussions/Projects; Google Docs/Contacts/Sheets/Drive/Gmail/Calendar; and Outlook Mail/Calendar/Contacts, Microsoft Files, Excel, and Planner. Each use skill depends on its provider support, with capability-local uv environments where needed.
 - Native service commands use extracted code and provider-owned configuration; legacy service commands are removed. Existing credentials, grants, audit histories, and recovery records are preserved in ignored owner-only files; old copies have been reconciled and are covered by the selective cleanup below. Exports require explicit destinations, Calendar selects an account explicitly, and private workflows own snapshot paths and cross-provider composition. No live account operation occurred.
@@ -109,6 +110,14 @@ The initial capture checks established paired frontmatter, relative links to exi
 The first implementation slice checks YAML frontmatter with the available Ruby parser, TOML provenance, moved content, compatibility and installed-client link resolution, installer syntax under Bash/Zsh, relative documentation links, and whitespace. The standard Python skill validator could not run without PyYAML; do not report that validator as passed. No upstream synchronization, live service write, full installer run, or new test suite was performed.
 
 ## Done
+### Flat native skill layout — 2026-10-26
+- [x] Reconcile the reviewed pending Penpot, integration, source-notice and cutover documentation changes into scoped local checkpoints.
+- [x] Move the 39 native skills to the Agent Hands root without compatibility aliases; preserve ignored private files and repair current code, documentation, consumer, installer and client paths.
+- [x] Verify final native/Penpot tests, command help, fresh/upgrade/repeat installation, local discovery, ignore boundaries and private-file metadata; document remaining verification limits.
+- [x] Commit the flat Agent Hands tree and private caller updates, then record the exact local Agent Hands pin with the configs routing/status changes; preserve unrelated workflow work and the publication hold.
+
+Acceptance: 39 root skill directories, 67 passing test programs, 24 locked offline runtimes, 70 client links, 2 updated MCP command paths, Bash/zsh fresh/upgrade/repeat installation, unchanged metadata/ignores for 30 private files, and the path-only recovery receipt. See the paired result for publication and fresh-client limits.
+
 ### Native interface cutover — 2026-10-26
 - [x] Migrate active private workflows and reconcile policies 0014/0026/0027, keeping consumer choices private.
 - [x] Map compatibility regression assertions to native owners and preserve missing useful coverage.

@@ -46,4 +46,4 @@ This repo supplies the capability only. **What counts as noise, and whether an a
 - [Policy 0004](../policies/0004-lifeos-microsoft-365-access.md): current delegated access and capability boundaries.
 - [Policy 0006](../policies/0006-writes-fail-rather-than-guess.md): writes fail rather than guess.
 - `docs/archive/lifeos-m365.md`: the original M365 spike and the tenant authorization findings.
-- `agent-hands/skills/use-outlook-mail/` and `authorize-microsoft/`: current command and transport owners.
+- `agent-hands/use-outlook-mail/` and `authorize-microsoft/`: current command and transport owners.

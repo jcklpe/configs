@@ -26,4 +26,4 @@ The combined Python discussion/read test suite passes 29 tests, the existing Sla
 Live search verification remains blocked unless the user separately approves an exact OAuth expansion. A history page plus selected thread reads does not establish an exhaustive search across older threads and group conversations. Keep this spike live until closure is explicitly authorized; no archival is implied by the implementation checkpoint.
 
 ## Maintained guidance
-Current command behavior and examples live in `agent-hands/skills/use-slack-messages/SKILL.md` and `agent-hands/bin/lifeos help`; the legacy Slack routing guide lives under `agent-hands/compat/lifeos/skills/`.
+Current command behavior and examples live in `agent-hands/use-slack-messages/SKILL.md` and `agent-hands/bin/lifeos help`; the legacy Slack routing guide lives under `agent-hands/compat/lifeos/skills/`.
