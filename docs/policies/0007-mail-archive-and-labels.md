@@ -20,7 +20,7 @@ Reversible filing removes repeated manual work while keeping sending and deletio
 - Archive, folder moves, and existing-label or category changes can be reversed from the CLI. Executed changes are traced in the audit log. Folder and label creation do not add deletion commands; a mistaken spam/junk rescue is undone in the mail UI.
 - Vault snapshots stay Inbox-only, so archived or skip-inbox mail drops out of the vault's view. That is the point for noise, but a vault skill that reads the snapshot as "everything outstanding" should say so in its `assumes:`.
 - Microsoft moves change message IDs. The CLI prints and logs the new ID, and unarchive needs it.
-- Enabling Gmail writes needs a browser re-consent per account. Until then, executed changes fail with a 403 and a pointer to `bash agent-hands/authorize-google/scripts/authorize auth ALIAS`.
+- Enabling Gmail writes needs a browser re-consent per account. Until then, executed changes fail with a 403 and a pointer to `bash agent-hands/setup-google-services/scripts/authorize auth ALIAS`.
 
 ## Spam and Junk Rescue
 `spam` and `junk` provide explicit reads of mail excluded from ordinary snapshots. `not-spam` removes `SPAM` and adds `INBOX`; its source must be in Spam, never Trash. `not-junk` moves a Junk message to the Inbox for ordinary triage. This is the narrow exception to the system-label restriction, and it runs only out of Spam or Junk. Reporting spam and moving mail into Junk remain refused. A mistaken rescue is undone in the mail UI. Review cadence and approval belong to the calling vault's policy; Microsoft `reportMessage` is not part of this capability.

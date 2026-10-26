@@ -24,4 +24,4 @@ Creating and editing events, including invitations, is useful enough to justify 
 - [Agent Hands README](../../agent-hands/README.md)
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md) — the alias-file ignore pattern.
 - [lifeos-tools-v2 archive](../archive/lifeos-tools-v2.md) — superseded Calendar V2 ideas.
-- Implementation: `agent-hands/use-google-calendar/scripts/`, `use-google-contacts/scripts/`, and `authorize-google/scripts/`.
+- Implementation: `agent-hands/use-google-calendar/scripts/`, `use-google-contacts/scripts/`, and `setup-google-services/scripts/`.

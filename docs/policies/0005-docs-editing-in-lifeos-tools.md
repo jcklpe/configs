@@ -1,6 +1,6 @@
 # 0005 Google Docs Editing Uses Agent Hands (Duplicated From The Org Repo)
 ## Current Approach
-Maintain Google Docs mechanics in `agent-hands/use-google-docs/`, with authorization in `authorize-google/`. Invoke `scripts/docs` directly from that skill. It preserves the safety model: dry-run by default, `--execute` to write, exact unique match, revision guard, `--link` support.
+Maintain Google Docs mechanics in `agent-hands/use-google-docs/`, with authorization in `setup-google-services/`. Invoke `scripts/docs` directly from that skill. It preserves the safety model: dry-run by default, `--execute` to write, exact unique match, revision guard, `--link` support.
 
 - General-purpose Google Docs editing is available through LifeOS without requiring an Open Austin checkout. General-purpose GitHub exports, issue creation, and board moves are available through the independent GitHub capability skills; existing-issue edits use `gh` under the consuming repository's approval rules. Open Austin-specific workflows remain in the org repository.
 - The org repo keeps its own copy of the docs tool so it stays self-contained when pulled down standalone. The resulting small code duplication is an **accepted cost**.

@@ -19,7 +19,7 @@ Configured team plans need to be ordinary local context, with bounded task updat
 - Refresh a configured plan through its explicit service export; the calling workspace owns its destination and freshness requirements.
 - The plan is shared with the whole team, so any write is visible to them. The dry-run plan says so, and vault skills should treat Planner writes as outward-facing.
 - The etag guard protects within one run; it cannot detect changes made between a dry run and a later `--execute`, which re-reads the task and shows its current state again.
-- Enabling Planner adds `Tasks.ReadWrite` and `User.ReadBasic.All` to the requested scopes. Any change to the requested set needs one interactive `bash agent-hands/authorize-microsoft/scripts/authorize auth ALIAS` (run in a real terminal; `--no-browser` uses a device code) before Planner calls work; until then they stall waiting for sign-in.
+- Enabling Planner adds `Tasks.ReadWrite` and `User.ReadBasic.All` to the requested scopes. Any change to the requested set needs one interactive `bash agent-hands/setup-microsoft-services/scripts/authorize auth ALIAS` (run in a real terminal; `--no-browser` uses a device code) before Planner calls work; until then they stall waiting for sign-in.
 
 ## Rationale for Limits
 - **Requesting `Tasks.Read` for read-only aliases.** Tried first on 2026-10-02: it is the narrower scope, but in UT's tenant it needs admin approval that has not been granted, so sign-in stalled.
