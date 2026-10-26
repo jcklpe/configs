@@ -36,4 +36,4 @@ Same model as 0007: exact IDs, dry-run by default, per-call caps, readback, the 
 ## Related
 - [LifeOS Microsoft 365 Mail Archive](lifeos-m365-mail-archive.md), the predecessor.
 - [0004](../policies/0004-lifeos-microsoft-365-access.md), [0006](../policies/0006-writes-fail-rather-than-guess.md), [0007](../policies/0007-mail-archive-and-labels.md), [0009](../policies/0009-mail-filters-and-rules.md).
-- `agent-hands/skills/use-gmail/SKILL.md`, `agent-hands/skills/use-outlook-mail/SKILL.md`.
+- `agent-hands/use-gmail/SKILL.md`, `agent-hands/use-outlook-mail/SKILL.md`.

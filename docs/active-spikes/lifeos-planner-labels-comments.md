@@ -3,7 +3,7 @@ attention: live
 ---
 # LifeOS Planner Labels and Comments
 ## Purpose and Scope
-Extend the Planner CLI, now owned by `agent-hands/skills/use-planner/` with legacy routing in `agent-hands/compat/lifeos/`, so approved task status changes do not require a browser. Implement existing-label listing, applying and removing labels with dry runs, allowlisted plans, existing authorization, concurrency checks, audit evidence and readback. Preserve unrelated working changes. No generic Graph command, credentials, OAuth scope expansion or browser fallback is authorized.
+Extend the Planner CLI, now owned by `agent-hands/use-planner/` with legacy routing in `agent-hands/compat/lifeos/`, so approved task status changes do not require a browser. Implement existing-label listing, applying and removing labels with dry runs, allowlisted plans, existing authorization, concurrency checks, audit evidence and readback. Preserve unrelated working changes. No generic Graph command, credentials, OAuth scope expansion or browser fallback is authorized.
 ## API Findings
 Microsoft documents `appliedCategories` in the [v1.0 task update API](https://learn.microsoft.com/en-us/graph/api/plannertask-update?view=graph-rest-1.0); the configured `Tasks.ReadWrite` permission supports labels. Resolve category IDs through plan `categoryDescriptions`, never guess from colors or create a label implicitly. A name must match exactly one existing label, case-insensitively. Merge current categories, guard the task ETag and compare active sets because the service can omit false values. Recheck label names before writing; their separate plan-details ETag cannot be atomically guarded with the task.
 
@@ -15,4 +15,4 @@ Label changes send a merged category map and no other task properties. Missing o
 
 Comment list, first-thread creation, post readback, task linking and repeat no-op were validated live. The first immediate post read returned 404 after thread creation; the command retained its pending-link journal and stopped. A later read-only recovery found the exact post, and execution linked that existing thread without another POST. Independent readback confirmed a single post and preserved task fields. This establishes first-comment and known-thread recovery behavior; live existing-thread reply still has only offline coverage. The transient 404 was observed, but its service-side cause is not established.
 
-Maintained usage lives in `agent-hands/skills/use-planner/SKILL.md`, `agent-hands/bin/lifeos help`, the compatibility M365 guide, and policy 0008. Keep this spike active pending human QA and closure authorization; do not archive on implementation completion alone.
+Maintained usage lives in `agent-hands/use-planner/SKILL.md`, `agent-hands/bin/lifeos help`, the compatibility M365 guide, and policy 0008. Keep this spike active pending human QA and closure authorization; do not archive on implementation completion alone.

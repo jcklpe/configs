@@ -1,6 +1,6 @@
 # 0008 LifeOS Microsoft 365 Planner
 ## Current Approach
-Use `bash agent-hands/skills/use-planner/scripts/planner` (path relative to configs) as an opt-in surface per account alias, configured with a `planner` block in `m365-accounts.json`.
+Use `bash agent-hands/use-planner/scripts/planner` (path relative to configs) as an opt-in surface per account alias, configured with a `planner` block in `m365-accounts.json`.
 
 - **Reads:** `plans`, `buckets`, `tasks` (filters `--bucket`, `--mine`, `--open`), `task` (with description and checklist), and `labels` (existing named plan labels).
 - **Scopes:** an alias with Planner enabled always requests `Tasks.ReadWrite`, plus `User.ReadBasic.All` so assignee IDs render as names. UT blocks user consent (the same wall `Files.ReadWrite` hit before admin consent on 2026-09-18), and `Tasks.ReadWrite` is already approved for the shared client while `Tasks.Read` is not, so requesting the narrower scope would stall on an admin-approval prompt. Write safety therefore lives in the CLI: `planner.write_enabled`, the plan allowlist, and dry-run-by-default.
@@ -19,7 +19,7 @@ Configured team plans need to be ordinary local context, with bounded task updat
 - Refresh a configured plan through its explicit service export; the calling workspace owns its destination and freshness requirements.
 - The plan is shared with the whole team, so any write is visible to them. The dry-run plan says so, and vault skills should treat Planner writes as outward-facing.
 - The etag guard protects within one run; it cannot detect changes made between a dry run and a later `--execute`, which re-reads the task and shows its current state again.
-- Enabling Planner adds `Tasks.ReadWrite` and `User.ReadBasic.All` to the requested scopes. Any change to the requested set needs one interactive `bash agent-hands/skills/authorize-microsoft/scripts/authorize auth ALIAS` (run in a real terminal; `--no-browser` uses a device code) before Planner calls work; until then they stall waiting for sign-in.
+- Enabling Planner adds `Tasks.ReadWrite` and `User.ReadBasic.All` to the requested scopes. Any change to the requested set needs one interactive `bash agent-hands/authorize-microsoft/scripts/authorize auth ALIAS` (run in a real terminal; `--no-browser` uses a device code) before Planner calls work; until then they stall waiting for sign-in.
 
 ## Rationale for Limits
 - **Requesting `Tasks.Read` for read-only aliases.** Tried first on 2026-10-02: it is the narrower scope, but in UT's tenant it needs admin approval that has not been granted, so sign-in stalled.
@@ -30,7 +30,7 @@ Configured team plans need to be ordinary local context, with bounded task updat
 The experimental extension provides dry-run-first `move-task --task ID --plan ID --bucket ID` using the [documented Graph beta task update](https://learn.microsoft.com/en-us/graph/api/plannertask-update?view=graph-rest-beta). The current implementation limits moves to two allowlisted plans in the same Microsoft 365 group, validates bucket membership, refuses active labels, recurrence and externally sourced tasks, and uses one ETag-guarded PATCH. It audits the attempt and verifies the destination and supported preserved fields. It never clones or deletes tasks and never retries an ambiguous write. Goals, custom columns and linked meeting notes remain outside verification. Offline tests are available. Same-group moves were validated live on 2026-10-11 with readback confirming task IDs, descriptions, assignments, dates, progress, priority and destinations. Nonempty checklist/reference and conversation preservation remains unverified live.
 
 ## Links
-- [use-planner skill](../../agent-hands/skills/use-planner/SKILL.md)
+- [use-planner skill](../../agent-hands/use-planner/SKILL.md)
 - [0004 LifeOS Microsoft 365 Access](0004-lifeos-microsoft-365-access.md)
 - [0006 Writes Fail Rather Than Guess](0006-writes-fail-rather-than-guess.md)
 - [0007 Mail Archive, Folders, And Labels](0007-mail-archive-and-labels.md)

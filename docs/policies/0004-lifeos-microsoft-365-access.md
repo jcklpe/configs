@@ -29,10 +29,10 @@ The Microsoft 365 mailbox can contain both forwarded UTmail and Microsoft-native
 - The initial M365 calendar surface does not mutate recurring series as a unit and blocks description replacement on online meetings to avoid damaging embedded Teams meeting data.
 
 ## Source and History
-[Microsoft 365 implementation](../archive/lifeos-m365.md) and [unified calendar implementation](../archive/unified-calendar.md) retain the development history. Current operational mechanics live in the [Microsoft 365 skill](../../agent-hands/skills/authorize-microsoft/SKILL.md) and [Outlook Calendar skill](../../agent-hands/skills/use-outlook-calendar/SKILL.md).
+[Microsoft 365 implementation](../archive/lifeos-m365.md) and [unified calendar implementation](../archive/unified-calendar.md) retain the development history. Current operational mechanics live in the [Microsoft 365 skill](../../agent-hands/authorize-microsoft/SKILL.md) and [Outlook Calendar skill](../../agent-hands/use-outlook-calendar/SKILL.md).
 
 ## Links
-- [authorize-microsoft skill](../../agent-hands/skills/authorize-microsoft/SKILL.md)
+- [authorize-microsoft skill](../../agent-hands/authorize-microsoft/SKILL.md)
 - [Agent Hands README](../../agent-hands/README.md)
 - [LifeOS Microsoft 365 spike](../archive/lifeos-m365.md)
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md)
