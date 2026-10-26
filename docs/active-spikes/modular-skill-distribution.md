@@ -83,20 +83,17 @@ configs/
 ├── project-workflows/                   # Submodule: shared/default checkout
 │   ├── README.md
 │   ├── workflow.toml
-│   ├── .workflow.env.example
-│   ├── .workflow.env                    # Ignored machine-specific values
 │   ├── .gitignore
-│   └── skills/
-│       ├── setup-project-workflows/
-│       │   ├── SKILL.md
-│       │   └── assets/templates/
-│       ├── update-project-workflows/
-│       ├── run-project-spike/
-│       ├── triage-project-misc/
-│       ├── draft-approval-slate/
-│       ├── commit-work/
-│       ├── pin-issue/
-│       └── log-future-idea/
+│   ├── setup-project-workflows/
+│   │   ├── SKILL.md
+│   │   └── assets/templates/
+│   ├── update-project-workflows/
+│   ├── run-project-spike/
+│   ├── triage-project-misc/
+│   ├── draft-approval-slate/
+│   ├── commit-work/
+│   ├── pin-issue/
+│   └── log-future-idea/
 ├── general-skills/
 │   ├── operate-lifeos/
 │   ├── write-skills/
@@ -122,11 +119,10 @@ example-project/
 └── project-workflows/                   # Submodule pinned to the adopted commit
     ├── README.md
     ├── workflow.toml                    # Tracked on the project's branch
-    ├── .workflow.env.example            # Tracked configuration contract
-    ├── .workflow.env                    # Ignored local/private values
     ├── .gitignore
-    └── skills/
-        └── …
+    ├── setup-project-workflows/
+    │   └── assets/templates/
+    └── …                               # Other complete skill directories
 ```
 
 Keep workflow configuration inside the submodule, not scattered across the parent root. Real project documentation stays in the parent; reusable templates stay in `setup-project-workflows/assets/templates/`. The parent still needs its own routing instructions and Git submodule metadata. A workflow branch must never accumulate the actual document history of unrelated adopting projects.
@@ -134,13 +130,13 @@ Keep workflow configuration inside the submodule, not scattered across the paren
 ## Project and general skill breakdown
 | Current source | Target | Intended change |
 | --- | --- | --- |
-| `skills/setup-project-docs` and `skills/setup-local-skills` | `project-workflows/skills/setup-project-workflows` | Combine documentation adoption, skill distribution, initial project branch, configuration, templates, and agent routing in one setup procedure. |
-| `skills/update-local-skills` | `project-workflows/skills/update-project-workflows` | Replace copy-versus-seed reconciliation with explicit submodule ancestry and project-branch reconciliation, preserving semantic judgment. |
-| `skills/run-project-spike` | Same skill in `project-workflows/skills/` | Preserve conceptual/task pairing, scope, history, QA, and closure conventions. |
-| `skills/triage-project-misc` | Same skill in `project-workflows/skills/` | Preserve scratch routing without requiring unrelated global skills. |
-| `skills/draft-approval-slate` | Same skill in `project-workflows/skills/` | Keep concrete review of proposed writes in the project operating package. |
-| `skills/commit-work` | Same skill in `project-workflows/skills/` | Preserve scoped commits and local authority; audit references to installed/global paths. |
-| `skills/pin-issue`, `skills/log-future-idea` | Same skills in `project-workflows/skills/` | Preserve the distinction between unresolved issues and future infrastructure ideas. |
+| `skills/setup-project-docs` and `skills/setup-local-skills` | `project-workflows/setup-project-workflows` | Combine documentation adoption, skill distribution, initial project branch, configuration, templates, and agent routing in one setup procedure. |
+| `skills/update-local-skills` | `project-workflows/update-project-workflows` | Replace copy-versus-seed reconciliation with explicit submodule ancestry and project-branch reconciliation, preserving semantic judgment. |
+| `skills/run-project-spike` | Same skill in `project-workflows/` | Preserve conceptual/task pairing, scope, history, QA, and closure conventions. |
+| `skills/triage-project-misc` | Same skill in `project-workflows/` | Preserve scratch routing without requiring unrelated global skills. |
+| `skills/draft-approval-slate` | Same skill in `project-workflows/` | Keep concrete review of proposed writes in the project operating package. |
+| `skills/commit-work` | Same skill in `project-workflows/` | Preserve scoped commits and local authority; audit references to installed/global paths. |
+| `skills/pin-issue`, `skills/log-future-idea` | Same skills in `project-workflows/` | Preserve the distinction between unresolved issues and future infrastructure ideas. |
 | `skills/lifeos-handoff` | `general-skills/operate-lifeos` | Broaden into a thin configured entry point; discover the vault and follow its authoritative instructions. Preserve useful handoff behavior through the vault's owning procedures rather than embedding its private structure. |
 | `skills/write-skills` | `general-skills/write-skills` | Keep skill-authoring guidance available independently of ordinary project operations. |
 | `skills/track-changes` | `general-skills/track-changes` | Preserve the locally adapted review workflow and explicit upstream provenance. |
@@ -214,7 +210,7 @@ The examples must match the actual owning skill's needs, support configured acco
 
 Projects normally select a configured account/target without copying provider credentials into every project. Co-located per-skill credentials remain the user-facing default design; explicitly needed project-specific configuration remains possible. Load configuration for the invoked capability, not from global shell startup.
 
-`workflow.toml` contains public-safe project-wide choices and is tracked on the adopting project's branch. `.workflow.env` holds ignored local/private values; `.workflow.env.example` defines the local contract. Specify path resolution relative to the owning project/skill, not the caller's incidental working directory. Exact keys and discovery rules remain open.
+`workflow.toml` contains public-safe project-wide choices and is tracked on an adopting project's branch. The canonical configs checkout instead uses shared `main` and neutral defaults. The speculative workflow env example was removed after checking the six selected consumers: none has a required dependency on it. Preserve each project's existing private-context mechanism and explicit access rules; do not create a new env contract without an observed need. Specify path resolution relative to the owning project/skill, not the caller's incidental working directory.
 
 The current CLI already has a uv project and lockfile, with MSAL as a direct dependency and Python >=3.11 declared. The migration extends that into a modular distribution; it does not start from no environment management.
 
@@ -246,7 +242,7 @@ An adopting project gets its own project-specific branch from initial adoption, 
 
 A configured remote called `origin` is not sufficient by itself: the referenced child commits must actually be published to a remote collaborators can access. Parent-repository publication does not publish child history. Branch metadata in `.gitmodules` can identify an update target but is not a substitute for the exact commit pin or attached development branch. Under current policy, agents prepare changes and the human handles pushes.
 
-The user selected public repositories under `jcklpe` with AGPL licensing on 2026-10-24: `https://github.com/jcklpe/agent-hands.git` and `https://github.com/jcklpe/project-workflows.git`. New packages use AGPL-3.0-only and preserve applicable source notices. Shared branches start at `main`; project adaptations now use `project/<slug>` under the user's 2026-10-25 platform-neutral naming choice. The earlier `codex/project-<slug>` names remain historical; current reconciliation and nested-pin evidence are in [Workflow Reconciliation](workflow-reconciliation.md). These destination choices do not create or publish the repositories. A public upstream must not receive private project configuration or sensitive local adaptations; use a suitable accessible remote if a project branch cannot be public.
+The user selected public repositories under `jcklpe` with AGPL licensing on 2026-10-24: `https://github.com/jcklpe/agent-hands.git` and `https://github.com/jcklpe/project-workflows.git`. New packages use AGPL-3.0-only and preserve applicable source notices. Shared branches start at `main`; project adaptations now use `project/<slug>` under the user's 2026-10-25 platform-neutral naming choice. The canonical configs installation now uses shared `main`; other projects keep their adaptation branches. The earlier `codex/project-<slug>` names remain historical; current reconciliation and nested-pin evidence are in [Workflow Reconciliation](workflow-reconciliation.md). These destination choices do not create or publish the repositories. A public upstream must not receive private project configuration or sensitive local adaptations; use a suitable accessible remote if a project branch cannot be public.
 
 ## General skill maintenance and global installation
 `operate-lifeos` is a workspace entry point. Its ignored configuration may identify the vault, potentially retaining `LIFEOS_VAULT_PATH` there. The reusable service tools must no longer require that variable. The entry skill reads the vault's actual instructions rather than copying private context or policies into public configs. It is not included with project-workflows.
@@ -344,7 +340,7 @@ The continued implementation corrected the installer's directory-link replacemen
 Read-only inspection during capture found the existing `skills/` library and `lifeos-tools/` implementation, the uv manifest, current spike/index conventions, and existing uncommitted changes. Those changes were preserved during capture, then reviewed and checkpointed under the later clean-baseline authorization. Loop retirement is committed with archived notes and must not be reintroduced. Current implementation state is recorded above; the remaining migration checklist is still active.
 
 Current owners and relevant work:
-- [Skill authoring guidance](../../general-skills/write-skills/SKILL.md), [project adoption/documentation setup](../../project-workflows/skills/setup-project-workflows/SKILL.md), and [project updates](../../project-workflows/skills/update-project-workflows/SKILL.md).
+- [Skill authoring guidance](../../general-skills/write-skills/SKILL.md), [project adoption/documentation setup](../../project-workflows/setup-project-workflows/SKILL.md), and [project updates](../../project-workflows/update-project-workflows/SKILL.md).
 - [Track Changes provenance](../../general-skills/track-changes/upstream.toml), [derived-skill updates](../../general-skills/update-derived-skills/SKILL.md), [Kaizen capture](../../general-skills/log-kaizen/SKILL.md), and [workflow review](../../general-skills/improve-agent-workflows/SKILL.md).
 - [Tool README](../../lifeos-tools/README.md), [uv project](../../lifeos-tools/pyproject.toml), [secret/configuration hygiene](../policies/0001-secrets-and-local-env.md), and [client symlink installer](../../install-script/functions/symlinks.sh).
 - [Excel](lifeos-m365-excel.md), [Planner labels/comments](lifeos-planner-labels-comments.md), [Slack conversation reads](lifeos-slack-conversation-reads.md), [Slack List comments](lifeos-slack-list-comments.md), [calendar settings](lifeos-calendar-event-settings.md), and [Trello checklists](lifeos-trello-checklists.md) are capability-preservation inputs; consult their current task records before extraction.

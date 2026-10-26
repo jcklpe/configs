@@ -37,7 +37,7 @@
 [submodule "project-workflows"]
 	path = project-workflows
 	url = https://github.com/jcklpe/project-workflows.git
-	branch = project/configs
+	branch = main
 
 [submodule "agent-hands"]
 	path = agent-hands
