@@ -27,7 +27,7 @@ All install scripts are **idempotent** - safe to run multiple times.
 - **Terminal:** [Tabby](https://tabby.sh/), [WezTerm](https://wezfurlong.org/wezterm/)
 - **Editor:** [VS Code](https://code.visualstudio.com/), [Micro](https://micro-editor.github.io/)
 - **Agent skills:** project procedures live in the [project-workflows submodule](project-workflows/README.md); independently usable review, authoring, and derived-skill maintenance procedures live in [general-skills/](general-skills/README.md). Selected skills are symlinked into Codex and Claude by `symlinks.sh`.
-- **Agent integrations:** [restoring configured integrations](agents/integrations.md) links to service-owned setup guides and records verification gaps. Connections and credentials remain local; installing a skill does not connect an account.
+- **Agent integrations:** [setup-agent-hands](agent-hands/setup-agent-hands/SKILL.md) is the starting point for restoring service capabilities, and each service's `setup-*` guide owns its MCP or CLI setup and verification. Connections and credentials remain local; installing a skill does not connect an account.
 
 ## Windows Tabby
 Windows Tabby reads `%APPDATA%\tabby\config.yaml`, separately from the Linux config inside WSL. Close Tabby, then run this in an administrator PowerShell from the Windows configs checkout:
