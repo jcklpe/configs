@@ -44,6 +44,11 @@ Unlike Markdown, do not separate comment paragraphs with a blank line or an empt
 
 The one exception is a comment block long enough to carry distinct titled sections, where a blank line may separate one section from the next. Reach for it rarely — a comment block that needs internal section breaks usually signals over-commenting.
 
+## Correcting Documents
+When fixing wrong or stale content in a document that states current facts, guidance, or design, write the corrected version for a new reader who never saw the error. Do not narrate the fix: no "previously X, now Y", no "as the user clarified", no note that the old text was a mistake. If a note wrongly says someone loves being stung by bees, the fix states what is true; it does not become "they love honey but, as they have told me, dislike bee stings."
+
+The history of a correction belongs where history is the point: Git, commit messages, and records of events such as logs, meeting notes, and incident reports.
+
 ## Approving Changes
 When proposing a batch of external or hard-to-reverse writes for the user to approve, use the `draft-approval-slate` skill if it is available: labeled items, the final copy that will ship, and current → proposed for edits. This applies even when the proposal comes up mid-conversation rather than inside a workflow.
 
