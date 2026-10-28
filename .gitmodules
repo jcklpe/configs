@@ -43,3 +43,7 @@
 	path = agent-hands
 	url = https://github.com/jcklpe/agent-hands.git
 	branch = main
+[submodule "wireframe-workflows"]
+	path = wireframe-workflows
+	url = https://github.com/jcklpe/wireframe-workflows.git
+	branch = main
