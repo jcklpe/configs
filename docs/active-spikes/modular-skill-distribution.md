@@ -41,7 +41,6 @@ This is the target structure. All six `general-skills` entries and the independe
 configs/
 ├── agent-hands/                         # Submodule: independent shareable repo
 │   ├── README.md
-│   ├── mcp-integrations.md
 │   └── skills/
 │       ├── setup-agent-hands/
 │       ├── setup-google-services/
@@ -101,8 +100,7 @@ configs/
 │   ├── log-kaizen/
 │   └── improve-agent-workflows/
 └── agents/
-    ├── AGENTS.global.md
-    └── integrations.md
+    └── AGENTS.global.md
 ```
 
 The broad service breakdown is agreed; exact provider setup names, command entrypoints, and module internals are design proposals to settle during implementation planning. A separate authorization skill is useful where it owns actual shared provider machinery, not merely to duplicate an existing login command.
@@ -254,12 +252,10 @@ Both Kaizen skills are independently installable general procedures. Private sto
 
 Global installation is a separate unresolved selection, not implied by the taxonomy. Preserve existing useful access during migration, then explicitly decide which source folders are exposed to each client. Repo-local adopted procedures retain local authority. Use the existing simple symlink installation style unless actual complexity justifies a different mechanism. No new manifest engine is required merely to reorganize directories.
 
-## MCP catalog and installation selections
-`agent-hands/mcp-integrations.md` travels with the shareable package. It covers relevant service/tool MCPs, including useful capabilities without custom CLI equivalents: official sources, capability scope, supported clients, transport/install method, version information where meaningful, setup/authentication requirements, and overlap with CLI operations. Mark optional integrations clearly. A catalog entry is not a claim that the integration is installed, connected, authorized, or equivalent to the CLI's deterministic restrictions.
+## MCP setup guides
+Each MCP integration gets a service-owned `setup-*` guide in Agent Hands: official sources, prerequisites, client registration, startup, verification, and remaining gaps. A guide is not a claim that the integration is installed, connected, authorized, or equivalent to the CLI's deterministic restrictions. What a machine has installed lives in each client's own configuration, and client-managed plugins follow the signed-in client account, so neither repository keeps an installation inventory. Keep private endpoints and account values in ignored configuration.
 
-`configs/agents/integrations.md` records the user's client selections and additional integrations outside that package's scope, referring to catalog entries rather than duplicating their instructions. Do not turn installation inventory into miscellaneous skill folders. Keep private endpoints and account values in ignored configuration.
-
-Distinguish standalone MCP servers from client-managed plugins that can bundle skills, tools, and connection flows. Listing an integration should not silently enable it or change the preferred route. A machine-readable manifest can be considered if a concrete installer needs one; a readable source/setup catalog is the initial plan. This spike does not reopen the wholesale MCP-replacement audit.
+Distinguish standalone MCP servers from client-managed plugins that can bundle skills, tools, and connection flows. Documenting an integration should not silently enable it or change the preferred route. A machine-readable manifest can be considered if a concrete installer needs one; readable setup guides are the initial plan. This spike does not reopen the wholesale MCP-replacement audit.
 
 ## What moves into LifeOS
 | Concern currently coupled to tooling | Reusable capability retained | LifeOS ownership |
@@ -467,10 +463,8 @@ The renderer strips leading YAML metadata, rejects an incomplete block, resolves
 
 The legacy résumé command retains its output/theme defaults, directory creation, overwrite behavior, and optional macOS opening through a thin adapter. Existing CSS paths remain links to the new owner. Synthetic regression checks and visual inspection cover a two-page report, normal and compact résumés, relative images, metadata omission, output preservation, and denied resources. The résumé fixture's rendered page is pixel-identical to the previous pipeline on this machine. Fresh Windows/Linux setup, font-equivalent pagination elsewhere, academic-theme design, private composition, MCP catalog, and final consumer cutover remain separate work.
 
-## Optional integrations catalog and client inventory
-The portable `agent-hands/mcp-integrations.md` now identifies vendor setup sources and distinguishes MCP servers, client plugins, and CLI skills. It records current documented Google Workspace preview, Slack Lists, Trello, GitHub, Microsoft, Notion, and Figma surfaces, with explicit limits where capability or account parity has not been verified. It separates enforced tool/resource controls from approval guidance and retains the CLI implementations rather than treating documented overlap as a migration decision.
-
-`agents/integrations.md` records only public-safe integration names, observed local enablement/installation states, and relevant client setup references. It links to the portable catalog instead of copying service configuration, account identities, private endpoints, tokens, or installation arguments. Documentation review and a dated inventory do not establish authenticated service access. No MCP connection, permission, global installation, or real configuration changed.
+## Integration setup guides
+Agent Hands' `setup-penpot`, `setup-pencil`, and `setup-jasp` guides own MCP setup: vendor sources, the distinction between standalone servers and client plugins, registration, startup, verification evidence, and remaining gaps. Client plugins are restored through each client's own setup. The CLI implementations remain; documented overlap with an MCP is not a migration decision. Documentation review does not establish authenticated service access.
 
 ## Derived review skill reconciliation
 `track-changes` now has a verified upstream comparison, not only a carried-forward source note. The recorded 2.2.0 baseline and current 2.3.0 upstream have identical skill, parser, and source-edit operation content. Local project precedence, review-only behavior, explicit chat-only requests, and author attribution remain intact. Two examples are clarified: agent-added highlight anchors carry attribution, and replies must share a source line because any newline separates threads. The upstream MIT notice travels with the adapted skill.
