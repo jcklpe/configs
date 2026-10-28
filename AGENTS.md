@@ -63,6 +63,7 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Package to install | [install-script/functions/brew-installs.sh](install-script/functions/brew-installs.sh) (mac/linuxbrew) or [dnf-installs.sh](install-script/functions/dnf-installs.sh) (Fedora) |
 | New dotfile symlinked into `$HOME` | [install-script/functions/symlinks.sh](install-script/functions/symlinks.sh) |
 | Project workflow procedure | `project-workflows/<skill-name>/SKILL.md`, with shared defaults in `project-workflows/workflow.toml` and configs-specific authority here |
+| Wireframing procedure (page structure, exploration, promotion, presentation) | `wireframe-workflows/<skill-name>/SKILL.md`; the collection is new, so see its [README](wireframe-workflows/README.md) for status |
 | General review, authoring, or skill-maintenance procedure | `general-skills/<skill-name>/SKILL.md`; see [current collection](general-skills/README.md) |
 | Cross-repo agent preference | [agents/AGENTS.global.md](agents/AGENTS.global.md) — never repo-specific facts |
 | Portable service/tool capability | `agent-hands/<skill-name>/SKILL.md`; invoke each capability through its documented native entrypoint |
