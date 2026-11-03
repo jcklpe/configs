@@ -100,6 +100,11 @@ create_symlink_if_needed "${CONFIGS}/general-skills/track-changes" "${HOME}/.cod
 create_symlink_if_needed "${CONFIGS}/project-workflows/update-project-workflows" "${HOME}/.codex/skills/update-project-workflows"
 remove_symlink_if_owned "${CONFIGS}/skills/update-local-skills" "${HOME}/.codex/skills/update-local-skills"
 create_symlink_if_needed "${CONFIGS}/project-workflows/commit-work" "${HOME}/.codex/skills/commit-work"
+create_symlink_if_needed "${CONFIGS}/project-workflows/create-agent-policy" "${HOME}/.codex/skills/create-agent-policy"
+create_symlink_if_needed "${CONFIGS}/project-workflows/edit-agent-policy" "${HOME}/.codex/skills/edit-agent-policy"
+create_symlink_if_needed "${CONFIGS}/project-workflows/review-agent-policies" "${HOME}/.codex/skills/review-agent-policies"
+create_symlink_if_needed "${CONFIGS}/project-workflows/adopt-agent-policies" "${HOME}/.codex/skills/adopt-agent-policies"
+create_symlink_if_needed "${CONFIGS}/project-workflows/retire-agent-policy" "${HOME}/.codex/skills/retire-agent-policy"
 create_symlink_if_needed "${CONFIGS}/general-skills/operate-lifeos" "${HOME}/.codex/skills/operate-lifeos"
 remove_symlink_if_owned "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.codex/skills/lifeos-handoff"
 # Agent Hands global links are optional and service-owned; see agent-hands/setup-agent-hands/SKILL.md.
@@ -132,6 +137,11 @@ create_symlink_if_needed "${CONFIGS}/general-skills/track-changes" "${HOME}/.cla
 create_symlink_if_needed "${CONFIGS}/project-workflows/update-project-workflows" "${HOME}/.claude/skills/update-project-workflows"
 remove_symlink_if_owned "${CONFIGS}/skills/update-local-skills" "${HOME}/.claude/skills/update-local-skills"
 create_symlink_if_needed "${CONFIGS}/project-workflows/commit-work" "${HOME}/.claude/skills/commit-work"
+create_symlink_if_needed "${CONFIGS}/project-workflows/create-agent-policy" "${HOME}/.claude/skills/create-agent-policy"
+create_symlink_if_needed "${CONFIGS}/project-workflows/edit-agent-policy" "${HOME}/.claude/skills/edit-agent-policy"
+create_symlink_if_needed "${CONFIGS}/project-workflows/review-agent-policies" "${HOME}/.claude/skills/review-agent-policies"
+create_symlink_if_needed "${CONFIGS}/project-workflows/adopt-agent-policies" "${HOME}/.claude/skills/adopt-agent-policies"
+create_symlink_if_needed "${CONFIGS}/project-workflows/retire-agent-policy" "${HOME}/.claude/skills/retire-agent-policy"
 create_symlink_if_needed "${CONFIGS}/general-skills/operate-lifeos" "${HOME}/.claude/skills/operate-lifeos"
 remove_symlink_if_owned "${CONFIGS}/skills/lifeos-handoff" "${HOME}/.claude/skills/lifeos-handoff"
 # Agent Hands global links are optional and service-owned; see agent-hands/setup-agent-hands/SKILL.md.

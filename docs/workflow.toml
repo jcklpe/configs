@@ -1,0 +1,23 @@
+schema_version = 1
+
+# Configs target settings. The Project Workflows child is the canonical maintenance/global installation.
+[project]
+name = "configs"
+root = ".."
+
+[documents]
+readme = "README.md"
+instructions = "AGENTS.md"
+index = "TODO.md"
+active_spikes = "docs/active-spikes"
+scratch = "docs/scratch"
+archive = "docs/archive"
+policies = "docs/policies"
+
+[coordination]
+mode = "local"
+repository = ""
+tooling = ""
+
+[validation]
+commands = []
