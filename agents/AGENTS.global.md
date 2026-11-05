@@ -22,6 +22,9 @@ The commit's author and committer are already the person whose git config create
 
 This says nothing about whether an agent may commit at all. That is a per-repo decision and belongs in that repo's own rules.
 
+## GitHub Coordination
+When coordinating work on GitHub, follow the project's chosen branch names. Human-name prefixes are optional, and branches may be shared by several contributors. Do not add agent/vendor prefixes, promotional “generated with” footers, badges or signatures. Never add agent co-author trailers. Preserve required licenses.
+
 ## Markdown And Prose Style
 Do not hard-wrap prose in Markdown, comments, docs, or examples. Let editors handle soft wrapping. Preserve paragraphs as single lines unless line breaks carry meaning, such as lists, tables, code blocks, quoted text, frontmatter, or an existing semantic-line-break style.
 
