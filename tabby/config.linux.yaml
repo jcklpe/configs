@@ -2,8 +2,9 @@ appearance:
   theme: Follow the OS
   opacity: 1
   css: |
-    /* Gradient border (no rounded corners — Fedora/GNOME handles window rounding) */
+    /* Gradient border with rounded corners matching the Mac config */
     app-root {
+      border-radius: 12px !important;
       border: 2px solid transparent !important;
       background: linear-gradient(#1E1F29, #1E1F29) padding-box,
                   linear-gradient(180deg, #D4F442, #02F758) border-box !important;
@@ -22,6 +23,8 @@ appearance:
       border-bottom: 2px solid #ED3A53;
     }
   spaciness: 1.1
+  dock: top
+  dockFill: 0.96
 terminal:
   fontSize: 19
   font: FiraCode Nerd Font Mono
