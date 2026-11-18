@@ -1,6 +1,22 @@
 # Configs
 Portable dotfiles and shell configuration that works across macOS, Linux, and NixOS. Clone once, run anywhere.
 
+## Canonical and machine branches
+`master` is this repository's canonical mainline; “main” means that role, not a second branch named `main`. Machine branches such as `lovelace-homelab` carry only machine-specific configuration and experiments. Common fixes belong upstream on `master`, then flow back down to every maintained machine branch. A branch name does not change the machine's hostname.
+
+The guarded Rust initialization in `path.sh` is common: it sources `~/.cargo/env` only if readable, installs nothing, and does nothing when that file is absent.
+
+### Reconciliation procedure
+1. Inspect remote heads and both directions of the commit/content diff regularly and before starting or finishing machine work. Use an isolated clone or worktree; never switch, reset, stash, or merge someone else's active checkout.
+2. Classify changes as common, machine-specific, experimental, or private. Promote only reviewed common changes to `master` in a focused commit, not by merging an entire machine branch. Keep credentials, hardware identity, local history backups, and unvalidated machine experiments out of common changes.
+3. Validate affected shells/configs and applicable tests. Record unavailable checks honestly. In particular, an unbuilt Nix/Home Manager experiment is not validated merely because it is version-controlled.
+4. Merge the current canonical commit into each known maintained machine branch without rewriting its history. Resolve overlapping edits explicitly; stop for uncertain conflicts or concurrent changes. Verify the canonical commit is an ancestor, retained machine changes are intentional, and shared files agree.
+5. Publish only with the owner's explicit authorization, respecting repository policies. Recheck remote heads immediately before updating; reject stale heads rather than force-pushing. Verify the published SHA and report conflicts, missing machine branches, and deployment work still pending.
+
+Published branch synchronization and live-machine deployment are separate. An agent currently working on another computer should finish or safely checkpoint its work first, fetch the canonical update, then create or update its machine branch and integrate reviewed common changes. Do not reset an active checkout just to make its status match the remote. No other machine branch should be inferred from legacy feature or dependency-update branches.
+
+The current `lovelace-homelab` branch contains opt-in Tabby/Quake/Nix experiments. Keep their documented unverified runtime/build checks visible until tested. Reconciliation must not silently promote these experiments to the canonical branch.
+
 ## What Gets Installed
 - **Homebrew** (package manager)
 - **zsh** with Powerlevel10k prompt

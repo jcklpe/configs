@@ -25,6 +25,11 @@ if command -v fnm >/dev/null 2>&1; then
     eval "$(fnm env --use-on-cd)"
 fi
 
+##- Rust (rustup)
+if [ -r "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+fi
+
 # Add other PATH tools here (pyenv, rbenv, etc.)
 
 # pipx
