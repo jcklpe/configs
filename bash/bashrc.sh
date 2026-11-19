@@ -10,7 +10,27 @@
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 # Initialize CONFIGS and PLUGINS
-source ~/configs/init.sh
+# Follow the entrypoint symlink so a side-by-side checkout loads its own init.
+if [ -n "${BASH_VERSION:-}" ]; then
+    _configs_bootstrap() {
+        local entry="$1" target root hops=0
+        while [ -L "$entry" ]; do
+            [ "$hops" -lt 40 ] || return 1
+            hops=$((hops + 1))
+            target="$(readlink "$entry")" || return 1
+            case "$target" in
+                /*) entry="$target" ;;
+                *) entry="$(dirname "$entry")/$target" ;;
+            esac
+        done
+        root="$(cd -P "$(dirname "$entry")/.." && pwd)" || return 1
+        source "$root/init.sh"
+    }
+    _configs_bootstrap "${BASH_SOURCE[0]}" || return
+    unset -f _configs_bootstrap
+else
+    source "$HOME/configs/init.sh" || return
+fi
 
 # Load PATH tools and environment managers
 source ${CONFIGS}/path.sh
