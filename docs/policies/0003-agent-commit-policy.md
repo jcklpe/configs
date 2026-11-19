@@ -37,6 +37,6 @@ The main risk is silent bad scope: an agent committing without confirmation coul
 ## Links
 - [AGENTS.md](../../AGENTS.md)
 - [0001 Secrets And Local Env Hygiene](0001-secrets-and-local-env.md)
-- [skills/commit-work/SKILL.md](../../skills/commit-work/SKILL.md)
-- [skills/run-project-spike/SKILL.md](../../skills/run-project-spike/SKILL.md)
+- [Project Workflows commit-work](../../project-workflows/commit-work/SKILL.md)
+- [Project Workflows run-project-spike](../../project-workflows/run-project-spike/SKILL.md)
 - [Commit Work spike](../archive/commit-work.md)
