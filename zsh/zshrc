@@ -4,7 +4,8 @@
 ##- 𝒛𝖘𝖍 𝖘𝖕𝖊𝖑𝖑𝖇𝖔𝖔𝖐
 
 # Initialize CONFIGS and PLUGINS (includes OS detection and setup)
-source ~/configs/init.sh
+# Follow the entrypoint symlink so a side-by-side checkout loads its own init.
+source "${${(%):-%x}:A:h:h}/init.sh" || return
 
 # Load PATH tools and environment managers
 source ${CONFIGS}/path.sh

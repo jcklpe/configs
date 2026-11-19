@@ -4,7 +4,27 @@
 # Everything useful is put in .bashrc but this allows me to selectively trigger scripts only at shell start up
 
 # Initialize CONFIGS, PLUGINS, and OS_TYPE (must come first)
-source ~/configs/init.sh
+# Follow the entrypoint symlink so a side-by-side checkout loads its own init.
+if [ -n "${BASH_VERSION:-}" ]; then
+    _configs_bootstrap() {
+        local entry="$1" target root hops=0
+        while [ -L "$entry" ]; do
+            [ "$hops" -lt 40 ] || return 1
+            hops=$((hops + 1))
+            target="$(readlink "$entry")" || return 1
+            case "$target" in
+                /*) entry="$target" ;;
+                *) entry="$(dirname "$entry")/$target" ;;
+            esac
+        done
+        root="$(cd -P "$(dirname "$entry")/.." && pwd)" || return 1
+        source "$root/init.sh"
+    }
+    _configs_bootstrap "${BASH_SOURCE[0]}" || return
+    unset -f _configs_bootstrap
+else
+    source "$HOME/configs/init.sh" || return
+fi
 
 ##- Variables and MISC Settings
 #set this to prevent percent sign showing due to partial line
