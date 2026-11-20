@@ -16,4 +16,4 @@ The two Kaizen skills share a private-record data contract, not a required code 
 
 `operate-lifeos` holds only the discovery contract; the private workspace owns its handoff format, context, and destinations. The temporary `skills/lifeos-handoff` route is removed after current callers moved to the configured entry or the private handoff owner. Project procedures live in the independent `project-workflows/` collection, without requiring these general skills. All planned service capabilities and Markdown-to-PDF rendering now live in `agent-hands/`; consumers invoke native entrypoints and keep their workflow composition in their own workspace.
 
-See the [modular distribution spike](../docs/active-spikes/modular-skill-distribution.md) for the current implementation state and remaining decisions.
+See the [modular distribution spike](../docs/archive/modular-skill-distribution.md) for extraction history and the maintained owners of remaining verification.

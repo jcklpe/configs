@@ -1,5 +1,5 @@
 ---
-attention: live
+attention: historical
 opened: 2026-10-24
 tags: [skills, cli, distribution, architecture]
 ---
@@ -8,6 +8,12 @@ tags: [skills, cli, distribution, architecture]
 Slug: `modular-skill-distribution`.
 
 Tasks: [modular-skill-distribution.todo.md](modular-skill-distribution.todo.md).
+
+Historical record. Closed 2026-11-02 at the user’s direction. Stable slug: `modular-skill-distribution`. The cross-collection extraction, native cutover and private consumer ownership are implemented. Earlier status and implementation sections preserve the dated development history; they do not keep the spike active or supersede maintained owners. Remaining verification and privacy work is assigned in the [closure task record](modular-skill-distribution.todo.md#closure-reconciliation-2026-11-02).
+
+Continues in: docs/active-spikes/workflow-reconciliation.md
+
+Maintained service commands and setup belong to [Agent Hands](../../agent-hands/README.md); shared project procedures belong to [Project Workflows](../../project-workflows/README.md); general skills and configs installer choices remain in their maintained configs owners.
 
 ## Status and authorization
 This spike captures the user's agreed architecture and migration intent from the design discussion through 2026-10-24. The initial request authorized documentation only. A subsequent instruction on 2026-10-24 authorizes a repository privacy check, committing the spike and checkpointing the existing work to a clean tree, then beginning implementation. Complete that baseline before starting extraction. Remote publication, history rewriting, credential changes, and unresolved external choices retain their own authorization boundaries.
@@ -239,7 +245,7 @@ An adopting project gets its own project-specific branch from initial adoption, 
 
 A configured remote called `origin` is not sufficient by itself: the referenced child commits must actually be published to a remote collaborators can access. Parent-repository publication does not publish child history. Branch metadata in `.gitmodules` can identify an update target but is not a substitute for the exact commit pin or attached development branch. Under current policy, agents prepare changes and the human handles pushes.
 
-The user selected public repositories under `jcklpe` with AGPL licensing on 2026-10-24: `https://github.com/jcklpe/agent-hands.git` and `https://github.com/jcklpe/project-workflows.git`. New packages use AGPL-3.0-only and preserve applicable source notices. Shared branches start at `main`; project adaptations now use `project/<slug>` under the user's 2026-10-25 platform-neutral naming choice. The canonical configs installation now uses shared `main`; other projects keep their adaptation branches. The earlier `codex/project-<slug>` names remain historical; current reconciliation and nested-pin evidence are in [Workflow Reconciliation](workflow-reconciliation.md). These destination choices do not create or publish the repositories. A public upstream must not receive private project configuration or sensitive local adaptations; use a suitable accessible remote if a project branch cannot be public.
+The user selected public repositories under `jcklpe` with AGPL licensing on 2026-10-24: `https://github.com/jcklpe/agent-hands.git` and `https://github.com/jcklpe/project-workflows.git`. New packages use AGPL-3.0-only and preserve applicable source notices. Shared branches start at `main`; project adaptations now use `project/<slug>` under the user's 2026-10-25 platform-neutral naming choice. The canonical configs installation now uses shared `main`; other projects keep their adaptation branches. The earlier `codex/project-<slug>` names remain historical; current reconciliation and nested-pin evidence are in [Workflow Reconciliation](../active-spikes/workflow-reconciliation.md). These destination choices do not create or publish the repositories. A public upstream must not receive private project configuration or sensitive local adaptations; use a suitable accessible remote if a project branch cannot be public.
 
 ## General skill maintenance and global installation
 `operate-lifeos` is a workspace entry point. Its ignored configuration may identify the vault, potentially retaining `LIFEOS_VAULT_PATH` there. The reusable service tools must no longer require that variable. The entry skill reads the vault's actual instructions rather than copying private context or policies into public configs. It is not included with project-workflows.
@@ -337,9 +343,9 @@ Read-only inspection during capture found the existing `skills/` library and `li
 Current owners and relevant work:
 - [Skill authoring guidance](../../general-skills/write-skills/SKILL.md), [project adoption/documentation setup](../../project-workflows/setup-project-workflows/SKILL.md), and [project updates](../../project-workflows/update-project-workflows/SKILL.md).
 - [Track Changes provenance](../../general-skills/track-changes/upstream.toml), [derived-skill updates](../../general-skills/update-derived-skills/SKILL.md), [Kaizen capture](../../general-skills/log-kaizen/SKILL.md), and [workflow review](../../general-skills/improve-agent-workflows/SKILL.md).
-- [Tool README](../../lifeos-tools/README.md), [uv project](../../lifeos-tools/pyproject.toml), [secret/configuration hygiene](../policies/0001-secrets-and-local-env.md), and [client symlink installer](../../install-script/functions/symlinks.sh).
-- [Excel](lifeos-m365-excel.md), [Planner labels/comments](lifeos-planner-labels-comments.md), [Slack conversation reads](lifeos-slack-conversation-reads.md), [Slack List comments](lifeos-slack-list-comments.md), [calendar settings](lifeos-calendar-event-settings.md), and [Trello checklists](lifeos-trello-checklists.md) are capability-preservation inputs; consult their current task records before extraction.
-- [Loop retirement](../archive/lifeos-loop-headless.md), [earlier skill taxonomy](../archive/skill-taxonomy.md), and [earlier workflow refinement](../archive/project-workflow-refinement.md) supply history, not substitute operating rules.
+- [Native service owners](../../agent-hands/README.md), [per-capability runtimes](../../agent-hands/README.md#runtimes), [secret/configuration hygiene](../policies/0001-secrets-and-local-env.md), and [client symlink installer](../../install-script/functions/symlinks.sh).
+- [Excel](../../agent-hands/docs/archive/lifeos-m365-excel.md), [Planner labels/comments](../../agent-hands/docs/archive/lifeos-planner-labels-comments.md), [Slack conversation reads](../../agent-hands/docs/archive/lifeos-slack-conversation-reads.md), [Slack List comments](../../agent-hands/docs/active-spikes/lifeos-slack-list-comments.md), [calendar settings](../../agent-hands/docs/active-spikes/lifeos-calendar-event-settings.md), and [Trello checklists](../../agent-hands/docs/archive/lifeos-trello-checklists.md) are capability-preservation inputs; consult their current task records before extraction.
+- [Loop retirement](../../agent-hands/docs/archive/lifeos-loop-headless.md), [earlier skill taxonomy](../archive/skill-taxonomy.md), and [earlier workflow refinement](../archive/project-workflow-refinement.md) supply history, not substitute operating rules.
 
 Reference sources for later implementation verification:
 - [Git submodule workflow](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and [gitmodules reference](https://git-scm.com/docs/gitmodules).

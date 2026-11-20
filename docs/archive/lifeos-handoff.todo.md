@@ -2,12 +2,14 @@
 attention: historical
 ---
 # LifeOS Handoff To-Do
+
+Privacy separation (2026-11-02): consumer-specific passages and actual account-validation chronology were preserved privately before removal from this public record. Portable requirements, recorded tooling evidence and stable slugs remain; historical instructions below are not current operating guidance.
 Status: **archived 2026-07-11.** Skill built, redesigned after QA into the three-dimension PM-report model, wired global, and tentatively QA-passed. This is the implementation trail.
 
 Conceptual doc: `docs/archive/lifeos-handoff.md`.
 
 ## Background
-LifeOS already receives accomplishments (vault `AGENTS.md` + `career/accomplishments.md`). This spike builds the missing producer half: a global, user-initiated `lifeos-handoff` skill that generates a ledger-ready handoff blurb from any repo. Design worked out 2026-07-09..11.
+The original work built a user-initiated report producer, with private receiver integration kept in the consumer. Design history dates to 2026-07-09..11; receiver schema and destination details are retained privately.
 
 ## Project Organization
 - `skills/lifeos-handoff/SKILL.md` — the new global skill. Agent-neutral.
@@ -36,9 +38,9 @@ Nothing built yet. The vault side is mature and untouched: `career/accomplishmen
 
 - [x] **Redesigned the skill after human QA.** *(Unplanned; 2026-07-11.)* The first draft was accomplishment-only and, worse, over-claimed — the dry-run blurb said "refactored 2,550 lines," work an AI agent executed under the user's direction, which the user cannot defend as their own. Reviewing that blurb with the user reframed the whole skill: it is a **status report to the LifeOS vault agent acting as project manager**, carrying up to three dimensions (Progress / Growth / Accomplishment), not an accomplishment harvester with a progress mode. Added a strict **attribution** principle (credit the user's real role — direction, architecture, constraints, judgment, decisions, error-catching — never phrase AI-produced artifacts as hand-made; infer role from the session, ask when unclear), a **generic-only strategic framing** rule (public repo; no private career specifics; the vault does specific positioning), and a **do-not-presuppose-vault-structure** rule (emit sectioned material, let the vault route it, since the vault evolves fast). Kept the `Resume angle` field and the accomplishment entry shape. Conceptual doc updated with the settled model and the attribution decision.
 
-- [x] **Verify: the skill surfaces in a fresh session, and a dry run produces a blurb in the correct entry shape from a real example.** Mechanical part done: the skill appears in the session skill list after symlinking, and a dry run handing off the lifeos-code-cleanup spike produced a clean six-field entry (Date/Focus/Accomplishment/Evidence/Resume angle/Notes) citing the `Spike:` grep and the archived doc as evidence, with real numbers (2,550 → 324) and no invented metrics. The subjective tone/granularity check is the remaining Human QA item.
+- [x] **Verify: the skill surfaces in a fresh session, and a dry run produces a blurb in the correct entry shape from a real example.** Mechanical discovery and an evidence-backed example were checked. The private receiver’s exact schema and sample acceptance context are retained privately; this dated check does not establish discovery of the later replacement.
 
-- [x] **Write `skills/lifeos-handoff/SKILL.md`.** Done. Covers what LifeOS is, when-to-invoke (user-request only, explicit "never unprompted"), the two flavors, the exact ledger entry shape, the fill rules (real evidence, no invented metrics, no vague praise, coarser than commits), the paste destination, and a worked example (handing off lifeos-code-cleanup). Description leads with triggers and the "user-initiated, never writes the vault" boundary.
+- [x] **Write `skills/lifeos-handoff/SKILL.md`.** Implemented the original user-requested report producer with evidence and truthful-attribution requirements. Its private receiver contract is retained separately; the later `operate-lifeos` entry delegates to the consuming workspace.
 - [x] **Add the `lifeos-handoff` symlink to the Codex and Claude blocks of `install-script/functions/symlinks.sh`, and create the two symlinks directly so it is live without a full installer run.** Done; both `~/.claude/skills/lifeos-handoff` and `~/.codex/skills/lifeos-handoff` are live, and the skill surfaces in this session's skill list.
 - [x] **Add the one-line LifeOS pointer to `agents/AGENTS.global.md` (global scope — not mirrored into configs/AGENTS.md, since that mirror is only for the Markdown/prose rules).** Done as a two-line `## LifeOS` section: what LifeOS is + use `lifeos-handoff` when asked, never unprompted. Position-independent (states a preference, names no repo). Deliberately not added to `configs/AGENTS.md` — only the prose-style rules are mirrored there.
 

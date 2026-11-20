@@ -12,7 +12,7 @@ index = "TODO.md"
 active_spikes = "docs/active-spikes"
 scratch = "docs/scratch"
 archive = "docs/archive"
-policies = "docs/policies"
+# Human governance remains in docs/policies, routed by AGENTS.md; no agent-policy adoption is implied.
 
 [coordination]
 mode = "local"

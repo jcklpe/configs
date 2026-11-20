@@ -2,21 +2,23 @@
 attention: historical
 ---
 # LifeOS Handoff
+
+Privacy separation (2026-11-02): consumer-specific passages and actual account-validation chronology were preserved privately before removal from this public record. Portable requirements, recorded tooling evidence and stable slugs remain; historical instructions below are not current operating guidance.
 Status: **archived 2026-07-11.** Opened and shipped the same day. A user-initiated global `lifeos-handoff` skill that produces, from any repo, a sectioned status report (Progress / Growth / Accomplishment) for the user's LifeOS vault. Redesigned mid-spike after QA to fix an over-attribution problem. This doc is historical context, not current rules.
 
 Companion to-do: `docs/archive/lifeos-handoff.todo.md`.
 
-Second of three sibling LifeOS spikes from the design conversation of 2026-07-09..11. Siblings: `docs/archive/lifeos-code-cleanup.md` (shipped) and Vault Runbook Conversion (not yet opened).
+Second of three sibling LifeOS spikes from the design conversation of 2026-07-09..11. Siblings: `agent-hands/docs/archive/lifeos-code-cleanup.md` (shipped) and Vault Runbook Conversion (not yet opened).
 
 ## Purpose
 Treat the LifeOS vault agent as the user's **project manager**: it wants to know what the user is up to, how their projects are going, why things take the time they take, and what the user is learning and becoming. Today there is no way to report that from a *different* repo — configs, a website project, anywhere the user actually works — without reconstructing it from memory later.
 
 This skill is the **producer** of that report. Invoked from any repo, it emits a sectioned status report the user carries into the vault. It does not touch the vault, and it does not decide where the material lands — the vault (receiver) handles filing.
 
-Accomplishment harvesting for resume/career material is *one facet* of the report, not the whole of it. The vault's `AGENTS.md` + `career/accomplishments.md` already handle the receiver side of that facet.
+Accomplishment harvesting is one facet of the report. The private consumer owns its receiver procedure, ledger schema and destination.
 
 ## The Two Halves
-- **Receiver (already exists, in the vault):** the vault's `AGENTS.md` + `career/accomplishments.md`. An agent working in the vault harvests accomplishments into the ledger.
+- **Receiver:** the consuming workspace owns integration and any private ledger schema.
 - **Producer (this spike, in configs):** the global `lifeos-handoff` skill. An agent working anywhere produces a ledger-ready blurb on request.
 
 The two never run in the same place, which is exactly why the producer is a separate, global skill rather than a vault convention.
@@ -33,18 +35,11 @@ The two never run in the same place, which is exactly why the producer is a sepa
 - **No new receiver logic.** The vault's ledger and its `AGENTS.md` instruction are the receiver and stay as they are.
 
 ## The Vault's Entry Shape
-The producer's output must match what `career/accomplishments.md` expects, so it drops in without reshaping. The ledger's stated "good entry shape" is:
+The original producer matched a consumer-specific ledger schema. That schema and its source instructions are preserved privately; a portable entrypoint must discover the maintained consumer procedure instead of distributing its fields.
 
-```md
-- Date / period:
-- Focus:
-- Accomplishment:
-- Evidence:
-- Resume angle:
-- Notes:
-```
+The receiver defines the fields for any saved accomplishment entry.
 
-The ledger also has a "Current Harvest Queue" for not-yet-resume-ready material. The skill's output should be ready for either, and should follow the ledger's own guidance: concrete facts (what changed, who benefited, what artifact/scope), evidence links, numbers only when real, no invented metrics, no vague praise.
+The receiver also owns the distinction between retained evidence and an accomplishment ready for use. A report should preserve concrete facts, actual evidence and truthful attribution without inventing metrics.
 
 ## The Three Dimensions
 The report carries up to three things; most handoffs touch more than one:
@@ -64,17 +59,17 @@ The reframe resolves the tension rather than suppressing it: framing the work as
 The producer lives in a public repo and cannot see the user's private career strategy. It may name generic transferable competencies (systems thinking, technical judgment, direction, process design, AI orchestration) and gesture lightly at the user's domains, but must not bake in specific positioning — named contacts, particular goals, "emphasize X to land Y". Specific positioning is the vault's job, because the vault is private and holds the career context. Harvest facts; let the vault frame.
 
 ## Destinations Are The Vault's Job
-The producer emits cleanly-labeled sections and hands them over. It does **not** presuppose the vault's structure or route the material, because the vault evolves quickly — a note or folder that exists this week may be gone or renamed next week. Routing is the vault agent's job. The one stable format the producer commits to is the accomplishment entry shape below, since that facet has a known ledger shape.
+The producer emits clearly labeled sections. The consumer owns filing, its evolving structure and any accomplishment schema; those details must be retrieved from that maintained private procedure.
 
 ## Where The Material Comes From
 Invoked in a repo, the skill draws on what is actually available: the session's work, the git log (especially `Spike:` trailers and archival summaries, which are already synthesized), spike docs, and what the user says the handoff is about. It favors evidence that already exists — a commit range, an archived spike doc, a shipped artifact — over prose it makes up.
 
 ## Constraints
 - `AGENTS.global.md` is read from inside every repo, so its LifeOS pointer must state a preference, never a fact about a location, and must stay to roughly one line (the file's value is being short). The skill body carries the substance; the pointer just names it.
-- The skill is agent-neutral and global — no configs-specific or vault-private paths hardcoded in a way that breaks in another repo. It may name the vault's ledger file as the destination, since that is a stable personal fact, not a repo fact.
+- The entrypoint is agent-neutral and global. It discovers private workspace instructions through configured pointers; personal schemas and destinations are owned by the private receiver.
 
 ## Relationship To Other Spikes
-Continues from: docs/archive/lifeos-code-cleanup.md
+Continues from: agent-hands/docs/archive/lifeos-code-cleanup.md
 Sibling: Vault Runbook Conversion (not yet opened). Independent of both — it can ship without them.
 
 ## Settled During Human QA (2026-07-11)
