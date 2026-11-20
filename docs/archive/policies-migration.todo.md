@@ -4,7 +4,7 @@ attention: historical
 # Policies Migration Tasks
 Opened 2026-10-14. Slug: `policies-migration`.
 
-Historical record. Closed 2026-11-02. The user authorized closure after the implementation and current-owner assessment. Maintained rules belong to [configs policies](../policies/) and [Agent Hands service policies](../../agent-hands/docs/policies/); this record preserves the migration’s work and evidence.
+Historical record. Closed 2026-11-02. The user authorized closure after the implementation and current-owner assessment. Maintained rules belong to [configs policies](../policies/) and [Agent Hands service policies](../../agent-hands/docs/agent-policies/); this record preserves the migration’s work and evidence.
 
 ## Scope
 Documentation migration only. Preserve unrelated work, existing project requirements, and historical archive bodies except navigation repairs.

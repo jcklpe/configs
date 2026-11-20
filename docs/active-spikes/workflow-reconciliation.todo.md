@@ -21,7 +21,7 @@ The original neutral-branch reconciliation is recorded below as history. The 202
 No local reconciliation work remains. Outer publication and client/closure decisions are outside the completed Git handoff.
 
 ## Ready for Human QA
-- Confirm the intended agent clients follow the adopted repository routing. Source/link checks and Git clone checks do not establish client discovery or interaction behavior.
+- Confirm the intended agent clients follow the adopted repository routing and discover the selected configs/global workflow and general skills with local-over-global precedence. This record owns those client checks deferred from the completed modular-distribution migration; source/link checks and Git clone checks do not establish client discovery or interaction behavior. Agent Hands owns its separate service-discovery/platform checks.
 
 ## Done
 - [x] Inspect actual repository boundaries, remotes, branches, current setup/update guidance, and publication scope. The containing configs repository is on `master`, separate from its workflow adaptation. Refreshed remote inspection confirmed the 50 unrelated outgoing configs commits and the absence of the desired new project refs.
@@ -83,3 +83,8 @@ The installed filesystem has only the seven canonical workflow skills, with 14 l
 - [x] Complete the separately authorized capture-list conversion without creating active work, preserve source reasoning and uncertain material, and repair incoming links. Consumer records own counts and content dispositions.
 - [x] Advance configs' canonical workflow and Agent Hands pins locally, retaining the separate Agent Hands README checkpoint. Validate exact parent/index/child agreement without publishing outer history.
 - [ ] Review the remaining uncommitted parent scaffolds/index boundaries in their owning workstreams; run fresh-client checks and security/privacy review before separately authorized publication. Private adaptation history is never a public contribution.
+
+## Agent-policy pilot navigation follow-up — 2026-11-02
+The completed Agent Hands pilot removed its old policy directory after preserving all eight sanitized originals and adopting the new indexed set. Two current-owner links were repaired in `docs/archive/policies-migration.md` and `docs/archive/policies-migration.todo.md` to select `agent-hands/docs/agent-policies/`. The navigation-only repairs are retained with the configs documentation reconciliation. They do not reopen Policies Migration or authorize committing unrelated history/import bodies or updating either child pin. Agent Hands tracks its five separate supporting untracked-document link repairs in [its pilot tasks](../../agent-hands/docs/archive/agent-policy-pilot.todo.md).
+
+The bounded configs receiving-policy handoff is [Agent Policy Migration](agent-policy-migration.md); it does not create a configs adaptation or change this reconciliation owner’s existing client/publication QA.

@@ -40,10 +40,10 @@ Use explicit `attention: live` for active spike pairs and `attention: historical
 Retaining the full pair remains the working default, not a demonstrated optimum. Searchable files provide a useful route into Git history, but a shorter historical entry could also provide that route. Keeping the pair additionally preserves the task-to-outcome relationship and surrounding reasoning without asking a later agent to reconstruct them across commits. The tradeoff is more historical material that may be mistaken for current guidance; markers and navigation reduce that risk without eliminating it. Revisit the default if actual retrieval shows recurrent confusion or an archive that materially obstructs useful work.
 
 ## Maintained Guidance
-- [Commit work](../../skills/commit-work/SKILL.md) and the [repository commit policy](../policies/0003-agent-commit-policy.md) own checkpoint scope, concurrency, review holds, and the pre-commit audience check.
-- [Run project spike](../../skills/run-project-spike/SKILL.md) owns active reasoning, bounded maintenance, retained archives, and closing-message review.
-- [Write skills](../../skills/write-skills/SKILL.md), [setup local skills](../../skills/setup-local-skills/SKILL.md), and [update local skills](../../skills/update-local-skills/SKILL.md) own path portability and dependency checks.
-- [Setup project docs](../../skills/setup-project-docs/SKILL.md) owns the reusable scaffold and current-policy defaults; [triage project misc](../../skills/triage-project-misc/SKILL.md), [pin issue](../../skills/pin-issue/SKILL.md), and [log future idea](../../skills/log-future-idea/SKILL.md) use those defaults.
+- [Commit work](../../project-workflows/commit-work/SKILL.md) and the [repository commit policy](../policies/0003-agent-commit-policy.md) own checkpoint scope, concurrency, review holds, and the pre-commit audience check.
+- [Run project spike](../../project-workflows/run-project-spike/SKILL.md) owns active reasoning, bounded maintenance, retained archives, and closing-message review.
+- [Write skills](../../general-skills/write-skills/SKILL.md), [setup local skills](../../skills/setup-local-skills/SKILL.md), and [update local skills](../../skills/update-local-skills/SKILL.md) own path portability and dependency checks.
+- [Setup project docs](../../skills/setup-project-docs/SKILL.md) owns the reusable scaffold and current-policy defaults; [triage project misc](../../project-workflows/triage-project-misc/SKILL.md), [pin issue](../../project-workflows/capture-for-later/SKILL.md), and [log future idea](../../project-workflows/capture-for-later/SKILL.md) use those defaults.
 
 ## Rollout — 2026-10-12
 The global sources live in this repository's `skills/`; imported copies are independently maintained project authority. This rollout compared existing copies before updating them. It did not install skills into repositories without matching workflows, rename governance folders, retag old archives, or publish changes.
@@ -105,7 +105,7 @@ The user authorized closure after qualifying the fresh-thread exercise: the prom
 
 The reason to close is that the agreed skill changes, comparison and rollout of existing copies, archive backfill, and bounded maintenance are complete. Structural checks and manual scenario review support the consistency of the written guidance. Actual execution, checkpoint choices under concurrent work, and retrieval of potentially conflicting historical guidance remain untested by this exercise. The user chose learning through ordinary use and logging concrete problems in Kaizen rather than extending this spike into an evaluation program.
 
-Current rules live in the linked maintained guidance. Cross-project skill observations can be captured through the [Kaizen workflow](../../skills/kaizen/SKILL.md) in designated private stores. Comparing these feedback mechanisms is follow-on discussion, not an adopted redesign or unfinished implementation requirement of this spike. No successor spike is opened by closure.
+Current rules live in the linked maintained guidance. Cross-project skill observations can be captured through the [Kaizen workflow](../../general-skills/log-kaizen/SKILL.md) in designated private stores. Comparing these feedback mechanisms is follow-on discussion, not an adopted redesign or unfinished implementation requirement of this spike. No successor spike is opened by closure.
 
 Continues from: docs/archive/commit-work.md
 Continues from: docs/archive/skill-authority.md

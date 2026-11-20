@@ -43,9 +43,9 @@ Verification covered private location resolution and file permissions, outside-r
 The source repository receives a scoped local checkpoint. The private project's daily cadence is already satisfied; its changes remain alongside unrelated ongoing work rather than being swept into this source commit. No push or public-history rewrite occurred. The user subsequently reviewed the implementation and authorized closure on 2026-10-13. Ordinary-use behavior and connector access remain unproven by these checks; future incidents and proposals belong in Kaizen rather than keeping this implementation spike open. No successor implementation is required for closure.
 
 ## Maintained Owners
-- [Kaizen skill](../../skills/kaizen/SKILL.md): workflow, privacy, proposal and approval boundary.
+- [Kaizen skill](../../general-skills/log-kaizen/SKILL.md): workflow, privacy, proposal and approval boundary.
 - [Global instructions](../../agents/AGENTS.global.md): standing activation during ordinary work.
-- [Write skills](../../skills/write-skills/SKILL.md): consult evidence before an authorized skill change.
+- [Write skills](../../general-skills/write-skills/SKILL.md): consult evidence before an authorized skill change.
 - [Installer](../../install-script/functions/symlinks.sh): discoverable global skill and retirement of old log shortcuts.
 - Private project instructions and retrospective: local routing and bounded recurring review; private records are not copied into this development history.
 

@@ -201,3 +201,4 @@ lifeos-tools/qa/
 
 # Inert local retirement archives and private preservation manifests.
 /.local-retired/
+/docs/project-workflows.local.toml

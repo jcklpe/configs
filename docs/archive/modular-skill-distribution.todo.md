@@ -1,5 +1,5 @@
 ---
-attention: live
+attention: historical
 opened: 2026-10-24
 tags: [skills, cli, distribution]
 ---
@@ -8,6 +8,8 @@ tags: [skills, cli, distribution]
 Slug: `modular-skill-distribution`.
 
 Concept: [modular-skill-distribution.md](modular-skill-distribution.md).
+
+Historical record. Closed 2026-11-02. Stable slug: `modular-skill-distribution`. The implemented extraction/cutover is complete; the closure reconciliation and owner table below account for deferred QA, provisioning and privacy work. Earlier current-state sections describe their dated checkpoints, not new instructions.
 
 ## Background and authorization
 Capture the agreed three-collection architecture and a reviewable migration plan. The initial 2026-10-24 request was documentation-only. The user's subsequent instruction authorizes the privacy review, scoped local checkpoints to a clean working tree, and then beginning implementation. Start with the general-skills review/authoring boundary after that baseline. Remote publication, historical rewriting, credential changes, and unresolved external choices are not implied.
@@ -34,19 +36,11 @@ The conceptual document owns decisions, rationale, boundaries, proposed folder s
 
 Future work spans configs, two new package repositories, and selected consumers. The LifeOS boundary work belongs with its actual vault instructions when authorized; do not create executable helpers or credentials in the vault. Existing project-local instructions remain authoritative until deliberately migrated.
 
-## To Do
+## Original planning checklist (historical)
 ### Gate and preservation baseline
-- [ ] Inventory current command behavior and map every supported operation to its target use skill, including active/uncommitted capability changes.
-- [ ] Map current code imports, shared helpers, executables, Python dependencies, configuration reads, credentials/caches, client symlinks, and known consumers.
-- [ ] Record which restrictions are enforced by code versus skill guidance versus LifeOS policy; preserve each intended behavior without claiming uniform dry-run semantics.
-- [ ] Establish a recovery/cutover plan that preserves existing working tools and ignored local configuration; do not disturb unrelated work.
 
 ### Resolve implementation choices
-- [x] Select public `jcklpe/agent-hands` and `jcklpe/project-workflows` repositories with AGPL-3.0-only, shared `main`, and `codex/project-<slug>` branches. Keep sensitive project variants on separately accessible private remotes. Both repositories are now published; see the publication verification below. The original branch-name choice in this completed item was superseded on 2026-10-25 by `project/<slug>`; see [Workflow Reconciliation](workflow-reconciliation.md).
-- [ ] Finalize provider setup/authorization boundaries, code import layout, entrypoints, lockfile boundaries, and narrow shared helpers.
-- [ ] Define supported platforms and onboarding prerequisites, including machines without uv, Python, or Bash.
-- [ ] Define adjacent configuration schemas, per-skill examples, account selection, path resolution, and exact ignore rules.
-- [ ] Decide the selected global/client installations separately from source ownership; keep project adoption independent of the general collection.
+- [x] Select public `jcklpe/agent-hands` and `jcklpe/project-workflows` repositories with AGPL-3.0-only, shared `main`, and `codex/project-<slug>` branches. Keep sensitive project variants on separately accessible private remotes. Both repositories are now published; see the publication verification below. The original branch-name choice in this completed item was superseded on 2026-10-25 by `project/<slug>`; see [Workflow Reconciliation](../active-spikes/workflow-reconciliation.md).
 
 ### Agent-hands extraction
 - [x] Establish the agent-hands repository/package structure and preserve appropriate attribution/history only after privacy review of material to be carried over.
@@ -64,27 +58,15 @@ Future work spans configs, two new package repositories, and selected consumers.
 - [x] Replace update-local-skills with update-project-workflows covering shared ancestry, semantic reconciliation, upstreamable changes, project-only divergence, and parent pointer updates.
 - [x] Add workflow.toml, .workflow.env.example, and ignore rules for .workflow.env inside the submodule; keep real project docs in the parent.
 - [x] Review mandatory Kaizen/authoring/general-skill references in project procedures and templates; make any adoption explicit without changing unrelated current policies.
-- [ ] Complete a subsequent real upstream/local reconciliation in the configs pilot. Initial local adoption is implemented; the isolated fixture verified ancestry/merge behavior, not a published upstream update.
 - [x] Verify the branch/pin procedure and that required child commits are reachable by collaborators before any parent reference is published. Anonymous fresh clones contain the currently adopted commits on 2026-10-25; the parent configs repository remains unpushed.
 
 ### General skills and LifeOS ownership
-- [ ] Repoint remaining live references and existing client installations to the moved general-skills owners, verify fresh client discovery, then remove the temporary compatibility links. Source migration and the existing Codex/Claude symlinks are complete; the bridges are removed and filesystem resolution is verified. Fresh client-process discovery remains QA.
 - [x] Retire the temporary lifeos-handoff source route after remaining source consumers have migrated to operate-lifeos.
 - [x] Retire the temporary skills/kaizen source route after remaining private references have been repointed. Existing vault-local Kaizen copies retain local authority until deliberately migrated.
-- [ ] Move personal task-chain choices, account/resource mappings, snapshot/index destinations, combined-agenda orchestration, and résumé content/destination conventions into appropriate LifeOS procedures.
-  - Résumé ownership is complete. Calendar source selection, availability interpretation, refresh windows/destinations, and failure handling now have a private LifeOS owner, with retrospective/source-map routing updated. The private source-refresh owner now covers scoped source/index outputs and freshness; Trello task choices remain in their private owner with accurate partial-link recovery. Provider configuration and destination adapters are migrated, private nickname preferences live in LifeOS, and obsolete aggregate/bootstrap routes are retired. Fresh-client and live-access verification remain pending.
-- [ ] Verify the LifeOS adaptations use public neutral helpers without copying service implementations, tokens, or authentication configuration into the vault; private orchestration and nonsecret consumer settings have private owners.
 
 ### Installation, privacy, and cutover
-- [ ] Finish selected global/client cutover and retire temporary source bridges after consumers migrate. Both collections are registered locally as submodules; workflow links are updated. All service configurations remain with their provider owners; native commands require explicit destinations and the compatibility package is removed. Aggregate/calendar composition and workspace bootstrap are retired. Fresh-client discovery and remaining account-access issues remain separate checks; both child repositories are published.
-- [ ] Update README, AGENTS routing, installer documentation, and affected consumers when the implementation actually changes their behavior.
-- [ ] Perform the privacy pass over proposed files and relevant Git history before committing/publishing this work; inspect examples, identifiers, paths, caches, private defaults, and real ignore behavior.
-- [ ] Validate selected-service independence, setup idempotency, current guardrails, neutral outputs, and recovery paths with appropriate existing checks.
-- [ ] Prepare scoped commits only after the review hold is satisfied; keep unrelated work separate and leave all pushes to the user.
-- [ ] Repair callers before retiring obsolete CLI/skill entrypoints, with any temporary compatibility route explicitly bounded.
-- [ ] Complete human QA and a durable-guidance/dependency review before requesting spike closure; keep the spike active until closure is authorized.
 
-## Ready for Human QA
+## Original QA prompts (historical)
 The first slice has file-level verification; a newly started Codex/Claude session should still discover and load `track-changes` and `write-skills` through its existing installation. No restart is required merely to continue this migration, and the new maintenance skill has not been installed globally.
 
 As subsequent slices become ready, prepare concrete checks for:
@@ -187,3 +169,67 @@ The optional compatibility package is implemented under `agent-hands/compat/life
 The original preservation manifest recorded metadata for 7,923 old-tree entries and 29 active private files without hashing secret contents. Earlier retirement and status-write attempts were denied before execution; no move occurred then. The user subsequently approved path-only inspection, reviewed the inventory, and authorized private content reconciliation and selective cleanup. Those reviews are complete; the whole-tree archive proposal is superseded. The original checkpoint remains useful Git history, but its pending-path gate is no longer current. No service requests, grant changes, token migration, or publication are authorized by this cleanup.
 
 The selective cleanup and post-removal verification above supersede the original recovery gate. Agent Hands remains at local checkpoint `dbf1aa1`; it must be published separately before its containing pin. Existing Project Workflows revisions and unrelated private work remain unchanged.
+
+## Service documentation ownership — 2026-10-30
+- At the user’s request, moved 64 service-owned documents into Agent Hands: nine active pairs, eighteen archive pairs, eight native service policies and the parked Bitwarden pair. Preserved stable service slugs, prior task states and historical bodies apart from dated ownership notes and navigation repairs; the Bitwarden pair now evaluates official credential delivery as well as its original cleanup proposal.
+- Transferred owning index entries and repaired direct inbound document links in configs and Agent Hands. Shell/run notes, secrets/commit policies, general workflow records, the mixed modular-distribution spike and personal LifeOS handoff history remain in configs. No service credentials, account state, installers, runtime implementation, workflow pins, commits or publication changed as part of this migration.
+- Documentation verification and any remaining link limits are reported with the migration handoff. Existing publication/security review holds remain in force.
+
+## Closure reconciliation 2026-11-02
+The user authorized archival after assessment of the implemented cross-collection migration. Each remaining original unchecked planning item appears once below with its outcome; deferral is explicit and is not represented as completed QA. Previously completed entries and dated implementation evidence remain preserved.
+
+- [x] Inventory current command behavior and map every supported operation to its target use skill, including active/uncommitted capability changes. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Map current code imports, shared helpers, executables, Python dependencies, configuration reads, credentials/caches, client symlinks, and known consumers. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Record which restrictions are enforced by code versus skill guidance versus LifeOS policy; preserve each intended behavior without claiming uniform dry-run semantics. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Establish a recovery/cutover plan that preserves existing working tools and ignored local configuration; do not disturb unrelated work. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Finalize provider setup/authorization boundaries, code import layout, entrypoints, lockfile boundaries, and narrow shared helpers. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Define supported platforms and onboarding prerequisites, including machines without uv, Python, or Bash. — Deferred, not completed. Selected-runtime/platform provisioning is owned by the Agent Hands CLI-provisioning note; client/linker checks belong to its selective-installation scope.
+
+- [x] Define adjacent configuration schemas, per-skill examples, account selection, path resolution, and exact ignore rules. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Decide the selected global/client installations separately from source ownership; keep project adoption independent of the general collection. — Implemented locally: selected source/client routing and bridge removal are recorded in the cutover checkpoints. Fresh client-process discovery is deferred to Workflow Reconciliation for configs/general skills and Agent Hands selective installation for service skills.
+
+- [x] Complete a subsequent real upstream/local reconciliation in the configs pilot. Initial local adoption is implemented; the isolated fixture verified ancestry/merge behavior, not a published upstream update. — Completed by Workflow Reconciliation: shared-main changes, adaptation merges and public recursive retrieval are recorded in that successor’s task record.
+
+- [x] Repoint remaining live references and existing client installations to the moved general-skills owners, verify fresh client discovery, then remove the temporary compatibility links. Source migration and the existing Codex/Claude symlinks are complete; the bridges are removed and filesystem resolution is verified. Fresh client-process discovery remains QA. — Implemented locally: selected source/client routing and bridge removal are recorded in the cutover checkpoints. Fresh client-process discovery is deferred to Workflow Reconciliation for configs/general skills and Agent Hands selective installation for service skills.
+
+- [x] Move personal task-chain choices, account/resource mappings, snapshot/index destinations, combined-agenda orchestration, and résumé content/destination conventions into appropriate LifeOS procedures. — Implemented: private handoff/source/calendar procedures own consumer choices; native cutover removed the compatibility package. The 2026-11-02 bounded documentation separation removes the remaining audited consumer prescriptions. Real account/use checks remain with the private consumer, not a claim of universal live QA.
+  - Résumé ownership is complete. Calendar source selection, availability interpretation, refresh windows/destinations, and failure handling now have a private LifeOS owner, with retrospective/source-map routing updated. The private source-refresh owner now covers scoped source/index outputs and freshness; Trello task choices remain in their private owner with accurate partial-link recovery. Provider configuration and destination adapters are migrated, private nickname preferences live in LifeOS, and obsolete aggregate/bootstrap routes are retired. Fresh-client and live-access verification remain pending.
+
+- [x] Verify the LifeOS adaptations use public neutral helpers without copying service implementations, tokens, or authentication configuration into the vault; private orchestration and nonsecret consumer settings have private owners. — Implemented: private handoff/source/calendar procedures own consumer choices; native cutover removed the compatibility package. The 2026-11-02 bounded documentation separation removes the remaining audited consumer prescriptions. Real account/use checks remain with the private consumer, not a claim of universal live QA.
+
+- [x] Finish selected global/client cutover and retire temporary source bridges after consumers migrate. Both collections are registered locally as submodules; workflow links are updated. All service configurations remain with their provider owners; native commands require explicit destinations and the compatibility package is removed. Aggregate/calendar composition and workspace bootstrap are retired. Fresh-client discovery and remaining account-access issues remain separate checks; both child repositories are published. — Implemented locally: selected source/client routing and bridge removal are recorded in the cutover checkpoints. Fresh client-process discovery is deferred to Workflow Reconciliation for configs/general skills and Agent Hands selective installation for service skills.
+
+- [x] Update README, AGENTS routing, installer documentation, and affected consumers when the implementation actually changes their behavior. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Perform the privacy pass over proposed files and relevant Git history before committing/publishing this work; inspect examples, identifiers, paths, caches, private defaults, and real ignore behavior. — The extraction/current-file review was completed.
+
+
+
+- [x] Validate selected-service independence, setup idempotency, current guardrails, neutral outputs, and recovery paths with appropriate existing checks. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Prepare scoped commits only after the review hold is satisfied; keep unrelated work separate and leave all pushes to the user. — Completed by the recorded extraction/cutover checkpoints. This archival and documentation remediation remains uncommitted at the user’s explicit direction.
+
+- [x] Repair callers before retiring obsolete CLI/skill entrypoints, with any temporary compatibility route explicitly bounded. — Completed by the extraction, provider-configuration, native-cutover and flat-layout checkpoints recorded in this pair. Later setup/use consolidation is owned by Agent Hands; historical planning names and interfaces below are not current commands.
+
+- [x] Complete human QA and a durable-guidance/dependency review before requesting spike closure; keep the spike active until closure is authorized. — Closure authorized by the user on 2026-11-02 after the read-only assessment. The bounded durable-guidance/dependency review is completed in this closure; remaining platform/client/account QA is explicitly deferred to the owners below rather than claimed passed.
+
+## To Do
+None in this closed extraction/cutover scope. Remaining work has these explicit owners:
+
+| Remaining work | Maintained owner |
+| --- | --- |
+| Selected runtime provisioning and supported-platform prerequisites | [Agent Hands CLI provisioning](../../agent-hands/docs/scratch/agent-hands-cli-tool-provisioning.md) |
+| Service skill fresh-client discovery, local/global selection and Linux/Windows linker QA | [Agent Hands selective installation](../../agent-hands/docs/archive/selective-skill-installation.todo.md) |
+| Provider onboarding and actual account access | Relevant Agent Hands setup/use record; private consumer owns account-specific use/validation |
+| Configs/global workflow and general-skill client routing QA | [Workflow Reconciliation](../active-spikes/workflow-reconciliation.todo.md#ready-for-human-qa) |
+| Consumer snapshot/schema/triage and ordinary-use QA | Private consumer’s maintained procedures and task records; no private paths are distributed here |
+| Future publication and exact dependency availability | Each owning repository’s separately reviewed release work; no publication performed or newly authorized |
+
+## Closure verification
+Current native skill ownership, absent compatibility/extra-skills directories, tracked capability references, recorded checkpoint history, current setup/use and private consumer owners were reviewed. Dated 2026-10-26 results (67 programs, 24 runtimes, 39 then-native skills) remain historical evidence; current HEAD has 36 root skills after later authorization consolidation and Canvas additions. No runtime suite or live service operation is repeated for this documentation-only closure. Remaining client/platform/access checks are explicitly unverified.
