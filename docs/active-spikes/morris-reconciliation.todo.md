@@ -9,13 +9,12 @@ attention: live
 - Reviewed and published Project Workflows and Agent Hands child histories after targeted fixes and offline/service verification. Agent Hands selects the published unchanged shared workflow source with project-owned configuration; no other consumers are migrated.
 - Restored retained authored records and already-approved closures as files, with direct owner navigation and explicit remaining acceptance limits. Removed duplicate configs service records whose maintained copies are published in Agent Hands.
 - Added reusable generated-file guidance and an Agent Hands inventory; disposable Office verification downloads now use guarded private system temp. Existing authentication and recovery stores remain intact, with no silent split of journals.
-## In progress
-- Complete containing-branch publication and fresh recursive retrieval.
-- Finish retained recovery-state disposition and obtain exact retirement approval.
-## Next
-- Complete security/privacy review of outgoing history, publish reviewed child revisions, then update containing pins and reconcile `master` and `morris` without rewriting canonical history.
-- Verify remote revisions and fresh recursive retrieval; prepare the other machine's handback.
-- Present exact retirement targets and preservation evidence for separate deletion approval.
-## Limits
-- No retirement deletion is approved by this task record. No work on the other machine is included.
-- Existing-account macOS checks do not establish fresh-machine, Windows or Linux behavior.
+## Verified delivery
+- Public `master` and `morris` fast-forward together; canonical naming and existing sanitized ancestry are preserved. Agent Hands and Project Workflows use public `main`, and the nested workflow checkout remains detached.
+- A fresh public recursive clone retrieved all 13 recorded submodule pins with clean checkouts and no local-path overrides.
+- All 83 retained authored-file hashes verify. Useful source/documentation is integrated, including previously approved closures; the 121 installed skill links resolve without depending on the retirement area.
+- Old recovery-state review found 48 successful GitHub receipts with verified steps, completed PowerPoint experiment dispatches, an unused Canvas test configuration and a small transient Outlook status file. Current sign-ins and maintained operation receipts remain with their active owners.
+## Remaining
+- Obtain itemized approval before permanently removing the old checkout and dedicated migration/recovery bundle. No deletion has been performed.
+- Hand back the verified public revisions to the other machine. Its remote branch is unchanged; it retains the GNOME Tabby/Nix change and merge history for its owner to reconcile. Do not reset it to `master` or discard that work.
+- Any broader persistent-state relocation is a separately coordinated follow-up; do not split writer journals or treat authentication as disposable scratch.
