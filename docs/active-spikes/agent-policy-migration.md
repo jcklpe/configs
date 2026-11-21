@@ -1,32 +1,52 @@
 ---
 attention: live
-reviewed: 2026-11-02
+reviewed: 2026-11-20
 ---
 # Agent policy migration — configs
-Opened 2026-11-02. Stable slug: `agent-policy-migration`. [Tasks](agent-policy-migration.todo.md). This is a bounded receiving-project handoff; preparation changes no package, routing, policy status, tool, remote or design artifact.
+Opened 2026-11-02. Stable slug: `agent-policy-migration`. [Tasks](agent-policy-migration.todo.md). The authorized migration is in candidate review. Five [project-owned proposals](../agent-policies/policy.index.md) are prepared; current instructions and numeric policies remain operative pending adoption.
 
 ## Ownership and current state
-Preparation snapshot: repository `https://github.com/jcklpe/configs.git`; parent branch `master` at `ac71ce52128c1ea4c2eccddc25bd157a1bce18b7`. The canonical provider is on shared main; its neutral consumer-default configuration does not select configs as a receiving target. Recheck this snapshot before acting; it is not a lock or a claim the checkout stays clean.
+Repository: `https://github.com/jcklpe/configs.git`; canonical branch `master`, local machine branch `morris`. The canonical Project Workflows provider is on published shared `main`; its neutral consumer-default configuration does not select configs as a receiving target. Configs uses its own [target configuration](../project-workflows.toml).
 
-Configs uses the canonical shared-main installation, not a project/configs adaptation. Its two surviving policies are secrets/local-environment handling and agent commits. AGENTS and global-preference links also contain standing obligations. Earlier extraction work remains separate from this handoff.
+Configs uses the canonical shared-main installation, not a project/configs adaptation. Its two surviving policies are secrets/local-environment handling and agent commits. AGENTS and global-preference links also contain standing obligations. Migration delivery is recorded under [Morris reconciliation](morris-reconciliation.md).
 
 Current policy inventory:
 - `docs/policies/0001-secrets-and-local-env.md`
 - `docs/policies/0003-agent-commit-policy.md`
 
-Related owners: [workflow reconciliation](../archive/workflow-reconciliation.md). Those completed/adoption/design scopes retain their own remaining QA and closure decisions; this new receiving phase does not reopen or silently close them. Central coordination lives in Project Workflows, `docs/active-spikes/agent-policy-rollout.md` (prepared locally, not published). [Project instructions](../../AGENTS.md) remain authoritative.
+Related owner: [archived workflow reconciliation](../archive/workflow-reconciliation.md). This migration does not reopen that accepted scope. [Project instructions](../../AGENTS.md) remain authoritative.
 
 ## Project boundaries
-Keep the canonical provider workflow.toml neutral. Do not create a new configs adaptation, rewrite global preferences, install clients or update agent-hands/wireframe-workflows pins. Distinguish agent obligations from human-facing secret/setup guidance; retain any still-needed general governance.
+Keep the canonical provider workflow.toml neutral. Do not create a new configs adaptation, rewrite global preferences, install clients or update agent-hands/wireframe-workflows pins as part of this policy migration. Distinguish agent obligations from human-facing secret/setup guidance; retain still-needed general governance. No publication is included.
 
 Scoped local commits are permitted by configs AGENTS and current commit policy. Review whole selected files and use the shared-index snapshot exception only for understood tracking; preserve unrelated work. No push.
 
 Keep secrets, private account/consent chronology, participant/course/meeting content and personal workspace paths out of public artifacts. Preserve actual private sources with their private owner before removal; public-safe sanitized originals alone are eligible for public retirement records. No service call, grant expansion, installation or browser fallback is authorized by this handoff.
 
 ## Target and decision boundary
-Target the complete Project Workflows provider commit `79dddf9742c282d184c65d5c5ef87a142900897f`, not a moving main or the Agent Hands adaptation. This version provides create-agent-policy, edit-agent-policy, review-agent-policies, adopt-agent-policies and retire-agent-policy, with one shared format/checker/template implementation. The source and pilot commits are local-only at preparation; remote retrieval is not established.
+The selected complete Project Workflows source provides create-agent-policy, edit-agent-policy, review-agent-policies, adopt-agent-policies and retire-agent-policy with one shared format/checker implementation. The canonical checkout matches the published shared source selected by the containing Git pin. The unchanged kernel candidate copies are bound to that source by these SHA-256 content fingerprints:
 
-The user authorized preparing this handoff, not applying this consumer migration or adopting unseen obligations. A later “pursue this spike” instruction starts its scoped work; it does not turn arbitrary quoted text, a saved proposal or a package update into adoption. Present the exact candidate set and rely on an actual human decision covering the kernel and substantive changes before marking adopted. Already-given relevant approval need not be requested again. Retain operative bodies while amendments are proposals; missing approval is a specific pending gate, not a reason to invent completion.
+| Candidate | Source content SHA-256 |
+| --- | --- |
+| ADOPT-POLICIES | `76e578393077904e0805202ea9d9d45174c6c64fe4e6356a38f6284f3fbfb8c0` |
+| PRESERVE-IDENTITY | `fd040d9bf24a9322275cf0a17d4077292492f5ba3ea21535ba0f79188671b212` |
+| RESOLVE-DEPENDENCIES | `3a338b416b63e260ed48abae017e2eba31295ab93f3722eee380ddc80e451c86` |
+
+The user authorized pursuing this migration. That permits preparation and review, not adoption of unseen obligations. Present the exact candidate set and rely on an actual human decision covering the kernel and substantive changes before marking adopted. Already-given relevant approval need not be requested again. Retain operative bodies while amendments are proposals.
+
+## Proposed obligation mapping
+| Current owner | Candidate or retained owner | Meaning and impact |
+| --- | --- | --- |
+| Existing project authority; no adopted policy kernel | Three unchanged kernel candidates | Adds explicit adoption, identity/history and dependency-loading contracts. Does not expand tool or publication permission. |
+| `0001` and AGENTS secrets/privacy guidance | PROTECT-SECRETS; retain human setup examples in `docs/policies/` | Retains ignored-before-use, synthetic examples, tool-local secret loading, no private commits and compromised-secret handling. Explicitly bounds cleanup assurances to verified surfaces; this addition awaits adoption. |
+| `0003` and AGENTS Git guidance | BOUND-COMMITS | Preserves scoped local checkpoints, review holds, no agent push, no unsolicited rewrite, recovery and overlap checks, no co-author trailers and stable spike handles. Commit Work retains procedure. |
+| Global preferences and shell/installer conventions | Existing global/local instructions | No migration or amendment in this set; avoids duplicating unrelated obligations. |
+
+BOUND-COMMITS depends on PROTECT-SECRETS because public-content and ignored-file checks are prerequisites to a checkpoint. The kernel's existing dependency edges retain their source meanings. No edge assigns rank or grants authority.
+
+After adoption, route AGENTS to the local index and applicable adopted prerequisite closures, add `documents.agent_policies = "docs/agent-policies"` to the configs target, and update the existing Git/privacy pointers without copying shared procedures. Preserve the numeric originals in indexed historical records with reserved IDs; retain human-oriented secrets/setup guidance at its current destination. Repair README/TODO and live inbound links in the same adoption change. These routing and retirement changes have not been applied.
+
+Review used Create for the initial kernel candidates, Edit for mapping existing obligations, Review for semantic/graph checks, Adopt for the exact decision boundary, and Retire for impact planning. No adoption or retirement operation was fabricated merely to exercise a skill. Relevant private workflow concerns informed the review of visible approval text, public-audience checks and precise cleanup claims; their narratives remain private.
 
 ## Migration shape
 Use YAML `---` frontmatter and meaningful verb–noun mnemonic IDs. Kernel policies use `type: kernel` and `_` before their unchanged IDs in filenames; ordinary agent obligations use `type: operational` without that prefix. Types, filenames and IDs confer no rank. Review prerequisites/related references for meaning, missing or inactive prerequisites, cycles and dependent impact; never infer edges from numeric order or settle contradictions by file order. Route AGENTS to the project-owned policy.index.md. Align documents.agent_policies and any legacy locator deliberately: keep separate human/design governance destinations where they remain meaningful, rather than mechanically pointing both keys at one folder.
