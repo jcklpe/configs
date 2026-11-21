@@ -10,4 +10,4 @@ Runtime recovery belongs to Agent Hands' Word reliability work. Project Workflow
 
 Retirement requires a complete disposition of retained authored work and recovery state, followed by itemized deletion approval. Publication and retirement must not operate normal browser profiles or reset working service sign-ins.
 
-Related: [workflow reconciliation](workflow-reconciliation.md), [Agent Hands](../../agent-hands/TODO.md), [Project Workflows](../../project-workflows/TODO.md).
+Related: [workflow reconciliation](../archive/workflow-reconciliation.md), [Agent Hands](../../agent-hands/TODO.md), [Project Workflows](../../project-workflows/TODO.md).

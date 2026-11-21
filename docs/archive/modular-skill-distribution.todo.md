@@ -40,7 +40,7 @@ Future work spans configs, two new package repositories, and selected consumers.
 ### Gate and preservation baseline
 
 ### Resolve implementation choices
-- [x] Select public `jcklpe/agent-hands` and `jcklpe/project-workflows` repositories with AGPL-3.0-only, shared `main`, and `codex/project-<slug>` branches. Keep sensitive project variants on separately accessible private remotes. Both repositories are now published; see the publication verification below. The original branch-name choice in this completed item was superseded on 2026-10-25 by `project/<slug>`; see [Workflow Reconciliation](../active-spikes/workflow-reconciliation.md).
+- [x] Select public `jcklpe/agent-hands` and `jcklpe/project-workflows` repositories with AGPL-3.0-only, shared `main`, and `codex/project-<slug>` branches. Keep sensitive project variants on separately accessible private remotes. Both repositories are now published; see the publication verification below. The original branch-name choice in this completed item was superseded on 2026-10-25 by `project/<slug>`; see [Workflow Reconciliation](workflow-reconciliation.md).
 
 ### Agent-hands extraction
 - [x] Establish the agent-hands repository/package structure and preserve appropriate attribution/history only after privacy review of material to be carried over.
@@ -227,7 +227,7 @@ None in this closed extraction/cutover scope. Remaining work has these explicit 
 | Selected runtime provisioning and supported-platform prerequisites | [Agent Hands CLI provisioning](../../agent-hands/docs/scratch/agent-hands-cli-tool-provisioning.md) |
 | Service skill fresh-client discovery, local/global selection and Linux/Windows linker QA | [Agent Hands selective installation](../../agent-hands/docs/archive/selective-skill-installation.todo.md) |
 | Provider onboarding and actual account access | Relevant Agent Hands setup/use record; private consumer owns account-specific use/validation |
-| Configs/global workflow and general-skill client routing QA | [Workflow Reconciliation](../active-spikes/workflow-reconciliation.todo.md#ready-for-human-qa) |
+| Configs/global workflow and general-skill client routing QA | [Workflow Reconciliation](workflow-reconciliation.todo.md#ready-for-human-qa) |
 | Consumer snapshot/schema/triage and ordinary-use QA | Private consumer’s maintained procedures and task records; no private paths are distributed here |
 | Future publication and exact dependency availability | Each owning repository’s separately reviewed release work; no publication performed or newly authorized |
 

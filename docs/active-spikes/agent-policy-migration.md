@@ -14,7 +14,7 @@ Current policy inventory:
 - `docs/policies/0001-secrets-and-local-env.md`
 - `docs/policies/0003-agent-commit-policy.md`
 
-Related owners: [workflow reconciliation](workflow-reconciliation.md). Those completed/adoption/design scopes retain their own remaining QA and closure decisions; this new receiving phase does not reopen or silently close them. Central coordination lives in Project Workflows, `docs/active-spikes/agent-policy-rollout.md` (prepared locally, not published). [Project instructions](../../AGENTS.md) remain authoritative.
+Related owners: [workflow reconciliation](../archive/workflow-reconciliation.md). Those completed/adoption/design scopes retain their own remaining QA and closure decisions; this new receiving phase does not reopen or silently close them. Central coordination lives in Project Workflows, `docs/active-spikes/agent-policy-rollout.md` (prepared locally, not published). [Project instructions](../../AGENTS.md) remain authoritative.
 
 ## Project boundaries
 Keep the canonical provider workflow.toml neutral. Do not create a new configs adaptation, rewrite global preferences, install clients or update agent-hands/wireframe-workflows pins. Distinguish agent obligations from human-facing secret/setup guidance; retain any still-needed general governance.

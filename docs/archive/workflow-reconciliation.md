@@ -1,18 +1,29 @@
 ---
-attention: live
+attention: historical
 ---
 
 # Workflow Reconciliation
+Historical record. Closed 2026-11-20. Slug: `workflow-reconciliation`. Current procedure belongs to [Setup Project Workflows](../../project-workflows/setup-project-workflows/SKILL.md), [Update Project Workflows](../../project-workflows/update-project-workflows/SKILL.md) and [configs instructions](../../AGENTS.md#skills-workflow). The selected published delivery and ordinary macOS client acceptance are complete; other consumers and deferred client/platform checks retain their owners.
+
+The retained development entries describe their dated checkpoints; later pending or local-only statements are historical.
+
 Opened: 2026-10-25. Slug: `workflow-reconciliation`.
 
 This follow-up makes workflow adaptation branches platform-neutral and carries reusable process improvements through shared `main`, both project branches, and their consuming repositories. The user authorized the naming changes, shared skill/guidance changes, project reconciliation, scoped commits, and normal publication needed to make the resulting pins retrievable. The later 2026-10-26 scope authorizes flattening the shared skills, removing unused workflow-env scaffolding and the owner-waived MIT source notice, making configs the canonical shared-main installation, and retiring its adaptation with recovery history preserved. It does not authorize publishing unrelated history, changing credentials, force-pushing, implementing CLI feedback, or migrating the other inspected projects.
 
 Continues from: docs/archive/modular-skill-distribution.md
 
+## Final scope and acceptance — 2026-11-20
+The selected configs/global workflow installation and Agent Hands adoption are delivered. Configs maintains the unchanged shared source on the child's main branch; Agent Hands selects its exact detached pin. Project-owned settings and policies stay outside the package. Published child retrieval, all recursive pins and installed links have been verified through the installation reconciliation. Ordinary macOS Codex and Claude Code discovery and project-local precedence have user acceptance, and actual repository work follows the declared procedures.
+
+The dated rollout history below does not claim every consumer was published or retested. Remaining changes in other consumers stay with their project-owned records. Windows/Linux validation is deferred until relevant; the separate Copilot instruction-discovery question remains in [configs work](../../TODO.md#later). Receiving configs policy adoption belongs to [Agent policy migration](../active-spikes/agent-policy-migration.md). Other-machine delivery verification remains with [Morris reconciliation](../active-spikes/morris-reconciliation.md). None is an unfinished implementation item in this selected workflow delivery.
+
+Current maintenance belongs to [Setup Project Workflows](../../project-workflows/setup-project-workflows/SKILL.md), [Update Project Workflows](../../project-workflows/update-project-workflows/SKILL.md) and [configs instructions](../../AGENTS.md#skills-workflow).
+
 ## Repository boundaries
 Configs uses canonical `master` with `morris` and `lovelace-homelab` machine branches. Its `project-workflows/` checkout is the canonical maintenance/global installation on shared `main`. Agent Hands uses `main` and pins its own unchanged detached workflow source. Project settings remain outside shared source in the declared `docs/project-workflows.toml`; private overrides remain ignored. The parent Git links record exact revisions.
 
-The former configs adaptation is retained by the published `archive/project-configs-2026-10-26` tag. Earlier adaptation-branch and workflow.toml statements below describe dated delivery history. Current source and configuration procedures belong to the maintained setup/update skills. The [Morris reconciliation](morris-reconciliation.md) owns the current child-first publication and old-checkout retirement; other consumers are separate.
+The former configs adaptation is retained by the published `archive/project-configs-2026-10-26` tag. Earlier adaptation-branch and workflow.toml statements below describe dated delivery history. Current source and configuration procedures belong to the maintained setup/update skills. The [Morris reconciliation](../active-spikes/morris-reconciliation.md) owns the current child-first publication and old-checkout retirement; other consumers are separate.
 
 ## Assessment of the previous update skill
 The previous procedure expressed the right principles but did not fully spell out the requested operational cycle. It covered merge-base comparison, semantic reconciliation, retained project differences, focused reusable contributions, parent pins, and remote availability. The gaps mattered when changing several branches and nested consumers together.

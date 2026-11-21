@@ -1,8 +1,12 @@
 ---
-attention: live
+attention: historical
 ---
 
 # Workflow Reconciliation — Tasks
+Historical record. Closed 2026-11-20. Slug: `workflow-reconciliation`. Current procedure belongs to [Setup Project Workflows](../../project-workflows/setup-project-workflows/SKILL.md), [Update Project Workflows](../../project-workflows/update-project-workflows/SKILL.md) and [configs instructions](../../AGENTS.md#skills-workflow). The selected published delivery and ordinary macOS client acceptance are complete; other consumers and deferred client/platform checks retain their owners.
+
+The retained development entries describe their dated checkpoints; later pending or local-only statements are historical.
+
 Opened: 2026-10-25. Slug: `workflow-reconciliation`.
 
 ## Background
@@ -18,12 +22,14 @@ Preserve unrelated edits and commits, project-specific configuration, earlier CL
 The original neutral-branch reconciliation is recorded below as history. The 2026-10-26 follow-up flattens the shared collection, makes configs the canonical shared-main checkout, removes unused env scaffolding and the redundant source notice, and updates installed links/installer routing. The retired configs adaptation is recoverable by its published archive tag. This checkpoint changes only configs' workflow pin; Agent Hands, other consumers, and unrelated outer history remain untouched. Client QA and outer publication remain separate.
 
 ## To Do
-No local reconciliation work remains. Outer publication and client/closure decisions are outside the completed Git handoff.
+No implementation or selected macOS acceptance item remains. The reviewed installation reconciliation published the selected source and pins and verified recursive retrieval. Current maintenance belongs to the setup/update skills; other consumers and platform-specific follow-ups keep their own scope.
 
 ## Ready for Human QA
-- Confirm the intended agent clients follow the adopted repository routing and discover the selected configs/global workflow and general skills with local-over-global precedence. This record owns those client checks deferred from the completed modular-distribution migration; source/link checks and Git clone checks do not establish client discovery or interaction behavior. Agent Hands owns its separate service-discovery/platform checks.
+No repeat macOS discovery exercise is required: ordinary Codex/Claude Code discovery and local-over-global selection are user-confirmed, and current repository work follows the selected procedures. Automatic discovery in every client or consumer is not claimed. Windows/Linux checks are deferred until relevant; the distinct Copilot question remains in [configs work](../../TODO.md#later).
 
 ## Done
+- Confirm the intended agent clients follow the adopted repository routing and discover the selected configs/global workflow and general skills with local-over-global precedence. This record owns those client checks deferred from the completed modular-distribution migration; source/link checks and Git clone checks do not establish client discovery or interaction behavior. Agent Hands owns its separate service-discovery/platform checks. Resolved for ordinary macOS Codex/Claude Code use through the recorded user acceptance and actual procedure use; broader client/platform claims remain excluded.
+- Reconcile the selected delivery with the published installation checkpoint: shared source, project-owned settings, exact recursive pins and installed links verify. The earlier pending publication statements below are dated history.
 - [x] Inspect actual repository boundaries, remotes, branches, current setup/update guidance, and publication scope. The containing configs repository is on `master`, separate from its workflow adaptation. Refreshed remote inspection confirmed the 50 unrelated outgoing configs commits and the absence of the desired new project refs.
 - [x] Rename only the workflow adaptation branches and record matching configuration. Local branches are `project/configs` and `project/agent-hands`; their histories and project settings are preserved. Removed stale old-name Git tracking where present, pending explicit new-ref tracking on publication. No folder or remote-branch deletion occurred.
 - [x] Assess the original workflow and check the reusable draft. The concept records the coverage gaps. YAML parsing, selected-diff review, and the independent read-only synthetic exercise passed; the installed quick validator failed at import because PyYAML is unavailable. No runtime dependencies were changed.
@@ -82,9 +88,9 @@ The installed filesystem has only the seven canonical workflow skills, with 14 l
 - [x] Reconcile the authorized project branches with current local shared guidance; preserve custom procedures, unrelated skills/resources, private boundaries, and external Git metadata where required.
 - [x] Complete the separately authorized capture-list conversion without creating active work, preserve source reasoning and uncertain material, and repair incoming links. Consumer records own counts and content dispositions.
 - [x] Advance configs' canonical workflow and Agent Hands pins locally, retaining the separate Agent Hands README checkpoint. Validate exact parent/index/child agreement without publishing outer history.
-- [ ] Review the remaining uncommitted parent scaffolds/index boundaries in their owning workstreams; run fresh-client checks and security/privacy review before separately authorized publication. Private adaptation history is never a public contribution.
+- [ ] Review the remaining uncommitted parent scaffolds/index boundaries in their owning workstreams; run fresh-client checks and security/privacy review before separately authorized publication. Private adaptation history is never a public contribution. Deferred to those owning consumer workstreams; this archival closes only the selected configs/global and Agent Hands delivery, whose publication and macOS acceptance are verified.
 
 ## Agent-policy pilot navigation follow-up — 2026-11-02
 The completed Agent Hands pilot removed its old policy directory after preserving all eight sanitized originals and adopting the new indexed set. Two current-owner links were repaired in `docs/archive/policies-migration.md` and `docs/archive/policies-migration.todo.md` to select `agent-hands/docs/agent-policies/`. The navigation-only repairs are retained with the configs documentation reconciliation. They do not reopen Policies Migration or authorize committing unrelated history/import bodies or updating either child pin. Agent Hands tracks its five separate supporting untracked-document link repairs in [its pilot tasks](../../agent-hands/docs/archive/agent-policy-pilot.todo.md).
 
-The bounded configs receiving-policy handoff is [Agent Policy Migration](agent-policy-migration.md); it does not create a configs adaptation or change this reconciliation owner’s existing client/publication QA.
+The bounded configs receiving-policy handoff is [Agent Policy Migration](../active-spikes/agent-policy-migration.md); it does not create a configs adaptation or change this reconciliation owner’s existing client/publication QA.

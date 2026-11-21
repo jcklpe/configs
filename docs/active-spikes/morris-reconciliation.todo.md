@@ -18,5 +18,5 @@ attention: live
 - The follow-up runtime checks passed Bash/Zsh startup, three concurrent direct PowerShell startups and an existing-account Microsoft profile read. Installed links still resolve after retirement. A targeted credential-pattern scan of all local Git blobs found only a synthetic example; it is not a guarantee against every possible private datum.
 
 ## Remaining
-- Hand back the verified public revisions to the other machine. Its remote branch is unchanged; it retains the GNOME Tabby/Nix change and merge history for its owner to reconcile. Do not reset it to `master` or discard that work.
+- Verify the other machine's final reconciliation report and any reviewed publication. The verified revisions were handed back and the user reports that work complete; independent remote inspection still shows the previously observed branch heads. Local deployment and remote publication must be distinguished. Preserve its GNOME Tabby/Nix work and do not reset its branch to `master`.
 - Any broader persistent-state relocation is a separately coordinated follow-up; do not split writer journals or treat authentication as disposable scratch.
