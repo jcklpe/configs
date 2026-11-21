@@ -1,17 +1,19 @@
 ---
-attention: live
+attention: historical
 reviewed: 2026-11-21
 ---
 # Agent policy migration — configs work
+Historical record. Closed 2026-11-21 under D21. Stable slug: `agent-policy-migration`. Current authority belongs to [AGENTS.md](../../AGENTS.md) and the [adopted policy index](../agent-policies/policy.index.md).
 Opened 2026-11-02. Stable slug: `agent-policy-migration`. [Concept and scope](agent-policy-migration.md).
 
 ## To Do
-- Prepare explicit spike closure and archival wording review; adoption does not itself archive this pair.
+None. D21 authorized archival and its complete message.
 
 ## Ready for Human QA
 None. D19 adopted the exact five-policy set on 2026-11-21.
 
 ## Done
+- Prepare explicit spike closure and archival wording review; adoption does not itself archive this pair. Completed with D21 approval on 2026-11-21.
 - Prepare project-owned proposed kernel and needed operational candidates in the explicit agent-policy destination, preserving operative bodies and sanitized originals/history; align actual routing/locators without reclassifying human governance. Completed under D19 on 2026-11-21; retained source, routing and structural checks are recorded in the concept.
 - Present the exact adoption set and apply only an actual human decision covering it; otherwise retain proposals and record the precise pending gate rather than marking migration done. Completed under D19 on 2026-11-21; retained source, routing and structural checks are recorded in the concept.
 - Verify actual index/graph/selected closures, source preservation, links, available parser behavior, configuration and repeat no-op; report scoped final files and untouched concurrent work. Completed under D19 on 2026-11-21; retained source, routing and structural checks are recorded in the concept.

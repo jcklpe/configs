@@ -1,5 +1,5 @@
 # Configs agent policy index
-The user approved these five project-owned policies and their migration on 2026-11-21 (D19). Adopted policies govern agents within their stated scopes; package updates, structural checks and this index do not grant service or publication permissions. [Migration evidence](../active-spikes/agent-policy-migration.md) records the obligation mapping and retained owners.
+The user approved these five project-owned policies and their migration on 2026-11-21 (D19). Adopted policies govern agents within their stated scopes; package updates, structural checks and this index do not grant service or publication permissions. [Migration evidence](../archive/agent-policy-migration.md) records the obligation mapping and retained owners.
 
 <!-- agent-policies:start -->
 | ID | Policy | Type | Scope | Status | Revised |
