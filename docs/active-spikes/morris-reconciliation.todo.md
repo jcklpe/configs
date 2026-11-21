@@ -21,6 +21,7 @@ attention: live
 ## Current local follow-through — 2026-11-21
 - The five earlier approved closures and the subsequently approved Outlook saved-draft, Slack List comment and mail-filing closures are committed locally. Agent Hands also records their live QA, another independently verified headless Word save, and official Workday access prerequisites. The containing pin selects these reviewed local checkpoints; publication must make the child available before the parent pin. No push is included in this pass.
 - Configs policy candidates are a separate reviewed checkpoint, all still proposed. Existing rules and routing remain operative until explicit adoption. No installer, global policy or service sign-in changed.
+- The next selected Agent Hands checkpoints record the 2026-11-21 fresh headless Word edit/save/read pass, live Calendar Free/popup create/update with independent readback, and the documented Workday browser attachment candidate. Calendar client notification delivery and the normal-browser Workday connection remain unverified. Configs additionally verifies an isolated policy migration preview; no candidate has been adopted. These checkpoints contain sanitized findings rather than raw service responses or browser state.
 ## Remaining
 - Publish the reviewed local child and containing checkpoints only with explicit authorization, then verify remote retrieval.
 - Any broader persistent-state relocation is a separately coordinated follow-up; do not split writer journals or treat authentication as disposable scratch.
