@@ -5,7 +5,7 @@ Portable service spikes, policies and former LifeOS tooling history are owned by
 
 ## Active Spikes
 - Agent policy migration (slug `agent-policy-migration`): five project-owned policy candidates and the obligation mapping are prepared and structurally checked; exact adoption and routing/retirement remain pending. Current rules stay operative. [Scope](docs/active-spikes/agent-policy-migration.md); [tasks](docs/active-spikes/agent-policy-migration.todo.md).
-- Morris reconciliation (slug `morris-reconciliation`): local repairs and reviewed delivery are verified; the approved uncompressed recovery bundle is retired with a private ZIP retained. Independent verification of the reported Lovelace completion remains. [Reasoning](docs/active-spikes/morris-reconciliation.md); [tasks](docs/active-spikes/morris-reconciliation.todo.md).
+- Morris reconciliation (slug `morris-reconciliation`): local repairs and reviewed migration delivery are verified; the user accepts homelab reconciliation as handled. New local QA/closure checkpoints await authorized child-first publication. [Reasoning](docs/active-spikes/morris-reconciliation.md); [tasks](docs/active-spikes/morris-reconciliation.todo.md).
 
 ## Later Spikes (this conversation, not yet opened)
 - None.
