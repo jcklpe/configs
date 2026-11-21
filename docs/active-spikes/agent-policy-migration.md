@@ -1,6 +1,6 @@
 ---
 attention: live
-reviewed: 2026-11-20
+reviewed: 2026-11-21
 ---
 # Agent policy migration — configs
 Opened 2026-11-02. Stable slug: `agent-policy-migration`. [Tasks](agent-policy-migration.todo.md). The authorized migration is in candidate review. Five [project-owned proposals](../agent-policies/policy.index.md) are prepared; current instructions and numeric policies remain operative pending adoption.
@@ -47,6 +47,8 @@ BOUND-COMMITS depends on PROTECT-SECRETS because public-content and ignored-file
 After adoption, route AGENTS to the local index and applicable adopted prerequisite closures, add `documents.agent_policies = "docs/agent-policies"` to the configs target, and update the existing Git/privacy pointers without copying shared procedures. Preserve the numeric originals in indexed historical records with reserved IDs; retain human-oriented secrets/setup guidance at its current destination. Repair README/TODO and live inbound links in the same adoption change. These routing and retirement changes have not been applied.
 
 Review used Create for the initial kernel candidates, Edit for mapping existing obligations, Review for semantic/graph checks, Adopt for the exact decision boundary, and Retire for impact planning. No adoption or retirement operation was fabricated merely to exercise a skill. Relevant private workflow concerns informed the review of visible approval text, public-audience checks and precise cleanup claims; their narratives remain private.
+
+On 2026-11-21, an isolated system-temp preview exercised the proposed AGENTS/README/configuration routing and numeric-policy retirement shape. Both original numeric sources were preserved byte-for-byte against their SHA-256 fingerprints, and the proposed TOML parsed with the existing Python runtime. Repeated validation of the actual five proposals passed with an empty operative load list and unchanged index generation. The preview did not alter active routing, retire records or adopt a policy. Exact policy text and migration deltas are ready for the conversational approval slate; temporary preparation is not an approval record.
 
 ## Migration shape
 Use YAML `---` frontmatter and meaningful verb–noun mnemonic IDs. Kernel policies use `type: kernel` and `_` before their unchanged IDs in filenames; ordinary agent obligations use `type: operational` without that prefix. Types, filenames and IDs confer no rank. Review prerequisites/related references for meaning, missing or inactive prerequisites, cycles and dependent impact; never infer edges from numeric order or settle contradictions by file order. Route AGENTS to the project-owned policy.index.md. Align documents.agent_policies and any legacy locator deliberately: keep separate human/design governance destinations where they remain meaningful, rather than mechanically pointing both keys at one folder.

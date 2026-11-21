@@ -9,7 +9,7 @@ This is a review set, not an operative policy adoption. Current [project instruc
 | ADOPT-POLICIES | [Adopt agent policies explicitly](_ADOPT-POLICIES-require-explicit-adoption.md) | kernel | Agent treatment of policy obligations, skill procedures and local policy decisions. | proposed | 2026-11-02 |
 | PRESERVE-IDENTITY | [Preserve obligation identity](_PRESERVE-IDENTITY-retain-meaning-and-history.md) | kernel | Agent policy identity, record metadata, change history and retirement. | proposed | 2026-11-02 |
 | RESOLVE-DEPENDENCIES | [Resolve prerequisites before loading](_RESOLVE-DEPENDENCIES-load-prerequisites-once.md) | kernel | Agent discovery and loading of applicable adopted policy prerequisites. | proposed | 2026-11-02 |
-| BOUND-COMMITS | [Preserve scoped local checkpoints](BOUND-COMMITS-preserve-scoped-local-checkpoints.md) | operational | Agent Git checkpoints, history changes and publication in configs. | proposed | 2026-11-20 |
+| BOUND-COMMITS | [Preserve scoped local checkpoints](BOUND-COMMITS-preserve-scoped-local-checkpoints.md) | operational | Agent Git checkpoints, history changes and publication in configs. | proposed | 2026-11-21 |
 | PROTECT-SECRETS | [Keep private inputs out of Git](PROTECT-SECRETS-keep-private-inputs-out-of-git.md) | operational | Agent handling of secrets, private configuration and public content in configs. | proposed | 2026-11-20 |
 <!-- agent-policies:end -->
 

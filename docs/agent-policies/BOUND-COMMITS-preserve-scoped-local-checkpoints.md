@@ -4,7 +4,7 @@ type: operational
 scope: "Agent Git checkpoints, history changes and publication in configs."
 status: proposed
 authority: ""
-revised: "2026-11-20"
+revised: "2026-11-21"
 depends_on: ["PROTECT-SECRETS"]
 related_to: []
 ---
@@ -21,4 +21,4 @@ Do not put commit hashes in durable docs; use stable `Spike:` handles. Spike com
 
 Do not run or change the user's `gitall` or `gitcommit` sweep helpers while an agent is working. They can absorb unrelated work through the shared index. The human's `gitpush` helper remains unchanged.
 
-[Commit Work](../../project-workflows/commit-work/SKILL.md) owns command mechanics, guarded new-file handling, recovery checks and message formatting. [Run Project Spike](../../project-workflows/run-project-spike/SKILL.md) owns spike tracking and closure procedure. The current [numeric commit policy](../policies/0003-agent-commit-policy.md) remains operative until the proposed migration is explicitly adopted.
+[Commit Work](../../project-workflows/commit-work/SKILL.md) owns command mechanics, guarded new-file handling, recovery checks and message formatting. [Run Project Spike](../../project-workflows/run-project-spike/SKILL.md) owns spike tracking and closure procedure.

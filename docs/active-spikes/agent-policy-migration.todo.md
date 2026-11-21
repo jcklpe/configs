@@ -1,6 +1,6 @@
 ---
 attention: live
-reviewed: 2026-11-20
+reviewed: 2026-11-21
 ---
 # Agent policy migration — configs work
 Opened 2026-11-02. Stable slug: `agent-policy-migration`. [Concept and scope](agent-policy-migration.md).
@@ -12,7 +12,7 @@ Opened 2026-11-02. Stable slug: `agent-policy-migration`. [Concept and scope](ag
 - Make any permitted scoped local checkpoints under the current repository’s commit policy, child before parent pin where applicable; retain untracked imports/containing pins outside scope and report local-only publication constraints. Prepare closure for human authorization only when the bounded criteria are met.
 
 ## Ready for Human QA
-- Five proposed policies are prepared in the [review index](../agent-policies/policy.index.md). Structural validation passed with the existing Python/Ruby parser route, and repeated index generation is a no-op. The operative load list is correctly empty because all five are proposals. Exact adoption, routing/retirement and an ordinary post-adoption task remain pending; no service write is needed for that task.
+- Five proposed policies are prepared in the [review index](../agent-policies/policy.index.md). Structural validation passed with the existing Python/Ruby parser route, and repeated index generation is a no-op. The operative load list is correctly empty because all five are proposals. The isolated 2026-11-21 migration preview preserved both numeric originals exactly and parsed the proposed target configuration. Exact adoption, routing/retirement and an ordinary post-adoption task remain pending; no service write is needed for that task.
 
 ## Done
 - Re-read AGENTS, current Git/index/concurrent state and the exact source/adoption/commit authority. Preserve unrelated work and resolve any explicit shared-worktree hold before edits. Completed against the current clean starting index and authorized scope; unrelated work is preserved.
