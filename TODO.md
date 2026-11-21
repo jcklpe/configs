@@ -4,7 +4,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 Portable service spikes, policies and former LifeOS tooling history are owned by [Agent Hands](agent-hands/TODO.md). The parked [Bitwarden evaluation](agent-hands/docs/scratch/bitwarden-capabilities.md) includes runtime credential delivery and the original cleanup proposal.
 
 ## Active Spikes
-- Agent policy migration (slug `agent-policy-migration`): five project-owned policy candidates and the obligation mapping are prepared and structurally checked; exact adoption and routing/retirement remain pending. Current rules stay operative. [Scope](docs/active-spikes/agent-policy-migration.md); [tasks](docs/active-spikes/agent-policy-migration.todo.md).
+- Agent policy migration (slug `agent-policy-migration`): D19 adopted all five policies and completed routing and numeric-policy retirement on 2026-11-21. Structural validation and source preservation are verified; archival review remains. [Scope](docs/active-spikes/agent-policy-migration.md); [tasks](docs/active-spikes/agent-policy-migration.todo.md).
 - Morris reconciliation (slug `morris-reconciliation`): local repairs and reviewed migration delivery are verified; the user accepts homelab reconciliation as handled. New local QA/closure checkpoints await authorized child-first publication. [Reasoning](docs/active-spikes/morris-reconciliation.md); [tasks](docs/active-spikes/morris-reconciliation.todo.md).
 
 ## Later Spikes (this conversation, not yet opened)

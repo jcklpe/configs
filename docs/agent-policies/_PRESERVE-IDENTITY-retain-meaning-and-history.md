@@ -2,9 +2,9 @@
 id: PRESERVE-IDENTITY
 type: kernel
 scope: "Agent policy identity, record metadata, change history and retirement."
-status: proposed
-authority: ""
-revised: "2026-11-02"
+status: adopted
+authority: "User approved D19 in conversation on 2026-11-21."
+revised: "2026-11-21"
 depends_on: ["ADOPT-POLICIES"]
 related_to: ["RESOLVE-DEPENDENCIES"]
 ---

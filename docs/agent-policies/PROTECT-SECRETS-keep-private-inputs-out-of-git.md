@@ -2,9 +2,9 @@
 id: PROTECT-SECRETS
 type: operational
 scope: "Agent handling of secrets, private configuration and public content in configs."
-status: proposed
-authority: ""
-revised: "2026-11-20"
+status: adopted
+authority: "User approved D19 in conversation on 2026-11-21."
+revised: "2026-11-21"
 depends_on: []
 related_to: ["BOUND-COMMITS"]
 ---

@@ -2,8 +2,8 @@
 id: BOUND-COMMITS
 type: operational
 scope: "Agent Git checkpoints, history changes and publication in configs."
-status: proposed
-authority: ""
+status: adopted
+authority: "User approved D19 in conversation on 2026-11-21."
 revised: "2026-11-21"
 depends_on: ["PROTECT-SECRETS"]
 related_to: []

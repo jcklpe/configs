@@ -1,4 +1,5 @@
-# 0001 Secrets And Local Env Hygiene
+# Secrets and local environment setup
+This is human setup guidance. Agent obligations belong to [PROTECT-SECRETS](../agent-policies/PROTECT-SECRETS-keep-private-inputs-out-of-git.md); the [original numeric policy](../archive/agent-policy-retirements/0001-secrets-and-local-env.md) is retained as history.
 ## Current Approach
 Use a personal dotfiles tool hygiene pattern:
 

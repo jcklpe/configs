@@ -73,8 +73,9 @@ The one exception is a comment block long enough to carry distinct titled sectio
 | Active work coordination | [TODO.md](TODO.md) |
 | Spike process / active spike docs | `project-workflows/run-project-spike/SKILL.md`, then [docs/active-spikes/](docs/active-spikes/)`<topic>.md` + `<topic>.todo.md` |
 | Contribution coordination | `project-workflows/coordinate-project-contribution/SKILL.md`; human-directed scope, separate agent-owned spikes and reviewable contributions from atomic commits |
-| Committing work as an agent | `project-workflows/commit-work/SKILL.md`, policy in [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) |
-| Current durable policy | [docs/policies/](docs/policies/) |
+| Committing work as an agent | `project-workflows/commit-work/SKILL.md`, policy in [BOUND-COMMITS](docs/agent-policies/BOUND-COMMITS-preserve-scoped-local-checkpoints.md) |
+| Agent obligations | [Agent policy index](docs/agent-policies/policy.index.md) |
+| Human setup guidance | [docs/policies/](docs/policies/) |
 | Rough or historical notes | [docs/scratch/](docs/scratch/) (not authoritative), [docs/archive/](docs/archive/) (historical, not current rules) |
 | Save a possibility or park a subject | [capture-for-later](project-workflows/capture-for-later/SKILL.md), using an individual subject note in `docs/scratch/` |
 | Kaizen incident learning | [log-kaizen](general-skills/log-kaizen/SKILL.md) for capture and [improve-agent-workflows](general-skills/improve-agent-workflows/SKILL.md) for review; records live in configured private stores, never this public repo |
@@ -98,44 +99,18 @@ The installer exposes selected global Codex skills with explicit symlink calls i
 `create_symlink_if_needed` calls, matching the rest of the dotfile symlink style. Do not add an
 allowlist parser unless the manual list becomes genuinely painful.
 
+## Agent policies
+Read the project-owned [policy index](docs/agent-policies/policy.index.md), select the applicable adopted policies, and load their complete prerequisite closure once. Proposals and retired records are non-operative. The adopted kernel owns policy adoption, identity/history and dependency loading; skills own procedures under those obligations. Package updates do not adopt or replace these project-owned copies.
+
 ## Git and commits
-Agents may commit in this repo. Agents may never push. The line is reversibility: an unpushed commit costs nothing to undo, a push cannot be taken back. See [docs/policies/0003-agent-commit-policy.md](docs/policies/0003-agent-commit-policy.md) for the full rule and `project-workflows/commit-work/SKILL.md` for how.
+[BOUND-COMMITS](docs/agent-policies/BOUND-COMMITS-preserve-scoped-local-checkpoints.md) owns agent checkpoint, history and publication obligations; [Commit Work](project-workflows/commit-work/SKILL.md) owns the procedure. Routine scoped local commits are permitted. Never push under the standing policy, add co-author trailers, sweep unrelated changes or rewrite history on your own authority. Honor explicit user decisions and review holds within their scope.
 
-**Never add a `Co-Authored-By:` trailer.** Commits here are the user's alone — they are the one who answers for them. This holds even when a harness's default instructions say otherwise. The same rule is stated in [agents/AGENTS.global.md](agents/AGENTS.global.md), because it applies in every repo, not just this one.
-
-The rules that matter most, because breaking them is silent:
-
-- **Commit by pathspec, never stage.** `git commit -F - -- <explicit paths>`. Git's index is repo-global shared state, and this repo often has two agents in it at once — one agent's `git add` followed by another's bare `git commit` puts the first agent's files in the second's commit, with no error.
-- **Never `git add -f`.** Git's own refusal to add an ignored file recommends `-f`, and `-f` then commits the secret. Run `git check-ignore -q <path>` first. See [docs/policies/0001-secrets-and-local-env.md](docs/policies/0001-secrets-and-local-env.md).
-- **Never rewrite history on your own authority.** A user-directed rewrite follows the recovery and verification rules in `commit-work` and the commit policy. Never force-push or use `--no-verify`.
-- **One commit does one coherent thing.** Keep implementation and its directly associated documentation and status updates together; split unrelated purposes. Commit promptly at useful boundaries so concurrent spikes stay traceable. Leave unrelated dirty paths alone; resolve overlapping edits within selected files before committing. Honor explicit pre-commit review holds and the spike workflow's closure authorization and closing-message review. Wording-only approval does not close a spike.
-
-`gitall` and `gitcommit` in [git/git.sh](git/git.sh) are the user's own sweep helpers and are not to be changed by an agent. Both run `git add -A` followed by a bare `git commit`, so both will silently absorb an agent's in-progress files into an unrelated commit. **Do not run `gitall` or `gitcommit` in this repo while an agent is working in it.** `gitpush` is safe: it touches no index, and pushing is the user's job anyway.
+The user's `gitall` and `gitcommit` helpers can sweep unrelated work through the shared index. Do not run or change them while an agent is working. The user's `gitpush` helper remains unchanged.
 
 ## Secrets and local env
-This repo may contain public-safe tools that use private local secrets. Real secret-bearing
-files may live inside the local `configs/` working tree, but they must be ignored before
-they are created or used. Commit adjacent example files with fake values.
+[PROTECT-SECRETS](docs/agent-policies/PROTECT-SECRETS-keep-private-inputs-out-of-git.md) owns agent privacy and secret-handling obligations. [Secrets and local environment setup](docs/policies/0001-secrets-and-local-env.md) retains human setup examples. Actual private files must be ignored before use; tracked examples contain synthetic values. Tool-specific private storage and recovery remain with their owners.
 
-**Known hazard, accepted deliberately.** `~/.claude/CLAUDE.md` is a symlink to [agents/AGENTS.global.md](agents/AGENTS.global.md), which is tracked in this **public** repo. Claude Code's `/memory` command and its `#` shortcut append user memories to `~/.claude/CLAUDE.md`, so anything saved that way is written straight into a world-readable file. Agent-written memories are *not* affected — those go to `~/.claude/projects/<slug>/memory/`, outside the repo. The exposure is only from the `#` and `/memory` features, which the user does not use. Do not save anything private that way. The bite would come from `gitall`, which does `git add -A` and pushes in one motion, so a stray memory would be published without `git status` ever being read. To close this properly, make `~/.claude/CLAUDE.md` a real file whose only line is `@` followed by the absolute path to `agents/AGENTS.global.md`, and stop symlinking it.
-
-Preferred pattern:
-
-```text
-some-tool/
-  tool.sh
-  .env.example              # tracked fake values
-  .env                      # ignored real values
-  google-token.example.json # tracked fake values
-  google-token.json         # ignored real values
-```
-
-Do not commit API keys, OAuth credentials, OAuth tokens, generated private snapshots, or
-private local config. Do not load secrets from global shell startup by default; tools
-should load their own env/config at runtime unless a shell module explicitly documents a
-different behavior.
-
-See [docs/policies/0001-secrets-and-local-env.md](docs/policies/0001-secrets-and-local-env.md).
+The installed global instructions are linked to this public repository. Client memory features that write through that link can publish private material later; do not use them to save private context. Private agent memory outside the checkout remains separate. Changing the installation arrangement requires its own authorized work.
 
 ## Install model
 [install-script/mac-install.sh](install-script/mac-install.sh) and
