@@ -1,8 +1,9 @@
 ---
-attention: live
+attention: historical
 ---
 # Morris reconciliation
-The Morris checkout migration and tool repairs are verified. Reviewed updates await child-first publication and final archival wording approval. The other machine’s reconciliation is handled separately.
+Historical record. Closed 2026-11-23 under D24. Stable slug: `morris-reconciliation`. Current setup and branch syncing belong to [README](../../README.md) and [project instructions](../../AGENTS.md); service behavior and storage belong to [Agent Hands](../../agent-hands/README.md).
+The Morris checkout migration and tool repairs are complete. Reviewed Agent Hands updates are published, and the containing delivery records their exact pin. Ongoing setup and branch syncing follow the maintained README and project instructions. Machine deployment remains separate from repository publication.
 
 The live checkout contains preserved implementation checkpoints on sanitized history. Do not import history from retired checkouts. Review retained authored files as files, preserve unique work, and inspect every outgoing commit for public suitability. Remote connection repair does not itself publish changes.
 

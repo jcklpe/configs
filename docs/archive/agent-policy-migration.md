@@ -9,7 +9,7 @@ Opened 2026-11-02. Stable slug: `agent-policy-migration`. [Tasks](agent-policy-m
 ## Ownership and current state
 Repository: `https://github.com/jcklpe/configs.git`; canonical branch `master`, local machine branch `morris`. The canonical Project Workflows provider is on published shared `main`; its neutral consumer-default configuration does not select configs as a receiving target. Configs uses its own [target configuration](../project-workflows.toml).
 
-Configs uses the canonical shared-main installation, not a project/configs adaptation. Its adopted operational policies cover secrets/local-environment handling and agent commits. AGENTS and global-preference links also contain standing obligations. Migration delivery is recorded under [Morris reconciliation](../active-spikes/morris-reconciliation.md).
+Configs uses the canonical shared-main installation, not a project/configs adaptation. Its adopted operational policies cover secrets/local-environment handling and agent commits. AGENTS and global-preference links also contain standing obligations. Migration delivery is recorded under [Morris reconciliation](morris-reconciliation.md).
 
 Current policy inventory:
 - `docs/policies/0001-secrets-and-local-env.md`

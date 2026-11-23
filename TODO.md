@@ -4,7 +4,7 @@ This file is the coordination map for active work in this repo. Keep detailed th
 Portable service spikes, policies and former LifeOS tooling history are owned by [Agent Hands](agent-hands/TODO.md). The parked [Bitwarden evaluation](agent-hands/docs/scratch/bitwarden-capabilities.md) includes runtime credential delivery and the original cleanup proposal.
 
 ## Active Spikes
-- Morris reconciliation (slug `morris-reconciliation`): local repairs and reviewed migration delivery are verified; the user accepts homelab reconciliation as handled. Implementation is complete; user-authorized child-first publication and final archival wording are being prepared. [Reasoning](docs/active-spikes/morris-reconciliation.md); [tasks](docs/active-spikes/morris-reconciliation.todo.md).
+None.
 
 ## Completed policy migration
 - Agent policy migration (slug `agent-policy-migration`): D19 adopted all five policies and completed routing and numeric-policy retirement on 2026-11-21. Structural validation and source preservation are verified; archived under D21 on 2026-11-21. [Scope](docs/archive/agent-policy-migration.md); [tasks](docs/archive/agent-policy-migration.todo.md).
@@ -16,6 +16,7 @@ Portable service spikes, policies and former LifeOS tooling history are owned by
 - `run` dispatcher notes: `docs/scratch/run-command.md`, `docs/scratch/run-command.todo.md`
 
 ## Recently Shipped
+- Morris reconciliation (closed 2026-11-23): local checkout migration, tool repairs, installed skill routing and reviewed child-first delivery are complete. Ongoing syncing follows README. [History](docs/archive/morris-reconciliation.md); [verification](docs/archive/morris-reconciliation.todo.md).
 - Workflow Reconciliation (closed 2026-11-20): selected shared-source delivery, configs/global installation, Agent Hands pins and ordinary macOS client routing are verified. Other consumer work and deferred client/platform checks retain their owners. [History](docs/archive/workflow-reconciliation.md); [acceptance and retained limits](docs/archive/workflow-reconciliation.todo.md).
 - Policies Migration (closed 2026-11-02): completed the decisions-to-policies migration, with current rules maintained by configs and Agent Hands. No implementation or human QA remains in this scope. [Historical reasoning](docs/archive/policies-migration.md); [work and verification](docs/archive/policies-migration.todo.md).
 - Modular Skill Distribution (closed 2026-11-02): cross-collection extraction, native cutover and consumer ownership are implemented. Original checklist reconciled; remaining client/platform QA and provisioning have their existing owners. [Historical reasoning](docs/archive/modular-skill-distribution.md); [closure and residuals](docs/archive/modular-skill-distribution.todo.md#closure-reconciliation-2026-11-02).
